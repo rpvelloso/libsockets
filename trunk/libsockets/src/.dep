@@ -1,0 +1,11 @@
+tclientsocket.o: tclientsocket.cpp ../include/tclientsocket.h \
+ ../include/tsocket.h ../include/tobject.h
+tlogger.o: tlogger.cpp ../include/tlogger.h ../include/tobject.h
+tmutex.o: tmutex.cpp ../include/tmutex.h ../include/tobject.h
+tobject.o: tobject.cpp ../include/tobject.h
+tserversocket.o: tserversocket.cpp ../include/tserversocket.h \
+ ../include/tsocket.h ../include/tobject.h
+tsocket.o: tsocket.cpp ../include/tsocket.h ../include/tobject.h
+tthread.o: tthread.cpp ../include/tthread.h ../include/tobject.h
+utils.o: utils.cpp ../include/utils.h
+xmlParser.o: xmlParser.cpp ../include/xmlParser.h

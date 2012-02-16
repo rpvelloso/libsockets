@@ -1,0 +1,34 @@
+CXX = g++
+CXXFLAGS = -Wall -I../include -O0 -g3 -fmessage-length=0 -fPIC -DDEVEL_ENV -c
+LDFLAGS = -shared -lpthread -lwsock32 
+LD = g++
+TARGET = libsockets.dll
+RM = del
+RMFLAGS = /Q
+CP = copy
+MKDIR = mkdir
+INSTALL_PATH_HDR = C:\mingw\include\libsockets
+INSTALL_PATH_LIB = C:\mingw\lib
+INSTALL_PATH_WIN = C:\windows\system32
+OBJS = tclientsocket.o tlogger.o tmutex.o \
+tobject.o tserversocket.o tsocket.o tthread.o utils.o \
+xmlParser.o
+SRCS = tclientsocket.cpp tlogger.cpp tmutex.cpp tobject.cpp \
+tserversocket.cpp tsocket.cpp tthread.cpp utils.cpp xmlParser.cpp
+
+%.o:	%.cpp
+	$(CXX) $(CXXFLAGS) $< -o $@
+
+all:	$(TARGET)
+$(TARGET):	$(OBJS)
+	$(LD) -o $@ $(OBJS) $(LDFLAGS)
+dep:	$(SRCS)
+	$(CXX) -MM $(CXXFLAGS) $(SRCS) > .dep
+include .dep
+clean:
+	$(RM) $(RMFLAGS) $(OBJS) $(TARGET)
+install:
+#	$(MKDIR) $(INSTALL_PATH_HDR)
+	$(CP) ..\include\*.h $(INSTALL_PATH_HDR)
+	$(CP) $(TARGET) $(INSTALL_PATH_LIB)
+	$(CP) $(TARGET) $(INSTALL_PATH_WIN)
