@@ -1,0 +1,17 @@
+main.o: main.cpp ../include/techoserver.h ../include/techothread.h \
+ ../include/techoserver.h ../include/techoclientsocket.h \
+ ../include/techolog.h ../include/techoserversocket.h
+techoclientsocket.o: techoclientsocket.cpp ../include/techothread.h \
+ ../include/techoserver.h ../include/techothread.h ../include/techolog.h \
+ ../include/techoserversocket.h ../include/techoclientsocket.h \
+ ../include/techoclientsocket.h
+techolog.o: techolog.cpp ../include/techolog.h
+techoserver.o: techoserver.cpp ../include/techoserver.h \
+ ../include/techothread.h ../include/techoserver.h \
+ ../include/techoclientsocket.h ../include/techolog.h \
+ ../include/techoserversocket.h
+techoserversocket.o: techoserversocket.cpp ../include/techoserversocket.h \
+ ../include/techoclientsocket.h ../include/techolog.h
+techothread.o: techothread.cpp ../include/techothread.h \
+ ../include/techoserver.h ../include/techothread.h ../include/techolog.h \
+ ../include/techoserversocket.h ../include/techoclientsocket.h
