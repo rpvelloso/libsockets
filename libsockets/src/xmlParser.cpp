@@ -1,3 +1,5 @@
+#define APPROXIMATE_PARSING
+#define _XMLPARSER_NO_MESSAGEBOX_
 /**
  ****************************************************************************
  * <P> XML.c - implementation file for basic XML parser written in ANSI C++
