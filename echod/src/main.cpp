@@ -40,7 +40,7 @@ void pusage(char *p)
 {
 	cout << "usage: "<<p<<" [-a bind_addr] [-p bind_port]"<<endl;
 	cout << "-a bind_addr: the IP address to bind the server to. Default 127.0.0.1"<<endl;
-	cout << "-p bind_port: the server port number. Default 21"<<endl;
+	cout << "-p bind_port: the server port number. Default 7"<<endl;
 	exit(-1);
 }
 
