@@ -26,14 +26,15 @@ using namespace std;
 
 tHTTPClientSocket::tHTTPClientSocket(int fd, sockaddr_in *sin) : tClientSocket(fd, sin) {
 	log = NULL;
-	msg_overflow = 0;
-	msg_pos = 0;
-	lnlen = 0;
-	recv_sta = tHTTPReceiveHeader;
-	http_body = NULL;
+	msgOverflow = 0;
+	msgPos = 0;
+	lineLength = 0;
+	recvSta = tHTTPReceiveHeader;
+	httpBody = NULL;
 }
 
 tHTTPClientSocket::~tHTTPClientSocket() {
+	if (httpBody) free(httpBody);
 	Close();
 }
 
@@ -52,33 +53,33 @@ void tHTTPClientSocket::OnSend(void *buf, size_t *size) {
 void tHTTPClientSocket::OnReceive(void *buf, size_t size) {
 	size_t i=0;
 
-	for (;(i<size) && (recv_sta == tHTTPReceiveHeader);i++) {
+	for (;(i<size) && (recvSta == tHTTPReceiveHeader);i++) {
 		if (((char *)buf)[i] == ENDL) {
-			if (!lnlen) {
-				http_message[msg_pos] = 0x00;
-				msg_pos = 0;
-				if (msg_overflow) {
-					msg_overflow = 0;
+			if (!lineLength) {
+				httpMessage[msgPos] = 0x00;
+				msgPos = 0;
+				if (msgOverflow) {
+					msgOverflow = 0;
 					LOG("HTTP message buffer overflow.\n");
-				} else if (strlen(http_message) > 0) ProcessHTTPHeader();
+				} else if (strlen(httpMessage) > 0) ProcessHTTPHeader();
 			}
-			lnlen = 0;
+			lineLength = 0;
 		} else {
-			if (msg_pos >= MSG_LEN) {
-				msg_pos = 0;
-				msg_overflow = 1;
+			if (msgPos >= MSG_LEN) {
+				msgPos = 0;
+				msgOverflow = 1;
 			}
 			if (((char *)buf)[i] != '\r') {
-				http_message[msg_pos++] = ((char *)buf)[i];
-				lnlen++;
-			} else http_message[msg_pos++] = '\n';
+				httpMessage[msgPos++] = ((char *)buf)[i];
+				lineLength++;
+			} else httpMessage[msgPos++] = '\n';
 		}
 	}
-	if (recv_sta == tHTTPReceiveBody) {
+	if (recvSta == tHTTPReceiveBody) {
 		size_t cpy_len = (size-i)>contentLength?contentLength:(size-i);
-		memcpy(&(((char *)http_body)[body_pos]),&(((char *)buf)[i]),cpy_len);
-		body_pos += cpy_len;
-		if (body_pos == contentLength) ProcessHTTPBody();
+		memcpy(&(((char *)httpBody)[bodyPos]),&(((char *)buf)[i]),cpy_len);
+		bodyPos += cpy_len;
+		if (bodyPos == contentLength) ProcessHTTPBody();
 	}
 }
 
@@ -90,48 +91,72 @@ void tHTTPClientSocket::OnDisconnect() {
 }
 
 void tHTTPClientSocket::ProcessHTTPHeader() {
-	string line, parm, msg = http_message;
+	string line, parm, msg = httpMessage;
 	int i=0;
 	stringstream cl;
+	string request;
 
-	contentLength = 0;
 	host = "";
+	method = "";
+	uri = "";
+	query = "";
+	httpVersion = "";
+	userAgent = "";
+	contentType = "";
+	boundary = "";
+	contentLength = 0;
 	do {
 		line = stringtok(&msg,"\n"); i++;
 		if (i == 1) { // request line
-			action = stringtok(&line," ");
-			uri = stringtok(&line," ");
+			method = stringtok(&line," ");
+			request = stringtok(&line," ");
+			uri = stringtok(&request,"?");
+			query = request;
+			httpVersion = line;
 		} else { // header lines
 			parm = stringtok(&line,": ");
 			upper_case(parm);
 			if (parm == "HOST") {
 				host = line;
+			} else if (parm == "USER-AGENT") {
+				userAgent = line;
+			} else if (parm == "CONTENT-TYPE") {
+				contentType = stringtok(&line,"; ");
+				stringtok(&line,"=");
+				boundary = line;
 			} else if (parm == "CONTENT-LENGTH") {
 				cl << line;
 				cl >> contentLength;
 			}
 		}
 	} while (line!="");
-	cout << "Action: \'" << action << "\'" << endl;
-	cout << "URI: \'" << uri << "\'" << endl;
-	cout << "Host: \'" << host << "\'" << endl;
-	cout << "Length: \'" << contentLength << "\'" << endl;
 	if (contentLength > 0) {
-		if (http_body) {
-			free(http_body);
-			http_body = NULL;
+		if (httpBody) {
+			free(httpBody);
+			httpBody = NULL;
 		}
-		http_body = malloc(contentLength+1);
-		body_pos = 0;
-		((char *)http_body)[contentLength] = 0x00;
-		recv_sta = tHTTPReceiveBody;
+		httpBody = malloc(contentLength+1);
+		bodyPos = 0;
+		((char *)httpBody)[contentLength] = 0x00;
+		recvSta = tHTTPReceiveBody;
 	}
+
+	cout << "Method..: \'" << method << "\'" << endl;
+	cout << "URI.....: \'" << uri << "\'" << endl;
+	cout << "Query...: \'" << query << "\'" << endl;
+	cout << "Version.: \'" << httpVersion << "\'" << endl;
+	cout << "Host....: \'" << host << "\'" << endl;
+	cout << "Agent...: \'" << userAgent << "\'" << endl;
+	cout << "Length..: \'" << contentLength << "\'" << endl;
+	cout << "Type....: \'" << contentType << "\'" << endl;
+	cout << "Boundary: \'" << boundary << "\'" << endl;
 }
 
 void tHTTPClientSocket::ProcessHTTPBody() {
-	cout << "HTTP Body: " << endl;
-	cout << "\'" << (char *)http_body << "\'" << endl;
-	free(http_body);
-	http_body = NULL;
-	recv_sta = tHTTPReceiveHeader;
+	cout << "Body....: " << endl;
+	cout << "\'" << (char *)httpBody << "\'" << endl;
+
+	free(httpBody);
+	httpBody = NULL;
+	recvSta = tHTTPReceiveHeader;
 }
