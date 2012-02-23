@@ -16,8 +16,13 @@
     You should have received a copy of the GNU General Public License
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <algorithm>
+#include <sstream>
+#include <libsockets/libsockets.h>
 #include "thttpthread.h"
 #include "thttpclientsocket.h"
+
+using namespace std;
 
 tHTTPClientSocket::tHTTPClientSocket(int fd, sockaddr_in *sin) : tClientSocket(fd, sin) {
 	log = NULL;
@@ -79,5 +84,30 @@ void tHTTPClientSocket::OnDisconnect() {
 }
 
 void tHTTPClientSocket::ProcessHTTPHeader() {
-	cout << "HTTP message received: " << endl << http_message << endl;
+	string line, parm, msg = http_message;
+	int i=0;
+	stringstream cl;
+
+	cout << "HTTP message received: " << endl;
+	do {
+		line = stringtok(&msg,"\n"); i++;
+		cout << "Line " << i << ": " << line << endl;
+		if (i == 1) { // request line
+			action = stringtok(&line," ");
+			uri = stringtok(&line," ");
+		} else { // header lines
+			parm = stringtok(&line,": ");
+			upper_case(parm);
+			if (parm == "HOST") {
+				host = line;
+			} else if (parm == "CONTENT-LENGTH") {
+				cl << line;
+				cl >> contentLength;
+			}
+		}
+	} while (line!="");
+	cout << "Action: \'" << action << "\'" << endl;
+	cout << "URI: \'" << uri << "\'" << endl;
+	cout << "Host: \'" << host << "\'" << endl;
+	cout << "Length: \'" << contentLength << "\'" << endl;
 }

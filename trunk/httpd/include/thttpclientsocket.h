@@ -20,6 +20,7 @@
 #define THTTPCLIENTSOCKET_H_
 
 #include <string>
+#include <sstream>
 #include <libsockets/libsockets.h>
 #include "thttplog.h"
 
@@ -49,6 +50,8 @@ protected:
     char http_message[MSG_LEN];
     int msg_pos,msg_overflow,lnlen;
     tHTTPMessageReceiveState recv_sta;
+    string userAgent,host,action,uri;
+    unsigned long int contentLength;
 
 };
 
