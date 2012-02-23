@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -I../include -O0 -g3 -fmessage-length=0 -fPIC -c
+CXXFLAGS = -Wall -I../include -O0 -g3 -fmessage-length=0 -c
 LDFLAGS = -lpthread -lwsock32 -lsockets
 LD = g++
 TARGET = httpd.exe

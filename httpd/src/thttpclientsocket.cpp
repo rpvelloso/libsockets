@@ -130,7 +130,7 @@ void tHTTPClientSocket::ProcessHTTPHeader() {
 
 void tHTTPClientSocket::ProcessHTTPBody() {
 	cout << "HTTP Body: " << endl;
-	cout << (char *)http_body << endl;
+	cout << "\'" << (char *)http_body << "\'" << endl;
 	free(http_body);
 	http_body = NULL;
 	recv_sta = tHTTPReceiveHeader;
