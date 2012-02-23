@@ -141,20 +141,20 @@ void tHTTPClientSocket::ProcessHTTPHeader() {
 		recvSta = tHTTPReceiveBody;
 	}
 
-	cout << "Method..: \'" << method << "\'" << endl;
-	cout << "URI.....: \'" << uri << "\'" << endl;
-	cout << "Query...: \'" << query << "\'" << endl;
-	cout << "Version.: \'" << httpVersion << "\'" << endl;
-	cout << "Host....: \'" << host << "\'" << endl;
-	cout << "Agent...: \'" << userAgent << "\'" << endl;
-	cout << "Length..: \'" << contentLength << "\'" << endl;
-	cout << "Type....: \'" << contentType << "\'" << endl;
-	cout << "Boundary: \'" << boundary << "\'" << endl;
+	cout << "Method..: \'" << method << "\'" << endl
+	<< "URI.....: \'" << uri << "\'" << endl
+	<< "Query...: \'" << query << "\'" << endl
+	<< "Version.: \'" << httpVersion << "\'" << endl
+	<< "Host....: \'" << host << "\'" << endl
+	<< "Agent...: \'" << userAgent << "\'" << endl
+	<< "Length..: \'" << contentLength << "\'" << endl
+	<< "Type....: \'" << contentType << "\'" << endl
+	<< "Boundary: \'" << boundary << "\'" << endl;
 }
 
 void tHTTPClientSocket::ProcessHTTPBody() {
-	cout << "Body....: " << endl;
-	cout << "\'" << (char *)httpBody << "\'" << endl;
+	cout << "Body....: " << endl
+	<< "\'" << (char *)httpBody << "\'" << endl;
 
 	free(httpBody);
 	httpBody = NULL;
