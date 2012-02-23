@@ -47,7 +47,7 @@ public:
     void ProcessHTTPBody();
 protected:
     tHTTPLog *log;
-    char httpMessage[MSG_LEN];
+    char httpHeader[MSG_LEN];
     void *httpBody;
     int msgPos,msgOverflow,lineLength;
     size_t bodyPos;
