@@ -44,15 +44,16 @@ public:
     void OnConnect();
     void OnDisconnect();
     void ProcessHTTPHeader();
-
+    void ProcessHTTPBody();
 protected:
     tHTTPLog *log;
     char http_message[MSG_LEN];
+    void *http_body;
     int msg_pos,msg_overflow,lnlen;
+    size_t body_pos;
     tHTTPMessageReceiveState recv_sta;
     string userAgent,host,action,uri;
     unsigned long int contentLength;
-
 };
 
 #endif
