@@ -21,6 +21,9 @@
 
 tHTTPClientSocket::tHTTPClientSocket(int fd, sockaddr_in *sin) : tClientSocket(fd, sin) {
 	log = NULL;
+	msg_overflow = 0;
+	msg_pos = 0;
+	lnlen=0;
 }
 
 tHTTPClientSocket::~tHTTPClientSocket() {
@@ -40,11 +43,30 @@ void tHTTPClientSocket::OnSend(void *buf, size_t *size) {
 }
 
 void tHTTPClientSocket::OnReceive(void *buf, size_t size) {
-	char s[HTTP_BUFLEN+1];
-
-	memcpy(s,buf,size);
-	s[size] = 0;
-	log->Log("received from %s: %s\n",GetHostName(),s);
+	for (size_t i=0;i<size;i++) {
+		if (((char *)buf)[i] == ENDL) {
+			if (!lnlen) {
+				http_message[msg_pos] = 0x00;
+				msg_pos = 0;
+				if (msg_overflow) {
+					msg_overflow = 0;
+					LOG("HTTP message buffer overflow.\n");
+				} else if (strlen(http_message) > 0) ProcessMessage();
+			}
+			lnlen = 0;
+		} else {
+			if (msg_pos >= MSG_LEN) {
+				msg_pos = 0;
+				msg_overflow = 1;
+			}
+			if (((char *)buf)[i] != '\r') {
+				http_message[msg_pos++] = ((char *)buf)[i];
+				lnlen++;
+			} else {
+				http_message[msg_pos++] = '\n';
+			}
+		}
+	}
 }
 
 void tHTTPClientSocket::OnConnect() {
@@ -52,4 +74,8 @@ void tHTTPClientSocket::OnConnect() {
 
 void tHTTPClientSocket::OnDisconnect() {
 	log->Log("connection to %s closed.\n",GetHostName());
+}
+
+void tHTTPClientSocket::ProcessMessage() {
+	cout << "HTTP message received: " << endl << http_message << endl;
 }

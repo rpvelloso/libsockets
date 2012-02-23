@@ -31,9 +31,7 @@ tHTTPThread::~tHTTPThread() {
 void tHTTPThread::Execute() {
 	int len;
 
-	while ((len = socket->Receive(buffer, HTTP_BUFLEN)) > 0) {
-		socket->Send(buffer, len);
-	}
+	while ((len = socket->Receive(buffer, HTTP_BUFLEN)) > 0);
 }
 
 void tHTTPThread::OnStart() {

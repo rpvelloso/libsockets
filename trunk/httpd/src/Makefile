@@ -1,11 +1,11 @@
 CXX = g++
 CXXFLAGS = -Wall -I../include -O0 -g3 -fmessage-length=0 -fPIC -c
-LDFLAGS = -lpthread -lwsock32 -lsockets
+LDFLAGS = -lpthread -lsockets
 LD = g++
-TARGET = httpd.exe
-RM = del
-RMFLAGS = /Q
-CP = copy
+TARGET = httpd
+RM = rm
+RMFLAGS = -rf
+CP = cp
 OBJS = main.o thttpclientsocket.o thttplog.o thttpserver.o \
 thttpserversocket.o thttpthread.o
 SRCS = main.cpp thttpclientsocket.cpp thttplog.cpp thttpserver.cpp \
