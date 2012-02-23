@@ -47,12 +47,12 @@ public:
     void ProcessHTTPBody();
 protected:
     tHTTPLog *log;
-    char http_message[MSG_LEN];
-    void *http_body;
-    int msg_pos,msg_overflow,lnlen;
-    size_t body_pos;
-    tHTTPMessageReceiveState recv_sta;
-    string userAgent,host,action,uri;
+    char httpMessage[MSG_LEN];
+    void *httpBody;
+    int msgPos,msgOverflow,lineLength;
+    size_t bodyPos;
+    tHTTPMessageReceiveState recvSta;
+    string userAgent,host,method,uri,query,contentType,boundary,httpVersion;
     unsigned long int contentLength;
 };
 
