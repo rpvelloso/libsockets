@@ -88,10 +88,10 @@ void tHTTPClientSocket::ProcessHTTPHeader() {
 	int i=0;
 	stringstream cl;
 
-	cout << "HTTP message received: " << endl;
+	contentLength = 0;
+	host = "";
 	do {
 		line = stringtok(&msg,"\n"); i++;
-		cout << "Line " << i << ": " << line << endl;
 		if (i == 1) { // request line
 			action = stringtok(&line," ");
 			uri = stringtok(&line," ");
