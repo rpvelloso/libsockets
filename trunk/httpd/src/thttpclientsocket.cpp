@@ -62,9 +62,7 @@ void tHTTPClientSocket::OnReceive(void *buf, size_t size) {
 			if (((char *)buf)[i] != '\r') {
 				http_message[msg_pos++] = ((char *)buf)[i];
 				lnlen++;
-			} else {
-				http_message[msg_pos++] = '\n';
-			}
+			} else http_message[msg_pos++] = '\n';
 		}
 	}
 }
