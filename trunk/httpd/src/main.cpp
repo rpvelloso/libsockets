@@ -40,7 +40,7 @@ void pusage(char *p)
 {
 	cout << "usage: "<<p<<" [-a bind_addr] [-p bind_port]"<<endl;
 	cout << "-a bind_addr: the IP address to bind the server to. Default 127.0.0.1"<<endl;
-	cout << "-p bind_port: the server port number. Default 7"<<endl;
+	cout << "-p bind_port: the server port number. Default 80"<<endl;
 	exit(-1);
 }
 
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 {
 	int opt;
 	string bind_addr="127.0.0.1";
-	unsigned short bind_port=7;
+	unsigned short bind_port=80;
 
 	while ((opt = getopt(argc, argv, "a:p:h")) != -1) {
 		switch (opt) {
