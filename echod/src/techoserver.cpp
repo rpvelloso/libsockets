@@ -29,7 +29,8 @@ tEchoServer::~tEchoServer() {
 	list<tEchoThread *>::iterator i;
 
 	for (i=threads.begin();i!=threads.end();i++) {
-		(*i)->Stop();
+		(*i)->SetSelfDestroy(0);
+		delete (*i);
 	}
 	threads.clear();
 	delete server_socket;
