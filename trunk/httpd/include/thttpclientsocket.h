@@ -28,6 +28,11 @@
 
 #define LOG(...) log->Log(__VA_ARGS__)
 
+enum tHTTPMessageReceiveState {
+	tHTTPReceiveHeader=0,
+	tHTTPReceiveBody
+};
+
 class tHTTPClientSocket : public tClientSocket {
 public:
 	tHTTPClientSocket(int, sockaddr_in *);
@@ -37,12 +42,14 @@ public:
     void OnReceive(void *, size_t);
     void OnConnect();
     void OnDisconnect();
-    void ProcessMessage();
+    void ProcessHTTPHeader();
 
 protected:
     tHTTPLog *log;
     char http_message[MSG_LEN];
     int msg_pos,msg_overflow,lnlen;
+    tHTTPMessageReceiveState recv_sta;
+
 };
 
 #endif

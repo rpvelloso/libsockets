@@ -23,7 +23,8 @@ tHTTPClientSocket::tHTTPClientSocket(int fd, sockaddr_in *sin) : tClientSocket(f
 	log = NULL;
 	msg_overflow = 0;
 	msg_pos = 0;
-	lnlen=0;
+	lnlen = 0;
+	recv_sta = tHTTPReceiveHeader;
 }
 
 tHTTPClientSocket::~tHTTPClientSocket() {
@@ -43,27 +44,30 @@ void tHTTPClientSocket::OnSend(void *buf, size_t *size) {
 }
 
 void tHTTPClientSocket::OnReceive(void *buf, size_t size) {
-	for (size_t i=0;i<size;i++) {
-		if (((char *)buf)[i] == ENDL) {
-			if (!lnlen) {
-				http_message[msg_pos] = 0x00;
-				msg_pos = 0;
-				if (msg_overflow) {
-					msg_overflow = 0;
-					LOG("HTTP message buffer overflow.\n");
-				} else if (strlen(http_message) > 0) ProcessMessage();
+	if (recv_sta == tHTTPReceiveHeader) {
+		for (size_t i=0;i<size;i++) {
+			if (((char *)buf)[i] == ENDL) {
+				if (!lnlen) {
+					http_message[msg_pos] = 0x00;
+					msg_pos = 0;
+					if (msg_overflow) {
+						msg_overflow = 0;
+						LOG("HTTP message buffer overflow.\n");
+					} else if (strlen(http_message) > 0) ProcessHTTPHeader();
+				}
+				lnlen = 0;
+			} else {
+				if (msg_pos >= MSG_LEN) {
+					msg_pos = 0;
+					msg_overflow = 1;
+				}
+				if (((char *)buf)[i] != '\r') {
+					http_message[msg_pos++] = ((char *)buf)[i];
+					lnlen++;
+				} else http_message[msg_pos++] = '\n';
 			}
-			lnlen = 0;
-		} else {
-			if (msg_pos >= MSG_LEN) {
-				msg_pos = 0;
-				msg_overflow = 1;
-			}
-			if (((char *)buf)[i] != '\r') {
-				http_message[msg_pos++] = ((char *)buf)[i];
-				lnlen++;
-			} else http_message[msg_pos++] = '\n';
 		}
+	} else if (recv_sta == tHTTPReceiveBody) {
 	}
 }
 
@@ -74,6 +78,6 @@ void tHTTPClientSocket::OnDisconnect() {
 	log->Log("connection to %s closed.\n",GetHostName());
 }
 
-void tHTTPClientSocket::ProcessMessage() {
+void tHTTPClientSocket::ProcessHTTPHeader() {
 	cout << "HTTP message received: " << endl << http_message << endl;
 }
