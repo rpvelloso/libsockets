@@ -30,6 +30,7 @@ tHTTPClientSocket::tHTTPClientSocket(int fd, sockaddr_in *sin) : tClientSocket(f
 	msg_pos = 0;
 	lnlen = 0;
 	recv_sta = tHTTPReceiveHeader;
+	http_body = NULL;
 }
 
 tHTTPClientSocket::~tHTTPClientSocket() {
@@ -49,30 +50,35 @@ void tHTTPClientSocket::OnSend(void *buf, size_t *size) {
 }
 
 void tHTTPClientSocket::OnReceive(void *buf, size_t size) {
-	if (recv_sta == tHTTPReceiveHeader) {
-		for (size_t i=0;i<size;i++) {
-			if (((char *)buf)[i] == ENDL) {
-				if (!lnlen) {
-					http_message[msg_pos] = 0x00;
-					msg_pos = 0;
-					if (msg_overflow) {
-						msg_overflow = 0;
-						LOG("HTTP message buffer overflow.\n");
-					} else if (strlen(http_message) > 0) ProcessHTTPHeader();
-				}
-				lnlen = 0;
-			} else {
-				if (msg_pos >= MSG_LEN) {
-					msg_pos = 0;
-					msg_overflow = 1;
-				}
-				if (((char *)buf)[i] != '\r') {
-					http_message[msg_pos++] = ((char *)buf)[i];
-					lnlen++;
-				} else http_message[msg_pos++] = '\n';
+	size_t i=0;
+
+	for (;(i<size) && (recv_sta == tHTTPReceiveHeader);i++) {
+		if (((char *)buf)[i] == ENDL) {
+			if (!lnlen) {
+				http_message[msg_pos] = 0x00;
+				msg_pos = 0;
+				if (msg_overflow) {
+					msg_overflow = 0;
+					LOG("HTTP message buffer overflow.\n");
+				} else if (strlen(http_message) > 0) ProcessHTTPHeader();
 			}
+			lnlen = 0;
+		} else {
+			if (msg_pos >= MSG_LEN) {
+				msg_pos = 0;
+				msg_overflow = 1;
+			}
+			if (((char *)buf)[i] != '\r') {
+				http_message[msg_pos++] = ((char *)buf)[i];
+				lnlen++;
+			} else http_message[msg_pos++] = '\n';
 		}
-	} else if (recv_sta == tHTTPReceiveBody) {
+	}
+	if (recv_sta == tHTTPReceiveBody) {
+		size_t cpy_len = (size-i)>contentLength?contentLength:(size-i);
+		memcpy(&(((char *)http_body)[body_pos]),&(((char *)buf)[i]),cpy_len);
+		body_pos += cpy_len;
+		if (body_pos == contentLength) ProcessHTTPBody();
 	}
 }
 
@@ -110,4 +116,22 @@ void tHTTPClientSocket::ProcessHTTPHeader() {
 	cout << "URI: \'" << uri << "\'" << endl;
 	cout << "Host: \'" << host << "\'" << endl;
 	cout << "Length: \'" << contentLength << "\'" << endl;
+	if (contentLength > 0) {
+		if (http_body) {
+			free(http_body);
+			http_body = NULL;
+		}
+		http_body = malloc(contentLength+1);
+		body_pos = 0;
+		((char *)http_body)[contentLength] = 0x00;
+		recv_sta = tHTTPReceiveBody;
+	}
+}
+
+void tHTTPClientSocket::ProcessHTTPBody() {
+	cout << "HTTP Body: " << endl;
+	cout << (char *)http_body << endl;
+	free(http_body);
+	http_body = NULL;
+	recv_sta = tHTTPReceiveHeader;
 }
