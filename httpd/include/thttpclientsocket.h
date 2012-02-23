@@ -19,8 +19,14 @@
 #ifndef THTTPCLIENTSOCKET_H_
 #define THTTPCLIENTSOCKET_H_
 
+#include <string>
 #include <libsockets/libsockets.h>
 #include "thttplog.h"
+
+#define ENDL '\n'
+#define MSG_LEN 4096
+
+#define LOG(...) log->Log(__VA_ARGS__)
 
 class tHTTPClientSocket : public tClientSocket {
 public:
@@ -31,9 +37,12 @@ public:
     void OnReceive(void *, size_t);
     void OnConnect();
     void OnDisconnect();
+    void ProcessMessage();
 
 protected:
     tHTTPLog *log;
+    char http_message[MSG_LEN];
+    int msg_pos,msg_overflow,lnlen;
 };
 
 #endif
