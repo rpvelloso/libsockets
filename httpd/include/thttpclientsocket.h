@@ -29,7 +29,7 @@
 
 #define LOG(...) log->Log(__VA_ARGS__)
 
-enum tHTTPMessageReceiveState {
+enum tHTTPRequestState {
 	tHTTPReceiveHeader=0,
 	tHTTPReceiveBody,
 	tHTTPProcessRequest
@@ -47,13 +47,28 @@ public:
     void ProcessHTTPHeader();
     void ProcessHTTPBody();
     void ProcessHTTPRequest();
+
+    void GET();
+    void OPTIONS();
+    int  HEAD();
+    void POST();
+    void PUT();
+    void DEL();
+    void TRACE();
+    void CONNECT();
+
+    void ReplyServer();
+    void ReplyDate();
+    void Reply501();
+    void Reply404();
+
 protected:
     tHTTPLog *log;
     char httpHeader[HTTP_HDR_LEN];
     void *httpBody;
     int hdrPos,msgOverflow,lineLength;
     size_t bodyPos;
-    tHTTPMessageReceiveState recvState;
+    tHTTPRequestState reqState;
     string userAgent,host,method,uri,query,contentType,boundary,httpVersion;
     unsigned long int contentLength;
 };
