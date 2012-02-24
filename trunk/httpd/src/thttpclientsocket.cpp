@@ -18,18 +18,21 @@
  */
 #include <algorithm>
 #include <sstream>
+#include "time.h"
 #include <libsockets/libsockets.h>
 #include "thttpthread.h"
 #include "thttpclientsocket.h"
 
-using namespace std;
+#ifdef WIN32 // under windows, this functions are thread-safe
+	#define gmtime_r(i,j) memcpy(j,gmtime(i),sizeof(struct tm))
+#endif
 
 tHTTPClientSocket::tHTTPClientSocket(int fd, sockaddr_in *sin) : tClientSocket(fd, sin) {
 	log = NULL;
 	msgOverflow = 0;
 	hdrPos = 0;
 	lineLength = 0;
-	recvState = tHTTPReceiveHeader;
+	reqState = tHTTPReceiveHeader;
 	httpBody = NULL;
 }
 
@@ -43,17 +46,15 @@ void tHTTPClientSocket::SetLog(tHTTPLog *l) {
 }
 
 void tHTTPClientSocket::OnSend(void *buf, size_t *size) {
-	char s[HTTP_BUFLEN+1];
+	string *s = (string *)buf;
 
-	memcpy(s,buf,*size);
-	s[*size] = 0;
-	log->Log("sent to %s: %s\n",GetHostName(),s);
+	log->Log("sent to %s: %s",GetHostName(),s->c_str());
 }
 
 void tHTTPClientSocket::OnReceive(void *buf, size_t size) {
 	size_t i=0;
 
-	for (;(i<size) && (recvState == tHTTPReceiveHeader);i++) {
+	for (;(i<size) && (reqState == tHTTPReceiveHeader);i++) {
 		if (((char *)buf)[i] == ENDL) {
 			if (!lineLength) {
 				httpHeader[hdrPos] = 0x00;
@@ -75,13 +76,13 @@ void tHTTPClientSocket::OnReceive(void *buf, size_t size) {
 			} else httpHeader[hdrPos++] = '\n';
 		}
 	}
-	if (recvState == tHTTPReceiveBody) {
+	if (reqState == tHTTPReceiveBody) {
 		size_t cpy_len = (size-i)>contentLength?contentLength:(size-i);
 		memcpy(&(((char *)httpBody)[bodyPos]),&(((char *)buf)[i]),cpy_len);
 		bodyPos += cpy_len;
 		if (bodyPos == contentLength) ProcessHTTPBody();
 	}
-	if (recvState == tHTTPProcessRequest) ProcessHTTPRequest();
+	if (reqState == tHTTPProcessRequest) ProcessHTTPRequest();
 }
 
 void tHTTPClientSocket::OnConnect() {
@@ -153,8 +154,8 @@ void tHTTPClientSocket::ProcessHTTPHeader() {
 		httpBody = malloc(contentLength+1);
 		bodyPos = 0;
 		((char *)httpBody)[contentLength] = 0x00;
-		recvState = tHTTPReceiveBody;
-	} else recvState = tHTTPProcessRequest;
+		reqState = tHTTPReceiveBody;
+	} else reqState = tHTTPProcessRequest;
 }
 
 void tHTTPClientSocket::ProcessHTTPBody() {
@@ -163,19 +164,121 @@ void tHTTPClientSocket::ProcessHTTPBody() {
 
 	/*free(httpBody);
 	httpBody = NULL;*/
-	recvState = tHTTPProcessRequest;
+	reqState = tHTTPProcessRequest;
 }
 
 void tHTTPClientSocket::ProcessHTTPRequest() {
-	if (method == "GET") {
-	} else if (method == "OPTIONS") {
-	} else if (method == "HEAD") {
-	} else if (method == "POST") {
-	} else if (method == "PUT") {
-	} else if (method == "DELETE") {
-	} else if (method == "TRACE") {
-	} else if (method == "CONNECT") {
-	} else {
+	     if (method == "GET")     GET();
+	else if (method == "OPTIONS") OPTIONS();
+	else if (method == "HEAD")    HEAD();
+	else if (method == "POST")    POST();
+	else if (method == "PUT")     PUT();
+	else if (method == "DELETE")  DEL();
+	else if (method == "TRACE")   TRACE();
+	else if (method == "CONNECT") CONNECT();
+	else {
+		Reply501();
 	}
-	recvState = tHTTPReceiveHeader; // goes back to initial state
+	reqState = tHTTPReceiveHeader; // goes back to initial state
+}
+
+void tHTTPClientSocket::GET()
+{
+	// reuse HEAD() code inside GET()
+	Reply404();
+}
+
+void tHTTPClientSocket::OPTIONS()
+{
+	Reply501();
+}
+
+int tHTTPClientSocket::HEAD()
+{
+	Reply501();
+	return 0;
+}
+
+void tHTTPClientSocket::POST()
+{
+	Reply501();
+}
+
+void tHTTPClientSocket::PUT()
+{
+	Reply501();
+}
+
+void tHTTPClientSocket::DEL()
+{
+	Reply501();
+}
+
+void tHTTPClientSocket::TRACE()
+{
+	Reply501();
+}
+
+void tHTTPClientSocket::CONNECT()
+{
+	Reply501();
+}
+
+void tHTTPClientSocket::ReplyServer()
+{
+	Send("Server: httpd-libsockets-devel.\r\n");
+}
+
+static string weekdays[7] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+static string months[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+
+void tHTTPClientSocket::ReplyDate()
+{
+	time_t t = time(NULL);
+	struct tm tt;
+	stringstream dtstr;
+
+	gmtime_r(&t,&tt);
+	dtstr << weekdays[tt.tm_wday] << ", " << tt.tm_mday << " " << months[tt.tm_mon] << " " << (1900+tt.tm_year) << " "
+			<< tt.tm_hour << ":" << tt.tm_min << ":" << tt.tm_sec << " GMT";
+	Send("Date: " + dtstr.str() + "\r\n");
+	// data & time format: Mon, 01 Jan 1900 hh:mm:ss GMT
+}
+
+void tHTTPClientSocket::Reply501()
+{
+	string html =
+			"<HTML>\r\n" \
+			"<HEAD><TITLE>Not Implemented</TITLE></HEAD>\r\n" \
+			"<BODY><H1>Not Implemented</H1>This server does not implement the requested method.</BODY>\r\n" \
+			"</HTML>";
+	stringstream len;
+
+	len << html.length();
+	Send(httpVersion + " 501 Not Implemented.\r\n");
+	ReplyServer();
+	ReplyDate();
+	Send("Content-length: " + len.str() + "\r\n");
+	Send("Content-type: text/html\r\n");
+	Send("Connection: close\r\n");
+	Send("\r\n");
+	Send(html);
+}
+
+void tHTTPClientSocket::Reply404()
+{
+	string html =
+			"<HEAD><META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html;charset=ISO-8859-1\"><TITLE>Not Found</TITLE></HEAD>\r\n" \
+			"<H1>Not Found</H1> The requested object does not exist on this server.";
+	stringstream len;
+
+	len << html.length();
+	Send(httpVersion + " 404 Not Found.\r\n");
+	ReplyServer();
+	ReplyDate();
+	Send("Content-length: " + len.str() + "\r\n");
+	Send("Content-type: text/html\r\n");
+	Send("Connection: close\r\n");
+	Send("\r\n");
+	Send(html);
 }
