@@ -60,7 +60,7 @@ void tHTTPClientSocket::OnReceive(void *buf, size_t size) {
 				msgPos = 0;
 				if (msgOverflow) {
 					msgOverflow = 0;
-					LOG("HTTP message buffer overflow.\n");
+					LOG("HTTP header buffer overflow.\n");
 				} else if (strlen(httpHeader) > 0) ProcessHTTPHeader();
 			}
 			lineLength = 0;
