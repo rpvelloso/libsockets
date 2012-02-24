@@ -97,6 +97,7 @@ void tHTTPClientSocket::ProcessHTTPHeader() {
 	stringstream cl;
 	string request;
 
+	// reset header
 	host = "";
 	method = "";
 	uri = "";
@@ -167,9 +168,14 @@ void tHTTPClientSocket::ProcessHTTPBody() {
 
 void tHTTPClientSocket::ProcessHTTPRequest() {
 	if (method == "GET") {
-
+	} else if (method == "OPTIONS") {
+	} else if (method == "HEAD") {
+	} else if (method == "POST") {
+	} else if (method == "PUT") {
+	} else if (method == "DELETE") {
+	} else if (method == "TRACE") {
+	} else if (method == "CONNECT") {
 	} else {
-
 	}
 	recvState = tHTTPReceiveHeader; // goes back to initial state
 }
