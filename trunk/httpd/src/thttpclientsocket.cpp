@@ -27,9 +27,9 @@ using namespace std;
 tHTTPClientSocket::tHTTPClientSocket(int fd, sockaddr_in *sin) : tClientSocket(fd, sin) {
 	log = NULL;
 	msgOverflow = 0;
-	msgPos = 0;
+	hdrPos = 0;
 	lineLength = 0;
-	recvSta = tHTTPReceiveHeader;
+	recvState = tHTTPReceiveHeader;
 	httpBody = NULL;
 }
 
@@ -53,11 +53,11 @@ void tHTTPClientSocket::OnSend(void *buf, size_t *size) {
 void tHTTPClientSocket::OnReceive(void *buf, size_t size) {
 	size_t i=0;
 
-	for (;(i<size) && (recvSta == tHTTPReceiveHeader);i++) {
+	for (;(i<size) && (recvState == tHTTPReceiveHeader);i++) {
 		if (((char *)buf)[i] == ENDL) {
 			if (!lineLength) {
-				httpHeader[msgPos] = 0x00;
-				msgPos = 0;
+				httpHeader[hdrPos] = 0x00;
+				hdrPos = 0;
 				if (msgOverflow) {
 					msgOverflow = 0;
 					LOG("HTTP header buffer overflow.\n");
@@ -65,17 +65,17 @@ void tHTTPClientSocket::OnReceive(void *buf, size_t size) {
 			}
 			lineLength = 0;
 		} else {
-			if (msgPos >= HTTP_HDR_LEN) {
-				msgPos = 0;
+			if (hdrPos >= HTTP_HDR_LEN) {
+				hdrPos = 0;
 				msgOverflow = 1;
 			}
 			if (((char *)buf)[i] != '\r') {
-				httpHeader[msgPos++] = ((char *)buf)[i];
+				httpHeader[hdrPos++] = ((char *)buf)[i];
 				lineLength++;
-			} else httpHeader[msgPos++] = '\n';
+			} else httpHeader[hdrPos++] = '\n';
 		}
 	}
-	if (recvSta == tHTTPReceiveBody) {
+	if (recvState == tHTTPReceiveBody) {
 		size_t cpy_len = (size-i)>contentLength?contentLength:(size-i);
 		memcpy(&(((char *)httpBody)[bodyPos]),&(((char *)buf)[i]),cpy_len);
 		bodyPos += cpy_len;
@@ -151,7 +151,7 @@ void tHTTPClientSocket::ProcessHTTPHeader() {
 		httpBody = malloc(contentLength+1);
 		bodyPos = 0;
 		((char *)httpBody)[contentLength] = 0x00;
-		recvSta = tHTTPReceiveBody;
+		recvState = tHTTPReceiveBody;
 	}
 }
 
@@ -161,5 +161,5 @@ void tHTTPClientSocket::ProcessHTTPBody() {
 
 	free(httpBody);
 	httpBody = NULL;
-	recvSta = tHTTPReceiveHeader;
+	recvState = tHTTPReceiveHeader;
 }
