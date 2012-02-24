@@ -242,7 +242,7 @@ void tHTTPClientSocket::ReplyDate()
 	dtstr << weekdays[tt.tm_wday] << ", " << tt.tm_mday << " " << months[tt.tm_mon] << " " << (1900+tt.tm_year) << " "
 			<< tt.tm_hour << ":" << tt.tm_min << ":" << tt.tm_sec << " GMT";
 	Send("Date: " + dtstr.str() + "\r\n");
-	// data & time format: Mon, 01 Jan 1900 hh:mm:ss GMT
+	// data & time format: Mon, 31 Dec 1900 23:59:59 GMT
 }
 
 void tHTTPClientSocket::Reply501()
