@@ -49,9 +49,9 @@ protected:
     tHTTPLog *log;
     char httpHeader[HTTP_HDR_LEN];
     void *httpBody;
-    int msgPos,msgOverflow,lineLength;
+    int hdrPos,msgOverflow,lineLength;
     size_t bodyPos;
-    tHTTPMessageReceiveState recvSta;
+    tHTTPMessageReceiveState recvState;
     string userAgent,host,method,uri,query,contentType,boundary,httpVersion;
     unsigned long int contentLength;
 };
