@@ -65,7 +65,7 @@ void tHTTPClientSocket::OnReceive(void *buf, size_t size) {
 			}
 			lineLength = 0;
 		} else {
-			if (msgPos >= MSG_LEN) {
+			if (msgPos >= HTTP_HDR_LEN) {
 				msgPos = 0;
 				msgOverflow = 1;
 			}

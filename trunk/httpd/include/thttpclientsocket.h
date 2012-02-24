@@ -25,7 +25,7 @@
 #include "thttplog.h"
 
 #define ENDL '\n'
-#define MSG_LEN 4096
+#define HTTP_HDR_LEN 4096
 
 #define LOG(...) log->Log(__VA_ARGS__)
 
@@ -47,7 +47,7 @@ public:
     void ProcessHTTPBody();
 protected:
     tHTTPLog *log;
-    char httpHeader[MSG_LEN];
+    char httpHeader[HTTP_HDR_LEN];
     void *httpBody;
     int msgPos,msgOverflow,lineLength;
     size_t bodyPos;
