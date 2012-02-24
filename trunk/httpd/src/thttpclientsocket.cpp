@@ -81,6 +81,7 @@ void tHTTPClientSocket::OnReceive(void *buf, size_t size) {
 		bodyPos += cpy_len;
 		if (bodyPos == contentLength) ProcessHTTPBody();
 	}
+	if (recvState == tHTTPProcessRequest) ProcessHTTPRequest();
 }
 
 void tHTTPClientSocket::OnConnect() {
@@ -152,14 +153,23 @@ void tHTTPClientSocket::ProcessHTTPHeader() {
 		bodyPos = 0;
 		((char *)httpBody)[contentLength] = 0x00;
 		recvState = tHTTPReceiveBody;
-	}
+	} else recvState = tHTTPProcessRequest;
 }
 
 void tHTTPClientSocket::ProcessHTTPBody() {
 	cout << "Body....: " << endl;
 	cout << "\'" << (char *)httpBody << "\'" << endl;
 
-	free(httpBody);
-	httpBody = NULL;
-	recvState = tHTTPReceiveHeader;
+	/*free(httpBody);
+	httpBody = NULL;*/
+	recvState = tHTTPProcessRequest;
+}
+
+void tHTTPClientSocket::ProcessHTTPRequest() {
+	if (method == "GET") {
+
+	} else {
+
+	}
+	recvState = tHTTPReceiveHeader; // goes back to initial state
 }

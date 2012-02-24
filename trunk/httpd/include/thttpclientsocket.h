@@ -31,7 +31,8 @@
 
 enum tHTTPMessageReceiveState {
 	tHTTPReceiveHeader=0,
-	tHTTPReceiveBody
+	tHTTPReceiveBody,
+	tHTTPProcessRequest
 };
 
 class tHTTPClientSocket : public tClientSocket {
@@ -45,6 +46,7 @@ public:
     void OnDisconnect();
     void ProcessHTTPHeader();
     void ProcessHTTPBody();
+    void ProcessHTTPRequest();
 protected:
     tHTTPLog *log;
     char httpHeader[HTTP_HDR_LEN];
