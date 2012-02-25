@@ -70,7 +70,7 @@ protected:
     size_t bodyPos;
     tHTTPRequestState reqState;
     string userAgent,host,method,uri,query,contentType,boundary,httpVersion;
-    unsigned long int contentLength;
+    size_t contentLength;
 };
 
 #endif
