@@ -59,8 +59,9 @@ public:
 
     void ReplyServer();
     void ReplyDate();
-    void Reply501();
     void Reply404();
+    void Reply500();
+    void Reply501();
 
 protected:
     tHTTPLog *log;

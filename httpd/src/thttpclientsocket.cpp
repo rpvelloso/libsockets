@@ -19,13 +19,18 @@
 #include <algorithm>
 #include <sstream>
 #include <time.h>
+#include <errno.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <libsockets/libsockets.h>
 #include "thttpthread.h"
 #include "thttpclientsocket.h"
 
+#define ERR_STR_LEN 100
+
 #ifdef WIN32 // under windows, this functions are thread-safe
 	#define gmtime_r(i,j) memcpy(j,gmtime(i),sizeof(struct tm))
+	#define strerror_r(i,j,k) strerror(i)
 #endif
 
 #define CRLF "\r\n"
@@ -243,9 +248,41 @@ void tHTTPClientSocket::ProcessHTTPRequest() {
 void tHTTPClientSocket::GET()
 {
 	off_t offset = 0;
+	char **envp=NULL,*argv[2] = { NULL, NULL };
+	size_t i=0,j=1;
+	pid_t f;
+	int cgiRet;
+	string q;
+	char strerr[ERR_STR_LEN];
 
-	if (query != "") Reply501();
-	else {
+	if (query != "") {
+		if (!(f=fork())) {
+			while (i<query.length()) if (query[i++] == '&') j++;
+			envp = (char **)malloc(sizeof(void *) * (j+1));
+			i = 0; q = query;
+			while (q != "") {
+				envp[i++] = strdup(stringtok(&q,"&").c_str());
+			}
+			envp[j] = NULL;
+			argv[0] = strdup(uri.c_str());
+			/* TODO:
+			 * in the future change this redirection of stdin & out
+			 * to the client socket. Instead of redirecting, use a
+			 * pipe to intermediate CGI output */
+			dup2(this->socket_fd,fileno(stdin));
+			dup2(this->socket_fd,fileno(stdout));
+			execve(argv[0],argv,envp);
+			Reply500();
+			exit(-1);
+		} else if (f == -1) {
+			LOG(strerror_r(errno,strerr,ERR_STR_LEN)); // fork() error
+			Reply500();
+		} else {
+			waitpid(f,&cgiRet,0);
+			if (cgiRet) Reply500();	// CGI has executed, but ended abnormally
+			Close();
+		}
+	} else {
 		if (!HEAD()) SendFile(uri.c_str(),&offset,contentLength);
 	}
 }
@@ -326,6 +363,44 @@ void tHTTPClientSocket::ReplyDate()
 	Send("Date: " + time2str(time(NULL)) + CRLF);
 }
 
+void tHTTPClientSocket::Reply404()
+{
+	string html =
+			"<HEAD><META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html;charset=ISO-8859-1\"><TITLE>Not Found</TITLE></HEAD>" CRLF \
+			"<H1>Not Found</H1> The requested object does not exist on this server.";
+	stringstream len;
+
+	len << html.length();
+	Send(httpVersion + " 404 Not Found." + CRLF);
+	ReplyServer();
+	ReplyDate();
+	Send("Content-length: " + len.str() + CRLF);
+	Send("Content-type: text/html" CRLF);
+	Send("Connection: close" CRLF);
+	Send(CRLF);
+	Send(html);
+}
+
+void tHTTPClientSocket::Reply500()
+{
+	string html =
+			"<HTML>" CRLF \
+			"<HEAD><TITLE>Internal Server Error</TITLE></HEAD>" CRLF \
+			"<BODY><H1>Internal Server Error</H1>Oops...</BODY>" CRLF \
+			"</HTML>";
+	stringstream len;
+
+	len << html.length();
+	Send(httpVersion + " 500 Internal Server Error." + CRLF);
+	ReplyServer();
+	ReplyDate();
+	Send("Content-length: " + len.str() + CRLF);
+	Send("Content-type: text/html" CRLF);
+	Send("Connection: close" CRLF);
+	Send(CRLF);
+	Send(html);
+}
+
 void tHTTPClientSocket::Reply501()
 {
 	string html =
@@ -337,24 +412,6 @@ void tHTTPClientSocket::Reply501()
 
 	len << html.length();
 	Send(httpVersion + " 501 Not Implemented." + CRLF);
-	ReplyServer();
-	ReplyDate();
-	Send("Content-length: " + len.str() + CRLF);
-	Send("Content-type: text/html" CRLF);
-	Send("Connection: close" CRLF);
-	Send(CRLF);
-	Send(html);
-}
-
-void tHTTPClientSocket::Reply404()
-{
-	string html =
-			"<HEAD><META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html;charset=ISO-8859-1\"><TITLE>Not Found</TITLE></HEAD>" CRLF \
-			"<H1>Not Found</H1> The requested object does not exist on this server.";
-	stringstream len;
-
-	len << html.length();
-	Send(httpVersion + " 404 Not Found." + CRLF);
 	ReplyServer();
 	ReplyDate();
 	Send("Content-length: " + len.str() + CRLF);
