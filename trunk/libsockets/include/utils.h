@@ -25,6 +25,7 @@
 using namespace std;
 
 #define upper_case(s) std::transform(s.begin(), s.end(), s.begin(), (int(*)(int))std::toupper)
+#define lower_case(s) std::transform(s.begin(), s.end(), s.begin(), (int(*)(int))std::tolower)
 
 string stringtok(string *, string);
 
