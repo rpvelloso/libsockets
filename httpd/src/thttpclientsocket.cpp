@@ -227,8 +227,9 @@ void tHTTPClientSocket::GET()
 {
 	off_t offset = 0;
 
-	if (!HEAD()) { // reuse HEAD()
-		SendFile(uri.c_str(),&offset,contentLength);
+	if (query != "") Reply501();
+	else {
+		if (!HEAD()) SendFile(uri.c_str(),&offset,contentLength);
 	}
 }
 
