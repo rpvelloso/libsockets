@@ -44,11 +44,12 @@ string time2str(time_t t) {
 	return dtstr.str();
 }
 
-static string textExt = ".TXT";
-static string htmlExt = ".HTM.HTML";
-static string imageExt = ".GFI.JPG.JPEG.BMP.PNG.XPM";
-static string audioExt = ".MP3.WAV";
-static string videoExt = ".MPEG.AVI.MP4.MKV.MPG";
+// TODO: add more MIME types
+static string textExt = ".txt";
+static string htmlExt = ".htm.html";
+static string imageExt = ".gfi.jpg.jpeg.bmp.png.xpm.xbm";
+static string audioExt = ".mp3.wav";
+static string videoExt = ".mpeg.avi.mp4.mkv.mpg.asf.flv";
 
 string ext2type(string f) {
 	size_t p;
@@ -57,7 +58,7 @@ string ext2type(string f) {
 	p = f.find_last_of(".",f.length());
 	if (p != string::npos) {
 		ext = f.substr(p+1,f.length()-p);
-		upper_case(ext);
+		lower_case(ext);
 	}
 	if (textExt.find(ext,0)!=string::npos) ret = "text/plain";
 	else if (htmlExt.find(ext,0)!=string::npos) ret = "text/html";
