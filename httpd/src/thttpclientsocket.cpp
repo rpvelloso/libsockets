@@ -53,14 +53,16 @@ static string videoExt = ".mpeg.avi.mp4.mkv.mpg.asf.flv";
 
 string ext2type(string f) {
 	size_t p;
-	string ret = "text/html",ext = ".HTM";
+	string ret,ext = "";
 
 	p = f.find_last_of(".",f.length());
 	if (p != string::npos) {
 		ext = f.substr(p+1,f.length()-p);
 		lower_case(ext);
 	}
-	if (textExt.find(ext,0)!=string::npos) ret = "text/plain";
+	cout << "extensao: " << ext << endl;
+	if (ext == "") ret = "application/octet-stream";
+	else if (textExt.find(ext,0)!=string::npos) ret = "text/plain";
 	else if (htmlExt.find(ext,0)!=string::npos) ret = "text/html";
 	else if (imageExt.find(ext,0)!=string::npos) ret = "image/"+ext;
 	else if (audioExt.find(ext,0)!=string::npos) ret = "audio/"+ext;
