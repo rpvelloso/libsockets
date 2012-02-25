@@ -71,6 +71,19 @@ string ext2type(string f) {
 	return ret;
 }
 
+string unescapeUri(string uri) {
+	size_t p;
+	string hex;
+	char c,*s;
+
+	while ((p=uri.find('%',0)) != string::npos) {
+		hex = "0x" + uri.substr(p+1,2);
+		c = strtol(hex.c_str(),&s,16);
+		uri.replace(p,3,1,c);
+	}
+	return uri;
+}
+
 tHTTPClientSocket::tHTTPClientSocket(int fd, sockaddr_in *sin) : tClientSocket(fd, sin) {
 	log = NULL;
 	msgOverflow = 0;
@@ -153,12 +166,12 @@ void tHTTPClientSocket::ProcessHTTPHeader() {
 	boundary = "";
 	contentLength = 0;
 
-	do {
+	do { // TODO: parse header params better
 		line = stringtok(&msg,"\n\r"); i++;
 		lineAux = line;
 		if (i == 1) { // request line
 			method = stringtok(&line," ");
-			request = stringtok(&line," ");
+			request = unescapeUri(stringtok(&line," "));
 			uri = stringtok(&request,"?");
 			query = request;
 			httpVersion = line;
@@ -211,9 +224,9 @@ void tHTTPClientSocket::ProcessHTTPBody() {
 
 void tHTTPClientSocket::ProcessHTTPRequest() {
 	     if (method == "GET")     GET();
-	else if (method == "OPTIONS") OPTIONS();
-	else if (method == "HEAD")    HEAD();
+ 	else if (method == "HEAD")    HEAD();
 	else if (method == "POST")    POST();
+	else if (method == "OPTIONS") OPTIONS();
 	else if (method == "PUT")     PUT();
 	else if (method == "DELETE")  DEL();
 	else if (method == "TRACE")   TRACE();
@@ -246,7 +259,7 @@ int tHTTPClientSocket::HEAD()
 	string index;
 
 	if (!stat(uri.c_str(),&st)) {
-		if (S_ISDIR(st.st_mode)) {
+		if (S_ISDIR(st.st_mode)) { // TODO: create option to list files in dir with no index.html
 			index = uri + "/index.htm";
 			if (stat(index.c_str(),&st)) {
 				index = uri + "/index.html";
