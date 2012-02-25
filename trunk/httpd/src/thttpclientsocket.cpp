@@ -60,7 +60,6 @@ string ext2type(string f) {
 		ext = f.substr(p+1,f.length()-p);
 		lower_case(ext);
 	}
-	cout << "extensao: " << ext << endl;
 	if (ext == "") ret = "application/octet-stream";
 	else if (textExt.find(ext,0)!=string::npos) ret = "text/plain";
 	else if (htmlExt.find(ext,0)!=string::npos) ret = "text/html";
