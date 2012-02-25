@@ -204,8 +204,6 @@ void tHTTPClientSocket::ProcessHTTPBody() {
 	cout << "Body....: " << endl;
 	cout << "\'" << (char *)httpBody << "\'" << endl;
 
-	/*free(httpBody);
-	httpBody = NULL;*/
 	reqState = tHTTPProcessRequest;
 }
 
