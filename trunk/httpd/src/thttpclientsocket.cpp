@@ -52,13 +52,16 @@ static string audioExt = ".mp3.wav";
 static string videoExt = ".mpeg.avi.mp4.mkv.mpg.asf.flv";
 
 string ext2type(string f) {
-	size_t p;
-	string ret,ext = "";
+	size_t p,p2;
+	string ret,ext="";
 
 	p = f.find_last_of(".",f.length());
+	p2 = f.find_last_of("/",f.length());
 	if (p != string::npos) {
-		ext = f.substr(p+1,f.length()-p);
-		lower_case(ext);
+		if ((p2 != string::npos) && (p>p2)) {
+			ext = f.substr(p+1,f.length()-p);
+			lower_case(ext);
+		}
 	}
 	if (ext == "") ret = "application/octet-stream";
 	else if (textExt.find(ext,0)!=string::npos) ret = "text/plain";
