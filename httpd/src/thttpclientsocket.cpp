@@ -56,8 +56,8 @@ string ext2type(string f) {
 	string ret,ext="";
 
 	p = f.find_last_of(".",f.length());
-	p2 = f.find_last_of("/",f.length());
 	if (p != string::npos) {
+		p2 = f.find_last_of("/",f.length());
 		if ((p2 != string::npos) && (p>p2)) {
 			ext = f.substr(p+1,f.length()-p);
 			lower_case(ext);
