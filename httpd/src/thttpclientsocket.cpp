@@ -322,7 +322,11 @@ void tHTTPClientSocket::GET()
 
 void tHTTPClientSocket::OPTIONS()
 {
-	Reply501();
+	Send(httpVersion + " 200 OK" + CRLF);
+	ReplyServer();
+	ReplyDate();
+	Send("Content-length: 0" CRLF);
+	Send("Allow: HEAD, GET, POST, OPTIONS" CRLF);
 }
 
 int tHTTPClientSocket::HEAD()
