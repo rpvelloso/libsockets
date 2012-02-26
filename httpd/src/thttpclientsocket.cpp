@@ -268,11 +268,12 @@ void tHTTPClientSocket::GET()
 			/* TODO:
 			 * in the future change this redirection of stdin & out
 			 * to the client socket. Instead of redirecting, use a
-			 * pipe to intermediate CGI output */
+			 * pipe to intermediate CGI output and detect if the
+			 * CGI hasn't sent HTTP response header, so the server
+			 * can send it */
 			dup2(this->socket_fd,fileno(stdin));
 			dup2(this->socket_fd,fileno(stdout));
 			execve(argv[0],argv,envp);
-			Reply500();
 			exit(-1);
 		} else if (f == -1) {
 			LOG(strerror_r(errno,strerr,ERR_STR_LEN)); // fork() error
