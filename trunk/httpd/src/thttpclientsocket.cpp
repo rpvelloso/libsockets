@@ -254,16 +254,35 @@ void tHTTPClientSocket::GET()
 	int cgiRet;
 	string q;
 	char strerr[ERR_STR_LEN];
+	stringstream len;
 
 	if (query != "") {
 		if (!(f=fork())) {
 			while (i<query.length()) if (query[i++] == '&') j++;
-			envp = (char **)malloc(sizeof(void *) * (j+1));
+			envp = (char **)malloc(sizeof(void *) * (j+11));
 			i = 0; q = query;
 			while (q != "") {
 				envp[i++] = strdup(stringtok(&q,"&").c_str());
 			}
-			envp[j] = NULL;
+			/* TODO:
+			 * Add more CGI variables to the environ (REMOTE_ADDR, etc).
+			 * The above was enough to run basic PHP CGI get/post
+			 */
+			len << "CONTENT_LENGTH=" << contentLength;
+			envp[j] = strdup(len.str().c_str());
+			if (boundary != "")
+				envp[j+ 1] = strdup(("CONTENT_TYPE=" + contentType + "; boundary=" + boundary).c_str());
+			else
+				envp[j+ 1] = strdup(("CONTENT_TYPE=" + contentType).c_str());
+			envp[j+ 2] = strdup(("REQUEST_METHOD=" + method).c_str());
+			envp[j+ 3] = strdup(("HTTP_HOST=" + host).c_str());
+			envp[j+ 4] = strdup(("HTTP_USER_AGENT=" + userAgent).c_str());
+			envp[j+ 5] = strdup("GATEWAY_INTERFACE=CGI/1.1");
+			envp[j+ 6] = strdup(("QUERY_STRING=" + query).c_str());
+			envp[j+ 7] = strdup(("REQUEST_URI=" + uri).c_str());
+			envp[j+ 8] = strdup(("SERVER_PROTOCOL=" + httpVersion).c_str());
+			envp[j+ 9] = strdup(("SCRIPT_FILENAME=" + uri).c_str());
+			envp[j+10] = NULL;
 			argv[0] = strdup(uri.c_str());
 			/* TODO:
 			 * in the future change this redirection of stdin & out
@@ -271,9 +290,23 @@ void tHTTPClientSocket::GET()
 			 * pipe to intermediate CGI output and detect if the
 			 * CGI hasn't sent HTTP response header, so the server
 			 * can send it */
-			dup2(this->socket_fd,fileno(stdin));
 			dup2(this->socket_fd,fileno(stdout));
+
+			// Send POST data to CGI stdin
+			if ((httpBody) && (contentLength > 0) && (method == "POST")) {
+				int pp[2];
+
+				if (!pipe(pp)) {
+					write(pp[1],httpBody,contentLength);
+					close(pp[1]);
+					dup2(pp[0],fileno(stdin));
+				} else {
+					exit(-1);
+				}
+			} else dup2(this->socket_fd,fileno(stdin));
+
 			execve(argv[0],argv,envp);
+			LOG(strerror_r(errno,strerr,ERR_STR_LEN)); // execve() error
 			exit(-1);
 		} else if (f == -1) {
 			LOG(strerror_r(errno,strerr,ERR_STR_LEN)); // fork() error
@@ -331,7 +364,7 @@ int tHTTPClientSocket::HEAD()
 
 void tHTTPClientSocket::POST()
 {
-	Reply501();
+	GET();
 }
 
 void tHTTPClientSocket::PUT()
