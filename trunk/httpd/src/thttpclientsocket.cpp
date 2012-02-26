@@ -264,8 +264,7 @@ void tHTTPClientSocket::GET()
 			while (q != "") {
 				envp[i++] = strdup(stringtok(&q,"&").c_str());
 			}
-			/* TODO:
-			 * Add more CGI variables to the environ (REMOTE_ADDR, etc).
+			/* TODO: Add more CGI variables to the environ (REMOTE_ADDR, etc).
 			 * The above was enough to run basic PHP CGI get/post
 			 */
 			len << "CONTENT_LENGTH=" << contentLength;
@@ -284,12 +283,11 @@ void tHTTPClientSocket::GET()
 			envp[j+ 9] = strdup(("SCRIPT_FILENAME=" + uri).c_str());
 			envp[j+10] = NULL;
 			argv[0] = strdup(uri.c_str());
-			/* TODO:
-			 * in the future change this redirection of stdin & out
+			/* TODO: in the future change this redirection of stdout
 			 * to the client socket. Instead of redirecting, use a
 			 * pipe to intermediate CGI output and detect if the
 			 * CGI hasn't sent HTTP response header, so the server
-			 * can send it */
+			 * can send/complete it */
 			dup2(this->socket_fd,fileno(stdout));
 
 			// Send POST data to CGI stdin
