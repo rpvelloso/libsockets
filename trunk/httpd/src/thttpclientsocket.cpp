@@ -18,6 +18,7 @@
  */
 #include <algorithm>
 #include <sstream>
+#include <unistd.h>
 #include <time.h>
 #include <errno.h>
 #include <sys/stat.h>
@@ -342,6 +343,10 @@ int tHTTPClientSocket::HEAD()
 			}
 			uri = index;
 		}
+		if (access(uri.c_str(),R_OK)) {
+			Reply403();
+			return -1;
+		}
 		len << st.st_size;
 		contentLength = st.st_size;
 		Send(httpVersion + " 200 OK" + CRLF);
@@ -395,11 +400,29 @@ void tHTTPClientSocket::ReplyDate()
 	Send("Date: " + time2str(time(NULL)) + CRLF);
 }
 
+void tHTTPClientSocket::Reply403()
+{
+	string html =
+			"<HEAD><TITLE>Forbidden</TITLE></HEAD>" CRLF \
+			"<H1>Forbidden</H1> You don\'t have permission to access " + uri + " on this server.";
+	stringstream len;
+
+	len << html.length();
+	Send(httpVersion + " 403 Forbidden." + CRLF);
+	ReplyServer();
+	ReplyDate();
+	Send("Content-length: " + len.str() + CRLF);
+	Send("Content-type: text/html" CRLF);
+	Send("Connection: close" CRLF);
+	Send(CRLF);
+	Send(html);
+}
+
 void tHTTPClientSocket::Reply404()
 {
 	string html =
-			"<HEAD><META HTTP-EQUIV=\"Content-Type\" CONTENT=\"text/html;charset=ISO-8859-1\"><TITLE>Not Found</TITLE></HEAD>" CRLF \
-			"<H1>Not Found</H1> The requested object does not exist on this server.";
+			"<HEAD><TITLE>Not Found</TITLE></HEAD>" CRLF \
+			"<H1>Not Found</H1> The requested object " + uri + " does not exist on this server.";
 	stringstream len;
 
 	len << html.length();
@@ -418,7 +441,8 @@ void tHTTPClientSocket::Reply500()
 	string html =
 			"<HTML>" CRLF \
 			"<HEAD><TITLE>Internal Server Error</TITLE></HEAD>" CRLF \
-			"<BODY><H1>Internal Server Error</H1>Oops...</BODY>" CRLF \
+			"<BODY><H1>Internal Server Error</H1>The server encountered an unexpected"\
+			" condition which prevented it from fulfilling the request.</BODY>" CRLF \
 			"</HTML>";
 	stringstream len;
 

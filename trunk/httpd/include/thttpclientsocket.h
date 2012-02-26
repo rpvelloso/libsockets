@@ -59,6 +59,7 @@ public:
 
     void ReplyServer();
     void ReplyDate();
+    void Reply403();
     void Reply404();
     void Reply500();
     void Reply501();
