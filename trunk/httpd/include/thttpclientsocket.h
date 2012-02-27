@@ -73,10 +73,10 @@ protected:
     char httpHeader[HTTP_HDR_LEN];
     void *httpBody;
     int hdrPos,msgOverflow,lineLength;
-    size_t bodyPos;
+    ssize_t bodyPos;
     tHTTPRequestState reqState;
     string userAgent,host,method,uri,query,contentType,boundary,httpVersion;
-    size_t contentLength;
+    ssize_t contentLength;
     tHTTPServer *owner;
 };
 
