@@ -22,7 +22,12 @@
 #include <time.h>
 #include <errno.h>
 #include <sys/stat.h>
-#include <sys/wait.h>
+#ifndef WIN32
+	#include <sys/wait.h>
+#else
+	#include <process.h>
+	#include <io.h>
+#endif
 #include <libsockets/libsockets.h>
 #include "thttpthread.h"
 #include "thttpclientsocket.h"
@@ -32,6 +37,9 @@
 #ifdef WIN32 // under windows, this functions are thread-safe
 	#define gmtime_r(i,j) memcpy(j,gmtime(i),sizeof(struct tm))
 	#define strerror_r(i,j,k) strerror(i)
+	#define pipe(p) _pipe(p,4096,0)
+	#define fork() 0
+	#define waitpid(p,r,n) _cwait(r,p,n)
 #endif
 
 #define CRLF "\r\n"
@@ -112,9 +120,11 @@ void tHTTPClientSocket::SetLog(tHTTPLog *l) {
 }
 
 void tHTTPClientSocket::OnSend(void *buf, size_t *size) {
-	string *s = (string *)buf;
+	if (*size == -1) {
+		string *s = (string *)buf;
 
-	log->Log("sent to %s: %s",GetHostName(),s->c_str());
+		log->Log("sent to %s: %s",GetHostName(),s->c_str());
+	}
 }
 
 void tHTTPClientSocket::OnReceive(void *buf, size_t size) {
@@ -250,9 +260,8 @@ void tHTTPClientSocket::ProcessHTTPRequest() {
 	else if (method == "DELETE")  DEL();
 	else if (method == "TRACE")   TRACE();
 	else if (method == "CONNECT") CONNECT();
-	else {
-		Reply501();
-	}
+	else Reply501();
+
 	reqState = tHTTPReceiveHeader; // goes back to initial state
 }
 
@@ -264,17 +273,22 @@ void tHTTPClientSocket::GET()
 	pid_t f;
 	int cgiRet;
 	string q;
+	int pp[2] = { -1 , -1 };
+#ifndef WIN32
 	char strerr[ERR_STR_LEN];
+#else
+	PROCESS_INFORMATION processInfo;
+	STARTUPINFO startUpInfo;
+#endif
 	stringstream sstr;
 
 	if (query != "") {
 		if (!(f=fork())) {
 			while (i<query.length()) if (query[i++] == '&') j++;
-			envp = (char **)malloc(sizeof(void *) * (j+17));
+			j = j + 17;
+			envp = (char **)malloc(sizeof(void *) * j);
 			i = 0; q = query;
-			while (q != "") {
-				envp[i++] = strdup(stringtok(&q,"&").c_str());
-			}
+			while (q != "") envp[i++] = strdup(stringtok(&q,"&").c_str());
 			sstr << "CONTENT_LENGTH=" << contentLength;
 			envp[j] = strdup(sstr.str().c_str());
 			if (boundary != "")
@@ -308,20 +322,36 @@ void tHTTPClientSocket::GET()
 			/* TODO: replace the pipe below, because of buffer limit.
 			 * Upload of large files are blocking in the write() */
 			if ((httpBody) && (contentLength > 0) && (method == "POST")) {
-				int pp[2];
-
 				if (!pipe(pp)) {
 					write(pp[1],httpBody,contentLength);
-					close(pp[1]);
+#ifndef WIN32
 					dup2(pp[0],fileno(stdin));
 				} else {
 					exit(-1);
+#endif
 				}
-			} else dup2(this->socket_fd,fileno(stdin));
+			}
+#ifndef WIN32
+			else dup2(this->socket_fd,fileno(stdin));
+
 			dup2(this->socket_fd,fileno(stdout));
 			execve(argv[0],argv,envp);
 			LOG(strerror_r(errno,strerr,ERR_STR_LEN)); // execve() error
 			exit(-1);
+#endif
+#ifdef WIN32
+			ZeroMemory(&processInfo, sizeof(PROCESS_INFORMATION));
+			ZeroMemory(&startUpInfo, sizeof(STARTUPINFO));
+			startUpInfo.cb = sizeof(STARTUPINFO);
+			startUpInfo.hStdError = (void *)_get_osfhandle(fileno(stderr));
+			startUpInfo.hStdOutput = (void *)_get_osfhandle(this->socket_fd);
+			startUpInfo.hStdInput = (void *)_get_osfhandle(pp[0]==-1?this->socket_fd:pp[0]);
+			startUpInfo.dwFlags |= STARTF_USESTDHANDLES;
+
+			if (CreateProcess(NULL, argv[0], NULL, NULL, TRUE, 0, NULL, NULL, &startUpInfo, &processInfo)) {
+				WaitForSingleObject(processInfo.hProcess,INFINITE);
+			} else Reply500();
+#endif
 		} else if (f == -1) {
 			LOG(strerror_r(errno,strerr,ERR_STR_LEN)); // fork() error
 			Reply500();
@@ -331,7 +361,9 @@ void tHTTPClientSocket::GET()
 			Close();
 		}
 	} else {
-		if (!HEAD()) SendFile(uri.c_str(),&offset,contentLength);
+		if (!HEAD()) {
+			if (SendFile(uri.c_str(),&offset,contentLength) != contentLength) Reply500();
+		}
 	}
 }
 
