@@ -35,6 +35,7 @@ public:
 	void RemoveThread(tHTTPThread *);
 	tHTTPLog *GetLog();
 	string getDocumentRoot();
+	tHTTPServerSocket *getServerSocket();
 protected:
 	tHTTPServerSocket *server_socket;
 	list<tHTTPThread *> threads;

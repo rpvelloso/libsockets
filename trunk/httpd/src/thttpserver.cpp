@@ -47,6 +47,7 @@ void tHTTPServer::Run(const char *addr, unsigned short port) {
 		cerr << "Error: could not listen on " << addr << ":" << port <<endl;
 		perror("Open()");
 	} else {
+		cout << "using document root \'" << documentRoot << "\'" << endl;
 		while (server_socket->GetStatus() == tSocketListening) {
 			client_socket = server_socket->Accept();
 			if (client_socket) {
@@ -76,4 +77,8 @@ tHTTPLog *tHTTPServer::GetLog() {
 
 string tHTTPServer::getDocumentRoot() {
 	return documentRoot;
+}
+
+tHTTPServerSocket *tHTTPServer::getServerSocket() {
+	return server_socket;
 }
