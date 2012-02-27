@@ -305,7 +305,8 @@ void tHTTPClientSocket::GET()
 			 * CGI hasn't sent HTTP response header, so the server
 			 * can send/complete it */
 
-			// Send POST data to CGI stdin
+			/* TODO: replace the pipe below, because of buffer limit.
+			 * Upload of large files are blocking in the write() */
 			if ((httpBody) && (contentLength > 0) && (method == "POST")) {
 				int pp[2];
 
