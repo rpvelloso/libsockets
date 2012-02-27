@@ -28,16 +28,18 @@ class tHTTPThread;
 
 class tHTTPServer : public tObject {
 public:
-	tHTTPServer();
+	tHTTPServer(string);
 	~tHTTPServer();
 	void Run(const char *, unsigned short);
 	void Stop();
 	void RemoveThread(tHTTPThread *);
 	tHTTPLog *GetLog();
+	string getDocumentRoot();
 protected:
 	tHTTPServerSocket *server_socket;
 	list<tHTTPThread *> threads;
     tHTTPLog *log;
+    string documentRoot;
 };
 
 #endif

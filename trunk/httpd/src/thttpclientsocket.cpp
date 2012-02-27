@@ -158,6 +158,14 @@ void tHTTPClientSocket::OnDisconnect() {
 	log->Log("connection to %s closed.\n",GetHostName());
 }
 
+tHTTPServer *tHTTPClientSocket::getOwner() {
+	return owner;
+}
+
+void tHTTPClientSocket::setOwner(tHTTPServer *o) {
+	owner = o;
+}
+
 void tHTTPClientSocket::ProcessHTTPHeader() {
 	string line, lineAux, parm, msg = httpHeader;
 	int i=0;
@@ -180,7 +188,9 @@ void tHTTPClientSocket::ProcessHTTPHeader() {
 		lineAux = line;
 		if (i == 1) { // request line
 			method = stringtok(&line," ");
-			request = unescapeUri(stringtok(&line," "));
+			request = stringtok(&line," ");
+			if (request[0]=='/') request.erase(0,1);
+			request = unescapeUri(owner->getDocumentRoot() + request);
 			uri = stringtok(&request,"?");
 			query = request;
 			httpVersion = line;
@@ -260,7 +270,7 @@ void tHTTPClientSocket::GET()
 	if (query != "") {
 		if (!(f=fork())) {
 			while (i<query.length()) if (query[i++] == '&') j++;
-			envp = (char **)malloc(sizeof(void *) * (j+11));
+			envp = (char **)malloc(sizeof(void *) * (j+12));
 			i = 0; q = query;
 			while (q != "") {
 				envp[i++] = strdup(stringtok(&q,"&").c_str());
@@ -282,7 +292,8 @@ void tHTTPClientSocket::GET()
 			envp[j+ 7] = strdup(("REQUEST_URI=" + uri).c_str());
 			envp[j+ 8] = strdup(("SERVER_PROTOCOL=" + httpVersion).c_str());
 			envp[j+ 9] = strdup(("SCRIPT_FILENAME=" + uri).c_str());
-			envp[j+10] = NULL;
+			envp[j+10] = strdup(("DOCUMENT_ROOT=" + owner->getDocumentRoot()).c_str());
+			envp[j+11] = NULL;
 			argv[0] = strdup(uri.c_str());
 			/* TODO: in the future change this redirection of stdout
 			 * to the client socket. Instead of redirecting, use a

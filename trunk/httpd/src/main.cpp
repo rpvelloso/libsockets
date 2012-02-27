@@ -42,7 +42,7 @@ void pusage(char *p)
 	cout << "usage: "<<p<<" [-a bind_addr] [-p bind_port]"<<endl;
 	cout << "-a bind_addr: the IP address to bind the server to. Default 127.0.0.1"<<endl;
 	cout << "-p bind_port: the server port number. Default 80"<<endl;
-	cout << "-r dir: chroot directory. Default \"/\"."<<endl;
+	cout << "-r dir: document root directory, must by an absolute path. Default \"/\"."<<endl;
 	exit(-1);
 }
 
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 	string bind_addr="127.0.0.1",rdir="/";
 	unsigned short bind_port=80;
 
-	while ((opt = getopt(argc, argv, "a:p:h:r")) != -1) {
+	while ((opt = getopt(argc, argv, "a:p:r:h")) != -1) {
 		switch (opt) {
 		case 'a':
 			bind_addr = optarg;
@@ -70,7 +70,9 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	if ((rdir.empty()) || (bind_port == 0) || bind_addr.empty()) {
+	if ((rdir.empty()) || (bind_port == 0) ||
+		bind_addr.empty() || (rdir[0] != '/')) {
+
     	pusage(argv[0]);
 	} else {
 
@@ -85,7 +87,7 @@ int main(int argc, char *argv[])
     	if (rdir != "/") chroot(rdir.c_str());
 #endif
 
-    	srv = new tHTTPServer();
+    	srv = new tHTTPServer(rdir);
 
     	signal(SIGINT,signal_handler);
     	signal(SIGTERM,signal_handler);
