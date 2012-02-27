@@ -35,6 +35,8 @@ enum tHTTPRequestState {
 	tHTTPProcessRequest
 };
 
+class tHTTPServer;
+
 class tHTTPClientSocket : public tClientSocket {
 public:
 	tHTTPClientSocket(int, sockaddr_in *);
@@ -47,6 +49,8 @@ public:
     void ProcessHTTPHeader();
     void ProcessHTTPBody();
     void ProcessHTTPRequest();
+    tHTTPServer *getOwner();
+    void setOwner(tHTTPServer *);
 
     void GET();
     void OPTIONS();
@@ -73,6 +77,7 @@ protected:
     tHTTPRequestState reqState;
     string userAgent,host,method,uri,query,contentType,boundary,httpVersion;
     size_t contentLength;
+    tHTTPServer *owner;
 };
 
 #endif

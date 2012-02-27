@@ -18,11 +18,12 @@
  */
 #include "thttpserver.h"
 
-tHTTPServer::tHTTPServer() : tObject() {
+tHTTPServer::tHTTPServer(string dr) : tObject() {
 	server_socket = new tHTTPServerSocket();
 	log = new tHTTPLog();
 	log->Open();
 	server_socket->SetLog(log);
+	documentRoot = dr;
 }
 
 tHTTPServer::~tHTTPServer() {
@@ -49,6 +50,7 @@ void tHTTPServer::Run(const char *addr, unsigned short port) {
 		while (server_socket->GetStatus() == tSocketListening) {
 			client_socket = server_socket->Accept();
 			if (client_socket) {
+				client_socket->setOwner(this);
 				client_socket->SetLog(log);
 				client_thread = new tHTTPThread(1, this, client_socket);
 				threads.push_back(client_thread);
@@ -70,4 +72,8 @@ void tHTTPServer::RemoveThread(tHTTPThread *t) {
 
 tHTTPLog *tHTTPServer::GetLog() {
 	return log;
+}
+
+string tHTTPServer::getDocumentRoot() {
+	return documentRoot;
 }
