@@ -235,8 +235,8 @@ void tHTTPClientSocket::ProcessHTTPHeader() {
 }
 
 void tHTTPClientSocket::ProcessHTTPBody() {
-	cout << "Body....: " << endl;
-	cout << "\'" << (char *)httpBody << "\'" << endl;
+	/*cout << "Body....: " << endl;
+	cout << "\'" << (char *)httpBody << "\'" << endl;*/
 
 	reqState = tHTTPProcessRequest;
 }
@@ -265,42 +265,45 @@ void tHTTPClientSocket::GET()
 	int cgiRet;
 	string q;
 	char strerr[ERR_STR_LEN];
-	stringstream len;
+	stringstream sstr;
 
 	if (query != "") {
 		if (!(f=fork())) {
 			while (i<query.length()) if (query[i++] == '&') j++;
-			envp = (char **)malloc(sizeof(void *) * (j+12));
+			envp = (char **)malloc(sizeof(void *) * (j+17));
 			i = 0; q = query;
 			while (q != "") {
 				envp[i++] = strdup(stringtok(&q,"&").c_str());
 			}
-			/* TODO: Add more CGI variables to the environ (REMOTE_ADDR, etc).
-			 * The above was enough to run basic PHP CGI get/post
-			 */
-			len << "CONTENT_LENGTH=" << contentLength;
-			envp[j] = strdup(len.str().c_str());
+			sstr << "CONTENT_LENGTH=" << contentLength;
+			envp[j] = strdup(sstr.str().c_str());
 			if (boundary != "")
 				envp[j+ 1] = strdup(("CONTENT_TYPE=" + contentType + "; boundary=" + boundary).c_str());
 			else
 				envp[j+ 1] = strdup(("CONTENT_TYPE=" + contentType).c_str());
-			envp[j+ 2] = strdup(("REQUEST_METHOD=" + method).c_str());
-			envp[j+ 3] = strdup(("HTTP_HOST=" + host).c_str());
-			envp[j+ 4] = strdup(("HTTP_USER_AGENT=" + userAgent).c_str());
-			envp[j+ 5] = strdup("GATEWAY_INTERFACE=CGI/1.1");
-			envp[j+ 6] = strdup(("QUERY_STRING=" + query).c_str());
-			envp[j+ 7] = strdup(("REQUEST_URI=" + uri).c_str());
-			envp[j+ 8] = strdup(("SERVER_PROTOCOL=" + httpVersion).c_str());
-			envp[j+ 9] = strdup(("SCRIPT_FILENAME=" + uri).c_str());
-			envp[j+10] = strdup(("DOCUMENT_ROOT=" + owner->getDocumentRoot()).c_str());
-			envp[j+11] = NULL;
+			sstr.str(""); sstr << "REMOTE_PORT=" << this->GetPort();
+			envp[j+ 2] = strdup(sstr.str().c_str());
+			sstr.str(""); sstr << "SERVER_PORT=" << owner->getServerSocket()->GetPort();
+			envp[j+ 3] = strdup(sstr.str().c_str());
+			envp[j+ 4] = strdup(("REMOTE_ADDR=" + this->GetIP()).c_str());
+			envp[j+ 5] = strdup(("SERVER_ADDR=" + owner->getServerSocket()->GetIP()).c_str());
+			envp[j+ 6] = strdup(("REQUEST_METHOD=" + method).c_str());
+			envp[j+ 7] = strdup(("HTTP_HOST=" + host).c_str());
+			envp[j+ 8] = strdup(("SERVER_NAME=" + host).c_str());
+			envp[j+ 9] = strdup(("HTTP_USER_AGENT=" + userAgent).c_str());
+			envp[j+10] = strdup("GATEWAY_INTERFACE=CGI/1.1");
+			envp[j+11] = strdup(("QUERY_STRING=" + query).c_str());
+			envp[j+12] = strdup(("REQUEST_URI=" + uri).c_str());
+			envp[j+13] = strdup(("SERVER_PROTOCOL=" + httpVersion).c_str());
+			envp[j+14] = strdup(("SCRIPT_FILENAME=" + uri).c_str());
+			envp[j+15] = strdup(("DOCUMENT_ROOT=" + owner->getDocumentRoot()).c_str());
+			envp[j+16] = NULL;
 			argv[0] = strdup(uri.c_str());
 			/* TODO: in the future change this redirection of stdout
 			 * to the client socket. Instead of redirecting, use a
 			 * pipe to intermediate CGI output and detect if the
 			 * CGI hasn't sent HTTP response header, so the server
 			 * can send/complete it */
-			dup2(this->socket_fd,fileno(stdout));
 
 			// Send POST data to CGI stdin
 			if ((httpBody) && (contentLength > 0) && (method == "POST")) {
@@ -314,7 +317,7 @@ void tHTTPClientSocket::GET()
 					exit(-1);
 				}
 			} else dup2(this->socket_fd,fileno(stdin));
-
+			dup2(this->socket_fd,fileno(stdout));
 			execve(argv[0],argv,envp);
 			LOG(strerror_r(errno,strerr,ERR_STR_LEN)); // execve() error
 			exit(-1);
