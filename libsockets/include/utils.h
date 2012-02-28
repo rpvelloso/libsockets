@@ -21,6 +21,13 @@
 
 #include <iostream>
 #include <string>
+#ifdef DEVEL_ENV
+	#include "xmlParser.h"
+#else
+	#include <libsockets/xmlParser.h>
+#endif
+
+
 
 using namespace std;
 

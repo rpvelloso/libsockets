@@ -25,6 +25,5 @@
 #include <libsockets/tmutex.h>
 #include <libsockets/tlogger.h>
 #include <libsockets/utils.h>
-#include <libsockets/xmlParser.h>
 
 #endif /* LIBSOCKETS_H_ */
