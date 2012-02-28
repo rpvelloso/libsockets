@@ -25,14 +25,14 @@
 
 tFTPClientSocket::tFTPClientSocket(int fd, sockaddr_in *sin) : tClientSocket(fd, sin) {
 	log = NULL;
-	cmd_pos = 0;
-	cmd_overflow = 0;
-	pasv_socket = NULL;
+	cmdPos = 0;
+	cmdOverflow = 0;
+	pasvSocket = NULL;
 	passive = 0;
 	logged = 0;
 	username.clear();
-	client_ip.clear();
-	client_port = 0;
+	clientIp.clear();
+	clientPort = 0;
 	restart = 0;
 	cwd = "/";
 	owner = NULL;
@@ -40,18 +40,18 @@ tFTPClientSocket::tFTPClientSocket(int fd, sockaddr_in *sin) : tClientSocket(fd,
 
 tFTPClientSocket::~tFTPClientSocket() {
 	Close();
-	if (pasv_socket) delete pasv_socket;
+	if (pasvSocket) delete pasvSocket;
 }
 
-void tFTPClientSocket::SetLog(tFTPLog *l) {
+void tFTPClientSocket::setLog(tFTPLog *l) {
 	log = l;
 }
 
-tFTPLog *tFTPClientSocket::GetLog() {
+tFTPLog *tFTPClientSocket::getLog() {
 	return log;
 }
 
-void tFTPClientSocket::OnSend(void *buf, size_t *size) {
+void tFTPClientSocket::onSend(void *buf, size_t *size) {
 #ifdef WIN32
 /*	if ((*size) == -1) {
 		string *s = ((string *)buf);
@@ -64,34 +64,34 @@ void tFTPClientSocket::OnSend(void *buf, size_t *size) {
 #endif
 }
 
-void tFTPClientSocket::OnReceive(void *buf, size_t size) {
+void tFTPClientSocket::onReceive(void *buf, size_t size) {
 	for (size_t i=0;i<size;i++) {
 		if (((char *)buf)[i] == CMD_DELIM) {
-			command_buffer[cmd_pos] = 0x00;
-			cmd_pos = 0;
-			if (cmd_overflow) {
-				cmd_overflow = 0;
+			commandBuffer[cmdPos] = 0x00;
+			cmdPos = 0;
+			if (cmdOverflow) {
+				cmdOverflow = 0;
 				LOG("command buffer overflow.\n");
-			} else if (strlen(command_buffer) > 0) ProcessCommand();
+			} else if (strlen(commandBuffer) > 0) processCommand();
 		} else {
-			if (cmd_pos >= CMD_BUFLEN) {
-				cmd_pos = 0;
-				cmd_overflow = 1;
+			if (cmdPos >= CMD_BUFLEN) {
+				cmdPos = 0;
+				cmdOverflow = 1;
 			}
-			if (((char *)buf)[i] != '\r') command_buffer[cmd_pos++] = ((char *)buf)[i];
+			if (((char *)buf)[i] != '\r') commandBuffer[cmdPos++] = ((char *)buf)[i];
 		}
 	}
 }
 
-string tFTPClientSocket::GetCWD() {
+string tFTPClientSocket::getCWD() {
 	return cwd;
 }
 
-string tFTPClientSocket::GetUsername() {
+string tFTPClientSocket::getUsername() {
 	return username;
 }
 
-string tFTPClientSocket::ResolvePath(string p) {
+string tFTPClientSocket::resolvePath(string p) {
 	string ret;
 	list<string> path;
 	list<string>::iterator i;
@@ -105,19 +105,19 @@ string tFTPClientSocket::ResolvePath(string p) {
 		cpath = "";
 	}
 
-	t = stringtok(&ccwd,DIR_DELIM_STR);
+	t = stringTok(&ccwd,DIR_DELIM_STR);
 	while (!t.empty()) {
 		if ((t == "..") && (path.size()>0)) path.remove(path.back());
 		else if (t != ".") path.push_back(t);
-		t = stringtok(&ccwd,DIR_DELIM_STR);
+		t = stringTok(&ccwd,DIR_DELIM_STR);
 	}
 
 	if (!cpath.empty()) {
-		t = stringtok(&cpath,DIR_DELIM_STR);
+		t = stringTok(&cpath,DIR_DELIM_STR);
 		while (!t.empty()) {
 			if (t == "..") path.remove(path.back());
 			else if (t != ".") path.push_back(t);
-			t = stringtok(&cpath,DIR_DELIM_STR);
+			t = stringTok(&cpath,DIR_DELIM_STR);
 		}
 	}
 
@@ -132,19 +132,19 @@ string tFTPClientSocket::ResolvePath(string p) {
 	return ret;
 }
 
-void tFTPClientSocket::SetOwner(tFTPServer *o) {
+void tFTPClientSocket::setOwner(tFTPServer *o) {
 	owner = o;
 }
 
-void tFTPClientSocket::ProcessCommand() {
+void tFTPClientSocket::processCommand() {
 	string cmd = "";
 	string parm = "";
-	string buf = command_buffer;
+	string buf = commandBuffer;
 
-	LOG("%s\n",command_buffer);
-	cmd = stringtok(&buf,STR_DELIM);
-	parm = stringtok(&buf,CMD_DELIM_STR);
-	upper_case(cmd);
+	LOG("%s\n",commandBuffer);
+	cmd = stringTok(&buf,STR_DELIM);
+	parm = stringTok(&buf,CMD_DELIM_STR);
+	upperCase(cmd);
 	if      (cmd == "QUIT") QUIT();
 	else if (cmd == "USER") USER(parm);
 	else if (cmd == "PASS") PASS(parm);
@@ -175,7 +175,7 @@ void tFTPClientSocket::ProcessCommand() {
 			  (cmd == "XPWD")) && logged) PWD();
 	else Send(R500);
 
-	if (cmd != "RNFR") rename_from = "";
+	if (cmd != "RNFR") renameFrom = "";
 }
 
 void tFTPClientSocket::QUIT() {
@@ -197,7 +197,7 @@ void tFTPClientSocket::PASS(string p) {
 
 	if (!logged && !p.empty()) {
 		if (!username.empty()) {
-			l = owner->Authenticate(username,p);
+			l = owner->authenticate(username,p);
 			if (l) {
 				if ((d=opendir(l->homedir.c_str()))) {
 					closedir(d);
@@ -212,7 +212,7 @@ void tFTPClientSocket::PASS(string p) {
 
 void tFTPClientSocket::MODE(string m) {
 	if (!m.empty()) {
-		upper_case(m);
+		upperCase(m);
 		if (m == "S") {
 			Send(R200_MODE);
 		} else Send(R504);
@@ -221,7 +221,7 @@ void tFTPClientSocket::MODE(string m) {
 
 void tFTPClientSocket::TYPE(string t) {
 	if (!t.empty()) {
-		upper_case(t);
+		upperCase(t);
 		if ((t == "A") || (t == "I")) {
 			Send(R200_TYPE);
 			Send(t.c_str());
@@ -232,7 +232,7 @@ void tFTPClientSocket::TYPE(string t) {
 
 void tFTPClientSocket::STRU(string s) {
 	if (!s.empty()) {
-		upper_case(s);
+		upperCase(s);
 		if (s == "F") {
 			Send(R200_STRU);
 		} else Send(R504);
@@ -243,7 +243,7 @@ void tFTPClientSocket::CWD(string c) {
 	DIR *d;
 
 	if (!c.empty()) {
-		c = ResolvePath(c);
+		c = resolvePath(c);
 		if ((d = opendir(c.c_str()))) {
 			cwd = c;
 			Send(R250);
@@ -261,19 +261,19 @@ void tFTPClientSocket::PORT(string a) {
 	stringstream ip;
 
 	if (!a.empty()) {
-		port_char = stringtok(&a,PORT_DELIM);
+		port_char = stringTok(&a,PORT_DELIM);
 		while (!port_char.empty() && (x < 6)) {
 			port_param[x++] = atoi(port_char.c_str());
-			port_char = stringtok(&a,PORT_DELIM);
+			port_char = stringTok(&a,PORT_DELIM);
 		}
 		if (x != 6) Send(R501);
 		else {
 			ip << port_param[0]<<"."<<port_param[1]<<"."<<port_param[2]<<"."<<port_param[3];
-			client_ip = ip.str();
-			client_port = (unsigned short)(((port_param[4] << 8) & 0xff00) | ((port_param[5]) & 0xff));
-			if (pasv_socket) {
-				delete pasv_socket;
-				pasv_socket = NULL;
+			clientIp = ip.str();
+			clientPort = (unsigned short)(((port_param[4] << 8) & 0xff00) | ((port_param[5]) & 0xff));
+			if (pasvSocket) {
+				delete pasvSocket;
+				pasvSocket = NULL;
 			}
 			passive = 0;
 			Send(R200);
@@ -287,22 +287,22 @@ void tFTPClientSocket::LIST(string p, int lt) {
 	if (!passive) {
 		data_socket = new tFTPDataSocket();
 		if (data_socket) {
-			if (data_socket->Open(client_ip.c_str(),client_port)) Send(R425);
+			if (data_socket->Open(clientIp.c_str(),clientPort)) Send(R425);
 			else {
-				data_socket->SetControlConnection(this);
-				data_socket->List(p,lt);
+				data_socket->setControlConnection(this);
+				data_socket->list(p,lt);
 			}
 			delete data_socket;
 		} else Send(R425);
 	} else {
-		if (pasv_socket) {
-			if (pasv_socket->GetStatus() == tSocketListening) {
-				data_socket = pasv_socket->Accept();
-				delete pasv_socket;
-				pasv_socket = NULL;
+		if (pasvSocket) {
+			if (pasvSocket->getStatus() == tSocketListening) {
+				data_socket = pasvSocket->Accept();
+				delete pasvSocket;
+				pasvSocket = NULL;
 				if (data_socket) {
-					data_socket->SetControlConnection(this);
-					data_socket->List(p,lt);
+					data_socket->setControlConnection(this);
+					data_socket->list(p,lt);
 				} else Send(R425);
 				delete data_socket;
 			} else Send(R425);
@@ -312,7 +312,7 @@ void tFTPClientSocket::LIST(string p, int lt) {
 
 void tFTPClientSocket::MKD(string d) {
 	if (!d.empty()) {
-		d = ResolvePath(d);
+		d = resolvePath(d);
 #ifdef WIN32
 		if (mkdir(d.c_str()) != -1) Send(R257);
 #else
@@ -327,7 +327,7 @@ void tFTPClientSocket::SIZE(string f) {
 	struct stat st;
 
 	if (!f.empty()) {
-		f = ResolvePath(f);
+		f = resolvePath(f);
 		if (stat(f.c_str(),&st) != -1) {
 			if (S_ISREG(st.st_mode)) {
 				fsize << (unsigned int)st.st_size;
@@ -358,7 +358,7 @@ void tFTPClientSocket::PWD() {
 }
 
 void tFTPClientSocket::PASV() {
-	string ip = GetIP();
+	string ip = getIP();
 	unsigned short port;
 	unsigned int portlo;
 	unsigned int porthi;
@@ -366,11 +366,11 @@ void tFTPClientSocket::PASV() {
 	size_t pos;
 
 	passive = 0;
-	if (pasv_socket) delete pasv_socket;
-	pasv_socket = new tFTPPassiveSocket();
-	if (!pasv_socket->Open(ip.c_str(),0)) {
+	if (pasvSocket) delete pasvSocket;
+	pasvSocket = new tFTPPassiveSocket();
+	if (!pasvSocket->Open(ip.c_str(),0)) {
 		while ((pos=ip.find("."))!=string::npos) ip[pos]=',';
-		port = pasv_socket->GetPort();
+		port = pasvSocket->getPort();
 		portlo = port & 0x00ff;
 		porthi = (port >> 8) & 0x00ff;
 		addr<<ip<<","<<porthi<<","<<portlo;
@@ -379,8 +379,8 @@ void tFTPClientSocket::PASV() {
 		Send(").\n");
 		passive = 1;
 	} else {
-		delete pasv_socket;
-		pasv_socket = NULL;
+		delete pasvSocket;
+		pasvSocket = NULL;
 		Send(R425);
 	}
 }
@@ -391,26 +391,26 @@ void tFTPClientSocket::RETR(string f) {
 	restart = 0;
 
 	if (!f.empty()) {
-		f = ResolvePath(f);
+		f = resolvePath(f);
 		if (!passive) {
 			data_socket = new tFTPDataSocket();
 			if (data_socket) {
-				if (data_socket->Open(client_ip.c_str(),client_port)) Send(R425);
+				if (data_socket->Open(clientIp.c_str(),clientPort)) Send(R425);
 				else {
-					data_socket->SetControlConnection(this);
-					data_socket->Retrieve(f.c_str(), r);
+					data_socket->setControlConnection(this);
+					data_socket->retrieve(f.c_str(), r);
 				}
 				delete data_socket;
 			} else Send(R425);
 		} else {
-			if (pasv_socket) {
-				if (pasv_socket->GetStatus() == tSocketListening) {
-					data_socket = pasv_socket->Accept();
-					delete pasv_socket;
-					pasv_socket = NULL;
+			if (pasvSocket) {
+				if (pasvSocket->getStatus() == tSocketListening) {
+					data_socket = pasvSocket->Accept();
+					delete pasvSocket;
+					pasvSocket = NULL;
 					if (data_socket) {
-						data_socket->SetControlConnection(this);
-						data_socket->Retrieve(f.c_str(), r);
+						data_socket->setControlConnection(this);
+						data_socket->retrieve(f.c_str(), r);
 					} else Send(R425);
 					delete data_socket;
 				} else Send(R425);
@@ -425,26 +425,26 @@ void tFTPClientSocket::STOR(string f) {
 	restart = 0;
 
 	if (!f.empty()) {
-		f = ResolvePath(f);
+		f = resolvePath(f);
 		if (!passive) {
 			data_socket = new tFTPDataSocket();
 			if (data_socket) {
-				if (data_socket->Open(client_ip.c_str(),client_port)) Send(R425);
+				if (data_socket->Open(clientIp.c_str(),clientPort)) Send(R425);
 				else {
-					data_socket->SetControlConnection(this);
-					data_socket->Store(f.c_str(),r);
+					data_socket->setControlConnection(this);
+					data_socket->store(f.c_str(),r);
 				}
 				delete data_socket;
 			} else Send(R425);
 		} else {
-			if (pasv_socket) {
-				if (pasv_socket->GetStatus() == tSocketListening) {
-					data_socket = pasv_socket->Accept();
-					delete pasv_socket;
-					pasv_socket = NULL;
+			if (pasvSocket) {
+				if (pasvSocket->getStatus() == tSocketListening) {
+					data_socket = pasvSocket->Accept();
+					delete pasvSocket;
+					pasvSocket = NULL;
 					if (data_socket) {
-						data_socket->SetControlConnection(this);
-						data_socket->Store(f.c_str(),r);
+						data_socket->setControlConnection(this);
+						data_socket->store(f.c_str(),r);
 					} else Send(R425);
 					delete data_socket;
 				} else Send(R425);
@@ -462,7 +462,7 @@ void tFTPClientSocket::REST(string f) {
 
 void tFTPClientSocket::DELE(string p) {
 	if (!p.empty()) {
-		p = ResolvePath(p);
+		p = resolvePath(p);
 		if (remove(p.c_str()) != -1) Send(R250);
 		else Send(R550_DELE);
 	} else Send(R501);
@@ -470,24 +470,24 @@ void tFTPClientSocket::DELE(string p) {
 
 void tFTPClientSocket::RNFR(string p) {
 	if (!p.empty()) {
-		rename_from = ResolvePath(p);
+		renameFrom = resolvePath(p);
 		Send(R350_RNFR);
 	} else Send(R501);
 }
 
 void tFTPClientSocket::RNTO(string p) {
-	if (!rename_from.empty()) {
+	if (!renameFrom.empty()) {
 		if (!p.empty()) {
-			p = ResolvePath(p);
-			if (rename(rename_from.c_str(),p.c_str()) == -1) Send(R550_RNTO);
+			p = resolvePath(p);
+			if (rename(renameFrom.c_str(),p.c_str()) == -1) Send(R550_RNTO);
 			else Send(R250);
 		} else Send(R501);
 	} else Send(R503_RNTO);
 }
 
-void tFTPClientSocket::OnConnect() {
+void tFTPClientSocket::onConnect() {
 }
 
-void tFTPClientSocket::OnDisconnect() {
-	LOG("connection to %s closed.\n",GetHostName());
+void tFTPClientSocket::onDisconnect() {
+	LOG("connection to %s closed.\n",getHostname());
 }

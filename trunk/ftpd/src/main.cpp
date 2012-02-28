@@ -32,7 +32,7 @@ void signal_handler(int sig)
 		(sig == SIGSTOP) ||
 		(sig == SIGTERM) ||
 		(sig == SIGQUIT)) {
-		srv->Stop();
+		srv->stop();
 	}
 }
 
@@ -69,6 +69,7 @@ int main(int argc, char *argv[])
 			break;
 		case 'r':
 			rdir = optarg;
+			if (rdir[rdir.length()-1]!='/') rdir = rdir + '/';
 			break;
 		case 'h':
 		default:
@@ -103,7 +104,7 @@ int main(int argc, char *argv[])
     	signal(SIGSTOP,signal_handler);
     	signal(SIGQUIT,signal_handler);
 
-    	srv->Run(bind_addr.c_str(),bind_port);
+    	srv->run(bind_addr.c_str(),bind_port);
     	delete srv;
 
 #ifdef WIN32

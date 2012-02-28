@@ -27,9 +27,9 @@ class tFTPDataSocket;
 class tFTPPassiveSocket : public tServerSocket<tFTPDataSocket> {
 public:
 	~tFTPPassiveSocket();
-    void OnClientConnect(tFTPDataSocket *);
-    void OnServerUp();
-    void OnServerDown();
+    void onClientConnect(tFTPDataSocket *);
+    void onServerUp();
+    void onServerDown();
 };
 
 #endif
