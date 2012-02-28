@@ -343,7 +343,7 @@ void tHTTPClientSocket::GET()
 			ZeroMemory(&processInfo, sizeof(PROCESS_INFORMATION));
 			ZeroMemory(&startUpInfo, sizeof(STARTUPINFO));
 			startUpInfo.cb = sizeof(STARTUPINFO);
-			startUpInfo.hStdError = (void *)_get_osfhandle(fileno(stderr));
+			startUpInfo.hStdError = (void *)_get_osfhandle(this->socketFd);
 			startUpInfo.hStdOutput = (void *)_get_osfhandle(this->socketFd);
 			startUpInfo.hStdInput = (void *)_get_osfhandle(tmpPostData?fileno(tmpPostData):this->socketFd);
 			startUpInfo.dwFlags |= STARTF_USESTDHANDLES;
