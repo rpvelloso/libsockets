@@ -26,24 +26,24 @@
 #include "tftpdatasocket.h"
 
 tFTPDataSocket::tFTPDataSocket() : tClientSocket() {
-	transfer_complete = 0;
+	transferComplete = 0;
 }
 
 tFTPDataSocket::tFTPDataSocket(int fd, sockaddr_in *sin) : tClientSocket(fd,sin) {
-	transfer_complete = 0;
+	transferComplete = 0;
 }
 
 tFTPDataSocket::~tFTPDataSocket() {
 	Close();
 }
 
-void tFTPDataSocket::SetTransferComplete(int tc) {
-	transfer_complete = tc;
+void tFTPDataSocket::setTransferComplete(int tc) {
+	transferComplete = tc;
 }
 
 static const char *month[12] = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
 
-void tFTPDataSocket::List(string p, int list_type) {
+void tFTPDataSocket::list(string p, int list_type) {
 	DIR *d;
 	struct dirent *de;
 	stringstream ls;
@@ -58,8 +58,8 @@ void tFTPDataSocket::List(string p, int list_type) {
 #endif
 
 	if (!p.empty() && p[0] != '-') {
-		p = GetControlConnection()->ResolvePath(p);
-	} else p = GetControlConnection()->GetCWD();
+		p = getControlConnection()->resolvePath(p);
+	} else p = getControlConnection()->getCWD();
 
 #ifndef WIN32
 	len = offsetof(struct dirent, d_name) +
@@ -71,7 +71,7 @@ void tFTPDataSocket::List(string p, int list_type) {
 #else
 	if (1) {
 #endif
-		GetControlConnection()->Send(R150);
+		getControlConnection()->Send(R150);
 		if ((d = opendir(p.c_str()))) {
 			readdir_r(d,entryp,&de);
 			while (de) {
@@ -99,78 +99,78 @@ void tFTPDataSocket::List(string p, int list_type) {
 						<<setw(2)<<tm1.tm_mday<<" "<<setw(5)<<tm1.tm_year+1900<<" "<<de->d_name<<"\r\n";
 					} else ls << de->d_name << "\r\n";
 				} else {
-					control_connection->GetLog()->Log(control_connection,"error: LIST error %s - %s\n",filepath.c_str(),strerror_r(errno,errstr,ERRSTR_LEN));
+					controlConnection->getLog()->log(controlConnection,"error: LIST error %s - %s\n",filepath.c_str(),strerror_r(errno,errstr,ERRSTR_LEN));
 				}
 				readdir_r(d,entryp,&de);
 			}
 			Send(ls.str().c_str());
 			closedir(d);
 		} else {
-			control_connection->GetLog()->Log(control_connection,"error: directory access error %s - %s\n",p.c_str(),strerror_r(errno,errstr,ERRSTR_LEN));
+			controlConnection->getLog()->log(controlConnection,"error: directory access error %s - %s\n",p.c_str(),strerror_r(errno,errstr,ERRSTR_LEN));
 		}
 #ifndef WIN32
 		free(entryp);
 #endif
-		transfer_complete = 1;
-		GetControlConnection()->Send(R226);
+		transferComplete = 1;
+		getControlConnection()->Send(R226);
 	}
 	Close();
 }
 
-void tFTPDataSocket::Retrieve(string f, off_t off) {
+void tFTPDataSocket::retrieve(string f, off_t off) {
 	struct stat st;
 	size_t count;
 
-	transfer_complete = 1;
+	transferComplete = 1;
 
 	if (!stat(f.c_str(),&st)) {
 		if (!S_ISDIR(st.st_mode)) {
-			GetControlConnection()->Send(R150);
+			getControlConnection()->Send(R150);
 			count = st.st_size - off;
-			transfer_complete = 0;
-			if (SendFile(f.c_str(),&off,count)>0) {
-				GetControlConnection()->Send(R226);
-				transfer_complete = 1;
+			transferComplete = 0;
+			if (sendFile(f.c_str(),&off,count)>0) {
+				getControlConnection()->Send(R226);
+				transferComplete = 1;
 			}
-		} else GetControlConnection()->Send(R550_RETR);
-	} else GetControlConnection()->Send(R550_RETR);
+		} else getControlConnection()->Send(R550_RETR);
+	} else getControlConnection()->Send(R550_RETR);
 	Close();
 }
 
-void tFTPDataSocket::Store(string f, off_t off) {
+void tFTPDataSocket::store(string f, off_t off) {
 	int fd,len;
 	char storbuf[STOR_BUFLEN];
 
-	transfer_complete = 1;
+	transferComplete = 1;
 
 	if ((fd=open(f.c_str(),O_CREAT|O_WRONLY,STOR_PERM))>0) {
 		if (lseek(fd,off,SEEK_SET)!=-1) {
-			GetControlConnection()->Send(R150);
-			while ((len=Receive(storbuf,STOR_BUFLEN))>0) {
+			getControlConnection()->Send(R150);
+			while ((len=receive(storbuf,STOR_BUFLEN))>0) {
 				if (write(fd,storbuf,len)!=len) {
-					transfer_complete = 0;
+					transferComplete = 0;
 					break;
 				}
 			}
-			if (len!=0) GetControlConnection()->Send(R550_STOR);
-			else GetControlConnection()->Send(R226);
-		} else GetControlConnection()->Send(R550_STOR);
+			if (len!=0) getControlConnection()->Send(R550_STOR);
+			else getControlConnection()->Send(R226);
+		} else getControlConnection()->Send(R550_STOR);
 		close(fd);
-	} else GetControlConnection()->Send(R550_STOR);
+	} else getControlConnection()->Send(R550_STOR);
 	Close();
 }
 
-tFTPClientSocket *tFTPDataSocket::GetControlConnection() {
-	return control_connection;
+tFTPClientSocket *tFTPDataSocket::getControlConnection() {
+	return controlConnection;
 }
 
-void tFTPDataSocket::SetControlConnection(tFTPClientSocket *cc) {
-	control_connection = cc;
+void tFTPDataSocket::setControlConnection(tFTPClientSocket *cc) {
+	controlConnection = cc;
 }
 
-void tFTPDataSocket::OnConnect() {}
-void tFTPDataSocket::OnSend(void *, size_t *) {}
-void tFTPDataSocket::OnReceive(void *, size_t) {}
-void tFTPDataSocket::OnDisconnect() {
-	if (!transfer_complete) GetControlConnection()->Send(R426);
+void tFTPDataSocket::onConnect() {}
+void tFTPDataSocket::onSend(void *, size_t *) {}
+void tFTPDataSocket::onReceive(void *, size_t) {}
+void tFTPDataSocket::onDisconnect() {
+	if (!transferComplete) getControlConnection()->Send(R426);
 }

@@ -26,46 +26,46 @@ tFTPLog::~tFTPLog() {
 	delete mutex;
 }
 
-void tFTPLog::Log(const char *fmt, ...) {
+void tFTPLog::log(const char *fmt, ...) {
 	va_list arglist;
 	time_t t = time(NULL);
 	struct tm tm1;
 
 	gmtime_r(&t,&tm1);
 
-	if (log_status != tLogClosed) {
-		mutex->Lock();
+	if (logStatus != tLogClosed) {
+		mutex->lock();
 		fprintf(stderr,"%04d.%02d.%02d.%02d:%02d:%02d ",tm1.tm_year+1900,tm1.tm_mon+1,tm1.tm_mday,tm1.tm_hour,tm1.tm_min,tm1.tm_sec);
 		va_start(arglist,fmt);
 		vfprintf(stderr,fmt,arglist);
 		va_end(arglist);
-		mutex->Unlock();
+		mutex->unlock();
 	}
 }
 
-void tFTPLog::Log(tFTPClientSocket *c, const char *fmt, ...) {
+void tFTPLog::log(tFTPClientSocket *c, const char *fmt, ...) {
 	va_list arglist;
 	time_t t = time(NULL);
 	struct tm tm1;
 
 	gmtime_r(&t,&tm1);
 
-	if (log_status != tLogClosed) {
-		mutex->Lock();
+	if (logStatus != tLogClosed) {
+		mutex->lock();
 		fprintf(stderr,"%04d.%02d.%02d.%02d:%02d:%02d ",tm1.tm_year+1900,tm1.tm_mon+1,tm1.tm_mday,tm1.tm_hour,tm1.tm_min,tm1.tm_sec);
-		if (c) fprintf(stderr,"%s:%d %s - ",c->GetIP().c_str(),c->GetPort(),c->GetUsername().c_str());
+		if (c) fprintf(stderr,"%s:%d %s - ",c->getIP().c_str(),c->getPort(),c->getUsername().c_str());
 		va_start(arglist,fmt);
 		vfprintf(stderr,fmt,arglist);
 		va_end(arglist);
-		mutex->Unlock();
+		mutex->unlock();
 	}
 }
 
 int tFTPLog::Open() {
-	log_status = tLogOpened;
+	logStatus = tLogOpened;
 	return 0;
 }
 
 void tFTPLog::Close() {
-	log_status = tLogClosed;
+	logStatus = tLogClosed;
 }

@@ -21,30 +21,30 @@
 tFTPThread::tFTPThread(int sd, tFTPServer *o, tFTPClientSocket *s) : tThread(sd) {
 	socket = s;
 	owner = o;
-	log = owner->GetLog();
-	s->SetOwner(o);
+	log = owner->getLog();
+	s->setOwner(o);
 }
 
 tFTPThread::~tFTPThread() {
-    Stop();
+    stop();
 }
 
-void tFTPThread::Execute() {
+void tFTPThread::execute() {
 	int len;
 
-	while ((len = socket->Receive(buffer, RECV_BUFLEN)) > 0);
+	while ((len = socket->receive(buffer, RECV_BUFLEN)) > 0);
 }
 
-void tFTPThread::OnStart() {
-	log->Log(socket,"new thread [%x] started.\n",thread_id);
+void tFTPThread::onStart() {
+	log->log(socket,"new thread [%x] started.\n",threadId);
 }
 
-void tFTPThread::OnStop() {
-	if (GetSelfDestroy()) {
-		log->Log(socket,"thread [%x] self destroying.\n",thread_id);
-		owner->RemoveThread(this);
+void tFTPThread::onStop() {
+	if (getSelfDestroy()) {
+		log->log(socket,"thread [%x] self destroying.\n",threadId);
+		owner->removeThread(this);
 	}
-	log->Log(socket,"thread [%x] terminated.\n",thread_id);
+	log->log(socket,"thread [%x] terminated.\n",threadId);
 	delete socket;
-	owner->SetTotalClients(-1);
+	owner->setTotalClients(-1);
 }

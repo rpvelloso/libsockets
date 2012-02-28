@@ -36,7 +36,7 @@
 #define PORT_DELIM ","
 #define CMD_DELIM_STR "\0\r\n"
 
-#define LOG(...) log->Log(this, __VA_ARGS__)
+#define LOG(...) log->log(this, __VA_ARGS__)
 
 #ifdef WIN32 // under windows, this functions are thread-safe
 	#define strerror_r(i,j,k) strerror(i)
@@ -50,13 +50,13 @@ class tFTPClientSocket : public tClientSocket {
 public:
 	tFTPClientSocket(int, sockaddr_in *);
     ~tFTPClientSocket();
-    void SetLog(tFTPLog *);
-    tFTPLog *GetLog();
-    void ProcessCommand();
-    string GetCWD();
-    string GetUsername();
-    string ResolvePath(string);
-    void SetOwner(tFTPServer *o);
+    void setLog(tFTPLog *);
+    tFTPLog *getLog();
+    void processCommand();
+    string getCWD();
+    string getUsername();
+    string resolvePath(string);
+    void setOwner(tFTPServer *o);
 
 	void QUIT();
 	void USER(string);
@@ -81,23 +81,23 @@ public:
 	void RNFR(string);
 	void RNTO(string);
 
-    void OnSend(void *, size_t *);
-    void OnReceive(void *, size_t);
-    void OnConnect();
-    void OnDisconnect();
+    void onSend(void *, size_t *);
+    void onReceive(void *, size_t);
+    void onConnect();
+    void onDisconnect();
 
 protected:
     tFTPLog *log;
-    char command_buffer[CMD_BUFLEN];
-    int cmd_pos,cmd_overflow;
+    char commandBuffer[CMD_BUFLEN];
+    int cmdPos,cmdOverflow;
     string username;
     string cwd;
-    string rename_from;
+    string renameFrom;
     int logged;
     int passive;
-    string client_ip;
-    unsigned short client_port;
-    tFTPPassiveSocket *pasv_socket;
+    string clientIp;
+    unsigned short clientPort;
+    tFTPPassiveSocket *pasvSocket;
     off_t restart;
     tFTPServer *owner;
 };

@@ -34,9 +34,9 @@ class tFTPThread : public tThread {
 public:
 	tFTPThread(int , tFTPServer *, tFTPClientSocket *);
 	~tFTPThread();
-    void Execute();
-    void OnStart();
-    void OnStop();
+    void execute();
+    void onStart();
+    void onStop();
 protected:
     tFTPClientSocket *socket;
     char buffer[RECV_BUFLEN];

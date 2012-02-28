@@ -32,8 +32,8 @@ class tFTPLog : public tLogger {
 public:
 	tFTPLog();
 	~tFTPLog();
-	void Log(const char *fmt, ...);
-	void Log(tFTPClientSocket *, const char *fmt, ...);
+	void log(const char *fmt, ...);
+	void log(tFTPClientSocket *, const char *fmt, ...);
 	int Open();
 	void Close();
 

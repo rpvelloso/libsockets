@@ -29,10 +29,10 @@ class tFTPServerSocket : public tServerSocket<tFTPClientSocket> {
 public:
 	tFTPServerSocket();
     ~tFTPServerSocket();
-    void SetLog(tFTPLog *);
-    void OnClientConnect(tFTPClientSocket *);
-    void OnServerUp();
-    void OnServerDown();
+    void setLog(tFTPLog *);
+    void onClientConnect(tFTPClientSocket *);
+    void onServerUp();
+    void onServerDown();
 
 protected:
     tFTPLog *log;

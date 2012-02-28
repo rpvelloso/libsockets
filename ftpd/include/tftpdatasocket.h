@@ -39,20 +39,20 @@ public:
 	tFTPDataSocket();
 	tFTPDataSocket(int, sockaddr_in *);
 	~tFTPDataSocket();
-	void SetListType(int);
-	void List(string, int);
-	void Retrieve(string, off_t);
-	void Store(string, off_t);
-	tFTPClientSocket *GetControlConnection();
-	void SetControlConnection(tFTPClientSocket *);
-	void SetTransferComplete(int);
-	void OnSend(void *, size_t *);
-	void OnReceive(void *, size_t);
-	void OnConnect();
-	void OnDisconnect();
+	void setListType(int);
+	void list(string, int);
+	void retrieve(string, off_t);
+	void store(string, off_t);
+	tFTPClientSocket *getControlConnection();
+	void setControlConnection(tFTPClientSocket *);
+	void setTransferComplete(int);
+	void onSend(void *, size_t *);
+	void onReceive(void *, size_t);
+	void onConnect();
+	void onDisconnect();
 protected:
-	int transfer_complete;
-	tFTPClientSocket *control_connection;
+	int transferComplete;
+	tFTPClientSocket *controlConnection;
 };
 
 #endif

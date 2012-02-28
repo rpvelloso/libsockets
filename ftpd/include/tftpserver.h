@@ -40,25 +40,25 @@ class tFTPServer : public tObject {
 public:
 	tFTPServer(int, string);
 	~tFTPServer();
-	void Run(const char *, unsigned short);
-	void Stop();
-	void RemoveThread(tFTPThread *);
-	void AddThread(tFTPThread *);
-	tFTPLog *GetLog();
-	void SetMaxClients(int);
-	int GetMaxClients();
-	int GetTotalClients();
-	void SetTotalClients(int);
-	tLogin *Authenticate(string, string);
+	void run(const char *, unsigned short);
+	void stop();
+	void removeThread(tFTPThread *);
+	void addThread(tFTPThread *);
+	tFTPLog *getLog();
+	void setMaxClients(int);
+	int getMaxClients();
+	int getTotalClients();
+	void setTotalClients(int);
+	tLogin *authenticate(string, string);
 protected:
-	void LoadLogins(string);
+	void loadLogins(string);
 	list<tLogin *>users;
-	tFTPServerSocket *server_socket;
+	tFTPServerSocket *serverSocket;
 	list<tFTPThread *> threads;
-	tMutex *threads_mutex;
+	tMutex *threadsMutex;
 	tFTPLog *log;
-	int total_clients,max_clients;
-	tMutex *total_clients_mutex;
+	int totalClients,maxClients;
+	tMutex *totalClientsMutex;
 };
 
 #endif

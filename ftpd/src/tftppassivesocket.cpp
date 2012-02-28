@@ -22,6 +22,6 @@ tFTPPassiveSocket::~tFTPPassiveSocket() {
 	Close();
 }
 
-void tFTPPassiveSocket::OnClientConnect(tFTPDataSocket *) {}
-void tFTPPassiveSocket::OnServerUp() {}
-void tFTPPassiveSocket::OnServerDown() {}
+void tFTPPassiveSocket::onClientConnect(tFTPDataSocket *) {}
+void tFTPPassiveSocket::onServerUp() {}
+void tFTPPassiveSocket::onServerDown() {}

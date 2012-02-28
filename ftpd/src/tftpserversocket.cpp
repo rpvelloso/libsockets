@@ -26,18 +26,18 @@ tFTPServerSocket::~tFTPServerSocket() {
 	Close();
 }
 
-void tFTPServerSocket::SetLog(tFTPLog *l) {
+void tFTPServerSocket::setLog(tFTPLog *l) {
 	log = l;
 }
 
-void tFTPServerSocket::OnClientConnect(tFTPClientSocket *c) {
-	log->Log(c,"new client connected to the server from %s.\n",c->GetHostName());
+void tFTPServerSocket::onClientConnect(tFTPClientSocket *c) {
+	log->log(c,"new client connected to the server from %s.\n",c->getHostname());
 }
 
-void tFTPServerSocket::OnServerUp() {
-	log->Log("listening for connections on port %d.\n",GetPort());
+void tFTPServerSocket::onServerUp() {
+	log->log("listening for connections on port %d.\n",getPort());
 }
 
-void tFTPServerSocket::OnServerDown() {
-	log->Log("server shutdown.\n");
+void tFTPServerSocket::onServerDown() {
+	log->log("server shutdown.\n");
 }
