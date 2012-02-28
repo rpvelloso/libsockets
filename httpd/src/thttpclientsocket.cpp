@@ -25,6 +25,7 @@
 #ifndef WIN32
 	#include <sys/wait.h>
 #else
+#include <winerror.h>
 	#include <process.h>
 	#include <io.h>
 #endif
@@ -35,6 +36,7 @@
 
 #define ERR_STR_LEN 100
 #define PHP_BIN "/usr/bin/php-cgi"
+#define CMD_BIN "C:\\Windows\\System32\\cmd.exe /c C:"
 
 #ifdef WIN32 // under windows, this functions are thread-safe
 	#define gmtime_r(i,j) memcpy(j,gmtime(i),sizeof(struct tm))
@@ -67,6 +69,9 @@ static string mime[][2] = {
 		{".mpeg.avi.mp4.mkv.mpg.asf.flv","video/"},
 		{".php.php3.phps","application/php"},
 		{".css","text/css"},
+#ifdef WIN32
+		{".bat.cmd","application/batch"},
+#endif
 		{"", ""}
 		};
 
@@ -274,7 +279,7 @@ void tHTTPClientSocket::GET()
 	size_t i=0,j=1;
 	pid_t f;
 	int cgiRet;
-	string q;
+	string q,mt;
 #ifndef WIN32
 	char strerr[ERR_STR_LEN];
 #else
@@ -313,10 +318,22 @@ void tHTTPClientSocket::GET()
 			envp[i+14] = strdup(("SCRIPT_FILENAME=" + uri).c_str());
 			envp[i+15] = strdup(("DOCUMENT_ROOT=" + owner->getDocumentRoot()).c_str());
 			envp[i+16] = NULL;
+			mt = mimeType(uri);
 
-			if (mimeType(uri) == "application/php") {
+			if (mt == "application/php") {
 				argv[0] = strdup(PHP_BIN);
 				argv[1] = strdup(uri.c_str());
+#ifdef WIN32
+			} else if (mt == "application/batch") {
+
+				i=0;
+				while (i<uri.length()) {
+					if (uri[i]=='/') uri[i]='\\';
+					i++;
+				}
+
+				argv[0] = strdup((CMD_BIN + uri).c_str());
+#endif
 			} else argv[0] = strdup(uri.c_str());
 
 			if ((tmpPostData) && (contentLength > 0) && (method == "POST")) {
@@ -343,18 +360,20 @@ void tHTTPClientSocket::GET()
 			ZeroMemory(&processInfo, sizeof(PROCESS_INFORMATION));
 			ZeroMemory(&startUpInfo, sizeof(STARTUPINFO));
 			startUpInfo.cb = sizeof(STARTUPINFO);
-			startUpInfo.hStdError = (void *)_get_osfhandle(this->socketFd);
-			startUpInfo.hStdOutput = (void *)_get_osfhandle(this->socketFd);
-			startUpInfo.hStdInput = (void *)_get_osfhandle(tmpPostData?fileno(tmpPostData):this->socketFd);
+			startUpInfo.hStdError = (HANDLE)(this->socketFd);
+			startUpInfo.hStdOutput = (HANDLE)(this->socketFd);
+			startUpInfo.hStdInput = tmpPostData?(HANDLE)_get_osfhandle(fileno(tmpPostData)):(HANDLE)(this->socketFd);
 			startUpInfo.dwFlags |= STARTF_USESTDHANDLES;
 
-			if (CreateProcess(NULL, argv[0], NULL, NULL, TRUE, 0, envp, NULL, &startUpInfo, &processInfo)) {
+			if (CreateProcess(NULL, argv[0], NULL, NULL, TRUE, 0, NULL, NULL, &startUpInfo, &processInfo)) {
 				WaitForSingleObject(processInfo.hProcess,INFINITE);
-				for (i=0;i<j;i++) free(envp[i]);
-				free(envp);
-				free(argv[0]);
-				if (argv[1]) free(argv[1]);
+				CloseHandle(processInfo.hProcess);
+				CloseHandle(processInfo.hThread);
 			} else reply500InternalError();
+			for (i=0;i<j;i++) free(envp[i]);
+			free(envp);
+			free(argv[0]);
+			if (argv[1]) free(argv[1]);
 #endif
 		} else if (f == -1) {
 			LOG(strerror_r(errno,strerr,ERR_STR_LEN)); // fork() error
@@ -362,8 +381,8 @@ void tHTTPClientSocket::GET()
 		} else {
 			waitpid(f,&cgiRet,0);
 			if (cgiRet) reply500InternalError();	// CGI has executed, but ended abnormally
-			Close();
 		}
+		Close();
 	} else {
 		if (!HEAD()) {
 			if (sendFile(uri.c_str(),&offset,contentLength) <= 0) reply500InternalError();
