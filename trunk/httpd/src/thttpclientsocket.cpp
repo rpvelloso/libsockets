@@ -31,6 +31,7 @@
 #include <libsockets/libsockets.h>
 #include "thttpclientsocket.h"
 #include "thttpthread.h"
+#include "httpreply.h"
 
 #define ERR_STR_LEN 100
 
@@ -41,8 +42,6 @@
 	#define fork() 0
 	#define waitpid(p,r,n) _cwait(r,p,n)
 #endif
-
-#define CRLF "\r\n"
 
 static string weekDays[7] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 static string months[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
@@ -445,9 +444,7 @@ void tHTTPClientSocket::replyDate()
 
 void tHTTPClientSocket::reply403Forbidden()
 {
-	string html =
-			"<HEAD><TITLE>Forbidden</TITLE></HEAD>" CRLF \
-			"<H1>Forbidden</H1> You don\'t have permission to access " + uri + " on this server.";
+	string html = REPLY_403;
 	stringstream len;
 
 	len << html.length();
@@ -463,9 +460,7 @@ void tHTTPClientSocket::reply403Forbidden()
 
 void tHTTPClientSocket::reply404NotFound()
 {
-	string html =
-			"<HEAD><TITLE>Not Found</TITLE></HEAD>" CRLF \
-			"<H1>Not Found</H1> The requested object " + uri + " does not exist on this server.";
+	string html = REPLY_404;
 	stringstream len;
 
 	len << html.length();
@@ -481,12 +476,7 @@ void tHTTPClientSocket::reply404NotFound()
 
 void tHTTPClientSocket::reply500InternalError()
 {
-	string html =
-			"<HTML>" CRLF \
-			"<HEAD><TITLE>Internal Server Error</TITLE></HEAD>" CRLF \
-			"<BODY><H1>Internal Server Error</H1>The server encountered an unexpected"\
-			" condition which prevented it from fulfilling the request.</BODY>" CRLF \
-			"</HTML>";
+	string html = REPLY_500;
 	stringstream len;
 
 	len << html.length();
@@ -502,11 +492,7 @@ void tHTTPClientSocket::reply500InternalError()
 
 void tHTTPClientSocket::reply501NotImplemented()
 {
-	string html =
-			"<HTML>" CRLF \
-			"<HEAD><TITLE>Not Implemented</TITLE></HEAD>" CRLF \
-			"<BODY><H1>Not Implemented</H1>This server does not implement the requested method.</BODY>" CRLF \
-			"</HTML>";
+	string html = REPLY_501;
 	stringstream len;
 
 	len << html.length();
