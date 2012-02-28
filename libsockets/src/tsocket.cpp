@@ -20,7 +20,11 @@
 #include "tsocket.h"
 
 tSocket::tSocket() {
+#ifdef WIN32
+	socketFd = WSASocket(AF_INET,SOCK_STREAM,IPPROTO_TCP,NULL,0,0);
+#else
     socketFd = socket(PF_INET,SOCK_STREAM,0/*IPPROTO_TCP*/);
+#endif
     socketStatus = tSocketClosed;  
     hostname[0] = 0;                 
 }

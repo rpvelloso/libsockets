@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -Wall -I../include -O0 -g3 -fmessage-length=0 -DDEVEL_ENV -c
-LDFLAGS = -shared -lpthread -lwsock32 
+LDFLAGS = -shared -lpthread -lwsock32 -lws2_32
 LD = g++
 TARGET = libsockets.dll
 RM = del
