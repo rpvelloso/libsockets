@@ -355,8 +355,7 @@ void tHTTPClientSocket::GET()
 			execve(argv[0],argv,envp);
 			LOG(strerror_r(errno,strerr,ERR_STR_LEN)); // execve() error
 			exit(-1);
-#endif
-#ifdef WIN32
+#else
 			ZeroMemory(&processInfo, sizeof(PROCESS_INFORMATION));
 			ZeroMemory(&startUpInfo, sizeof(STARTUPINFO));
 			startUpInfo.cb = sizeof(STARTUPINFO);
