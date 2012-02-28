@@ -30,9 +30,9 @@ class tMutex : public tObject {
 public:
        tMutex();
        virtual ~tMutex();
-       int Lock();
-       int TryLock();
-       int Unlock();
+       int lock();
+       int tryLock();
+       int unlock();
 protected:
         pthread_mutex_t mutex;       
 };

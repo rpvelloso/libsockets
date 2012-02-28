@@ -34,16 +34,16 @@ public:
        virtual void Close();
        int Send(void *, size_t);
        int Send(string);
-       int Receive(void *, size_t);
-       ssize_t SendFile(const char *, off_t *, ssize_t);
+       int receive(void *, size_t);
+       ssize_t sendFile(const char *, off_t *, ssize_t);
 
-       virtual void OnSend(void *, size_t *) = 0;
-       virtual void OnReceive(void *, size_t) = 0;
-       virtual void OnConnect() = 0;
-       virtual void OnDisconnect() = 0;
+       virtual void onSend(void *, size_t *) = 0;
+       virtual void onReceive(void *, size_t) = 0;
+       virtual void onConnect() = 0;
+       virtual void onDisconnect() = 0;
 protected:
-       ssize_t bytes_in;
-       ssize_t bytes_out;
+       ssize_t bytesIn;
+       ssize_t bytesOut;
 };
 
 #endif /* TCLIENTSOCKET_H_ */

@@ -34,13 +34,13 @@ class tLogger : public tObject {
 public:
 	tLogger();
 	virtual ~tLogger();
-	virtual void Log(const char *fmt,...) = 0;
+	virtual void log(const char *fmt,...) = 0;
 	virtual int Open() = 0;
 	virtual void Close() = 0;
-	tLogStatus GetStatus();
+	tLogStatus getStatus();
 
 protected:
-	tLogStatus log_status;
+	tLogStatus logStatus;
 };
 
 #endif /* TLOGGER_H_ */

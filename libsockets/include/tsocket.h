@@ -49,18 +49,18 @@ class tSocket : public tObject {
 public:
        tSocket();
        virtual ~tSocket();
-       tSocketStatus GetStatus();
+       tSocketStatus getStatus();
        virtual int Open(const char *, unsigned short) = 0;
        virtual void Close() = 0;
-       int ResolveHost(const char *);
-       char *GetHostName();
-       unsigned short GetPort();
-       string GetIP();
-       int SetLinger(int,int);
+       int resolveHost(const char *);
+       char *getHostname();
+       unsigned short getPort();
+       string getIP();
+       int setLinger(int,int);
 protected:
-        int socket_fd;
-        tSocketStatus socket_status;
-        sockaddr_in socket_addr;        
+        int socketFd;
+        tSocketStatus socketStatus;
+        sockaddr_in socketAddr;        
         char hostname[MAX_HOSTNAME];
         
 };

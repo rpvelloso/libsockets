@@ -18,7 +18,7 @@
  */
 #include "utils.h"
 
-string stringtok(string *s, string d) {
+string stringTok(string *s, string d) {
 	string tok="",s1=*s;
 	unsigned int i=0;
 
