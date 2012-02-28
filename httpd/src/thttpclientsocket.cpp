@@ -348,13 +348,13 @@ void tHTTPClientSocket::GET()
 			if (cgiRet) Reply500();	// CGI has executed, but ended abnormally
 			Close();
 		}
-		if (tmpPostData) fclose(tmpPostData);
-		tmpPostData = NULL;
 	} else {
 		if (!HEAD()) {
 			if (SendFile(uri.c_str(),&offset,contentLength) <= 0) Reply500();
 		}
 	}
+	if (tmpPostData) fclose(tmpPostData);
+	tmpPostData = NULL;
 }
 
 void tHTTPClientSocket::OPTIONS()
