@@ -27,29 +27,29 @@ tEchoClientSocket::~tEchoClientSocket() {
 	Close();
 }
 
-void tEchoClientSocket::SetLog(tEchoLog *l) {
+void tEchoClientSocket::setLog(tEchoLog *l) {
 	log = l;
 }
 
-void tEchoClientSocket::OnSend(void *buf, size_t *size) {
+void tEchoClientSocket::onSend(void *buf, size_t *size) {
 	char s[ECHO_BUFLEN+1];
 
 	memcpy(s,buf,*size);
 	s[*size] = 0;
-	log->Log("sent to %s: %s\n",GetHostName(),s);
+	log->log("sent to %s: %s\n",getHostname(),s);
 }
 
-void tEchoClientSocket::OnReceive(void *buf, size_t size) {
+void tEchoClientSocket::onReceive(void *buf, size_t size) {
 	char s[ECHO_BUFLEN+1];
 
 	memcpy(s,buf,size);
 	s[size] = 0;
-	log->Log("received from %s: %s\n",GetHostName(),s);
+	log->log("received from %s: %s\n",getHostname(),s);
 }
 
-void tEchoClientSocket::OnConnect() {
+void tEchoClientSocket::onConnect() {
 }
 
-void tEchoClientSocket::OnDisconnect() {
-	log->Log("connection to %s closed.\n",GetHostName());
+void tEchoClientSocket::onDisconnect() {
+	log->log("connection to %s closed.\n",getHostname());
 }

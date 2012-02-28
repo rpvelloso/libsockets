@@ -26,17 +26,17 @@ tEchoServer *srv;
 	#define SIGSTOP SIGABRT
 #endif
 
-void signal_handler(int sig)
+void signalHandler(int sig)
 {
 	if ((sig == SIGINT) ||
 		(sig == SIGSTOP) ||
 		(sig == SIGTERM) ||
 		(sig == SIGQUIT)) {
-		srv->Stop();
+		srv->stop();
 	}
 }
 
-void pusage(char *p)
+void printUsage(char *p)
 {
 	cout << "usage: "<<p<<" [-a bind_addr] [-p bind_port]"<<endl;
 	cout << "-a bind_addr: the IP address to bind the server to. Default 127.0.0.1"<<endl;
@@ -47,26 +47,26 @@ void pusage(char *p)
 int main(int argc, char *argv[])
 {
 	int opt;
-	string bind_addr="127.0.0.1";
-	unsigned short bind_port=7;
+	string bindAddr="127.0.0.1";
+	unsigned short bindPort=7;
 
 	while ((opt = getopt(argc, argv, "a:p:h")) != -1) {
 		switch (opt) {
 		case 'a':
-			bind_addr = optarg;
+			bindAddr = optarg;
 			break;
 		case 'p':
-			bind_port = atoi(optarg);
+			bindPort = atoi(optarg);
 			break;
 		case 'h':
 		default:
-	    	pusage(argv[0]);
+	    	printUsage(argv[0]);
 	    break;
 		}
 	}
 
-	if ((bind_port == 0) || bind_addr.empty()) {
-    	pusage(argv[0]);
+	if ((bindPort == 0) || bindAddr.empty()) {
+    	printUsage(argv[0]);
 	} else {
 
 #ifdef WIN32
@@ -78,15 +78,15 @@ int main(int argc, char *argv[])
 
     	srv = new tEchoServer();
 
-    	signal(SIGINT,signal_handler);
-    	signal(SIGTERM,signal_handler);
+    	signal(SIGINT,signalHandler);
+    	signal(SIGTERM,signalHandler);
 #ifndef WIN32
-    	signal(SIGHUP,signal_handler);
+    	signal(SIGHUP,signalHandler);
 #endif
-    	signal(SIGSTOP,signal_handler);
-    	signal(SIGQUIT,signal_handler);
+    	signal(SIGSTOP,signalHandler);
+    	signal(SIGQUIT,signalHandler);
 
-    	srv->Run(bind_addr.c_str(),bind_port);
+    	srv->run(bindAddr.c_str(),bindPort);
     	delete srv;
 
 #ifdef WIN32

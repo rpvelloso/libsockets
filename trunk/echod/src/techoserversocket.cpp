@@ -27,18 +27,18 @@ tEchoServerSocket::~tEchoServerSocket() {
 	Close();
 }
 
-void tEchoServerSocket::SetLog(tEchoLog *l) {
+void tEchoServerSocket::setLog(tEchoLog *l) {
 	log = l;
 }
 
-void tEchoServerSocket::OnClientConnect(tEchoClientSocket *) {
-	log->Log("new client connected to the server.\n");
+void tEchoServerSocket::onClientConnect(tEchoClientSocket *) {
+	log->log("new client connected to the server.\n");
 }
 
-void tEchoServerSocket::OnServerUp() {
-	log->Log("listening for connections on port %d.\n",GetPort());
+void tEchoServerSocket::onServerUp() {
+	log->log("listening for connections on port %d.\n",getPort());
 }
 
-void tEchoServerSocket::OnServerDown() {
-	log->Log("server shutdown.\n");
+void tEchoServerSocket::onServerDown() {
+	log->log("server shutdown.\n");
 }

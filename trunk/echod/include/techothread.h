@@ -33,9 +33,9 @@ class tEchoThread : public tThread {
 public:
 	tEchoThread(int , tEchoServer *, tEchoClientSocket *);
 	~tEchoThread();
-    void Execute();
-    void OnStart();
-    void OnStop();
+    void execute();
+    void onStart();
+    void onStop();
 protected:
     tEchoClientSocket *socket;
     char buffer[ECHO_BUFLEN];

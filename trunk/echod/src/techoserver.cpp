@@ -19,40 +19,40 @@
 #include "techoserver.h"
 
 tEchoServer::tEchoServer() : tObject() {
-	server_socket = new tEchoServerSocket();
+	serverSocket = new tEchoServerSocket();
 	log = new tEchoLog();
 	log->Open();
-	server_socket->SetLog(log);
+	serverSocket->setLog(log);
 }
 
 tEchoServer::~tEchoServer() {
 	list<tEchoThread *>::iterator i;
 
 	for (i=threads.begin();i!=threads.end();i++) {
-		(*i)->SetSelfDestroy(0);
+		(*i)->setSelfDestroy(0);
 		delete (*i);
 	}
 	threads.clear();
-	delete server_socket;
+	delete serverSocket;
 	log->Close();
 	delete log;
 }
 
-void tEchoServer::Run(const char *addr, unsigned short port) {
+void tEchoServer::run(const char *addr, unsigned short port) {
 	tEchoClientSocket *client_socket;
 	tEchoThread *client_thread;
 
-	if (server_socket->Open(addr, port)) {
+	if (serverSocket->Open(addr, port)) {
 		cerr << "Error: could not listen on " << addr << ":" << port <<endl;
 		perror("Open()");
 	} else {
-		while (server_socket->GetStatus() == tSocketListening) {
-			client_socket = server_socket->Accept();
+		while (serverSocket->getStatus() == tSocketListening) {
+			client_socket = serverSocket->Accept();
 			if (client_socket) {
-				client_socket->SetLog(log);
+				client_socket->setLog(log);
 				client_thread = new tEchoThread(1, this, client_socket);
 				threads.push_back(client_thread);
-				client_thread->Start();
+				client_thread->start();
 			} else {
 				perror("Accept()");
 			}
@@ -60,14 +60,14 @@ void tEchoServer::Run(const char *addr, unsigned short port) {
 	}
 }
 
-void tEchoServer::Stop() {
-	server_socket->Close();
+void tEchoServer::stop() {
+	serverSocket->Close();
 }
 
-void tEchoServer::RemoveThread(tEchoThread *t) {
+void tEchoServer::removeThread(tEchoThread *t) {
 	threads.remove(t);
 }
 
-tEchoLog *tEchoServer::GetLog() {
+tEchoLog *tEchoServer::getLog() {
 	return log;
 }

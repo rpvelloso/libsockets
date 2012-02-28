@@ -26,23 +26,23 @@ tEchoLog::~tEchoLog() {
 	delete mutex;
 }
 
-void tEchoLog::Log(const char *fmt,...) {
+void tEchoLog::log(const char *fmt,...) {
 	va_list arglist;
 
-	if (log_status != tLogClosed) {
-		mutex->Lock();
+	if (logStatus != tLogClosed) {
+		mutex->lock();
 		va_start(arglist,fmt);
 		vfprintf(stderr,fmt,arglist);
 		va_end(arglist);
-		mutex->Unlock();
+		mutex->unlock();
 	}
 }
 
 int tEchoLog::Open() {
-	log_status = tLogOpened;
+	logStatus = tLogOpened;
 	return 0;
 }
 
 void tEchoLog::Close() {
-	log_status = tLogClosed;
+	logStatus = tLogClosed;
 }

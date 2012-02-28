@@ -21,30 +21,30 @@
 tEchoThread::tEchoThread(int sd, tEchoServer *o, tEchoClientSocket *s) : tThread(sd) {
 	socket = s;
 	owner = o;
-	log = owner->GetLog();
+	log = owner->getLog();
 }
 
 tEchoThread::~tEchoThread() {
-	Stop();
+	stop();
 }
 
-void tEchoThread::Execute() {
+void tEchoThread::execute() {
 	int len;
 
-	while ((len = socket->Receive(buffer, ECHO_BUFLEN)) > 0) {
+	while ((len = socket->receive(buffer, ECHO_BUFLEN)) > 0) {
 		socket->Send(buffer, len);
 	}
 }
 
-void tEchoThread::OnStart() {
-	log->Log("new thread [%x] started.\n",thread_id);
+void tEchoThread::onStart() {
+	log->log("new thread [%x] started.\n",threadId);
 }
 
-void tEchoThread::OnStop() {
-	if (GetSelfDestroy()) {
-		log->Log("thread [%x] self destroying.\n",thread_id);
-		owner->RemoveThread(this);
+void tEchoThread::onStop() {
+	if (getSelfDestroy()) {
+		log->log("thread [%x] self destroying.\n",threadId);
+		owner->removeThread(this);
 	}
-	log->Log("thread [%x] terminated.\n",thread_id);
+	log->log("thread [%x] terminated.\n",threadId);
 	delete socket;
 }
