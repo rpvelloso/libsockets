@@ -71,13 +71,13 @@ public:
 protected:
     tHTTPLog *log;
     char httpHeader[HTTP_HDR_LEN];
-    void *httpBody;
     int hdrPos,msgOverflow,lineLength;
     ssize_t bodyPos;
     tHTTPRequestState reqState;
     string userAgent,host,method,uri,query,contentType,boundary,httpVersion;
     ssize_t contentLength;
     tHTTPServer *owner;
+    FILE *tmpPostData;
 };
 
 #endif

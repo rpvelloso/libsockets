@@ -107,11 +107,11 @@ tHTTPClientSocket::tHTTPClientSocket(int fd, sockaddr_in *sin) : tClientSocket(f
 	hdrPos = 0;
 	lineLength = 0;
 	reqState = tHTTPReceiveHeader;
-	httpBody = NULL;
+	tmpPostData = NULL;
 }
 
 tHTTPClientSocket::~tHTTPClientSocket() {
-	if (httpBody) free(httpBody);
+	if (tmpPostData) fclose(tmpPostData);
 	Close();
 }
 
@@ -154,7 +154,7 @@ void tHTTPClientSocket::OnReceive(void *buf, size_t size) {
 	}
 	if (reqState == tHTTPReceiveBody) {
 		size_t cpyLen = (size-i)>contentLength?contentLength:(size-i);
-		memcpy(&(((char *)httpBody)[bodyPos]),&(((char *)buf)[i]),cpyLen);
+		fwrite(&(((char *)buf)[i]),cpyLen,1,tmpPostData);
 		bodyPos += cpyLen;
 		if (bodyPos == contentLength) ProcessHTTPBody();
 	}
@@ -233,21 +233,14 @@ void tHTTPClientSocket::ProcessHTTPHeader() {
 	<< "Boundary: \'" << boundary << "\'" << endl;
 
 	if (contentLength > 0) {
-		if (httpBody) {
-			free(httpBody);
-			httpBody = NULL;
-		}
-		httpBody = malloc(contentLength+1);
+		if (tmpPostData) fclose(tmpPostData);
+		tmpPostData = tmpfile();
 		bodyPos = 0;
-		((char *)httpBody)[contentLength] = 0x00;
 		reqState = tHTTPReceiveBody;
 	} else reqState = tHTTPProcessRequest;
 }
 
 void tHTTPClientSocket::ProcessHTTPBody() {
-	/*cout << "Body....: " << endl;
-	cout << "\'" << (char *)httpBody << "\'" << endl;*/
-
 	reqState = tHTTPProcessRequest;
 }
 
@@ -273,7 +266,6 @@ void tHTTPClientSocket::GET()
 	pid_t f;
 	int cgiRet;
 	string q;
-	int pp[2] = { -1 , -1 };
 #ifndef WIN32
 	char strerr[ERR_STR_LEN];
 #else
@@ -315,21 +307,15 @@ void tHTTPClientSocket::GET()
 			argv[0] = strdup(uri.c_str());
 			/* TODO: in the future change this redirection of stdout
 			 * to the client socket. Instead of redirecting, use a
-			 * pipe to intermediate CGI output and detect if the
+			 * tmp file to intermediate CGI output and detect if the
 			 * CGI hasn't sent HTTP response header, so the server
 			 * can send/complete it */
 
-			/* TODO: replace the pipe below, because of buffer limit.
-			 * Upload of large files are blocking in the write() */
-			if ((httpBody) && (contentLength > 0) && (method == "POST")) {
-				if (!pipe(pp)) {
-					write(pp[1],httpBody,contentLength);
+			if ((tmpPostData) && (contentLength > 0) && (method == "POST")) {
+				fseek(tmpPostData,0,SEEK_SET);
 #ifndef WIN32
-					dup2(pp[0],fileno(stdin));
-				} else {
-					exit(-1);
+				dup2(fileno(tmpPostData),fileno(stdin));
 #endif
-				}
 			}
 #ifndef WIN32
 			else dup2(this->socket_fd,fileno(stdin));
@@ -345,7 +331,7 @@ void tHTTPClientSocket::GET()
 			startUpInfo.cb = sizeof(STARTUPINFO);
 			startUpInfo.hStdError = (void *)_get_osfhandle(fileno(stderr));
 			startUpInfo.hStdOutput = (void *)_get_osfhandle(this->socket_fd);
-			startUpInfo.hStdInput = (void *)_get_osfhandle(pp[0]==-1?this->socket_fd:pp[0]);
+			startUpInfo.hStdInput = (void *)_get_osfhandle(tmpPostData?fileno(tmpPostData):this->socket_fd);
 			startUpInfo.dwFlags |= STARTF_USESTDHANDLES;
 
 			if (CreateProcess(NULL, argv[0], NULL, NULL, TRUE, 0, envp, NULL, &startUpInfo, &processInfo)) {
@@ -362,6 +348,8 @@ void tHTTPClientSocket::GET()
 			if (cgiRet) Reply500();	// CGI has executed, but ended abnormally
 			Close();
 		}
+		if (tmpPostData) fclose(tmpPostData);
+		tmpPostData = NULL;
 	} else {
 		if (!HEAD()) {
 			if (SendFile(uri.c_str(),&offset,contentLength) <= 0) Reply500();
