@@ -274,7 +274,7 @@ void tHTTPClientSocket::GET()
 #endif
 	stringstream sstr;
 
-	if (query != "") {
+	if ((query != "") && !access(uri.c_str(),X_OK)) {
 		if (!(f=fork())) {
 			while (i<query.length()) if (query[i++] == '&') j++;
 			j = j + 17;
