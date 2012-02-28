@@ -26,7 +26,7 @@ class tHTTPLog : public tLogger {
 public:
 	tHTTPLog();
 	~tHTTPLog();
-	void Log(const char *fmt,...);
+	void log(const char *fmt,...);
 	int Open();
 	void Close();
 

@@ -27,18 +27,18 @@ tHTTPServerSocket::~tHTTPServerSocket() {
 	Close();
 }
 
-void tHTTPServerSocket::SetLog(tHTTPLog *l) {
+void tHTTPServerSocket::setLog(tHTTPLog *l) {
 	log = l;
 }
 
-void tHTTPServerSocket::OnClientConnect(tHTTPClientSocket *) {
-	log->Log("new client connected to the server.\n");
+void tHTTPServerSocket::onClientConnect(tHTTPClientSocket *) {
+	log->log("new client connected to the server.\n");
 }
 
-void tHTTPServerSocket::OnServerUp() {
-	log->Log("listening for connections on port %d.\n",GetPort());
+void tHTTPServerSocket::onServerUp() {
+	log->log("listening for connections on port %d.\n",getPort());
 }
 
-void tHTTPServerSocket::OnServerDown() {
-	log->Log("server shutdown.\n");
+void tHTTPServerSocket::onServerDown() {
+	log->log("server shutdown.\n");
 }

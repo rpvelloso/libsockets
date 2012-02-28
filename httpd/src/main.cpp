@@ -33,11 +33,11 @@ void signal_handler(int sig)
 		(sig == SIGSTOP) ||
 		(sig == SIGTERM) ||
 		(sig == SIGQUIT)) {
-		srv->Stop();
+		srv->stop();
 	}
 }
 
-void pusage(char *p)
+void printUsage(char *p)
 {
 	cout << "usage: "<<p<<" [-a bind_addr] [-p bind_port]"<<endl;
 	cout << "-a bind_addr: the IP address to bind the server to. Default 127.0.0.1"<<endl;
@@ -49,31 +49,32 @@ void pusage(char *p)
 int main(int argc, char *argv[])
 {
 	int opt;
-	string bind_addr="127.0.0.1",rdir="/";
-	unsigned short bind_port=80;
+	string bindAddr="127.0.0.1",rootDir="/";
+	unsigned short bindPort=80;
 
 	while ((opt = getopt(argc, argv, "a:p:r:h")) != -1) {
 		switch (opt) {
 		case 'a':
-			bind_addr = optarg;
+			bindAddr = optarg;
 			break;
 		case 'p':
-			bind_port = atoi(optarg);
+			bindPort = atoi(optarg);
 			break;
 		case 'r':
-			rdir = optarg;
+			rootDir = optarg;
+			if (rootDir[rootDir.length()-1]!='/') rootDir = rootDir + '/';
 			break;
 		case 'h':
 		default:
-	    	pusage(argv[0]);
+	    	printUsage(argv[0]);
 	    break;
 		}
 	}
 
-	if ((rdir.empty()) || (bind_port == 0) ||
-		bind_addr.empty() || (rdir[0] != '/')) {
+	if ((rootDir.empty()) || (bindPort == 0) ||
+		bindAddr.empty() || (rootDir[0] != '/')) {
 
-    	pusage(argv[0]);
+    	printUsage(argv[0]);
 	} else {
 
 #ifdef WIN32
@@ -84,10 +85,10 @@ int main(int argc, char *argv[])
 #endif
 
 #ifndef WIN32
-    	if (rdir != "/") chroot(rdir.c_str());
+    	if (rootDir != "/") chroot(rootDir.c_str());
 #endif
 
-    	srv = new tHTTPServer(rdir);
+    	srv = new tHTTPServer(rootDir);
 
     	signal(SIGINT,signal_handler);
     	signal(SIGTERM,signal_handler);
@@ -97,7 +98,7 @@ int main(int argc, char *argv[])
     	signal(SIGSTOP,signal_handler);
     	signal(SIGQUIT,signal_handler);
 
-    	srv->Run(bind_addr.c_str(),bind_port);
+    	srv->run(bindAddr.c_str(),bindPort);
     	delete srv;
 
 #ifdef WIN32

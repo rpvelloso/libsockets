@@ -19,10 +19,10 @@
 #include "thttpserver.h"
 
 tHTTPServer::tHTTPServer(string dr) : tObject() {
-	server_socket = new tHTTPServerSocket();
+	serverSocket = new tHTTPServerSocket();
 	log = new tHTTPLog();
 	log->Open();
-	server_socket->SetLog(log);
+	serverSocket->setLog(log);
 	documentRoot = dr;
 }
 
@@ -30,32 +30,32 @@ tHTTPServer::~tHTTPServer() {
 	list<tHTTPThread *>::iterator i;
 
 	for (i=threads.begin();i!=threads.end();i++) {
-		(*i)->SetSelfDestroy(0);
+		(*i)->setSelfDestroy(0);
 		delete (*i);
 	}
 	threads.clear();
-	delete server_socket;
+	delete serverSocket;
 	log->Close();
 	delete log;
 }
 
-void tHTTPServer::Run(const char *addr, unsigned short port) {
+void tHTTPServer::run(const char *addr, unsigned short port) {
 	tHTTPClientSocket *client_socket;
 	tHTTPThread *client_thread;
 
-	if (server_socket->Open(addr, port)) {
+	if (serverSocket->Open(addr, port)) {
 		cerr << "Error: could not listen on " << addr << ":" << port <<endl;
 		perror("Open()");
 	} else {
 		cout << "using document root \'" << documentRoot << "\'" << endl;
-		while (server_socket->GetStatus() == tSocketListening) {
-			client_socket = server_socket->Accept();
+		while (serverSocket->getStatus() == tSocketListening) {
+			client_socket = serverSocket->Accept();
 			if (client_socket) {
 				client_socket->setOwner(this);
-				client_socket->SetLog(log);
+				client_socket->setLog(log);
 				client_thread = new tHTTPThread(1, this, client_socket);
 				threads.push_back(client_thread);
-				client_thread->Start();
+				client_thread->start();
 			} else {
 				perror("Accept()");
 			}
@@ -63,15 +63,15 @@ void tHTTPServer::Run(const char *addr, unsigned short port) {
 	}
 }
 
-void tHTTPServer::Stop() {
-	server_socket->Close();
+void tHTTPServer::stop() {
+	serverSocket->Close();
 }
 
-void tHTTPServer::RemoveThread(tHTTPThread *t) {
+void tHTTPServer::removeThread(tHTTPThread *t) {
 	threads.remove(t);
 }
 
-tHTTPLog *tHTTPServer::GetLog() {
+tHTTPLog *tHTTPServer::getLog() {
 	return log;
 }
 
@@ -80,5 +80,5 @@ string tHTTPServer::getDocumentRoot() {
 }
 
 tHTTPServerSocket *tHTTPServer::getServerSocket() {
-	return server_socket;
+	return serverSocket;
 }
