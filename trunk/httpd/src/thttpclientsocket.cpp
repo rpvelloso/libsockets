@@ -34,6 +34,7 @@
 #include "httpreply.h"
 
 #define ERR_STR_LEN 100
+#define PHP_BIN "/usr/bin/php-cgi"
 
 #ifdef WIN32 // under windows, this functions are thread-safe
 	#define gmtime_r(i,j) memcpy(j,gmtime(i),sizeof(struct tm))
@@ -58,13 +59,18 @@ string time2str(time_t t) {
 }
 
 // TODO: add more MIME types
-static string textExt = ".txt";
-static string htmlExt = ".htm.html";
-static string imageExt = ".gfi.jpg.jpeg.bmp.png.xpm.xbm";
-static string audioExt = ".mp3.wav";
-static string videoExt = ".mpeg.avi.mp4.mkv.mpg.asf.flv";
+static string mime[][2] = {
+		{".txt","text/plain"},
+		{".htm.html","text/html"},
+		{".gfi.jpg.jpeg.bmp.png.xpm.xbm","image/"},
+		{".mp3.wav","audio/"},
+		{".mpeg.avi.mp4.mkv.mpg.asf.flv","video/"},
+		{".php.php3.phps","application/php"},
+		{".css","text/css"},
+		{"", ""}
+		};
 
-string ext2type(string f) {
+string mimeType(string f) {
 	size_t p,p2;
 	string ret,ext="";
 
@@ -76,15 +82,17 @@ string ext2type(string f) {
 			lowerCase(ext);
 		}
 	}
-	if (ext == "") ret = "application/octet-stream";
-	else if (textExt.find(ext,0)!=string::npos) ret = "text/plain";
-	else if (htmlExt.find(ext,0)!=string::npos) ret = "text/html";
-	else if (imageExt.find(ext,0)!=string::npos) ret = "image/"+ext;
-	else if (audioExt.find(ext,0)!=string::npos) ret = "audio/"+ext;
-	else if (videoExt.find(ext,0)!=string::npos) ret = "video/"+ext;
-	else ret = "application/"+ext;
-
-	return ret;
+	if (ext == "") return "application/octet-stream";
+	else {
+		for (int i=0;mime[i][0]!="";i++) {
+			if (mime[i][0].find(ext,0)!=string::npos) {
+				ret = mime[i][1];
+				if (ret[ret.length()-1] == '/') ret = ret + ext;
+				return ret;
+			}
+		}
+	}
+	return ("application/"+ext);
 }
 
 string unescapeUri(string uri) {
@@ -262,7 +270,7 @@ void tHTTPClientSocket::processHttpRequest() {
 void tHTTPClientSocket::GET()
 {
 	off_t offset = 0;
-	char **envp=NULL,*argv[2] = { NULL, NULL };
+	char **envp=NULL,*argv[3] = { NULL, NULL, NULL };
 	size_t i=0,j=1;
 	pid_t f;
 	int cgiRet;
@@ -305,7 +313,11 @@ void tHTTPClientSocket::GET()
 			envp[i+14] = strdup(("SCRIPT_FILENAME=" + uri).c_str());
 			envp[i+15] = strdup(("DOCUMENT_ROOT=" + owner->getDocumentRoot()).c_str());
 			envp[i+16] = NULL;
-			argv[0] = strdup(uri.c_str());
+
+			if (mimeType(uri) == "application/php") {
+				argv[0] = strdup(PHP_BIN);
+				argv[1] = strdup(uri.c_str());
+			} else argv[0] = strdup(uri.c_str());
 
 			if ((tmpPostData) && (contentLength > 0) && (method == "POST")) {
 				fseek(tmpPostData,0,SEEK_SET);
@@ -339,6 +351,8 @@ void tHTTPClientSocket::GET()
 				WaitForSingleObject(processInfo.hProcess,INFINITE);
 				for (i=0;i<j;i++) free(envp[i]);
 				free(envp);
+				free(argv[0]);
+				if (argv[1]) free(argv[1]);
 			} else reply500InternalError();
 #endif
 		} else if (f == -1) {
@@ -395,7 +409,7 @@ int tHTTPClientSocket::HEAD()
 		replyServer();
 		replyDate();
 		Send("Content-length: " + len.str() + CRLF);
-		Send("Content-type: " + ext2type(uri) + CRLF);
+		Send("Content-type: " + mimeType(uri) + CRLF);
 		if (index == uri) Send("Content-Location: " + index + CRLF);
 		Send("Last-modified: " + time2str(st.st_mtime) + CRLF);
 		Send("Accept-ranges: bytes" CRLF);
