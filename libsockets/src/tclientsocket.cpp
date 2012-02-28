@@ -42,11 +42,10 @@ void tClientSocket::Close() {
         onDisconnect();
 #ifdef WIN32
         shutdown(socketFd,SD_BOTH);
-        close(socketFd);
 #else
         shutdown(socketFd,SHUT_RDWR);
-        close(socketFd);
 #endif
+        close(socketFd);
         socketStatus = tSocketClosed;
     }
 }
@@ -73,7 +72,7 @@ int tClientSocket::Send(void *buf, size_t size) {
     if (socketStatus == tSocketOpened) {
     	onSend(buf,&size);
 #ifdef WIN32
-        r = Send(socketFd,(char *)buf,size,0);
+        r = send(socketFd,(char *)buf,size,0);
 #else
         r = send(socketFd,buf,size,0);
 #endif
