@@ -334,6 +334,7 @@ void tHTTPClientSocket::GET()
 			 * CGI hasn't sent HTTP response header, so the server
 			 * can send/complete it */
 			dup2(this->socketFd,fileno(stdout));
+			dup2(this->socketFd,fileno(stderr));
 			execve(argv[0],argv,envp);
 			LOG(strerror_r(errno,strerr,ERR_STR_LEN)); // execve() error
 			exit(-1);
