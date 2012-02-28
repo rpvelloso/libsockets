@@ -27,7 +27,7 @@ tHTTPServer *srv;
 	#define SIGSTOP SIGABRT
 #endif
 
-void signal_handler(int sig)
+void signalHandler(int sig)
 {
 	if ((sig == SIGINT) ||
 		(sig == SIGSTOP) ||
@@ -90,13 +90,13 @@ int main(int argc, char *argv[])
 
     	srv = new tHTTPServer(rootDir);
 
-    	signal(SIGINT,signal_handler);
-    	signal(SIGTERM,signal_handler);
+    	signal(SIGINT,signalHandler);
+    	signal(SIGTERM,signalHandler);
 #ifndef WIN32
-    	signal(SIGHUP,signal_handler);
+    	signal(SIGHUP,signalHandler);
 #endif
-    	signal(SIGSTOP,signal_handler);
-    	signal(SIGQUIT,signal_handler);
+    	signal(SIGSTOP,signalHandler);
+    	signal(SIGQUIT,signalHandler);
 
     	srv->run(bindAddr.c_str(),bindPort);
     	delete srv;
