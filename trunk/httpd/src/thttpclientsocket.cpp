@@ -290,28 +290,28 @@ void tHTTPClientSocket::GET()
 			i = 0; q = query;
 			while (q != "") envp[i++] = strdup(stringtok(&q,"&").c_str());
 			sstr << "CONTENT_LENGTH=" << contentLength;
-			envp[j] = strdup(sstr.str().c_str());
+			envp[i] = strdup(sstr.str().c_str());
 			if (boundary != "")
-				envp[j+ 1] = strdup(("CONTENT_TYPE=" + contentType + "; boundary=" + boundary).c_str());
+				envp[i+ 1] = strdup(("CONTENT_TYPE=" + contentType + "; boundary=" + boundary).c_str());
 			else
-				envp[j+ 1] = strdup(("CONTENT_TYPE=" + contentType).c_str());
+				envp[i+ 1] = strdup(("CONTENT_TYPE=" + contentType).c_str());
 			sstr.str(""); sstr << "REMOTE_PORT=" << this->GetPort();
-			envp[j+ 2] = strdup(sstr.str().c_str());
+			envp[i+ 2] = strdup(sstr.str().c_str());
 			sstr.str(""); sstr << "SERVER_PORT=" << owner->getServerSocket()->GetPort();
-			envp[j+ 3] = strdup(sstr.str().c_str());
-			envp[j+ 4] = strdup(("REMOTE_ADDR=" + this->GetIP()).c_str());
-			envp[j+ 5] = strdup(("SERVER_ADDR=" + owner->getServerSocket()->GetIP()).c_str());
-			envp[j+ 6] = strdup(("REQUEST_METHOD=" + method).c_str());
-			envp[j+ 7] = strdup(("HTTP_HOST=" + host).c_str());
-			envp[j+ 8] = strdup(("SERVER_NAME=" + host).c_str());
-			envp[j+ 9] = strdup(("HTTP_USER_AGENT=" + userAgent).c_str());
-			envp[j+10] = strdup("GATEWAY_INTERFACE=CGI/1.1");
-			envp[j+11] = strdup(("QUERY_STRING=" + query).c_str());
-			envp[j+12] = strdup(("REQUEST_URI=" + uri).c_str());
-			envp[j+13] = strdup(("SERVER_PROTOCOL=" + httpVersion).c_str());
-			envp[j+14] = strdup(("SCRIPT_FILENAME=" + uri).c_str());
-			envp[j+15] = strdup(("DOCUMENT_ROOT=" + owner->getDocumentRoot()).c_str());
-			envp[j+16] = NULL;
+			envp[i+ 3] = strdup(sstr.str().c_str());
+			envp[i+ 4] = strdup(("REMOTE_ADDR=" + this->GetIP()).c_str());
+			envp[i+ 5] = strdup(("SERVER_ADDR=" + owner->getServerSocket()->GetIP()).c_str());
+			envp[i+ 6] = strdup(("REQUEST_METHOD=" + method).c_str());
+			envp[i+ 7] = strdup(("HTTP_HOST=" + host).c_str());
+			envp[i+ 8] = strdup(("SERVER_NAME=" + host).c_str());
+			envp[i+ 9] = strdup(("HTTP_USER_AGENT=" + userAgent).c_str());
+			envp[i+10] = strdup("GATEWAY_INTERFACE=CGI/1.1");
+			envp[i+11] = strdup(("QUERY_STRING=" + query).c_str());
+			envp[i+12] = strdup(("REQUEST_URI=" + uri).c_str());
+			envp[i+13] = strdup(("SERVER_PROTOCOL=" + httpVersion).c_str());
+			envp[i+14] = strdup(("SCRIPT_FILENAME=" + uri).c_str());
+			envp[i+15] = strdup(("DOCUMENT_ROOT=" + owner->getDocumentRoot()).c_str());
+			envp[i+16] = NULL;
 			argv[0] = strdup(uri.c_str());
 			/* TODO: in the future change this redirection of stdout
 			 * to the client socket. Instead of redirecting, use a
@@ -348,8 +348,10 @@ void tHTTPClientSocket::GET()
 			startUpInfo.hStdInput = (void *)_get_osfhandle(pp[0]==-1?this->socket_fd:pp[0]);
 			startUpInfo.dwFlags |= STARTF_USESTDHANDLES;
 
-			if (CreateProcess(NULL, argv[0], NULL, NULL, TRUE, 0, NULL, NULL, &startUpInfo, &processInfo)) {
+			if (CreateProcess(NULL, argv[0], NULL, NULL, TRUE, 0, envp, NULL, &startUpInfo, &processInfo)) {
 				WaitForSingleObject(processInfo.hProcess,INFINITE);
+				for (i=0;i<j;i++) free(envp[i]);
+				free(envp);
 			} else Reply500();
 #endif
 		} else if (f == -1) {
@@ -362,7 +364,7 @@ void tHTTPClientSocket::GET()
 		}
 	} else {
 		if (!HEAD()) {
-			if (SendFile(uri.c_str(),&offset,contentLength) != contentLength) Reply500();
+			if (SendFile(uri.c_str(),&offset,contentLength) <= 0) Reply500();
 		}
 	}
 }
