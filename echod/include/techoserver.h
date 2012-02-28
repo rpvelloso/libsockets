@@ -30,12 +30,12 @@ class tEchoServer : public tObject {
 public:
 	tEchoServer();
 	~tEchoServer();
-	void Run(const char *, unsigned short);
-	void Stop();
-	void RemoveThread(tEchoThread *);
-	tEchoLog *GetLog();
+	void run(const char *, unsigned short);
+	void stop();
+	void removeThread(tEchoThread *);
+	tEchoLog *getLog();
 protected:
-	tEchoServerSocket *server_socket;
+	tEchoServerSocket *serverSocket;
 	list<tEchoThread *> threads;
     tEchoLog *log;
 };

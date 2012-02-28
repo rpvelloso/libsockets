@@ -26,11 +26,11 @@ class tEchoClientSocket : public tClientSocket {
 public:
 	tEchoClientSocket(int, sockaddr_in *);
     ~tEchoClientSocket();
-    void SetLog(tEchoLog *);
-    void OnSend(void *, size_t *);
-    void OnReceive(void *, size_t);
-    void OnConnect();
-    void OnDisconnect();
+    void setLog(tEchoLog *);
+    void onSend(void *, size_t *);
+    void onReceive(void *, size_t);
+    void onConnect();
+    void onDisconnect();
 
 protected:
     tEchoLog *log;

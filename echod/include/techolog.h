@@ -26,7 +26,7 @@ class tEchoLog : public tLogger {
 public:
 	tEchoLog();
 	~tEchoLog();
-	void Log(const char *fmt,...);
+	void log(const char *fmt,...);
 	int Open();
 	void Close();
 

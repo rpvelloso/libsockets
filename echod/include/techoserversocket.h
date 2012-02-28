@@ -26,10 +26,10 @@ class tEchoServerSocket : public tServerSocket<tEchoClientSocket> {
 public:
 	tEchoServerSocket();
     ~tEchoServerSocket();
-    void SetLog(tEchoLog *);
-    void OnClientConnect(tEchoClientSocket *);
-    void OnServerUp();
-    void OnServerDown();
+    void setLog(tEchoLog *);
+    void onClientConnect(tEchoClientSocket *);
+    void onServerUp();
+    void onServerDown();
 
 protected:
     tEchoLog *log;
