@@ -21,53 +21,53 @@
 void *pthread_execute(void *);
 
 tThread::tThread(int sd) {
-	self_destroy = sd;
-    thread_status = tThreadStopped;
+	selfDestroy = sd;
+    threadStatus = tThreadStopped;
 }
 
 tThread::~tThread() {
 }
 
-void tThread::Start() {
-    if (!pthread_create(&thread_id, NULL, pthread_execute, (void *)this))
-    	pthread_detach(thread_id)
+void tThread::start() {
+    if (!pthread_create(&threadId, NULL, pthread_execute, (void *)this))
+    	pthread_detach(threadId)
     ;
 }
 
-void tThread::Stop() {
-    if (thread_status == tThreadRunning) {
-       if (pthread_cancel(thread_id)==0) {
-    	   OnStop();
-    	   thread_status = tThreadStopped;
+void tThread::stop() {
+    if (threadStatus == tThreadRunning) {
+       if (pthread_cancel(threadId)==0) {
+    	   onStop();
+    	   threadStatus = tThreadStopped;
        }
     }
 }
 
-tThreadStatus tThread::GetThreadStatus() {
-    return thread_status;              
+tThreadStatus tThread::getThreadStatus() {
+    return threadStatus;              
 }
 
-pthread_t tThread::GetThreadId() {
-	return thread_id;
+pthread_t tThread::getThreadId() {
+	return threadId;
 }
 
-void tThread::SetSelfDestroy(int sd) {
-	self_destroy = sd;
+void tThread::setSelfDestroy(int sd) {
+	selfDestroy = sd;
 }
 
-int tThread::GetSelfDestroy() {
-	return self_destroy;
+int tThread::getSelfDestroy() {
+	return selfDestroy;
 }
 
 void *pthread_execute(void *arg) {
      tThread *t = (tThread *)arg;
      
-     t->thread_status = tThreadRunning;
-     t->OnStart();
-     t->Execute();
-     t->OnStop();
-     t->thread_status = tThreadStopped;
-     if (t->GetSelfDestroy()) delete t;
+     t->threadStatus = tThreadRunning;
+     t->onStart();
+     t->execute();
+     t->onStop();
+     t->threadStatus = tThreadStopped;
+     if (t->getSelfDestroy()) delete t;
      pthread_exit(NULL);
      return NULL;
 }

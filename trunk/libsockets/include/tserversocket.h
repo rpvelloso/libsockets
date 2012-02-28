@@ -33,70 +33,69 @@ public:
        tServerSocket() : tSocket() {
     	   int reuse=1;
 
-    	   if (setsockopt(socket_fd,SOL_SOCKET,SO_REUSEADDR,(char *)&reuse,sizeof(int))<0) perror("setsockopt()");
+    	   if (setsockopt(socketFd,SOL_SOCKET,SO_REUSEADDR,(char *)&reuse,sizeof(int))<0) perror("setsockopt()");
        };
 
        virtual ~tServerSocket() {};
 
        int Open(const char *addr, unsigned short port) {
 #ifdef WIN32
-    	   int size = sizeof(socket_addr);
+    	   int size = sizeof(socketAddr);
 #else
-    	   socklen_t size = sizeof(socket_addr);
+    	   socklen_t size = sizeof(socketAddr);
 #endif
 
-           if (socket_status == tSocketClosed) {
-              if (ResolveHost(addr)) return -1;
-              socket_addr.sin_port = htons(port);
-              if (bind(socket_fd,(struct sockaddr *)&socket_addr,sizeof(socket_addr))) return -1;
-              if (listen(socket_fd,SERVER_BACKLOG)) return -1;
-              getsockname(socket_fd,(struct sockaddr *)&socket_addr,&size);
-              socket_status = tSocketListening;
-              OnServerUp();
+           if (socketStatus == tSocketClosed) {
+              if (resolveHost(addr)) return -1;
+              socketAddr.sin_port = htons(port);
+              if (bind(socketFd,(struct sockaddr *)&socketAddr,sizeof(socketAddr))) return -1;
+              if (listen(socketFd,SERVER_BACKLOG)) return -1;
+              getsockname(socketFd,(struct sockaddr *)&socketAddr,&size);
+              socketStatus = tSocketListening;
+              onServerUp();
               return 0;
            }
            return -1;
        };
 
        void Close() {
-           if (socket_status != tSocketClosed) {
-              OnServerDown();
+           if (socketStatus != tSocketClosed) {
+              onServerDown();
 #ifdef WIN32
-              shutdown(socket_fd,SD_BOTH);
-              closesocket(socket_fd);
+              shutdown(socketFd,SD_BOTH);
 #else
-              shutdown(socket_fd,SHUT_RDWR);
-              close(socket_fd);
+              shutdown(socketFd,SHUT_RDWR);
 #endif
-              socket_status = tSocketClosed;
+              close(socketFd);
+              socketStatus = tSocketClosed;
            }
        };
 
        C *Accept() {
-           sockaddr_in client_addr;
-           int client_fd;
+           sockaddr_in clientAddr;
+           int clientFd;
 #ifdef	WIN32
            int size;
 #else
            socklen_t size;
 #endif
-           C *clientsocket=NULL;
+           C *clientSocket=NULL;
 
-           if (socket_status == tSocketListening) {
-        	   size = sizeof(client_addr);
-        	   client_fd = accept(socket_fd,(struct sockaddr *)&client_addr,&size);
-        	   if (client_fd > 0) {
-        		   clientsocket = new C(client_fd,&client_addr);
-        		   clientsocket->OnConnect();
-        		   OnClientConnect(clientsocket);
+           if (socketStatus == tSocketListening) {
+        	   size = sizeof(clientAddr);
+        	   clientFd = accept(socketFd,(struct sockaddr *)&clientAddr,&size);
+        	   if (clientFd > 0) {
+        		   clientSocket = new C(clientFd,&clientAddr);
+        		   clientSocket->onConnect();
+        		   onClientConnect(clientSocket);
         	   }
            }
-           return clientsocket;
+           return clientSocket;
        };
 
-       virtual void OnClientConnect(C *) = 0;
-       virtual void OnServerUp() = 0;
-       virtual void OnServerDown() = 0;
+       virtual void onClientConnect(C *) = 0;
+       virtual void onServerUp() = 0;
+       virtual void onServerDown() = 0;
 };
 
 #endif /* TSERVERSOCKET_H_ */

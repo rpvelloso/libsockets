@@ -24,6 +24,6 @@ tLogger::tLogger() : tObject() {
 tLogger::~tLogger() {
 }
 
-tLogStatus tLogger::GetStatus() {
-	return log_status;
+tLogStatus tLogger::getStatus() {
+	return logStatus;
 }

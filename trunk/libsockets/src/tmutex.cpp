@@ -26,14 +26,14 @@ tMutex::~tMutex() {
     pthread_mutex_destroy(&mutex);
 }
 
-int tMutex::Lock() {
+int tMutex::lock() {
     return pthread_mutex_lock(&mutex);
 }
 
-int tMutex::TryLock() {
+int tMutex::tryLock() {
     return pthread_mutex_trylock(&mutex);
 }
 
-int tMutex::Unlock() {
+int tMutex::unlock() {
     return pthread_mutex_unlock(&mutex);
 }

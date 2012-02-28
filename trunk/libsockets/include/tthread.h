@@ -36,21 +36,21 @@ friend void *pthread_execute(void *);
 public:
        tThread(int);
        virtual ~tThread();
-       virtual void Execute() = 0;
-       void Start();
-       void Stop();
-       tThreadStatus GetThreadStatus();
-       pthread_t GetThreadId();
-       void SetSelfDestroy(int);
-       int GetSelfDestroy();
+       virtual void execute() = 0;
+       void start();
+       void stop();
+       tThreadStatus getThreadStatus();
+       pthread_t getThreadId();
+       void setSelfDestroy(int);
+       int getSelfDestroy();
        
-       virtual void OnStart() = 0;
-       virtual void OnStop() = 0;
+       virtual void onStart() = 0;
+       virtual void onStop() = 0;
        
 protected:
-       pthread_t thread_id;
-       tThreadStatus thread_status;
-       int self_destroy;
+       pthread_t threadId;
+       tThreadStatus threadStatus;
+       int selfDestroy;
 };
 
 #endif /* TTHREAD_H_ */

@@ -31,9 +31,9 @@
 
 using namespace std;
 
-#define upper_case(s) std::transform(s.begin(), s.end(), s.begin(), (int(*)(int))std::toupper)
-#define lower_case(s) std::transform(s.begin(), s.end(), s.begin(), (int(*)(int))std::tolower)
+#define upperCase(s) std::transform(s.begin(), s.end(), s.begin(), (int(*)(int))std::toupper)
+#define lowerCase(s) std::transform(s.begin(), s.end(), s.begin(), (int(*)(int))std::tolower)
 
-string stringtok(string *, string);
+string stringTok(string *, string);
 
 #endif /* UTILS_H_ */

@@ -26,28 +26,28 @@
 #include "tclientsocket.h"
 
 tClientSocket::tClientSocket() : tSocket() {
-	bytes_in = bytes_out = 0;
+	bytesIn = bytesOut = 0;
 }
 
 tClientSocket::tClientSocket(int fd, sockaddr_in *sin) {
-    socket_fd = fd;
-    memcpy((void *)&socket_addr,(void *)sin,sizeof(sockaddr_in));
-    socket_status = tSocketOpened;
+    socketFd = fd;
+    memcpy((void *)&socketAddr,(void *)sin,sizeof(sockaddr_in));
+    socketStatus = tSocketOpened;
     hostname[0]=0;
-	bytes_in = bytes_out = 0;
+	bytesIn = bytesOut = 0;
 }
 
 void tClientSocket::Close() {
-    if (socket_status != tSocketClosed) {
-        OnDisconnect();
+    if (socketStatus != tSocketClosed) {
+        onDisconnect();
 #ifdef WIN32
-        shutdown(socket_fd,SD_BOTH);
-        closesocket(socket_fd);
+        shutdown(socketFd,SD_BOTH);
+        close(socketFd);
 #else
-        shutdown(socket_fd,SHUT_RDWR);
-        close(socket_fd);
+        shutdown(socketFd,SHUT_RDWR);
+        close(socketFd);
 #endif
-        socket_status = tSocketClosed;
+        socketStatus = tSocketClosed;
     }
 }
 
@@ -55,12 +55,12 @@ tClientSocket::~tClientSocket() {
 }
 
 int tClientSocket::Open(const char *addr, unsigned short port) {
-    if (socket_status == tSocketClosed) {
-       if (ResolveHost(addr)) return -1;
-       socket_addr.sin_port = htons(port);
-       if (connect(socket_fd,(sockaddr *)&socket_addr,sizeof(socket_addr))==0) {
-          socket_status = tSocketOpened;
-          OnConnect();
+    if (socketStatus == tSocketClosed) {
+       if (resolveHost(addr)) return -1;
+       socketAddr.sin_port = htons(port);
+       if (connect(socketFd,(sockaddr *)&socketAddr,sizeof(socketAddr))==0) {
+          socketStatus = tSocketOpened;
+          onConnect();
           return 0;
        }
     }
@@ -70,14 +70,14 @@ int tClientSocket::Open(const char *addr, unsigned short port) {
 int tClientSocket::Send(void *buf, size_t size) {
 	ssize_t r;
 
-    if (socket_status == tSocketOpened) {
-    	OnSend(buf,&size);
+    if (socketStatus == tSocketOpened) {
+    	onSend(buf,&size);
 #ifdef WIN32
-        r = send(socket_fd,(char *)buf,size,0);
+        r = Send(socketFd,(char *)buf,size,0);
 #else
-        r = send(socket_fd,buf,size,0);
+        r = send(socketFd,buf,size,0);
 #endif
-        if (r>0) bytes_out += r;
+        if (r>0) bytesOut += r;
         return r;
     }
     return -1;
@@ -86,34 +86,34 @@ int tClientSocket::Send(void *buf, size_t size) {
 int tClientSocket::Send(string buf) {
 	ssize_t r;
 
-    if (socket_status == tSocketOpened) {
+    if (socketStatus == tSocketOpened) {
     	size_t len=-1;
 
-   		OnSend(&buf,&len);
-   		r = send(socket_fd,buf.c_str(),buf.size(),0);
-   		if (r>0) bytes_out += r;
+   		onSend(&buf,&len);
+   		r = send(socketFd,buf.c_str(),buf.size(),0);
+   		if (r>0) bytesOut += r;
    		return r;
     }
     return -1;
 }
 
 
-int tClientSocket::Receive(void *buf, size_t size) {
+int tClientSocket::receive(void *buf, size_t size) {
     int r;
 
-    if (socket_status == tSocketOpened) {
+    if (socketStatus == tSocketOpened) {
 #ifdef WIN32
-        r = recv(socket_fd,(char *)buf,size,0);
+        r = recv(socketFd,(char *)buf,size,0);
 #else
-        r = recv(socket_fd,buf,size,0);
+        r = recv(socketFd,buf,size,0);
 #endif
        if (r > 0) {
-    	   bytes_in += r;
-    	   OnReceive(buf,r);
+    	   bytesIn += r;
+    	   onReceive(buf,r);
        }
        if (r == 0) {
-    	   socket_status = tSocketClosed;
-    	   OnDisconnect();
+    	   socketStatus = tSocketClosed;
+    	   onDisconnect();
        }
        return r;
     }
@@ -121,7 +121,7 @@ int tClientSocket::Receive(void *buf, size_t size) {
 }
 
 #define SFBUF_SIZE 4096
-ssize_t tClientSocket::SendFile(const char *path, off_t *offset, ssize_t count) {
+ssize_t tClientSocket::sendFile(const char *path, off_t *offset, ssize_t count) {
 	ssize_t r=0;
 	int fd;
 
@@ -140,8 +140,8 @@ ssize_t tClientSocket::SendFile(const char *path, off_t *offset, ssize_t count) 
 		}
 #else
 	if ((fd = open(path,O_RDONLY)) > 0) {
-		r = sendfile(socket_fd,fd,offset,count);
-		if (r>0) bytes_out += r;
+		r = sendfile(socketFd,fd,offset,count);
+		if (r>0) bytesOut += r;
 #endif
 		close(fd);
 		return r;
