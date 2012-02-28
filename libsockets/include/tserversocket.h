@@ -63,10 +63,11 @@ public:
               onServerDown();
 #ifdef WIN32
               shutdown(socketFd,SD_BOTH);
+              closesocket(socketFd);
 #else
               shutdown(socketFd,SHUT_RDWR);
-#endif
               close(socketFd);
+#endif
               socketStatus = tSocketClosed;
            }
        };
