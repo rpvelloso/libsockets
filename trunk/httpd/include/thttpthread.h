@@ -33,9 +33,9 @@ class tHTTPThread : public tThread {
 public:
 	tHTTPThread(int , tHTTPServer *, tHTTPClientSocket *);
 	~tHTTPThread();
-    void Execute();
-    void OnStart();
-    void OnStop();
+    void execute();
+    void onStart();
+    void onStop();
 protected:
     tHTTPClientSocket *socket;
     char buffer[HTTP_BUFLEN];

@@ -27,7 +27,7 @@
 #define ENDL '\n'
 #define HTTP_HDR_LEN 4096
 
-#define LOG(...) log->Log(__VA_ARGS__)
+#define LOG(...) log->log(__VA_ARGS__)
 
 enum tHTTPRequestState {
 	tHTTPReceiveHeader=0,
@@ -41,14 +41,14 @@ class tHTTPClientSocket : public tClientSocket {
 public:
 	tHTTPClientSocket(int, sockaddr_in *);
     ~tHTTPClientSocket();
-    void SetLog(tHTTPLog *);
-    void OnSend(void *, size_t *);
-    void OnReceive(void *, size_t);
-    void OnConnect();
-    void OnDisconnect();
-    void ProcessHTTPHeader();
-    void ProcessHTTPBody();
-    void ProcessHTTPRequest();
+    void setLog(tHTTPLog *);
+    void onSend(void *, size_t *);
+    void onReceive(void *, size_t);
+    void onConnect();
+    void onDisconnect();
+    void processHttpHeader();
+    void processHttpBody();
+    void processHttpRequest();
     tHTTPServer *getOwner();
     void setOwner(tHTTPServer *);
 
@@ -61,12 +61,12 @@ public:
     void TRACE();
     void CONNECT();
 
-    void ReplyServer();
-    void ReplyDate();
-    void Reply403();
-    void Reply404();
-    void Reply500();
-    void Reply501();
+    void replyServer();
+    void replyDate();
+    void reply403Forbidden();
+    void reply404NotFound();
+    void reply500InternalError();
+    void reply501NotImplemented();
 
 protected:
     tHTTPLog *log;

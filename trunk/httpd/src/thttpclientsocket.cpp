@@ -29,8 +29,8 @@
 	#include <io.h>
 #endif
 #include <libsockets/libsockets.h>
-#include "thttpthread.h"
 #include "thttpclientsocket.h"
+#include "thttpthread.h"
 
 #define ERR_STR_LEN 100
 
@@ -44,18 +44,18 @@
 
 #define CRLF "\r\n"
 
-static string weekdays[7] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+static string weekDays[7] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 static string months[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
 string time2str(time_t t) {
 	struct tm tt;
-	stringstream dtstr;
+	stringstream dtStr;
 
 	gmtime_r(&t,&tt);
-	dtstr << weekdays[tt.tm_wday] << ", " << tt.tm_mday << " " << months[tt.tm_mon] << " " << (1900+tt.tm_year) << " "
+	dtStr << weekDays[tt.tm_wday] << ", " << tt.tm_mday << " " << months[tt.tm_mon] << " " << (1900+tt.tm_year) << " "
 			<< tt.tm_hour << ":" << tt.tm_min << ":" << tt.tm_sec << " GMT";
 	// data & time format: Mon, 31 Dec 1900 23:59:59 GMT
-	return dtstr.str();
+	return dtStr.str();
 }
 
 // TODO: add more MIME types
@@ -74,7 +74,7 @@ string ext2type(string f) {
 		p2 = f.find_last_of("/",f.length());
 		if ((p2 != string::npos) && (p>p2)) {
 			ext = f.substr(p+1,f.length()-p);
-			lower_case(ext);
+			lowerCase(ext);
 		}
 	}
 	if (ext == "") ret = "application/octet-stream";
@@ -115,19 +115,19 @@ tHTTPClientSocket::~tHTTPClientSocket() {
 	Close();
 }
 
-void tHTTPClientSocket::SetLog(tHTTPLog *l) {
+void tHTTPClientSocket::setLog(tHTTPLog *l) {
 	log = l;
 }
 
-void tHTTPClientSocket::OnSend(void *buf, size_t *size) {
+void tHTTPClientSocket::onSend(void *buf, size_t *size) {
 	if (*size == -1) {
 		string *s = (string *)buf;
 
-		log->Log("sent to %s: %s",GetHostName(),s->c_str());
+		log->log("sent to %s: %s",getHostname(),s->c_str());
 	}
 }
 
-void tHTTPClientSocket::OnReceive(void *buf, size_t size) {
+void tHTTPClientSocket::onReceive(void *buf, size_t size) {
 	size_t i=0;
 
 	for (;(i<size) && (reqState == tHTTPReceiveHeader);i++) {
@@ -138,7 +138,7 @@ void tHTTPClientSocket::OnReceive(void *buf, size_t size) {
 				if (msgOverflow) {
 					msgOverflow = 0;
 					LOG("HTTP header buffer overflow.\n");
-				} else if (strlen(httpHeader) > 0) ProcessHTTPHeader();
+				} else if (strlen(httpHeader) > 0) processHttpHeader();
 			}
 			lineLength = 0;
 		} else {
@@ -156,16 +156,16 @@ void tHTTPClientSocket::OnReceive(void *buf, size_t size) {
 		size_t cpyLen = (size-i)>contentLength?contentLength:(size-i);
 		fwrite(&(((char *)buf)[i]),cpyLen,1,tmpPostData);
 		bodyPos += cpyLen;
-		if (bodyPos == contentLength) ProcessHTTPBody();
+		if (bodyPos == contentLength) processHttpBody();
 	}
-	if (reqState == tHTTPProcessRequest) ProcessHTTPRequest();
+	if (reqState == tHTTPProcessRequest) processHttpRequest();
 }
 
-void tHTTPClientSocket::OnConnect() {
+void tHTTPClientSocket::onConnect() {
 }
 
-void tHTTPClientSocket::OnDisconnect() {
-	log->Log("connection to %s closed.\n",GetHostName());
+void tHTTPClientSocket::onDisconnect() {
+	log->log("connection to %s closed.\n",getHostname());
 }
 
 tHTTPServer *tHTTPClientSocket::getOwner() {
@@ -176,7 +176,7 @@ void tHTTPClientSocket::setOwner(tHTTPServer *o) {
 	owner = o;
 }
 
-void tHTTPClientSocket::ProcessHTTPHeader() {
+void tHTTPClientSocket::processHttpHeader() {
 	string line, lineAux, parm, msg = httpHeader;
 	int i=0;
 	stringstream cl;
@@ -194,26 +194,26 @@ void tHTTPClientSocket::ProcessHTTPHeader() {
 	contentLength = 0;
 
 	do { // TODO: parse header params better
-		line = stringtok(&msg,"\n\r"); i++;
+		line = stringTok(&msg,"\n\r"); i++;
 		lineAux = line;
 		if (i == 1) { // request line
-			method = stringtok(&line," ");
-			request = stringtok(&line," ");
+			method = stringTok(&line," ");
+			request = stringTok(&line," ");
 			if (request[0]=='/') request.erase(0,1);
 			request = unescapeUri(owner->getDocumentRoot() + request);
-			uri = stringtok(&request,"?");
+			uri = stringTok(&request,"?");
 			query = request;
 			httpVersion = line;
 		} else { // header lines
-			parm = stringtok(&line,": ");
-			upper_case(parm);
+			parm = stringTok(&line,": ");
+			upperCase(parm);
 			if (parm == "HOST") {
 				host = line;
 			} else if (parm == "USER-AGENT") {
 				userAgent = line;
 			} else if (parm == "CONTENT-TYPE") {
-				contentType = stringtok(&line,"; ");
-				stringtok(&line,"=");
+				contentType = stringTok(&line,"; ");
+				stringTok(&line,"=");
 				boundary = line;
 			} else if (parm == "CONTENT-LENGTH") {
 				cl << line;
@@ -240,22 +240,24 @@ void tHTTPClientSocket::ProcessHTTPHeader() {
 	} else reqState = tHTTPProcessRequest;
 }
 
-void tHTTPClientSocket::ProcessHTTPBody() {
+void tHTTPClientSocket::processHttpBody() {
 	reqState = tHTTPProcessRequest;
 }
 
-void tHTTPClientSocket::ProcessHTTPRequest() {
+void tHTTPClientSocket::processHttpRequest() {
 	     if (method == "GET")     GET();
  	else if (method == "HEAD")    HEAD();
 	else if (method == "POST")    POST();
 	else if (method == "OPTIONS") OPTIONS();
+
+	     /* unimplemented methods */
 	else if (method == "PUT")     PUT();
 	else if (method == "DELETE")  DEL();
 	else if (method == "TRACE")   TRACE();
 	else if (method == "CONNECT") CONNECT();
-	else Reply501();
+	else reply501NotImplemented();
 
-	reqState = tHTTPReceiveHeader; // goes back to initial state
+	reqState = tHTTPReceiveHeader; // end of request: goes back to initial state
 }
 
 void tHTTPClientSocket::GET()
@@ -280,19 +282,19 @@ void tHTTPClientSocket::GET()
 			j = j + 17;
 			envp = (char **)malloc(sizeof(void *) * j);
 			i = 0; q = query;
-			while (q != "") envp[i++] = strdup(stringtok(&q,"&").c_str());
+			while (q != "") envp[i++] = strdup(stringTok(&q,"&").c_str());
 			sstr << "CONTENT_LENGTH=" << contentLength;
 			envp[i] = strdup(sstr.str().c_str());
 			if (boundary != "")
 				envp[i+ 1] = strdup(("CONTENT_TYPE=" + contentType + "; boundary=" + boundary).c_str());
 			else
 				envp[i+ 1] = strdup(("CONTENT_TYPE=" + contentType).c_str());
-			sstr.str(""); sstr << "REMOTE_PORT=" << this->GetPort();
+			sstr.str(""); sstr << "REMOTE_PORT=" << this->getPort();
 			envp[i+ 2] = strdup(sstr.str().c_str());
-			sstr.str(""); sstr << "SERVER_PORT=" << owner->getServerSocket()->GetPort();
+			sstr.str(""); sstr << "SERVER_PORT=" << owner->getServerSocket()->getPort();
 			envp[i+ 3] = strdup(sstr.str().c_str());
-			envp[i+ 4] = strdup(("REMOTE_ADDR=" + this->GetIP()).c_str());
-			envp[i+ 5] = strdup(("SERVER_ADDR=" + owner->getServerSocket()->GetIP()).c_str());
+			envp[i+ 4] = strdup(("REMOTE_ADDR=" + this->getIP()).c_str());
+			envp[i+ 5] = strdup(("SERVER_ADDR=" + owner->getServerSocket()->getIP()).c_str());
 			envp[i+ 6] = strdup(("REQUEST_METHOD=" + method).c_str());
 			envp[i+ 7] = strdup(("HTTP_HOST=" + host).c_str());
 			envp[i+ 8] = strdup(("SERVER_NAME=" + host).c_str());
@@ -305,11 +307,6 @@ void tHTTPClientSocket::GET()
 			envp[i+15] = strdup(("DOCUMENT_ROOT=" + owner->getDocumentRoot()).c_str());
 			envp[i+16] = NULL;
 			argv[0] = strdup(uri.c_str());
-			/* TODO: in the future change this redirection of stdout
-			 * to the client socket. Instead of redirecting, use a
-			 * tmp file to intermediate CGI output and detect if the
-			 * CGI hasn't sent HTTP response header, so the server
-			 * can send/complete it */
 
 			if ((tmpPostData) && (contentLength > 0) && (method == "POST")) {
 				fseek(tmpPostData,0,SEEK_SET);
@@ -318,9 +315,14 @@ void tHTTPClientSocket::GET()
 #endif
 			}
 #ifndef WIN32
-			else dup2(this->socket_fd,fileno(stdin));
+			else dup2(this->socketFd,fileno(stdin));
 
-			dup2(this->socket_fd,fileno(stdout));
+			/* TODO: in the future change this redirection of stdout
+			 * to the client socket. Instead of redirecting, use a
+			 * tmp file to intermediate CGI output and detect if the
+			 * CGI hasn't sent HTTP response header, so the server
+			 * can send/complete it */
+			dup2(this->socketFd,fileno(stdout));
 			execve(argv[0],argv,envp);
 			LOG(strerror_r(errno,strerr,ERR_STR_LEN)); // execve() error
 			exit(-1);
@@ -330,27 +332,27 @@ void tHTTPClientSocket::GET()
 			ZeroMemory(&startUpInfo, sizeof(STARTUPINFO));
 			startUpInfo.cb = sizeof(STARTUPINFO);
 			startUpInfo.hStdError = (void *)_get_osfhandle(fileno(stderr));
-			startUpInfo.hStdOutput = (void *)_get_osfhandle(this->socket_fd);
-			startUpInfo.hStdInput = (void *)_get_osfhandle(tmpPostData?fileno(tmpPostData):this->socket_fd);
+			startUpInfo.hStdOutput = (void *)_get_osfhandle(this->socketFd);
+			startUpInfo.hStdInput = (void *)_get_osfhandle(tmpPostData?fileno(tmpPostData):this->socketFd);
 			startUpInfo.dwFlags |= STARTF_USESTDHANDLES;
 
 			if (CreateProcess(NULL, argv[0], NULL, NULL, TRUE, 0, envp, NULL, &startUpInfo, &processInfo)) {
 				WaitForSingleObject(processInfo.hProcess,INFINITE);
 				for (i=0;i<j;i++) free(envp[i]);
 				free(envp);
-			} else Reply500();
+			} else reply500InternalError();
 #endif
 		} else if (f == -1) {
 			LOG(strerror_r(errno,strerr,ERR_STR_LEN)); // fork() error
-			Reply500();
+			reply500InternalError();
 		} else {
 			waitpid(f,&cgiRet,0);
-			if (cgiRet) Reply500();	// CGI has executed, but ended abnormally
+			if (cgiRet) reply500InternalError();	// CGI has executed, but ended abnormally
 			Close();
 		}
 	} else {
 		if (!HEAD()) {
-			if (SendFile(uri.c_str(),&offset,contentLength) <= 0) Reply500();
+			if (sendFile(uri.c_str(),&offset,contentLength) <= 0) reply500InternalError();
 		}
 	}
 	if (tmpPostData) fclose(tmpPostData);
@@ -360,8 +362,8 @@ void tHTTPClientSocket::GET()
 void tHTTPClientSocket::OPTIONS()
 {
 	Send(httpVersion + " 200 OK" + CRLF);
-	ReplyServer();
-	ReplyDate();
+	replyServer();
+	replyDate();
 	Send("Content-length: 0" CRLF);
 	Send("Allow: HEAD, GET, POST, OPTIONS" CRLF);
 }
@@ -378,21 +380,21 @@ int tHTTPClientSocket::HEAD()
 			if (stat(index.c_str(),&st)) {
 				index = uri + "/index.html";
 				if (stat(index.c_str(),&st)) {
-					Reply404();
+					reply404NotFound();
 					return -1;
 				}
 			}
 			uri = index;
 		}
 		if (access(uri.c_str(),R_OK)) {
-			Reply403();
+			reply403Forbidden();
 			return -1;
 		}
 		len << st.st_size;
 		contentLength = st.st_size;
 		Send(httpVersion + " 200 OK" + CRLF);
-		ReplyServer();
-		ReplyDate();
+		replyServer();
+		replyDate();
 		Send("Content-length: " + len.str() + CRLF);
 		Send("Content-type: " + ext2type(uri) + CRLF);
 		if (index == uri) Send("Content-Location: " + index + CRLF);
@@ -401,7 +403,7 @@ int tHTTPClientSocket::HEAD()
 		Send(CRLF);
 		return 0;
 	} else {
-		Reply404();
+		reply404NotFound();
 		return -1;
 	}
 }
@@ -413,35 +415,35 @@ void tHTTPClientSocket::POST()
 
 void tHTTPClientSocket::PUT()
 {
-	Reply501();
+	reply501NotImplemented();
 }
 
 void tHTTPClientSocket::DEL()
 {
-	Reply501();
+	reply501NotImplemented();
 }
 
 void tHTTPClientSocket::TRACE()
 {
-	Reply501();
+	reply501NotImplemented();
 }
 
 void tHTTPClientSocket::CONNECT()
 {
-	Reply501();
+	reply501NotImplemented();
 }
 
-void tHTTPClientSocket::ReplyServer()
+void tHTTPClientSocket::replyServer()
 {
 	Send("Server: httpd-libsockets-devel." CRLF);
 }
 
-void tHTTPClientSocket::ReplyDate()
+void tHTTPClientSocket::replyDate()
 {
 	Send("Date: " + time2str(time(NULL)) + CRLF);
 }
 
-void tHTTPClientSocket::Reply403()
+void tHTTPClientSocket::reply403Forbidden()
 {
 	string html =
 			"<HEAD><TITLE>Forbidden</TITLE></HEAD>" CRLF \
@@ -450,8 +452,8 @@ void tHTTPClientSocket::Reply403()
 
 	len << html.length();
 	Send(httpVersion + " 403 Forbidden." + CRLF);
-	ReplyServer();
-	ReplyDate();
+	replyServer();
+	replyDate();
 	Send("Content-length: " + len.str() + CRLF);
 	Send("Content-type: text/html" CRLF);
 	Send("Connection: close" CRLF);
@@ -459,7 +461,7 @@ void tHTTPClientSocket::Reply403()
 	Send(html);
 }
 
-void tHTTPClientSocket::Reply404()
+void tHTTPClientSocket::reply404NotFound()
 {
 	string html =
 			"<HEAD><TITLE>Not Found</TITLE></HEAD>" CRLF \
@@ -468,8 +470,8 @@ void tHTTPClientSocket::Reply404()
 
 	len << html.length();
 	Send(httpVersion + " 404 Not Found." + CRLF);
-	ReplyServer();
-	ReplyDate();
+	replyServer();
+	replyDate();
 	Send("Content-length: " + len.str() + CRLF);
 	Send("Content-type: text/html" CRLF);
 	Send("Connection: close" CRLF);
@@ -477,7 +479,7 @@ void tHTTPClientSocket::Reply404()
 	Send(html);
 }
 
-void tHTTPClientSocket::Reply500()
+void tHTTPClientSocket::reply500InternalError()
 {
 	string html =
 			"<HTML>" CRLF \
@@ -489,8 +491,8 @@ void tHTTPClientSocket::Reply500()
 
 	len << html.length();
 	Send(httpVersion + " 500 Internal Server Error." + CRLF);
-	ReplyServer();
-	ReplyDate();
+	replyServer();
+	replyDate();
 	Send("Content-length: " + len.str() + CRLF);
 	Send("Content-type: text/html" CRLF);
 	Send("Connection: close" CRLF);
@@ -498,7 +500,7 @@ void tHTTPClientSocket::Reply500()
 	Send(html);
 }
 
-void tHTTPClientSocket::Reply501()
+void tHTTPClientSocket::reply501NotImplemented()
 {
 	string html =
 			"<HTML>" CRLF \
@@ -509,8 +511,8 @@ void tHTTPClientSocket::Reply501()
 
 	len << html.length();
 	Send(httpVersion + " 501 Not Implemented." + CRLF);
-	ReplyServer();
-	ReplyDate();
+	replyServer();
+	replyDate();
 	Send("Content-length: " + len.str() + CRLF);
 	Send("Content-type: text/html" CRLF);
 	Send("Connection: close" CRLF);

@@ -21,28 +21,28 @@
 tHTTPThread::tHTTPThread(int sd, tHTTPServer *o, tHTTPClientSocket *s) : tThread(sd) {
 	socket = s;
 	owner = o;
-	log = owner->GetLog();
+	log = owner->getLog();
 }
 
 tHTTPThread::~tHTTPThread() {
-	Stop();
+	stop();
 }
 
-void tHTTPThread::Execute() {
+void tHTTPThread::execute() {
 	int len;
 
-	while ((len = socket->Receive(buffer, HTTP_BUFLEN)) > 0);
+	while ((len = socket->receive(buffer, HTTP_BUFLEN)) > 0);
 }
 
-void tHTTPThread::OnStart() {
-	log->Log("new thread [%x] started.\n",thread_id);
+void tHTTPThread::onStart() {
+	log->log("new thread [%x] started.\n",threadId);
 }
 
-void tHTTPThread::OnStop() {
-	if (GetSelfDestroy()) {
-		log->Log("thread [%x] self destroying.\n",thread_id);
-		owner->RemoveThread(this);
+void tHTTPThread::onStop() {
+	if (getSelfDestroy()) {
+		log->log("thread [%x] self destroying.\n",threadId);
+		owner->removeThread(this);
 	}
-	log->Log("thread [%x] terminated.\n",thread_id);
+	log->log("thread [%x] terminated.\n",threadId);
 	delete socket;
 }

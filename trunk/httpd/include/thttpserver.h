@@ -30,14 +30,14 @@ class tHTTPServer : public tObject {
 public:
 	tHTTPServer(string);
 	~tHTTPServer();
-	void Run(const char *, unsigned short);
-	void Stop();
-	void RemoveThread(tHTTPThread *);
-	tHTTPLog *GetLog();
+	void run(const char *, unsigned short);
+	void stop();
+	void removeThread(tHTTPThread *);
+	tHTTPLog *getLog();
 	string getDocumentRoot();
 	tHTTPServerSocket *getServerSocket();
 protected:
-	tHTTPServerSocket *server_socket;
+	tHTTPServerSocket *serverSocket;
 	list<tHTTPThread *> threads;
     tHTTPLog *log;
     string documentRoot;

@@ -26,10 +26,10 @@ class tHTTPServerSocket : public tServerSocket<tHTTPClientSocket> {
 public:
 	tHTTPServerSocket();
     ~tHTTPServerSocket();
-    void SetLog(tHTTPLog *);
-    void OnClientConnect(tHTTPClientSocket *);
-    void OnServerUp();
-    void OnServerDown();
+    void setLog(tHTTPLog *);
+    void onClientConnect(tHTTPClientSocket *);
+    void onServerUp();
+    void onServerDown();
 
 protected:
     tHTTPLog *log;
