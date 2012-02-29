@@ -124,11 +124,12 @@ tHTTPClientSocket::tHTTPClientSocket(int fd, sockaddr_in *sin) : tClientSocket(f
 	hdrPos = 0;
 	lineLength = 0;
 	reqState = tHTTPReceiveHeader;
-	tmpPostData = NULL;
+	tmpPostData = tmpRespData = NULL;
 }
 
 tHTTPClientSocket::~tHTTPClientSocket() {
-	if (tmpPostData) fclose(tmpPostData);
+	if (tmpRespData) fclose(tmpPostData);
+	if (tmpRespData) fclose(tmpRespData);
 	Close();
 }
 
@@ -137,7 +138,7 @@ void tHTTPClientSocket::setLog(tHTTPLog *l) {
 }
 
 void tHTTPClientSocket::onSend(void *buf, size_t *size) {
-	if (*size == -1) {
+	if ((ssize_t)*size == -1) {
 		string *s = (string *)buf;
 
 		log->log("sent to %s: %s",getHostname(),s->c_str());
@@ -281,10 +282,11 @@ void tHTTPClientSocket::GET()
 {
 	off_t offset = 0;
 	char **envp=NULL,*argv[3] = { NULL, NULL, NULL };
-	size_t i=0,j=1;
+	size_t i=0,j=0;
 	pid_t f;
 	int cgiRet;
 	string q,mt;
+	struct stat st;
 #ifndef WIN32
 	char strerr[ERR_STR_LEN];
 #else
@@ -296,19 +298,21 @@ void tHTTPClientSocket::GET()
 	stringstream sstr;
 
 	if ((query != "") && !access(uri.c_str(),X_OK)) {
+		if (query[0] == '?') query.erase(0,1); // remove char '?'
 		if (!(f=fork())) {
 			mt = mimeType(uri);
 
 #ifdef WIN32
-			i=0;
 			while (i<uri.length()) {
 				if (uri[i]=='/') uri[i]='\\';
 				i++;
 			}
 			uri = "C:" + uri;
 #endif
+			i = 0;
 			while (i<query.length()) if (query[i++] == '&') j++;
 			j = j + 17;
+			if (j > 17) j++;
 			envp = (char **)malloc(sizeof(void *) * j);
 			i = 0; q = query;
 			while (q != "") envp[i++] = strdup(stringTok(&q,"&").c_str());
@@ -336,6 +340,9 @@ void tHTTPClientSocket::GET()
 			envp[i+15] = strdup(("DOCUMENT_ROOT=" + owner->getDocumentRoot()).c_str());
 			envp[i+16] = NULL;
 
+			if (tmpRespData) fclose(tmpRespData);
+			tmpRespData = tmpfile();
+
 			if (mt == "application/php") {
 #ifndef WIN32
 				argv[0] = strdup(PHP_BIN);
@@ -361,8 +368,8 @@ void tHTTPClientSocket::GET()
 			 * tmp file to intermediate CGI output and detect if the
 			 * CGI hasn't sent HTTP response header, so the server
 			 * can send/complete it */
-			dup2(this->socketFd,fileno(stdout));
-			dup2(this->socketFd,fileno(stderr));
+			dup2(fileno(tmpRespData),fileno(stdout));
+			dup2(fileno(tmpRespData),fileno(stderr));
 			execve(argv[0],argv,envp);
 			LOG(strerror_r(errno,strerr,ERR_STR_LEN)); // execve() error
 			exit(-1);
@@ -370,12 +377,12 @@ void tHTTPClientSocket::GET()
 			ZeroMemory(&processInfo, sizeof(PROCESS_INFORMATION));
 			ZeroMemory(&startUpInfo, sizeof(STARTUPINFO));
 			startUpInfo.cb = sizeof(STARTUPINFO);
-			startUpInfo.hStdError = (HANDLE)(this->socketFd);
-			startUpInfo.hStdOutput = (HANDLE)(this->socketFd);
-			startUpInfo.hStdInput = tmpPostData?(HANDLE)_get_osfhandle(fileno(tmpPostData)):(HANDLE)(this->socketFd);
+			startUpInfo.hStdError = (HANDLE)_get_osfhandle(fileno(tmpRespData));
+			startUpInfo.hStdOutput = (HANDLE)_get_osfhandle(fileno(tmpRespData));
+			startUpInfo.hStdInput = (HANDLE)_get_osfhandle(tmpPostData?fileno(tmpPostData):fileno(stdin));
 			startUpInfo.dwFlags |= STARTF_USESTDHANDLES;
 
-			for (i=0;i<j-1;i++) envStr << envp[i] << '\0' ; envStr << '\0';
+			for (i=0;i<j-1;i++) envStr << envp[i] << '\0'; envStr << '\0';
 			winEnv = malloc(envStr.tellp());
 			memcpy(winEnv,envStr.str().data(),envStr.tellp());
 
@@ -384,6 +391,7 @@ void tHTTPClientSocket::GET()
 				CloseHandle(processInfo.hProcess);
 				CloseHandle(processInfo.hThread);
 			} else reply500InternalError();
+
 			for (i=0;i<j-1;i++) free(envp[i]);
 			free(envp);
 			free(argv[0]);
@@ -397,6 +405,10 @@ void tHTTPClientSocket::GET()
 			waitpid(f,&cgiRet,0);
 			if (cgiRet) reply500InternalError();	// CGI has executed, but ended abnormally
 		}
+
+		if (fstat(fileno(tmpRespData),&st)!=-1) {
+			if (st.st_size > 0) sendFile(tmpRespData,&offset,st.st_size);
+		}
 		Close();
 	} else {
 		if (!HEAD()) {
@@ -404,7 +416,8 @@ void tHTTPClientSocket::GET()
 		}
 	}
 	if (tmpPostData) fclose(tmpPostData);
-	tmpPostData = NULL;
+	if (tmpRespData) fclose(tmpRespData);
+	tmpPostData = tmpRespData = NULL;
 }
 
 void tHTTPClientSocket::OPTIONS()
