@@ -126,7 +126,7 @@ ssize_t tClientSocket::sendFile(const char *path, off_t *offset, ssize_t count) 
 	int fd;
 
 #ifdef WIN32
-	if ((fd = open(path,O_RDONLY|O_BINARY)) > 0) {
+	if (offset && (fd = open(path,O_RDONLY|O_BINARY)) > 0) {
 		char sfbuf[SFBUF_SIZE];
 		int len;
 
@@ -139,7 +139,35 @@ ssize_t tClientSocket::sendFile(const char *path, off_t *offset, ssize_t count) 
 			r+=len;
 		}
 #else
-	if ((fd = open(path,O_RDONLY)) > 0) {
+	if (offset && (fd = open(path,O_RDONLY)) > 0) {
+		r = sendfile(socketFd,fd,offset,count);
+		if (r>0) bytesOut += r;
+#endif
+		close(fd);
+		return r;
+	}
+	return fd;
+}
+
+ssize_t tClientSocket::sendFile(FILE *f, off_t *offset, ssize_t count) {
+	ssize_t r=0;
+	int fd;
+
+#ifdef WIN32
+	if (f && (fd = fileno(f)) > 0) {
+		char sfbuf[SFBUF_SIZE];
+		int len;
+
+		lseek(fd,*offset,SEEK_SET);
+		while ((r < count) && (len=read(fd,sfbuf,SFBUF_SIZE))>0) {
+			if (Send(sfbuf,len)<=0) {
+				perror("Send()");
+				break;
+			}
+			r+=len;
+		}
+#else
+	if (f && (fd = fileno(f)) > 0) {
 		r = sendfile(socketFd,fd,offset,count);
 		if (r>0) bytesOut += r;
 #endif
