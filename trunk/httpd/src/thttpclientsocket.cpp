@@ -35,8 +35,13 @@
 #include "httpreply.h"
 
 #define ERR_STR_LEN 100
-#define PHP_BIN "/usr/bin/php-cgi"
-#define CMD_BIN "C:\\Windows\\System32\\cmd.exe /c C:"
+#ifdef WIN32
+	#define PHP_BIN "C:\\Progra~1\\PHP\\php-cgi.exe "
+#else
+	#define PHP_BIN "/usr/bin/php-cgi"
+#endif
+
+#define CMD_BIN "C:\\Windows\\System32\\cmd.exe /c "
 
 #ifdef WIN32 // under windows, this functions are thread-safe
 	#define gmtime_r(i,j) memcpy(j,gmtime(i),sizeof(struct tm))
@@ -292,6 +297,16 @@ void tHTTPClientSocket::GET()
 
 	if ((query != "") && !access(uri.c_str(),X_OK)) {
 		if (!(f=fork())) {
+			mt = mimeType(uri);
+
+#ifdef WIN32
+			i=0;
+			while (i<uri.length()) {
+				if (uri[i]=='/') uri[i]='\\';
+				i++;
+			}
+			uri = "C:" + uri;
+#endif
 			while (i<query.length()) if (query[i++] == '&') j++;
 			j = j + 17;
 			envp = (char **)malloc(sizeof(void *) * j);
@@ -320,20 +335,14 @@ void tHTTPClientSocket::GET()
 			envp[i+14] = strdup(("SCRIPT_FILENAME=" + uri).c_str());
 			envp[i+15] = strdup(("DOCUMENT_ROOT=" + owner->getDocumentRoot()).c_str());
 			envp[i+16] = NULL;
-			mt = mimeType(uri);
 
 			if (mt == "application/php") {
+#ifndef WIN32
 				argv[0] = strdup(PHP_BIN);
 				argv[1] = strdup(uri.c_str());
-#ifdef WIN32
+#else
+				argv[0] = strdup((PHP_BIN + uri).c_str());
 			} else if (mt == "application/batch") {
-
-				i=0;
-				while (i<uri.length()) {
-					if (uri[i]=='/') uri[i]='\\';
-					i++;
-				}
-
 				argv[0] = strdup((CMD_BIN + uri).c_str());
 #endif
 			} else argv[0] = strdup(uri.c_str());
