@@ -285,6 +285,8 @@ void tHTTPClientSocket::GET()
 #else
 	PROCESS_INFORMATION processInfo;
 	STARTUPINFO startUpInfo;
+	stringstream envStr(ios_base::in | ios_base::out | ios_base::binary);
+	void *winEnv=NULL;
 #endif
 	stringstream sstr;
 
@@ -364,15 +366,20 @@ void tHTTPClientSocket::GET()
 			startUpInfo.hStdInput = tmpPostData?(HANDLE)_get_osfhandle(fileno(tmpPostData)):(HANDLE)(this->socketFd);
 			startUpInfo.dwFlags |= STARTF_USESTDHANDLES;
 
-			if (CreateProcess(NULL, argv[0], NULL, NULL, TRUE, 0, NULL, NULL, &startUpInfo, &processInfo)) {
+			for (i=0;i<j-1;i++) envStr << envp[i] << '\0' ; envStr << '\0';
+			winEnv = malloc(envStr.tellp());
+			memcpy(winEnv,envStr.str().data(),envStr.tellp());
+
+			if (CreateProcess(NULL, argv[0], NULL, NULL, TRUE, 0, winEnv, NULL, &startUpInfo, &processInfo)) {
 				WaitForSingleObject(processInfo.hProcess,INFINITE);
 				CloseHandle(processInfo.hProcess);
 				CloseHandle(processInfo.hThread);
 			} else reply500InternalError();
-			for (i=0;i<j;i++) free(envp[i]);
+			for (i=0;i<j-1;i++) free(envp[i]);
 			free(envp);
 			free(argv[0]);
 			if (argv[1]) free(argv[1]);
+			free(winEnv);
 #endif
 		} else if (f == -1) {
 			LOG(strerror_r(errno,strerr,ERR_STR_LEN)); // fork() error
