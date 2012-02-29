@@ -78,6 +78,7 @@ protected:
     ssize_t contentLength;
     tHTTPServer *owner;
     FILE *tmpPostData;
+    FILE *tmpRespData;
 };
 
 #endif
