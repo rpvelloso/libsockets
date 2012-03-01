@@ -79,6 +79,8 @@ protected:
     tHTTPServer *owner;
     FILE *tmpPostData;
     FILE *tmpRespData;
+
+    void CGICall();
 };
 
 #endif
