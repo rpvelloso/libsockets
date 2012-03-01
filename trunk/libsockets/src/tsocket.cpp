@@ -16,6 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <fcntl.h>
 #include <sstream>
 #include "tsocket.h"
 
@@ -119,11 +120,11 @@ int tSocket::toggleNonBlockingIO() {
 
 int tSocket::toggleNonBlockingIO() {
 	int socketFlags;
-	socketFlags=fcntl(s,F_GETFL,0);
+	socketFlags=fcntl(socketFd,F_GETFL,0);
 	nonBlockingIO = !nonBlockingIO;
 	if (nonBlockingIO) socketFlags |= O_NONBLOCK;
 	else socketFlags &= ~O_NONBLOCK;
-	return fcntl(s,F_SETFL,socketFlags);
+	return fcntl(socketFd,F_SETFL,socketFlags);
 }
 
 #endif
