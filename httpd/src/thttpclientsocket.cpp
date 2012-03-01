@@ -433,6 +433,7 @@ void tHTTPClientSocket::GET()
 
 		CGICall();
 
+		fflush(tmpRespData);
 		if (fstat(fileno(tmpRespData),&st)!=-1) {
 			if (st.st_size > 0) {
 				/* TODO: Intermediate CGI output and detect if the
