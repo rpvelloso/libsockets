@@ -171,7 +171,7 @@ void tHTTPClientSocket::onReceive(void *buf, size_t size) {
 		}
 	}
 	if (reqState == tHTTPReceiveBody) {
-		size_t cpyLen = (size-i)>contentLength?contentLength:(size-i);
+		size_t cpyLen = (ssize_t)(size-i)>contentLength?contentLength:(size-i);
 		fwrite(&(((char *)buf)[i]),cpyLen,1,tmpPostData);
 		bodyPos += cpyLen;
 		if (bodyPos == contentLength) processHttpBody();
@@ -278,7 +278,10 @@ void tHTTPClientSocket::processHttpRequest() {
 	reqState = tHTTPReceiveHeader; // end of request: goes back to initial state
 }
 
-void tHTTPClientSocket::GET()
+#define ENV_VAR_COUNT 17
+
+#ifndef WIN32
+void tHTTPClientSocket::CGICall()
 {
 	off_t offset = 0;
 	char **envp=NULL,*argv[3] = { NULL, NULL, NULL };
@@ -287,137 +290,200 @@ void tHTTPClientSocket::GET()
 	int cgiRet;
 	string q,mt;
 	struct stat st;
-#ifndef WIN32
 	char strerr[ERR_STR_LEN];
+	stringstream sstr;
+
+	if (tmpRespData) fclose(tmpRespData);
+	tmpRespData = tmpfile();
+
+	if (!(f=fork())) {
+
+		if (query[0] == '?') query.erase(0,1); // remove char '?'
+		while (i<query.length()) if (query[i++] == '&') j++;
+		j += j?ENV_VAR_COUNT+1:ENV_VAR_COUNT;
+		envp = (char **)malloc(sizeof(void *) * j);
+
+		i = 0; q = query;
+		while (q != "") envp[i++] = strdup(stringTok(&q,"&").c_str());
+
+		sstr << "CONTENT_LENGTH=" << contentLength;
+		envp[i] = strdup(sstr.str().c_str());
+		if (boundary != "")
+			envp[i+ 1] = strdup(("CONTENT_TYPE=" + contentType + "; boundary=" + boundary).c_str());
+		else
+			envp[i+ 1] = strdup(("CONTENT_TYPE=" + contentType).c_str());
+		sstr.str(""); sstr << "REMOTE_PORT=" << this->getPort();
+		envp[i+ 2] = strdup(sstr.str().c_str());
+		sstr.str(""); sstr << "SERVER_PORT=" << owner->getServerSocket()->getPort();
+		envp[i+ 3] = strdup(sstr.str().c_str());
+		envp[i+ 4] = strdup(("REMOTE_ADDR=" + this->getIP()).c_str());
+		envp[i+ 5] = strdup(("SERVER_ADDR=" + owner->getServerSocket()->getIP()).c_str());
+		envp[i+ 6] = strdup(("REQUEST_METHOD=" + method).c_str());
+		envp[i+ 7] = strdup(("HTTP_HOST=" + host).c_str());
+		envp[i+ 8] = strdup(("SERVER_NAME=" + host).c_str());
+		envp[i+ 9] = strdup(("HTTP_USER_AGENT=" + userAgent).c_str());
+		envp[i+10] = strdup("GATEWAY_INTERFACE=CGI/1.1");
+		envp[i+11] = strdup(("QUERY_STRING=" + query).c_str());
+		envp[i+12] = strdup(("REQUEST_URI=" + uri).c_str());
+		envp[i+13] = strdup(("SERVER_PROTOCOL=" + httpVersion).c_str());
+		envp[i+14] = strdup(("SCRIPT_FILENAME=" + uri).c_str());
+		envp[i+15] = strdup(("DOCUMENT_ROOT=" + owner->getDocumentRoot()).c_str());
+		envp[i+16] = NULL;
+
+		mt = mimeType(uri);
+
+		if (mt == "application/php") {
+			argv[0] = strdup(PHP_BIN);
+			argv[1] = strdup(uri.c_str());
+		} else argv[0] = strdup(uri.c_str());
+
+		if ((tmpPostData) && (contentLength > 0) && (method == "POST")) {
+			fseek(tmpPostData,0,SEEK_SET);
+			dup2(fileno(tmpPostData),fileno(stdin));
+		} else fclose(stdin);
+
+		/* TODO: Intermediate CGI output and detect if the
+		 * CGI hasn't sent HTTP response header, so the server
+		 * can send/complete it */
+		dup2(fileno(tmpRespData),fileno(stdout));
+		dup2(fileno(tmpRespData),fileno(stderr));
+		execve(argv[0],argv,envp);
+		LOG(strerror_r(errno,strerr,ERR_STR_LEN)); // execve() error
+		exit(-1);
+	} else if (f == -1) {
+		LOG(strerror_r(errno,strerr,ERR_STR_LEN)); // fork() error
+		reply500InternalError();
+	} else {
+		waitpid(f,&cgiRet,0);
+		if (cgiRet) reply500InternalError();	// CGI has executed, but ended abnormally
+		else {
+			if (fstat(fileno(tmpRespData),&st)!=-1) {
+				if (st.st_size > 0) sendFile(tmpRespData,&offset,st.st_size);
+			}
+		}
+		Close();
+		if (tmpPostData) fclose(tmpPostData);
+		if (tmpRespData) fclose(tmpRespData);
+		tmpPostData = tmpRespData = NULL;
+	}
+}
+
 #else
+
+void tHTTPClientSocket::CGICall()
+{
+	off_t offset = 0;
+	char **envp=NULL,*argv[3] = { NULL, NULL, NULL };
+	size_t i=0,j=0;
+	pid_t f;
+	int cgiRet;
+	string q,mt;
+	struct stat st;
 	PROCESS_INFORMATION processInfo;
 	STARTUPINFO startUpInfo;
 	stringstream envStr(ios_base::in | ios_base::out | ios_base::binary);
 	void *winEnv=NULL;
-#endif
 	stringstream sstr;
 
-	if ((query != "") && !access(uri.c_str(),X_OK)) {
-		if (query[0] == '?') query.erase(0,1); // remove char '?'
-		if (!(f=fork())) {
-			mt = mimeType(uri);
+	if (query[0] == '?') query.erase(0,1); // remove char '?'
+	mt = mimeType(uri);
 
-#ifdef WIN32
-			while (i<uri.length()) {
-				if (uri[i]=='/') uri[i]='\\';
-				i++;
-			}
-			uri = "C:" + uri;
-#endif
-			i = 0;
-			while (i<query.length()) if (query[i++] == '&') j++;
-			j = j + 17;
-			if (j > 17) j++;
-			envp = (char **)malloc(sizeof(void *) * j);
-			i = 0; q = query;
-			while (q != "") envp[i++] = strdup(stringTok(&q,"&").c_str());
-			sstr << "CONTENT_LENGTH=" << contentLength;
-			envp[i] = strdup(sstr.str().c_str());
-			if (boundary != "")
-				envp[i+ 1] = strdup(("CONTENT_TYPE=" + contentType + "; boundary=" + boundary).c_str());
-			else
-				envp[i+ 1] = strdup(("CONTENT_TYPE=" + contentType).c_str());
-			sstr.str(""); sstr << "REMOTE_PORT=" << this->getPort();
-			envp[i+ 2] = strdup(sstr.str().c_str());
-			sstr.str(""); sstr << "SERVER_PORT=" << owner->getServerSocket()->getPort();
-			envp[i+ 3] = strdup(sstr.str().c_str());
-			envp[i+ 4] = strdup(("REMOTE_ADDR=" + this->getIP()).c_str());
-			envp[i+ 5] = strdup(("SERVER_ADDR=" + owner->getServerSocket()->getIP()).c_str());
-			envp[i+ 6] = strdup(("REQUEST_METHOD=" + method).c_str());
-			envp[i+ 7] = strdup(("HTTP_HOST=" + host).c_str());
-			envp[i+ 8] = strdup(("SERVER_NAME=" + host).c_str());
-			envp[i+ 9] = strdup(("HTTP_USER_AGENT=" + userAgent).c_str());
-			envp[i+10] = strdup("GATEWAY_INTERFACE=CGI/1.1");
-			envp[i+11] = strdup(("QUERY_STRING=" + query).c_str());
-			envp[i+12] = strdup(("REQUEST_URI=" + uri).c_str());
-			envp[i+13] = strdup(("SERVER_PROTOCOL=" + httpVersion).c_str());
-			envp[i+14] = strdup(("SCRIPT_FILENAME=" + uri).c_str());
-			envp[i+15] = strdup(("DOCUMENT_ROOT=" + owner->getDocumentRoot()).c_str());
-			envp[i+16] = NULL;
+	while (i<uri.length()) {
+		if (uri[i]=='/') uri[i]='\\';
+		i++;
+	}
+	uri = "C:" + uri;
 
-			if (tmpRespData) fclose(tmpRespData);
-			tmpRespData = tmpfile();
+	i = 0;
+	while (i<query.length()) if (query[i++] == '&') j++;
+	j = j + 17;
+	if (j > 17) j++;
+	envp = (char **)malloc(sizeof(void *) * j);
+	i = 0; q = query;
+	while (q != "") envp[i++] = strdup(stringTok(&q,"&").c_str());
+	sstr << "CONTENT_LENGTH=" << contentLength;
+	envp[i] = strdup(sstr.str().c_str());
+	if (boundary != "")
+		envp[i+ 1] = strdup(("CONTENT_TYPE=" + contentType + "; boundary=" + boundary).c_str());
+	else
+		envp[i+ 1] = strdup(("CONTENT_TYPE=" + contentType).c_str());
+	sstr.str(""); sstr << "REMOTE_PORT=" << this->getPort();
+	envp[i+ 2] = strdup(sstr.str().c_str());
+	sstr.str(""); sstr << "SERVER_PORT=" << owner->getServerSocket()->getPort();
+	envp[i+ 3] = strdup(sstr.str().c_str());
+	envp[i+ 4] = strdup(("REMOTE_ADDR=" + this->getIP()).c_str());
+	envp[i+ 5] = strdup(("SERVER_ADDR=" + owner->getServerSocket()->getIP()).c_str());
+	envp[i+ 6] = strdup(("REQUEST_METHOD=" + method).c_str());
+	envp[i+ 7] = strdup(("HTTP_HOST=" + host).c_str());
+	envp[i+ 8] = strdup(("SERVER_NAME=" + host).c_str());
+	envp[i+ 9] = strdup(("HTTP_USER_AGENT=" + userAgent).c_str());
+	envp[i+10] = strdup("GATEWAY_INTERFACE=CGI/1.1");
+	envp[i+11] = strdup(("QUERY_STRING=" + query).c_str());
+	envp[i+12] = strdup(("REQUEST_URI=" + uri).c_str());
+	envp[i+13] = strdup(("SERVER_PROTOCOL=" + httpVersion).c_str());
+	envp[i+14] = strdup(("SCRIPT_FILENAME=" + uri).c_str());
+	envp[i+15] = strdup(("DOCUMENT_ROOT=" + owner->getDocumentRoot()).c_str());
+	envp[i+16] = NULL;
 
-			if (mt == "application/php") {
-#ifndef WIN32
-				argv[0] = strdup(PHP_BIN);
-				argv[1] = strdup(uri.c_str());
-#else
-				argv[0] = strdup((PHP_BIN + uri).c_str());
-			} else if (mt == "application/batch") {
-				argv[0] = strdup((CMD_BIN + uri).c_str());
-#endif
-			} else argv[0] = strdup(uri.c_str());
+	if (tmpRespData) fclose(tmpRespData);
+	tmpRespData = tmpfile();
 
-			if ((tmpPostData) && (contentLength > 0) && (method == "POST")) {
-				fseek(tmpPostData,0,SEEK_SET);
-#ifndef WIN32
-				dup2(fileno(tmpPostData),fileno(stdin));
-#endif
-			}
-#ifndef WIN32
-			else dup2(this->socketFd,fileno(stdin));
+	if (mt == "application/php") {
+		argv[0] = strdup((PHP_BIN + uri).c_str());
+	} else if (mt == "application/batch") {
+		argv[0] = strdup((CMD_BIN + uri).c_str());
+	} else argv[0] = strdup(uri.c_str());
 
-			/* TODO: in the future change this redirection of stdout
-			 * to the client socket. Instead of redirecting, use a
-			 * tmp file to intermediate CGI output and detect if the
-			 * CGI hasn't sent HTTP response header, so the server
-			 * can send/complete it */
-			dup2(fileno(tmpRespData),fileno(stdout));
-			dup2(fileno(tmpRespData),fileno(stderr));
-			execve(argv[0],argv,envp);
-			LOG(strerror_r(errno,strerr,ERR_STR_LEN)); // execve() error
-			exit(-1);
-#else
-			ZeroMemory(&processInfo, sizeof(PROCESS_INFORMATION));
-			ZeroMemory(&startUpInfo, sizeof(STARTUPINFO));
-			startUpInfo.cb = sizeof(STARTUPINFO);
-			startUpInfo.hStdError = (HANDLE)_get_osfhandle(fileno(tmpRespData));
-			startUpInfo.hStdOutput = (HANDLE)_get_osfhandle(fileno(tmpRespData));
-			startUpInfo.hStdInput = (HANDLE)_get_osfhandle(tmpPostData?fileno(tmpPostData):fileno(stdin));
-			startUpInfo.dwFlags |= STARTF_USESTDHANDLES;
+	if ((tmpPostData) && (contentLength > 0) && (method == "POST")) {
+		fseek(tmpPostData,0,SEEK_SET);
+	}
+	ZeroMemory(&processInfo, sizeof(PROCESS_INFORMATION));
+	ZeroMemory(&startUpInfo, sizeof(STARTUPINFO));
+	startUpInfo.cb = sizeof(STARTUPINFO);
+	startUpInfo.hStdError = (HANDLE)_get_osfhandle(fileno(tmpRespData));
+	startUpInfo.hStdOutput = (HANDLE)_get_osfhandle(fileno(tmpRespData));
+	startUpInfo.hStdInput = (HANDLE)_get_osfhandle(tmpPostData?fileno(tmpPostData):fileno(stdin));
+	startUpInfo.dwFlags |= STARTF_USESTDHANDLES;
 
-			for (i=0;i<j-1;i++) envStr << envp[i] << '\0'; envStr << '\0';
-			winEnv = malloc(envStr.tellp());
-			memcpy(winEnv,envStr.str().data(),envStr.tellp());
+	for (i=0;i<j-1;i++) envStr << envp[i] << '\0'; envStr << '\0';
+	winEnv = malloc(envStr.tellp());
+	memcpy(winEnv,envStr.str().data(),envStr.tellp());
 
-			if (CreateProcess(NULL, argv[0], NULL, NULL, TRUE, 0, winEnv, NULL, &startUpInfo, &processInfo)) {
-				WaitForSingleObject(processInfo.hProcess,INFINITE);
-				CloseHandle(processInfo.hProcess);
-				CloseHandle(processInfo.hThread);
-			} else reply500InternalError();
+	if (CreateProcess(NULL, argv[0], NULL, NULL, TRUE, 0, winEnv, NULL, &startUpInfo, &processInfo)) {
+		WaitForSingleObject(processInfo.hProcess,INFINITE);
+		CloseHandle(processInfo.hProcess);
+		CloseHandle(processInfo.hThread);
+	} else reply500InternalError();
 
-			for (i=0;i<j-1;i++) free(envp[i]);
-			free(envp);
-			free(argv[0]);
-			if (argv[1]) free(argv[1]);
-			free(winEnv);
-#endif
-		} else if (f == -1) {
-			LOG(strerror_r(errno,strerr,ERR_STR_LEN)); // fork() error
-			reply500InternalError();
-		} else {
-			waitpid(f,&cgiRet,0);
-			if (cgiRet) reply500InternalError();	// CGI has executed, but ended abnormally
-		}
+	for (i=0;i<j-1;i++) free(envp[i]);
+	free(envp);
+	free(argv[0]);
+	if (argv[1]) free(argv[1]);
+	free(winEnv);
 
+	if (tmpRespData) {
 		if (fstat(fileno(tmpRespData),&st)!=-1) {
 			if (st.st_size > 0) sendFile(tmpRespData,&offset,st.st_size);
 		}
 		Close();
-	} else {
-		if (!HEAD()) {
-			if (sendFile(uri.c_str(),&offset,contentLength) <= 0) reply500InternalError();
-		}
 	}
 	if (tmpPostData) fclose(tmpPostData);
 	if (tmpRespData) fclose(tmpRespData);
 	tmpPostData = tmpRespData = NULL;
+}
+
+#endif
+
+void tHTTPClientSocket::GET()
+{
+	off_t offset = 0;
+
+	if ((query != "") && !access(uri.c_str(),X_OK)) CGICall();
+	else {
+		if (!HEAD()) {
+			if (sendFile(uri.c_str(),&offset,contentLength) <= 0) reply500InternalError();
+		}
+	}
 }
 
 void tHTTPClientSocket::OPTIONS()
