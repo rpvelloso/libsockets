@@ -275,13 +275,11 @@ void tHTTPClientSocket::processHttpRequest() {
 
 void tHTTPClientSocket::CGICall()
 {
-	off_t offset = 0;
 	char **envp=NULL,*argv[3] = { NULL, NULL, NULL };
 	size_t i=0,j=0;
 	pid_t f;
 	int cgiRet;
 	string q,mt;
-	struct stat st;
 	char strerr[ERR_STR_LEN];
 	stringstream sstr;
 
@@ -331,9 +329,6 @@ void tHTTPClientSocket::CGICall()
 			dup2(fileno(tmpPostData),fileno(stdin));
 		} else fclose(stdin);
 
-		/* TODO: Intermediate CGI output and detect if the
-		 * CGI hasn't sent HTTP response header, so the server
-		 * can send/complete it */
 		dup2(fileno(tmpRespData),fileno(stdout));
 		dup2(fileno(tmpRespData),fileno(stderr));
 		execve(argv[0],argv,envp);
@@ -344,13 +339,7 @@ void tHTTPClientSocket::CGICall()
 		reply500InternalError();
 	} else {
 		waitpid(f,&cgiRet,0);
-		if (cgiRet) reply500InternalError();	// CGI has executed, but ended abnormally
-		else {
-			if (fstat(fileno(tmpRespData),&st)!=-1) {
-				if (st.st_size > 0) sendFile(tmpRespData,&offset,st.st_size);
-			}
-		}
-		Close();
+		if (cgiRet) reply500InternalError(); // CGI has executed, but ended abnormally
 	}
 }
 
@@ -358,11 +347,10 @@ void tHTTPClientSocket::CGICall()
 
 void tHTTPClientSocket::CGICall()
 {
-	off_t offset = 0;
-	char *cmdline;
+	char *cmdLine;
+	unsigned long int cgiRet;
 	size_t i;
 	string q,mt;
-	struct stat st;
 	PROCESS_INFORMATION processInfo;
 	STARTUPINFO startUpInfo;
 	stringstream envStr(ios_base::in | ios_base::out | ios_base::binary);
@@ -401,10 +389,10 @@ void tHTTPClientSocket::CGICall()
 	memcpy(winEnv,envStr.str().data(),envStr.tellp());
 
 	if (mt == "application/php") {
-		cmdline = strdup((PHP_BIN + uri).c_str());
+		cmdLine = strdup((PHP_BIN + uri).c_str());
 	} else if (mt == "application/batch") {
-		cmdline = strdup((CMD_BIN + uri).c_str());
-	} else cmdline = strdup(uri.c_str());
+		cmdLine = strdup((CMD_BIN + uri).c_str());
+	} else cmdLine = strdup(uri.c_str());
 
 	if ((tmpPostData) && (contentLength > 0) && (method == "POST")) {
 		fseek(tmpPostData,0,SEEK_SET);
@@ -417,19 +405,16 @@ void tHTTPClientSocket::CGICall()
 	startUpInfo.hStdInput = (HANDLE)_get_osfhandle(tmpPostData?fileno(tmpPostData):fileno(stdin));
 	startUpInfo.dwFlags |= STARTF_USESTDHANDLES;
 
-	if (CreateProcess(NULL, cmdline, NULL, NULL, TRUE, 0, winEnv, NULL, &startUpInfo, &processInfo)) {
+	if (CreateProcess(NULL, cmdLine, NULL, NULL, TRUE, 0, winEnv, NULL, &startUpInfo, &processInfo)) {
 		WaitForSingleObject(processInfo.hProcess,INFINITE);
+		GetExitCodeProcess(processInfo.hProcess,&cgiRet);
+		if (cgiRet) reply500InternalError(); // CGI has executed, but ended abnormally
 		CloseHandle(processInfo.hProcess);
 		CloseHandle(processInfo.hThread);
 	} else reply500InternalError();
 
-	free(cmdline);
+	free(cmdLine);
 	free(winEnv);
-
-	if (fstat(fileno(tmpRespData),&st)!=-1) {
-		if (st.st_size > 0) sendFile(tmpRespData,&offset,st.st_size);
-	}
-	Close();
 }
 
 #endif
@@ -437,6 +422,7 @@ void tHTTPClientSocket::CGICall()
 void tHTTPClientSocket::GET()
 {
 	off_t offset = 0;
+	struct stat st;
 
 	if ((query != "") && !access(uri.c_str(),X_OK)) {
 		if (tmpRespData) fclose(tmpRespData);
@@ -444,8 +430,18 @@ void tHTTPClientSocket::GET()
 
 		CGICall();
 
+		if (fstat(fileno(tmpRespData),&st)!=-1) {
+			if (st.st_size > 0) {
+				/* TODO: Intermediate CGI output and detect if the
+				 * CGI hasn't sent HTTP response header, so the server
+				 * can send/complete it */
+				sendFile(tmpRespData,&offset,st.st_size);
+			}
+		} else reply500InternalError();
+		fclose(tmpRespData);
+		Close();
+
 		if (tmpPostData) fclose(tmpPostData);
-		if (tmpRespData) fclose(tmpRespData);
 		tmpPostData = tmpRespData = NULL;
 	} else {
 		if (!HEAD()) {
