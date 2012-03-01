@@ -281,6 +281,7 @@ void tHTTPClientSocket::processHttpRequest() {
 #define ENV_VAR_COUNT 17
 
 #ifndef WIN32
+
 void tHTTPClientSocket::CGICall()
 {
 	off_t offset = 0;
@@ -292,9 +293,6 @@ void tHTTPClientSocket::CGICall()
 	struct stat st;
 	char strerr[ERR_STR_LEN];
 	stringstream sstr;
-
-	if (tmpRespData) fclose(tmpRespData);
-	tmpRespData = tmpfile();
 
 	if (!(f=fork())) {
 
@@ -362,9 +360,6 @@ void tHTTPClientSocket::CGICall()
 			}
 		}
 		Close();
-		if (tmpPostData) fclose(tmpPostData);
-		if (tmpRespData) fclose(tmpRespData);
-		tmpPostData = tmpRespData = NULL;
 	}
 }
 
@@ -373,20 +368,20 @@ void tHTTPClientSocket::CGICall()
 void tHTTPClientSocket::CGICall()
 {
 	off_t offset = 0;
-	char **envp=NULL,*argv[3] = { NULL, NULL, NULL };
+	char *cmdline;
 	size_t i=0,j=0;
-	pid_t f;
-	int cgiRet;
 	string q,mt;
 	struct stat st;
 	PROCESS_INFORMATION processInfo;
 	STARTUPINFO startUpInfo;
 	stringstream envStr(ios_base::in | ios_base::out | ios_base::binary);
-	void *winEnv=NULL;
-	stringstream sstr;
+	void *winEnv;
 
 	if (query[0] == '?') query.erase(0,1); // remove char '?'
-	mt = mimeType(uri);
+	while (i<query.length()) if (query[i++] == '&') j++;
+	j += j?ENV_VAR_COUNT+1:ENV_VAR_COUNT;
+
+	mt = mimeType(uri); i = 0;
 
 	while (i<uri.length()) {
 		if (uri[i]=='/') uri[i]='\\';
@@ -394,45 +389,35 @@ void tHTTPClientSocket::CGICall()
 	}
 	uri = "C:" + uri;
 
-	i = 0;
-	while (i<query.length()) if (query[i++] == '&') j++;
-	j = j + 17;
-	if (j > 17) j++;
-	envp = (char **)malloc(sizeof(void *) * j);
 	i = 0; q = query;
-	while (q != "") envp[i++] = strdup(stringTok(&q,"&").c_str());
-	sstr << "CONTENT_LENGTH=" << contentLength;
-	envp[i] = strdup(sstr.str().c_str());
-	if (boundary != "")
-		envp[i+ 1] = strdup(("CONTENT_TYPE=" + contentType + "; boundary=" + boundary).c_str());
-	else
-		envp[i+ 1] = strdup(("CONTENT_TYPE=" + contentType).c_str());
-	sstr.str(""); sstr << "REMOTE_PORT=" << this->getPort();
-	envp[i+ 2] = strdup(sstr.str().c_str());
-	sstr.str(""); sstr << "SERVER_PORT=" << owner->getServerSocket()->getPort();
-	envp[i+ 3] = strdup(sstr.str().c_str());
-	envp[i+ 4] = strdup(("REMOTE_ADDR=" + this->getIP()).c_str());
-	envp[i+ 5] = strdup(("SERVER_ADDR=" + owner->getServerSocket()->getIP()).c_str());
-	envp[i+ 6] = strdup(("REQUEST_METHOD=" + method).c_str());
-	envp[i+ 7] = strdup(("HTTP_HOST=" + host).c_str());
-	envp[i+ 8] = strdup(("SERVER_NAME=" + host).c_str());
-	envp[i+ 9] = strdup(("HTTP_USER_AGENT=" + userAgent).c_str());
-	envp[i+10] = strdup("GATEWAY_INTERFACE=CGI/1.1");
-	envp[i+11] = strdup(("QUERY_STRING=" + query).c_str());
-	envp[i+12] = strdup(("REQUEST_URI=" + uri).c_str());
-	envp[i+13] = strdup(("SERVER_PROTOCOL=" + httpVersion).c_str());
-	envp[i+14] = strdup(("SCRIPT_FILENAME=" + uri).c_str());
-	envp[i+15] = strdup(("DOCUMENT_ROOT=" + owner->getDocumentRoot()).c_str());
-	envp[i+16] = NULL;
+	while (q != "") envStr << stringTok(&q,"&") << '\0';
+	envStr << "CONTENT_LENGTH=" << contentLength << '\0';
+	envStr << "CONTENT_TYPE=" << contentType;
+	if (boundary != "")	envStr << "; boundary=" << boundary;
+	envStr << '\0';
+	envStr << "REMOTE_PORT=" << this->getPort() << '\0';
+	envStr << "SERVER_PORT=" << owner->getServerSocket()->getPort() << '\0';
+	envStr << "REMOTE_ADDR=" << this->getIP() << '\0';
+	envStr << "SERVER_ADDR=" << owner->getServerSocket()->getIP() << '\0';
+	envStr << "REQUEST_METHOD=" << method << '\0';
+	envStr << "HTTP_HOST=" << host << '\0';
+	envStr << "SERVER_NAME=" << host << '\0';
+	envStr << "HTTP_USER_AGENT=" << userAgent << '\0';
+	envStr << "GATEWAY_INTERFACE=CGI/1.1" << '\0';
+	envStr << "QUERY_STRING=" << query << '\0';
+	envStr << "REQUEST_URI=" << uri << '\0';
+	envStr << "SERVER_PROTOCOL=" << httpVersion << '\0';
+	envStr << "SCRIPT_FILENAME=" << uri << '\0';
+	envStr << "DOCUMENT_ROOT=" << owner->getDocumentRoot() << '\0';
 
-	if (tmpRespData) fclose(tmpRespData);
-	tmpRespData = tmpfile();
+	winEnv = malloc(envStr.tellp());
+	memcpy(winEnv,envStr.str().data(),envStr.tellp());
 
 	if (mt == "application/php") {
-		argv[0] = strdup((PHP_BIN + uri).c_str());
+		cmdline = strdup((PHP_BIN + uri).c_str());
 	} else if (mt == "application/batch") {
-		argv[0] = strdup((CMD_BIN + uri).c_str());
-	} else argv[0] = strdup(uri.c_str());
+		cmdline = strdup((CMD_BIN + uri).c_str());
+	} else cmdline = strdup(uri.c_str());
 
 	if ((tmpPostData) && (contentLength > 0) && (method == "POST")) {
 		fseek(tmpPostData,0,SEEK_SET);
@@ -445,31 +430,19 @@ void tHTTPClientSocket::CGICall()
 	startUpInfo.hStdInput = (HANDLE)_get_osfhandle(tmpPostData?fileno(tmpPostData):fileno(stdin));
 	startUpInfo.dwFlags |= STARTF_USESTDHANDLES;
 
-	for (i=0;i<j-1;i++) envStr << envp[i] << '\0'; envStr << '\0';
-	winEnv = malloc(envStr.tellp());
-	memcpy(winEnv,envStr.str().data(),envStr.tellp());
-
-	if (CreateProcess(NULL, argv[0], NULL, NULL, TRUE, 0, winEnv, NULL, &startUpInfo, &processInfo)) {
+	if (CreateProcess(NULL, cmdline, NULL, NULL, TRUE, 0, winEnv, NULL, &startUpInfo, &processInfo)) {
 		WaitForSingleObject(processInfo.hProcess,INFINITE);
 		CloseHandle(processInfo.hProcess);
 		CloseHandle(processInfo.hThread);
 	} else reply500InternalError();
 
-	for (i=0;i<j-1;i++) free(envp[i]);
-	free(envp);
-	free(argv[0]);
-	if (argv[1]) free(argv[1]);
+	free(cmdline);
 	free(winEnv);
 
-	if (tmpRespData) {
-		if (fstat(fileno(tmpRespData),&st)!=-1) {
-			if (st.st_size > 0) sendFile(tmpRespData,&offset,st.st_size);
-		}
-		Close();
+	if (fstat(fileno(tmpRespData),&st)!=-1) {
+		if (st.st_size > 0) sendFile(tmpRespData,&offset,st.st_size);
 	}
-	if (tmpPostData) fclose(tmpPostData);
-	if (tmpRespData) fclose(tmpRespData);
-	tmpPostData = tmpRespData = NULL;
+	Close();
 }
 
 #endif
@@ -478,8 +451,16 @@ void tHTTPClientSocket::GET()
 {
 	off_t offset = 0;
 
-	if ((query != "") && !access(uri.c_str(),X_OK)) CGICall();
-	else {
+	if ((query != "") && !access(uri.c_str(),X_OK)) {
+		if (tmpRespData) fclose(tmpRespData);
+		tmpRespData = tmpfile();
+
+		CGICall();
+
+		if (tmpPostData) fclose(tmpPostData);
+		if (tmpRespData) fclose(tmpRespData);
+		tmpPostData = tmpRespData = NULL;
+	} else {
 		if (!HEAD()) {
 			if (sendFile(uri.c_str(),&offset,contentLength) <= 0) reply500InternalError();
 		}
