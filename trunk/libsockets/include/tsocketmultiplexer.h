@@ -37,7 +37,8 @@ enum tSocketMultiplexerState {
 	tSocketMultiplexerIdle=0,
 	tSoscketMultiplexerWaiting
 };
- /* TODO: usar pthread_kill ou self-pipe p/ interromper select() */
+ /* TODO: usar pthread_kill ou self-pipe p/ interromper select()
+  * apos alterar a lista de sockets */
 
 template <class C, class T>
 class tSocketMultiplexer : public tObject {
