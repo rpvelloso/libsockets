@@ -411,7 +411,10 @@ void tHTTPClientSocket::CGICall()
 		if (cgiRet) reply500InternalError(); // CGI has executed, but ended abnormally
 		CloseHandle(processInfo.hProcess);
 		CloseHandle(processInfo.hThread);
-	} else reply500InternalError();
+	} else {
+		LOG("CreateProcess() error");
+		reply500InternalError();
+	}
 
 	free(cmdLine);
 	free(winEnv);
