@@ -37,6 +37,8 @@ public:
        int receive(void *, size_t);
        ssize_t sendFile(const char *, off_t *, ssize_t);
        ssize_t sendFile(FILE *, off_t *, ssize_t);
+       int setReceiveTimeout(struct timeval);
+       int setSendTimeout(struct timeval);
 
        virtual void onSend(void *, size_t *) = 0;
        virtual void onReceive(void *, size_t) = 0;

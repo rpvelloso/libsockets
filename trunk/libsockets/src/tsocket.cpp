@@ -23,6 +23,7 @@ tSocket::tSocket() {
     socketFd = socket(PF_INET,SOCK_STREAM,0/*IPPROTO_TCP*/);
     socketStatus = tSocketClosed;  
     hostname[0] = 0;                 
+	nonBlockingIO = 0;
 }
 
 tSocket::~tSocket() {
@@ -104,6 +105,28 @@ int tSocket::setLinger(int onoff, int ll) {
 
 	return setsockopt(socketFd,SOL_SOCKET,SO_LINGER,(char *)&l,sizeof(l));
 }
+
+#ifdef WIN32
+
+int tSocket::toggleNonBlockingIO() {
+	unsigned long int socketFlags;
+	nonBlockingIO = !nonBlockingIO;
+	socketFlags = nonBlockingIO;
+	return ioctlsocket(socketFd,FIONBIO,&socketFlags);
+}
+
+#else
+
+int tSocket::toggleNonBlockingIO() {
+	int socketFlags;
+	socketFlags=fcntl(s,F_GETFL,0);
+	nonBlockingIO = !nonBlockingIO;
+	if (nonBlockingIO) socketFlags |= O_NONBLOCK;
+	else socketFlags &= ~O_NONBLOCK;
+	return fcntl(s,F_SETFL,socketFlags);
+}
+
+#endif
 
 #ifdef WIN32
 int WinSocketStartup() {

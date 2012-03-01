@@ -57,12 +57,13 @@ public:
        unsigned short getPort();
        string getIP();
        int setLinger(int,int);
+       int toggleNonBlockingIO();
 protected:
         int socketFd;
         tSocketStatus socketStatus;
         sockaddr_in socketAddr;        
         char hostname[MAX_HOSTNAME];
-        
+        int nonBlockingIO;
 };
 
 #ifdef WIN32

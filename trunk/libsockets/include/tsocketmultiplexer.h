@@ -20,6 +20,15 @@
 #ifndef TSOCKETMULTIPLEXER_H_
 #define TSOCKETMULTIPLEXER_H_
 
+#include <list>
+#ifdef WIN32
+	#include <winsock2.h>
+#else
+	#include <sys/select.h>
+#endif
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
 #ifdef DEVEL_ENV
 	#include "tobject.h"
 	#include "tmutex.h"
@@ -27,11 +36,6 @@
 	#include <libsockets/tobject.h>
 	#include <libsockets/tmutex.h>
 #endif
-#include <list>
-#include <sys/select.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
 
 enum tSocketMultiplexerState {
 	tSocketMultiplexerIdle=0,

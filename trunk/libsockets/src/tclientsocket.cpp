@@ -176,3 +176,11 @@ ssize_t tClientSocket::sendFile(FILE *f, off_t *offset, ssize_t count) {
 	}
 	return fd;
 }
+
+int tClientSocket::setReceiveTimeout(struct timeval t) {
+	return setsockopt(socketFd,SOL_SOCKET,SO_RCVTIMEO,(const char *)&t,sizeof(struct timeval));
+}
+
+int tClientSocket::setSendTimeout(struct timeval t) {
+	return setsockopt(socketFd,SOL_SOCKET,SO_SNDTIMEO,(const char *)&t,sizeof(struct timeval));
+}
