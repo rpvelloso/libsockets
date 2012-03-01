@@ -31,24 +31,15 @@
 #endif
 #include <libsockets/libsockets.h>
 #include "thttpclientsocket.h"
+#include "misc.h"
 #include "thttpthread.h"
 #include "httpreply.h"
 
 #define ERR_STR_LEN 100
-#ifdef WIN32
-	#define PHP_BIN "C:\\Progra~1\\PHP\\php-cgi.exe "
-#else
-	#define PHP_BIN "/usr/bin/php-cgi"
-#endif
-
-#define CMD_BIN "C:\\Windows\\System32\\cmd.exe /c "
 
 #ifdef WIN32 // under windows, this functions are thread-safe
 	#define gmtime_r(i,j) memcpy(j,gmtime(i),sizeof(struct tm))
 	#define strerror_r(i,j,k) strerror(i)
-	#define pipe(p) _pipe(p,4096,0)
-	#define fork() 0
-	#define waitpid(p,r,n) _cwait(r,p,n)
 #endif
 
 static string weekDays[7] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
@@ -86,7 +77,7 @@ string mimeType(string f) {
 
 	p = f.find_last_of(".",f.length());
 	if (p != string::npos) {
-		p2 = f.find_last_of("/",f.length());
+		p2 = f.find_last_of('/',f.length());
 		if ((p2 != string::npos) && (p>p2)) {
 			ext = f.substr(p+1,f.length()-p);
 			lowerCase(ext);
@@ -369,7 +360,7 @@ void tHTTPClientSocket::CGICall()
 {
 	off_t offset = 0;
 	char *cmdline;
-	size_t i=0,j=0;
+	size_t i;
 	string q,mt;
 	struct stat st;
 	PROCESS_INFORMATION processInfo;
@@ -378,37 +369,33 @@ void tHTTPClientSocket::CGICall()
 	void *winEnv;
 
 	if (query[0] == '?') query.erase(0,1); // remove char '?'
-	while (i<query.length()) if (query[i++] == '&') j++;
-	j += j?ENV_VAR_COUNT+1:ENV_VAR_COUNT;
-
 	mt = mimeType(uri); i = 0;
-
-	while (i<uri.length()) {
+	while (i<uri.length()) { // converts URL to windows local path
 		if (uri[i]=='/') uri[i]='\\';
 		i++;
 	}
-	uri = "C:" + uri;
+	uri = DRIVE + uri;
 
 	i = 0; q = query;
 	while (q != "") envStr << stringTok(&q,"&") << '\0';
-	envStr << "CONTENT_LENGTH=" << contentLength << '\0';
-	envStr << "CONTENT_TYPE=" << contentType;
+	envStr << "CONTENT_LENGTH=" << contentLength << '\0'
+	<< "CONTENT_TYPE=" << contentType;
 	if (boundary != "")	envStr << "; boundary=" << boundary;
-	envStr << '\0';
-	envStr << "REMOTE_PORT=" << this->getPort() << '\0';
-	envStr << "SERVER_PORT=" << owner->getServerSocket()->getPort() << '\0';
-	envStr << "REMOTE_ADDR=" << this->getIP() << '\0';
-	envStr << "SERVER_ADDR=" << owner->getServerSocket()->getIP() << '\0';
-	envStr << "REQUEST_METHOD=" << method << '\0';
-	envStr << "HTTP_HOST=" << host << '\0';
-	envStr << "SERVER_NAME=" << host << '\0';
-	envStr << "HTTP_USER_AGENT=" << userAgent << '\0';
-	envStr << "GATEWAY_INTERFACE=CGI/1.1" << '\0';
-	envStr << "QUERY_STRING=" << query << '\0';
-	envStr << "REQUEST_URI=" << uri << '\0';
-	envStr << "SERVER_PROTOCOL=" << httpVersion << '\0';
-	envStr << "SCRIPT_FILENAME=" << uri << '\0';
-	envStr << "DOCUMENT_ROOT=" << owner->getDocumentRoot() << '\0';
+	envStr << '\0'
+	<< "REMOTE_PORT=" << this->getPort() << '\0'
+	<< "SERVER_PORT=" << owner->getServerSocket()->getPort() << '\0'
+	<< "REMOTE_ADDR=" << this->getIP() << '\0'
+	<< "SERVER_ADDR=" << owner->getServerSocket()->getIP() << '\0'
+	<< "REQUEST_METHOD=" << method << '\0'
+	<< "HTTP_HOST=" << host << '\0'
+	<< "SERVER_NAME=" << host << '\0'
+	<< "HTTP_USER_AGENT=" << userAgent << '\0'
+	<< "GATEWAY_INTERFACE=CGI/1.1" << '\0'
+	<< "QUERY_STRING=" << query << '\0'
+	<< "REQUEST_URI=" << uri << '\0'
+	<< "SERVER_PROTOCOL=" << httpVersion << '\0'
+	<< "SCRIPT_FILENAME=" << uri << '\0'
+	<< "DOCUMENT_ROOT=" << owner->getDocumentRoot() << '\0' << '\0';
 
 	winEnv = malloc(envStr.tellp());
 	memcpy(winEnv,envStr.str().data(),envStr.tellp());
