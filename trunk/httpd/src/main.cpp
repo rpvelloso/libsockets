@@ -71,9 +71,8 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	if ((rootDir.empty()) || (bindPort == 0) ||
+	if (rootDir.empty() || (bindPort == 0) ||
 		bindAddr.empty() || (rootDir[0] != '/')) {
-
     	printUsage(argv[0]);
 	} else {
 
