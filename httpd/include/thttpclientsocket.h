@@ -74,7 +74,8 @@ protected:
     int hdrPos,msgOverflow,lineLength;
     ssize_t bodyPos;
     tHTTPRequestState reqState;
-    string userAgent,host,method,uri,query,contentType,boundary,httpVersion;
+    string userAgent,host,method,uri,scriptName,
+    query,contentType,boundary,httpVersion,referer,cookie;
     ssize_t contentLength;
     tHTTPServer *owner;
     FILE *tmpPostData;
