@@ -200,14 +200,19 @@ void tHTTPClientSocket::processHttpHeader() {
 	userAgent = "";
 	contentType = "";
 	boundary = "";
+	scriptName = "";
+	referer = "";
+	cookie = "";
 	contentLength = 0;
 
 	do { // TODO: parse header params better
 		line = stringTok(&msg,"\n\r"); i++;
 		lineAux = line;
+		cout << line << endl;
 		if (i == 1) { // request line
 			method = stringTok(&line," ");
-			request = stringTok(&line," ");
+			scriptName = request = stringTok(&line," ");
+			scriptName = unescapeUri(stringTok(&scriptName,"?"));
 			if (request[0]=='/') request.erase(0,1);
 			request = unescapeUri(owner->getDocumentRoot() + request);
 			uri = stringTok(&request,"?");
@@ -227,6 +232,10 @@ void tHTTPClientSocket::processHttpHeader() {
 			} else if (parm == "CONTENT-LENGTH") {
 				cl << line;
 				cl >> contentLength;
+			} else if (parm == "REFERER") {
+				referer = line;
+			} else if (parm == "COOKIE") {
+				cookie = line;
 			}
 		}
 	} while (lineAux != "");
@@ -239,7 +248,10 @@ void tHTTPClientSocket::processHttpHeader() {
 	<< "Agent...: \'" << userAgent << "\'" << endl
 	<< "Length..: \'" << contentLength << "\'" << endl
 	<< "Type....: \'" << contentType << "\'" << endl
-	<< "Boundary: \'" << boundary << "\'" << endl;
+	<< "Boundary: \'" << boundary << "\'" << endl
+	<< "Script..: \'" << scriptName << "\'" << endl
+	<< "Referer.: \'" << referer << "\'" << endl
+	<< "Cookie..: \'" << cookie << "\'" << endl;
 
 	if (contentLength > 0) {
 		if (tmpPostData) fclose(tmpPostData);
@@ -269,7 +281,7 @@ void tHTTPClientSocket::processHttpRequest() {
 	reqState = tHTTPReceiveHeader; // end of request: goes back to initial state
 }
 
-#define ENV_VAR_COUNT 17
+#define ENV_VAR_COUNT 20
 
 #ifndef WIN32
 
@@ -314,8 +326,11 @@ void tHTTPClientSocket::CGICall()
 		envp[i+12] = strdup(("REQUEST_URI=" + uri).c_str());
 		envp[i+13] = strdup(("SERVER_PROTOCOL=" + httpVersion).c_str());
 		envp[i+14] = strdup(("SCRIPT_FILENAME=" + uri).c_str());
-		envp[i+15] = strdup(("DOCUMENT_ROOT=" + owner->getDocumentRoot()).c_str());
-		envp[i+16] = NULL;
+		envp[i+15] = strdup(("SCRIPT_NAME=" + scriptName).c_str());
+		envp[i+16] = strdup(("DOCUMENT_ROOT=" + owner->getDocumentRoot()).c_str());
+		envp[i+17] = strdup(("HTTP_REFERER=" + referer).c_str());
+		envp[i+18] = strdup(("HTTP_COOKIE=" + cookie).c_str());
+		envp[i+19] = NULL;
 
 		mt = mimeType(uri);
 
@@ -383,6 +398,9 @@ void tHTTPClientSocket::CGICall()
 	<< "REQUEST_URI=" << uri << '\0'
 	<< "SERVER_PROTOCOL=" << httpVersion << '\0'
 	<< "SCRIPT_FILENAME=" << uri << '\0'
+	<< "SCRIPT_NAME=" << scriptName << '\0'
+	<< "HTTP_REFERER=" << referer << '\0'
+	<< "HTTP_COOKIE=" << cookie << '\0'
 	<< "DOCUMENT_ROOT=" << owner->getDocumentRoot() << '\0' << '\0';
 
 	winEnv = malloc(envStr.tellp());
@@ -426,9 +444,10 @@ void tHTTPClientSocket::GET()
 {
 	off_t offset = 0;
 	struct stat st;
-	char respHdr[6] = {0,0,0,0,0,0};
+	char respHdr[12];
+	string resp,mt = mimeType(uri);
 
-	if ((query != "") && !access(uri.c_str(),X_OK)) {
+	if (((query != "") || (mt == "application/php")) && !access(uri.c_str(),X_OK)) {
 		if (tmpRespData) fclose(tmpRespData);
 		tmpRespData = tmpfile();
 
@@ -438,9 +457,11 @@ void tHTTPClientSocket::GET()
 		fseek(tmpRespData,0,SEEK_SET);
 		if (fstat(fileno(tmpRespData),&st)!=-1) {
 			if (st.st_size > 0) {
-				fread(respHdr,5,1,tmpRespData);
+				fread(respHdr,11,1,tmpRespData); respHdr[11]=0x00;
+				resp = respHdr; upperCase(resp);
 				cout << respHdr << endl;
-				if (string(respHdr) != "HTTP/") Send(httpVersion + " 200 OK" + CRLF);
+				if (resp.substr(0,8) == "STATUS: ") Send(httpVersion + resp.substr(7,4) + CRLF);
+				else if (resp != "HTTP/") Send(httpVersion + " 200 OK" + CRLF);
 				sendFile(tmpRespData,&offset,st.st_size);
 			}
 		} else reply500InternalError();
