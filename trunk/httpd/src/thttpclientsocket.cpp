@@ -347,10 +347,10 @@ void tHTTPClientSocket::CGICall()
 		dup2(fileno(tmpRespData),fileno(stdout));
 		dup2(fileno(tmpRespData),fileno(stderr));
 		execve(argv[0],argv,envp);
-		LOG(strerror_r(errno,strerr,ERR_STR_LEN)); // execve() error
+		LOG("execve() error: %s\n",strerror_r(errno,strerr,ERR_STR_LEN)); // execve() error
 		exit(-1);
 	} else if (f == -1) {
-		LOG(strerror_r(errno,strerr,ERR_STR_LEN)); // fork() error
+		LOG("fork() error: %s\n",strerror_r(errno,strerr,ERR_STR_LEN)); // fork() error
 		reply500InternalError();
 	} else {
 		waitpid(f,&cgiRet,0);
@@ -430,7 +430,7 @@ void tHTTPClientSocket::CGICall()
 		CloseHandle(processInfo.hProcess);
 		CloseHandle(processInfo.hThread);
 	} else {
-		LOG("CreateProcess() error");
+		LOG("CreateProcess() error: %d\n",GetLastError());
 		reply500InternalError();
 	}
 
