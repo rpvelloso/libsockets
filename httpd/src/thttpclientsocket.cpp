@@ -426,6 +426,7 @@ void tHTTPClientSocket::GET()
 {
 	off_t offset = 0;
 	struct stat st;
+	char respHdr[6] = {0,0,0,0,0,0};
 
 	if ((query != "") && !access(uri.c_str(),X_OK)) {
 		if (tmpRespData) fclose(tmpRespData);
@@ -434,11 +435,12 @@ void tHTTPClientSocket::GET()
 		CGICall();
 
 		fflush(tmpRespData);
+		fseek(tmpRespData,0,SEEK_SET);
 		if (fstat(fileno(tmpRespData),&st)!=-1) {
 			if (st.st_size > 0) {
-				/* TODO: Intermediate CGI output and detect if the
-				 * CGI hasn't sent HTTP response header, so the server
-				 * can send/complete it */
+				fread(respHdr,5,1,tmpRespData);
+				cout << respHdr << endl;
+				if (string(respHdr) != "HTTP/") Send(httpVersion + " 200 OK" + CRLF);
 				sendFile(tmpRespData,&offset,st.st_size);
 			}
 		} else reply500InternalError();
