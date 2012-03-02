@@ -459,7 +459,6 @@ void tHTTPClientSocket::GET()
 			if (st.st_size > 0) {
 				fread(respHdr,11,1,tmpRespData); respHdr[11]=0x00;
 				resp = respHdr; upperCase(resp);
-				cout << respHdr << endl;
 				if (resp.substr(0,8) == "STATUS: ") Send(httpVersion + resp.substr(7,4) + CRLF);
 				else if (resp != "HTTP/") Send(httpVersion + " 200 OK" + CRLF);
 				sendFile(tmpRespData,&offset,st.st_size);
