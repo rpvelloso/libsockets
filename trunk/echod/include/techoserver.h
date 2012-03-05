@@ -33,11 +33,13 @@ public:
 	void run(const char *, unsigned short);
 	void stop();
 	void removeThread(tEchoThread *);
+	void addThread(tEchoThread *);
 	tEchoLog *getLog();
 protected:
 	tEchoServerSocket *serverSocket;
 	list<tEchoThread *> threads;
     tEchoLog *log;
+    tMutex *threadsMutex;
 };
 
 #endif

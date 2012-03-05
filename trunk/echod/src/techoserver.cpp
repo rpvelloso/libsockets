@@ -23,19 +23,23 @@ tEchoServer::tEchoServer() : tObject() {
 	log = new tEchoLog();
 	log->Open();
 	serverSocket->setLog(log);
+	threadsMutex = new tMutex();
 }
 
 tEchoServer::~tEchoServer() {
 	list<tEchoThread *>::iterator i;
 
+	threadsMutex->lock();
 	for (i=threads.begin();i!=threads.end();i++) {
 		(*i)->setSelfDestroy(0);
 		delete (*i);
 	}
 	threads.clear();
+	threadsMutex->unlock();
 	delete serverSocket;
 	log->Close();
 	delete log;
+	delete threadsMutex;
 }
 
 void tEchoServer::run(const char *addr, unsigned short port) {
@@ -51,7 +55,7 @@ void tEchoServer::run(const char *addr, unsigned short port) {
 			if (client_socket) {
 				client_socket->setLog(log);
 				client_thread = new tEchoThread(1, this, client_socket);
-				threads.push_back(client_thread);
+				addThread(client_thread);
 				client_thread->start();
 			} else {
 				perror("Accept()");
@@ -65,7 +69,15 @@ void tEchoServer::stop() {
 }
 
 void tEchoServer::removeThread(tEchoThread *t) {
+	threadsMutex->lock();
 	threads.remove(t);
+	threadsMutex->unlock();
+}
+
+void tEchoServer::addThread(tEchoThread *t) {
+	threadsMutex->lock();
+	threads.push_back(t);
+	threadsMutex->unlock();
 }
 
 tEchoLog *tEchoServer::getLog() {
