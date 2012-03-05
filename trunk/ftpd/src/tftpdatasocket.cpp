@@ -17,6 +17,7 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <sstream>
+#include <stddef.h>
 #include <iomanip>
 #include <dirent.h>
 #include <fcntl.h>
@@ -62,7 +63,7 @@ void tFTPDataSocket::list(string p, int list_type) {
 	} else p = getControlConnection()->getCWD();
 
 #ifndef WIN32
-	len = offsetof(struct dirent, d_name) +
+	len = offsetof(struct dirent , d_name) +
           pathconf(p.c_str(), _PC_NAME_MAX) +
           1;
 	entryp = (struct dirent *)malloc(len);
