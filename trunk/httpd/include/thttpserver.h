@@ -33,6 +33,7 @@ public:
 	void run(const char *, unsigned short);
 	void stop();
 	void removeThread(tHTTPThread *);
+	void addThread(tHTTPThread *);
 	tHTTPLog *getLog();
 	string getDocumentRoot();
 	tHTTPServerSocket *getServerSocket();
@@ -41,6 +42,7 @@ protected:
 	list<tHTTPThread *> threads;
     tHTTPLog *log;
     string documentRoot;
+    tMutex *threadsMutex;
 };
 
 #endif

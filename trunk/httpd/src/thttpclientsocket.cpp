@@ -119,7 +119,7 @@ tHTTPClientSocket::tHTTPClientSocket(int fd, sockaddr_in *sin) : tClientSocket(f
 }
 
 tHTTPClientSocket::~tHTTPClientSocket() {
-	if (tmpRespData) fclose(tmpPostData);
+	if (tmpPostData) fclose(tmpPostData);
 	if (tmpRespData) fclose(tmpRespData);
 	Close();
 }
