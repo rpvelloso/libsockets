@@ -24,19 +24,23 @@ tHTTPServer::tHTTPServer(string dr) : tObject() {
 	log->Open();
 	serverSocket->setLog(log);
 	documentRoot = dr;
+	threadsMutex = new tMutex();
 }
 
 tHTTPServer::~tHTTPServer() {
 	list<tHTTPThread *>::iterator i;
 
+	threadsMutex->lock();
 	for (i=threads.begin();i!=threads.end();i++) {
 		(*i)->setSelfDestroy(0);
 		delete (*i);
 	}
 	threads.clear();
+	threadsMutex->unlock();
 	delete serverSocket;
 	log->Close();
 	delete log;
+	delete threadsMutex;
 }
 
 void tHTTPServer::run(const char *addr, unsigned short port) {
@@ -54,7 +58,7 @@ void tHTTPServer::run(const char *addr, unsigned short port) {
 				client_socket->setOwner(this);
 				client_socket->setLog(log);
 				client_thread = new tHTTPThread(1, this, client_socket);
-				threads.push_back(client_thread);
+				addThread(client_thread);
 				client_thread->start();
 			} else {
 				perror("Accept()");
@@ -68,7 +72,15 @@ void tHTTPServer::stop() {
 }
 
 void tHTTPServer::removeThread(tHTTPThread *t) {
+	threadsMutex->lock();
 	threads.remove(t);
+	threadsMutex->unlock();
+}
+
+void tHTTPServer::addThread(tHTTPThread *t) {
+	threadsMutex->lock();
+	threads.push_back(t);
+	threadsMutex->unlock();
 }
 
 tHTTPLog *tHTTPServer::getLog() {
