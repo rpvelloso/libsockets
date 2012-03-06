@@ -190,6 +190,9 @@ void tHTTPClientSocket::processHttpHeader() {
 	int i=0;
 	stringstream cl;
 	string request;
+#ifndef WIN32
+	char strerr[ERR_STR_LEN];
+#endif
 
 	// reset header
 	host = "";
@@ -259,7 +262,6 @@ void tHTTPClientSocket::processHttpHeader() {
 			bodyPos = 0;
 			reqState = tHTTPReceiveBody;
 		} else {
-			char strerr[ERR_STR_LEN];
 
 			LOG("tmpfile() error: %s\n",strerror_r(errno,strerr,ERR_STR_LEN));
 			reply500InternalError();
@@ -458,9 +460,11 @@ void tHTTPClientSocket::GET()
 	struct stat st;
 	char respHdr[12];
 	string resp,mt = mimeType(uri);
+#ifndef WIN32
 	char strerr[ERR_STR_LEN];
+#endif
 
-	if (((query != "") || (mt == "application/php")) && !access(uri.c_str(),X_OK)) {
+	if ((mt == "application/php") || ((query != "") && !access(uri.c_str(),X_OK))) {
 		if (tmpRespData) fclose(tmpRespData);
 
 		if ((tmpRespData = tmpfile())) {
