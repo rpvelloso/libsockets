@@ -255,9 +255,15 @@ void tHTTPClientSocket::processHttpHeader() {
 
 	if (contentLength > 0) {
 		if (tmpPostData) fclose(tmpPostData);
-		tmpPostData = tmpfile();
-		bodyPos = 0;
-		reqState = tHTTPReceiveBody;
+		if ((tmpPostData = tmpfile())) {
+			bodyPos = 0;
+			reqState = tHTTPReceiveBody;
+		} else {
+			char strerr[ERR_STR_LEN];
+
+			LOG("tmpfile() error: %s\n",strerror_r(errno,strerr,ERR_STR_LEN));
+			reply500InternalError();
+		}
 	} else reqState = tHTTPProcessRequest;
 }
 
@@ -354,7 +360,10 @@ void tHTTPClientSocket::CGICall()
 		reply500InternalError();
 	} else {
 		waitpid(f,&cgiRet,0);
-		if (cgiRet) reply500InternalError(); // CGI has executed, but ended abnormally
+		if (cgiRet) {
+			LOG("CGI error: %s returned %d\n",uri.c_str(),cgiRet);
+			reply500InternalError(); // CGI has executed, but ended abnormally
+		}
 	}
 }
 
@@ -426,7 +435,10 @@ void tHTTPClientSocket::CGICall()
 	if (CreateProcess(NULL, cmdLine, NULL, NULL, TRUE, 0, winEnv, NULL, &startUpInfo, &processInfo)) {
 		WaitForSingleObject(processInfo.hProcess,INFINITE);
 		GetExitCodeProcess(processInfo.hProcess,&cgiRet);
-		if (cgiRet) reply500InternalError(); // CGI has executed, but ended abnormally
+		if (cgiRet) {
+			LOG("CGI error: %s returned %d\n",uri.c_str(),cgiRet);
+			reply500InternalError(); // CGI has executed, but ended abnormally
+		}
 		CloseHandle(processInfo.hProcess);
 		CloseHandle(processInfo.hThread);
 	} else {
@@ -446,32 +458,42 @@ void tHTTPClientSocket::GET()
 	struct stat st;
 	char respHdr[12];
 	string resp,mt = mimeType(uri);
+	char strerr[ERR_STR_LEN];
 
 	if (((query != "") || (mt == "application/php")) && !access(uri.c_str(),X_OK)) {
 		if (tmpRespData) fclose(tmpRespData);
-		tmpRespData = tmpfile();
 
-		CGICall();
+		if ((tmpRespData = tmpfile())) {
+			CGICall();
 
-		fflush(tmpRespData);
-		fseek(tmpRespData,0,SEEK_SET);
-		if (fstat(fileno(tmpRespData),&st)!=-1) {
-			if (st.st_size > 0) {
-				fread(respHdr,11,1,tmpRespData); respHdr[11]=0x00;
-				resp = respHdr; upperCase(resp);
-				if (resp.substr(0,8) == "STATUS: ") Send(httpVersion + resp.substr(7,4) + CRLF);
-				else if (resp != "HTTP/") Send(httpVersion + " 200 OK" + CRLF);
-				sendFile(tmpRespData,&offset,st.st_size);
+			fflush(tmpRespData);
+			if (fstat(fileno(tmpRespData),&st)!=-1) {
+				if (st.st_size > 0) {
+					fseek(tmpRespData,0,SEEK_SET);
+					fread(respHdr,11,1,tmpRespData); respHdr[11]=0x00;
+					resp = respHdr; upperCase(resp);
+					if (resp.substr(0,8) == "STATUS: ") Send(httpVersion + resp.substr(7,4) + CRLF);
+					else if (resp != "HTTP/") Send(httpVersion + " 200 OK" + CRLF);
+					sendFile(tmpRespData,&offset,st.st_size);
+				}
+			} else {
+				LOG("stat() error: %s\n",strerror_r(errno,strerr,ERR_STR_LEN));
+				reply500InternalError();
 			}
-		} else reply500InternalError();
-		fclose(tmpRespData);
-		Close();
-
+			fclose(tmpRespData);
+		} else {
+			LOG("tmpfile() error: %s\n",strerror_r(errno,strerr,ERR_STR_LEN));
+			reply500InternalError();
+		}
 		if (tmpPostData) fclose(tmpPostData);
 		tmpPostData = tmpRespData = NULL;
+		Close();
 	} else {
 		if (!HEAD()) {
-			if (sendFile(uri.c_str(),&offset,contentLength) <= 0) reply500InternalError();
+			if (sendFile(uri.c_str(),&offset,contentLength) <= 0) {
+				LOG("sendfile() error: %s\n",strerror_r(errno,strerr,ERR_STR_LEN));
+				reply500InternalError();
+			}
 		}
 	}
 }
