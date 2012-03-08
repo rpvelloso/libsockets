@@ -43,6 +43,11 @@ enum tSocketStatus {
      tSocketListening
 };
 
+enum tBlockingIOState {
+	tBlocking=0,
+	tNonBlocking
+};
+
 #define MAX_HOSTNAME 256
 
 class tSocket : public tObject {
@@ -58,6 +63,7 @@ public:
        string getIP();
        int setLinger(int,int);
        int toggleNonBlockingIO();
+       tBlockingIOState getBlockingIOState();
        int getSocketFd();
 protected:
         int socketFd;

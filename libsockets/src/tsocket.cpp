@@ -133,6 +133,10 @@ int tSocket::getSocketFd() {
 	return socketFd;
 }
 
+tBlockingIOState tSocket::getBlockingIOState() {
+	return nonBlockingIO?tNonBlocking:tBlocking;
+}
+
 #ifdef WIN32
 int WinSocketStartup() {
      WSADATA info;
