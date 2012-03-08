@@ -82,6 +82,7 @@ protected:
     FILE *tmpRespData;
 
     void CGICall();
+    int checkURI();
 };
 
 #endif
