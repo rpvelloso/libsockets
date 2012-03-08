@@ -129,6 +129,10 @@ int tSocket::toggleNonBlockingIO() {
 
 #endif
 
+int tSocket::getSocketFd() {
+	return socketFd;
+}
+
 #ifdef WIN32
 int WinSocketStartup() {
      WSADATA info;
