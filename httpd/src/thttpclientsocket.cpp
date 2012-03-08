@@ -355,16 +355,16 @@ void tHTTPClientSocket::CGICall()
 		dup2(fileno(tmpRespData),fileno(stdout));
 		dup2(fileno(tmpRespData),fileno(stderr));
 		execve(argv[0],argv,envp);
-		LOG("execve() error: %s\n",strerror_r(errno,strerr,ERR_STR_LEN)); // execve() error
+		LOG("execve() error: %s\n",strerror_r(errno,strerr,ERR_STR_LEN));
 		exit(-1);
 	} else if (f == -1) {
-		LOG("fork() error: %s\n",strerror_r(errno,strerr,ERR_STR_LEN)); // fork() error
+		LOG("fork() error: %s\n",strerror_r(errno,strerr,ERR_STR_LEN));
 		reply500InternalError();
 	} else {
 		waitpid(f,&cgiRet,0);
 		if (cgiRet) {
 			LOG("CGI error: %s returned %d\n",uri.c_str(),cgiRet);
-			reply500InternalError(); // CGI has executed, but ended abnormally
+			//reply500InternalError();
 		}
 	}
 }
@@ -439,7 +439,7 @@ void tHTTPClientSocket::CGICall()
 		GetExitCodeProcess(processInfo.hProcess,&cgiRet);
 		if (cgiRet) {
 			LOG("CGI error: %s returned %d\n",uri.c_str(),cgiRet);
-			reply500InternalError(); // CGI has executed, but ended abnormally
+			//reply500InternalError(); // CGI has executed, but ended abnormally
 		}
 		CloseHandle(processInfo.hProcess);
 		CloseHandle(processInfo.hThread);
@@ -479,6 +479,8 @@ void tHTTPClientSocket::GET()
 					if (resp.substr(0,8) == "STATUS: ") Send(httpVersion + resp.substr(7,4) + CRLF);
 					else if (resp != "HTTP/") Send(httpVersion + " 200 OK" + CRLF);
 					sendFile(tmpRespData,&offset,st.st_size);
+				} else {
+					LOG("CGI error: no output from %s\n",uri.c_str());
 				}
 			} else {
 				LOG("stat() error: %s\n",strerror_r(errno,strerr,ERR_STR_LEN));
