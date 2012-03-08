@@ -44,6 +44,8 @@ enum tSocketMultiplexerState {
  /* TODO: usar pthread_kill ou self-pipe p/ interromper select()
   * apos alterar a lista de sockets */
 
+#define interruptWait() write(ctrlPipe[1],'\0',1)
+
 template <class C>
 class tSocketMultiplexer : public tObject {
 public:
@@ -58,17 +60,18 @@ public:
 	};
 
 	void addSocket(C *socket) {
+		if (C->getBlokingIOState() == tBlocking) C->toggleNonBlockingIO();
 		socketListMutex->lock();
 		socketList.push_back(C);
 		socketListMutex->unlock();
-		write(ctrlPipe[1],'\0',1);
+		interruptWait();
 	};
 
 	void removeSocket(C *socket) {
 		socketListMutex->lock();
 		socketList.remove(C);
 		socketListMutex->unlock();
-		write(ctrlPipe[1],'\0',1);
+		interruptWait();
 	};
 
 	int waitForData() {
@@ -76,6 +79,7 @@ public:
 		int maxFd=ctrlPipe[0],fd,r=0;
 		list<C *>::iterator i;
 
+		state = tSoscketMultiplexerWaiting;
 		while (r>=0) {
 			FD_ZERO(&rfds);
 			socketListMutex->lock();
@@ -87,7 +91,6 @@ public:
 			socketListMutex->unlock();
 			maxFd++;
 
-			state = tSoscketMultiplexerWaiting;
 			r = select(maxFd, &rfds, NULL, NULL, NULL);
 			if (r>0) {
 				list<C *> s;
@@ -101,18 +104,24 @@ public:
 				socketListMutex->unlock();
 				for (i=s.begin();i!=s.end();i++) onDataAvailable(*i);
 				s.clear();
-				if (FD_ISSET(ctrlPipe[0],&rfds)) read(ctrlPipe[0],&c,1);
+				if (FD_ISSET(ctrlPipe[0],&rfds)) {
+					read(ctrlPipe[0],&c,1);
+					if (c) return;
+				}
 			}
 		}
+		state = tSocketMultiplexerIdle;
 	};
 
 	tSocketMultiplexerState getState() {
 		return state;
 	};
 
+	void exitWait() {
+		write(ctrlPipe[1],'\1',1);
+	};
+
 	virtual void onDataAvailable(C *socket) = 0;
-	virtual void onTimeout() = 0;
-	virtual void onWaitError() = 0;
 protected:
 	list<C *> socketList;
 	int ctrlPipe[2];
