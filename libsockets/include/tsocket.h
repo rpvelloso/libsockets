@@ -58,6 +58,7 @@ public:
        string getIP();
        int setLinger(int,int);
        int toggleNonBlockingIO();
+       int getSocketFd();
 protected:
         int socketFd;
         tSocketStatus socketStatus;

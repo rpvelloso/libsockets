@@ -44,30 +44,78 @@ enum tSocketMultiplexerState {
  /* TODO: usar pthread_kill ou self-pipe p/ interromper select()
   * apos alterar a lista de sockets */
 
-template <class C, class T>
+template <class C>
 class tSocketMultiplexer : public tObject {
 public:
-	tSocketMultiplexer() { state = tSocketMultiplexerIdle; };
-	virtual ~tSocketMultiplexer() {};
-	void addSocket(C *socket) {};
-	void removeSocket(int pos) {};
-	void removeSocket(C *socket) {};
-	int waitForData() {};
-	struct timeval getTimeout() { return timeout; };
-	void setTimeout(struct timeval t) { memcpy(&timeout,&t,sizeof(struct timeval)); };
-	T *getOwner() { return owner; };
-	void setOwner(T *o) { owner = o; };
-	tSocketMultiplexerState getState() { return state; };
+	tSocketMultiplexer() {
+		state = tSocketMultiplexerIdle;
+		pipe(ctrlPipe);
+	};
+
+	virtual ~tSocketMultiplexer() {
+		close(ctrlPipe[0]);
+		close(ctrlPipe[1]);
+	};
+
+	void addSocket(C *socket) {
+		socketListMutex->lock();
+		socketList.push_back(C);
+		socketListMutex->unlock();
+		write(ctrlPipe[1],'\0',1);
+	};
+
+	void removeSocket(C *socket) {
+		socketListMutex->lock();
+		socketList.remove(C);
+		socketListMutex->unlock();
+		write(ctrlPipe[1],'\0',1);
+	};
+
+	int waitForData() {
+		fd_set rfds;
+		int maxFd=ctrlPipe[0],fd,r=0;
+		list<C *>::iterator i;
+
+		while (r>=0) {
+			FD_ZERO(&rfds);
+			socketListMutex->lock();
+			for (i=socketList.begin();i!=socketList.end();i++) {
+				fd = (*i)->getSocketFd();
+				FD_SET(fd,&rfds);
+				if (fd>maxFd) maxFd = fd;
+			}
+			socketListMutex->unlock();
+			maxFd++;
+
+			state = tSoscketMultiplexerWaiting;
+			r = select(maxFd, &rfds, NULL, NULL, NULL);
+			if (r>0) {
+				list<C *> s;
+				char c;
+
+				socketListMutex->lock();
+				for (i=socketList.begin();i!=socketList.end();i++) {
+					fd = (*i)->getSocketFd();
+					if (FD_ISSET(fd,&rfds)) s.push_back(*i);
+				}
+				socketListMutex->unlock();
+				for (i=s.begin();i!=s.end();i++) onDataAvailable(*i);
+				s.clear();
+				if (FD_ISSET(ctrlPipe[0],&rfds)) read(ctrlPipe[0],&c,1);
+			}
+		}
+	};
+
+	tSocketMultiplexerState getState() {
+		return state;
+	};
 
 	virtual void onDataAvailable(C *socket) = 0;
 	virtual void onTimeout() = 0;
 	virtual void onWaitError() = 0;
 protected:
-	list<int> socketFdList;
 	list<C *> socketList;
-	fd_set rdfs;
-	struct timeval timeout;
-	T *owner;
+	int ctrlPipe[2];
 	tSocketMultiplexerState state;
 	tMutex *socketListMutex;
 };
