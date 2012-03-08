@@ -96,17 +96,17 @@ string mimeType(string f) {
 	return ("application/"+ext);
 }
 
-string unescapeUri(string uri) {
+string unescapeUri(string u) {
 	size_t p;
 	string hex;
 	char c,*s;
 
-	while ((p=uri.find('%',0)) != string::npos) {
-		hex = "0x" + uri.substr(p+1,2);
+	while ((p=u.find('%',0)) != string::npos) {
+		hex = "0x" + u.substr(p+1,2);
 		c = strtol(hex.c_str(),&s,16);
-		uri.replace(p,3,1,c);
+		u.replace(p,3,1,c);
 	}
-	return uri;
+	return u;
 }
 
 tHTTPClientSocket::tHTTPClientSocket(int fd, sockaddr_in *sin) : tClientSocket(fd, sin) {
@@ -262,7 +262,6 @@ void tHTTPClientSocket::processHttpHeader() {
 			bodyPos = 0;
 			reqState = tHTTPReceiveBody;
 		} else {
-
 			LOG("tmpfile() error: %s\n",strerror_r(errno,strerr,ERR_STR_LEN));
 			reply500InternalError();
 		}
@@ -274,6 +273,13 @@ void tHTTPClientSocket::processHttpBody() {
 }
 
 void tHTTPClientSocket::processHttpRequest() {
+
+	if (uri != "*") {
+		if (checkURI()) {
+			reply404NotFound();
+			return;
+		}
+	}
 	     if (method == "GET")     GET();
  	else if (method == "HEAD")    HEAD();
 	else if (method == "POST")    POST();
@@ -287,6 +293,33 @@ void tHTTPClientSocket::processHttpRequest() {
 	else reply501NotImplemented();
 
 	reqState = tHTTPReceiveHeader; // end of request: goes back to initial state
+}
+
+static string idx[] = {
+		"/index.php",
+		"/index.htm",
+		"/index.html",
+		""
+};
+
+int tHTTPClientSocket::checkURI()
+{
+	struct stat st;
+	string index;
+	int i=0;
+
+	if (!stat(uri.c_str(),&st)) {
+		if (S_ISDIR(st.st_mode)) {
+			while (idx[i] != "") {
+				index = uri + idx[i++];
+				if (!stat(index.c_str(),&st) && !S_ISDIR(st.st_mode)) {
+					uri = index;
+					return 0;
+				}
+			}
+		} else return 0;
+	}
+	return -1;
 }
 
 #define ENV_VAR_COUNT 20
@@ -517,40 +550,23 @@ int tHTTPClientSocket::HEAD()
 {
 	struct stat st;
 	stringstream len;
-	string index;
 
-	if (!stat(uri.c_str(),&st)) {
-		if (S_ISDIR(st.st_mode)) { // TODO: create option to list files in dir with no index.html
-			index = uri + "/index.htm";
-			if (stat(index.c_str(),&st)) {
-				index = uri + "/index.html";
-				if (stat(index.c_str(),&st)) {
-					reply404NotFound();
-					return -1;
-				}
-			}
-			uri = index;
-		}
-		if (access(uri.c_str(),R_OK)) {
-			reply403Forbidden();
-			return -1;
-		}
-		len << st.st_size;
-		contentLength = st.st_size;
-		Send(httpVersion + " 200 OK" + CRLF);
-		replyServer();
-		replyDate();
-		Send("Content-length: " + len.str() + CRLF);
-		Send("Content-type: " + mimeType(uri) + CRLF);
-		if (index == uri) Send("Content-Location: " + index + CRLF);
-		Send("Last-modified: " + time2str(st.st_mtime) + CRLF);
-		Send("Accept-ranges: bytes" CRLF);
-		Send(CRLF);
-		return 0;
-	} else {
-		reply404NotFound();
+	stat(uri.c_str(),&st);
+	if (access(uri.c_str(),R_OK)) {
+		reply403Forbidden();
 		return -1;
 	}
+	len << st.st_size;
+	contentLength = st.st_size;
+	Send(httpVersion + " 200 OK" + CRLF);
+	replyServer();
+	replyDate();
+	Send("Content-length: " + len.str() + CRLF);
+	Send("Content-type: " + mimeType(uri) + CRLF);
+	Send("Last-modified: " + time2str(st.st_mtime) + CRLF);
+	Send("Accept-ranges: bytes" CRLF);
+	Send(CRLF);
+	return 0;
 }
 
 void tHTTPClientSocket::POST()
