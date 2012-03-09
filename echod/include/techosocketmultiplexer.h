@@ -19,6 +19,7 @@
 #ifndef TECHOSOCKETMULTIPLEXER_H_
 #define TECHOSOCKETMULTIPLEXER_H_
 
+#include <errno.h>
 #include <libsockets/libsockets.h>
 #include "techoclientsocket.h"
 
@@ -35,7 +36,9 @@ public:
 
 		if ((len = socket->receive(buffer, ECHO_BUFLEN)) > 0) {
 			socket->Send(buffer, len);
-		} else removeSocket(socket);
+		} else {
+			if ((errno != EINTR) && (errno != EWOULDBLOCK)) removeSocket(socket);
+		}
 	};
 protected:
     char buffer[ECHO_BUFLEN];
