@@ -23,6 +23,10 @@
 #include <libsockets/libsockets.h>
 #include "techoclientsocket.h"
 
+#ifdef WIN32
+	#define EWOULDBLOCK WSAEWOULDBLOCK
+#endif
+
 #define ECHO_BUFLEN 4096
 
 class tEchoSocketMultiplexer : public tSocketMultiplexer<tEchoClientSocket> {
