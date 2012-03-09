@@ -39,6 +39,7 @@ public:
        ssize_t sendFile(FILE *, off_t *, ssize_t);
        int setReceiveTimeout(struct timeval);
        int setSendTimeout(struct timeval);
+       int hasOutput(); // for use with tSocketMultiplexer
 
        virtual void onSend(void *, size_t *) = 0;
        virtual void onReceive(void *, size_t) = 0;
@@ -47,6 +48,7 @@ public:
 protected:
        ssize_t bytesIn;
        ssize_t bytesOut;
+       int hasOutp;
 };
 
 #endif /* TCLIENTSOCKET_H_ */

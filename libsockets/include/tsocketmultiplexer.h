@@ -48,7 +48,7 @@ static int INTR_WAIT = 0x00;
 static int EXIT_WAIT = 0x01;
 
 #ifdef WIN32
-	#define pipe(p) _pipe(p,4096, O_BINARY)
+	#define pipe(p) _pipe(p,256, _O_BINARY)
 #endif
 
 #define interruptWait() write(ctrlPipe[1],(void *)&INTR_WAIT,1)
@@ -97,35 +97,40 @@ public:
 	};
 
 	int waitForData() {
-		fd_set rfds;
+		fd_set rfds,wfds;
 		int maxFd=ctrlPipe[0],fd,r=0;
 		typename list<C *>::iterator i;
 
 		state = tSoscketMultiplexerWaiting;
 		while (r>=0) {
 			FD_ZERO(&rfds);
+			FD_ZERO(&wfds);
 			FD_SET(ctrlPipe[0],&rfds);
 			socketListMutex->lock();
 			for (i=socketList.begin();i!=socketList.end();i++) {
 				fd = (*i)->getSocketFd();
 				FD_SET(fd,&rfds);
+				if ((*i)->hasOutput()) FD_SET(fd,&wfds);
 				if (fd>maxFd) maxFd = fd;
 			}
 			socketListMutex->unlock();
 
-			r = select(maxFd + 1, &rfds, NULL, NULL, NULL);
+			r = select(maxFd + 1, &rfds, &wfds, NULL, NULL);
 			if (r>0) {
-				list<C *> s;
+				list<C *> rs,ws;
 				char c;
 
 				socketListMutex->lock();
 				for (i=socketList.begin();i!=socketList.end();i++) {
 					fd = (*i)->getSocketFd();
-					if (FD_ISSET(fd,&rfds)) s.push_back(*i);
+					if (FD_ISSET(fd,&wfds)) ws.push_back(*i); // half-duplex
+					else if (FD_ISSET(fd,&rfds)) rs.push_back(*i);
 				}
 				socketListMutex->unlock();
-				for (i=s.begin();i!=s.end();i++) onDataAvailable(*i);
-				s.clear();
+				for (i=ws.begin();i!=ws.end();i++) onOutputAvailable(*i);
+				for (i=rs.begin();i!=rs.end();i++) onInputAvailable(*i);
+				rs.clear();
+				ws.clear();
 				if (FD_ISSET(ctrlPipe[0],&rfds)) {
 					read(ctrlPipe[0],&c,1);
 					if (c) break;
@@ -146,7 +151,8 @@ public:
 	};
 
 	size_t getSocketCount() { return socketList.size(); };
-	virtual void onDataAvailable(C *socket) = 0;
+	virtual void onInputAvailable(C *socket) = 0;
+	virtual void onOutputAvailable(C *socket) = 0;
 protected:
 	list<C *> socketList;
 	int ctrlPipe[2];

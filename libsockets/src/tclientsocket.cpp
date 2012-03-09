@@ -184,3 +184,7 @@ int tClientSocket::setReceiveTimeout(struct timeval t) {
 int tClientSocket::setSendTimeout(struct timeval t) {
 	return setsockopt(socketFd,SOL_SOCKET,SO_SNDTIMEO,(const char *)&t,sizeof(struct timeval));
 }
+
+int tClientSocket::hasOutput() {
+	return hasOutp;
+}
