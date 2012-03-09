@@ -27,6 +27,7 @@
 
 tClientSocket::tClientSocket() : tSocket() {
 	bytesIn = bytesOut = 0;
+	hasOutp = 0;
 }
 
 tClientSocket::tClientSocket(int fd, sockaddr_in *sin) {
@@ -35,6 +36,7 @@ tClientSocket::tClientSocket(int fd, sockaddr_in *sin) {
     socketStatus = tSocketOpened;
     hostname[0]=0;
 	bytesIn = bytesOut = 0;
+	hasOutp = 0;
 }
 
 void tClientSocket::Close() {
