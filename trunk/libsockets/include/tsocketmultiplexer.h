@@ -21,14 +21,15 @@
 #define TSOCKETMULTIPLEXER_H_
 
 #include <list>
+#include <sys/time.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <errno.h>
 #ifdef WIN32
 	#include <winsock2.h>
 #else
 	#include <sys/select.h>
 #endif
-#include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
 #ifdef DEVEL_ENV
 	#include "tobject.h"
 	#include "tmutex.h"
@@ -106,9 +107,8 @@ public:
 				if (fd>maxFd) maxFd = fd;
 			}
 			socketListMutex->unlock();
-			maxFd++;
 
-			r = select(maxFd, &rfds, NULL, NULL, NULL);
+			r = select(maxFd + 1, &rfds, NULL, NULL, NULL);
 			if (r>0) {
 				list<C *> s;
 				char c;
@@ -125,6 +125,8 @@ public:
 					read(ctrlPipe[0],&c,1);
 					if (c) break;
 				}
+			} else {
+				if (errno == EINTR) r = 0;
 			}
 		}
 		state = tSocketMultiplexerIdle;
