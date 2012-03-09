@@ -124,13 +124,15 @@ public:
 				for (i=socketList.begin();i!=socketList.end();i++) {
 					fd = (*i)->getSocketFd();
 					if (FD_ISSET(fd,&wfds)) ws.push_back(*i); // half-duplex
-					else if (FD_ISSET(fd,&rfds)) rs.push_back(*i);
+					else if (FD_ISSET(fd,&rfds) && !((*i)->hasOutput())) rs.push_back(*i);
 				}
 				socketListMutex->unlock();
+
 				for (i=ws.begin();i!=ws.end();i++) onOutputAvailable(*i);
 				for (i=rs.begin();i!=rs.end();i++) onInputAvailable(*i);
 				rs.clear();
 				ws.clear();
+
 				if (FD_ISSET(ctrlPipe[0],&rfds)) {
 					read(ctrlPipe[0],&c,1);
 					if (c) break;
