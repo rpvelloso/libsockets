@@ -59,7 +59,7 @@ public:
 	virtual ~tSocketMultiplexer() {
 		typename list<C *>::iterator i;
 
-		exitWait();
+		stopWaiting();
 		while (state != tSocketMultiplexerIdle);
 
 		close(ctrlPipe[1]);
@@ -87,6 +87,7 @@ public:
 		socketList.remove(socket);
 		socketListMutex->unlock();
 		interruptWait();
+		delete socket;
 	};
 
 	int waitForData() {
@@ -133,10 +134,11 @@ public:
 		return state;
 	};
 
-	void exitWait() {
+	void stopWaiting() {
 		write(ctrlPipe[1],(const void *)&EXIT_WAIT,1);
 	};
 
+	size_t getSocketCount() { return socketList.size(); };
 	virtual void onDataAvailable(C *socket) = 0;
 protected:
 	list<C *> socketList;
