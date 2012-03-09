@@ -114,7 +114,7 @@ int tSocket::toggleNonBlockingIO() {
 	int r;
 
 	socketFlags = !nonBlockingIO;
-	if (((r=ioctlsocket(socketFd,FIONBIO,&socketFlags)) != -1) nonBlockingIO = !nonBlockingIO;
+	if ((r=ioctlsocket(socketFd,FIONBIO,&socketFlags)) != -1) nonBlockingIO = !nonBlockingIO;
 	return r;
 }
 
