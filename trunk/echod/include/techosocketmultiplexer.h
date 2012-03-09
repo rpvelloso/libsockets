@@ -35,7 +35,7 @@ public:
 
 	~tEchoSocketMultiplexer() {};
 
-	void onDataAvailable(tEchoClientSocket *socket) {
+	void onOutputAvailable(tEchoClientSocket *socket) {
 		int len;
 
 		if ((len = socket->receive(buffer, ECHO_BUFLEN)) > 0) {
@@ -44,6 +44,8 @@ public:
 			if ((errno != EINTR) && (errno != EWOULDBLOCK)) removeSocket(socket);
 		}
 	};
+
+	void onInputAvailable(tEchoClientSocket *socket) {};
 protected:
     char buffer[ECHO_BUFLEN];
 };
