@@ -21,6 +21,7 @@
 
 #include <libsockets/tclientsocket.h>
 #include <libsockets/tserversocket.h>
+#include <libsockets/tsocketmultiplexer.h>
 #include <libsockets/tthread.h>
 #include <libsockets/tmutex.h>
 #include <libsockets/tlogger.h>

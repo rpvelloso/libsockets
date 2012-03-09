@@ -41,35 +41,50 @@ enum tSocketMultiplexerState {
 	tSocketMultiplexerIdle=0,
 	tSoscketMultiplexerWaiting
 };
- /* TODO: usar pthread_kill ou self-pipe p/ interromper select()
-  * apos alterar a lista de sockets */
 
-#define interruptWait() write(ctrlPipe[1],'\0',1)
+static int INTR_WAIT = 0x00;
+static int EXIT_WAIT = 0x01;
 
-template <class C>
+#define interruptWait() write(ctrlPipe[1],(void *)&INTR_WAIT,1)
+
+template <class C> // tClientSocket derived class
 class tSocketMultiplexer : public tObject {
 public:
-	tSocketMultiplexer() {
+	tSocketMultiplexer() : tObject() {
 		state = tSocketMultiplexerIdle;
+		socketListMutex = new tMutex();
 		pipe(ctrlPipe);
 	};
 
 	virtual ~tSocketMultiplexer() {
-		close(ctrlPipe[0]);
+		typename list<C *>::iterator i;
+
+		exitWait();
+		while (state != tSocketMultiplexerIdle);
+
 		close(ctrlPipe[1]);
+		close(ctrlPipe[0]);
+
+		socketListMutex->lock();
+		for (i=socketList.begin();i!=socketList.end();i++) {
+			delete (*i);
+		}
+		socketList.clear();
+		socketListMutex->unlock();
+		delete socketListMutex;
 	};
 
 	void addSocket(C *socket) {
-		if (C->getBlokingIOState() == tBlocking) C->toggleNonBlockingIO();
+		if (socket->getBlockingIOState() == tBlocking) socket->toggleNonBlockingIO();
 		socketListMutex->lock();
-		socketList.push_back(C);
+		socketList.push_back(socket);
 		socketListMutex->unlock();
 		interruptWait();
 	};
 
 	void removeSocket(C *socket) {
 		socketListMutex->lock();
-		socketList.remove(C);
+		socketList.remove(socket);
 		socketListMutex->unlock();
 		interruptWait();
 	};
@@ -77,11 +92,12 @@ public:
 	int waitForData() {
 		fd_set rfds;
 		int maxFd=ctrlPipe[0],fd,r=0;
-		list<C *>::iterator i;
+		typename list<C *>::iterator i;
 
 		state = tSoscketMultiplexerWaiting;
 		while (r>=0) {
 			FD_ZERO(&rfds);
+			FD_SET(ctrlPipe[0],&rfds);
 			socketListMutex->lock();
 			for (i=socketList.begin();i!=socketList.end();i++) {
 				fd = (*i)->getSocketFd();
@@ -106,7 +122,7 @@ public:
 				s.clear();
 				if (FD_ISSET(ctrlPipe[0],&rfds)) {
 					read(ctrlPipe[0],&c,1);
-					if (c) return;
+					if (c) break;
 				}
 			}
 		}
@@ -118,7 +134,7 @@ public:
 	};
 
 	void exitWait() {
-		write(ctrlPipe[1],'\1',1);
+		write(ctrlPipe[1],(const void *)&EXIT_WAIT,1);
 	};
 
 	virtual void onDataAvailable(C *socket) = 0;
