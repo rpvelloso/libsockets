@@ -21,6 +21,7 @@
 #define TSOCKETMULTIPLEXER_H_
 
 #include <list>
+#include <fcntl.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -45,6 +46,10 @@ enum tSocketMultiplexerState {
 
 static int INTR_WAIT = 0x00;
 static int EXIT_WAIT = 0x01;
+
+#ifdef WIN32
+	#define pipe(p) _pipe(p,4096, O_BINARY)
+#endif
 
 #define interruptWait() write(ctrlPipe[1],(void *)&INTR_WAIT,1)
 
