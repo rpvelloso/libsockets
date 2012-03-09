@@ -23,22 +23,20 @@
 #include "techoserver.h"
 #include "techoclientsocket.h"
 #include "techolog.h"
-
-
-#define ECHO_BUFLEN 4096
+#include "techosocketmultiplexer.h"
 
 class tEchoServer;
 
 class tEchoThread : public tThread {
 public:
-	tEchoThread(int , tEchoServer *, tEchoClientSocket *);
+	tEchoThread(int , tEchoServer *);
 	~tEchoThread();
     void execute();
     void onStart();
     void onStop();
+    tEchoSocketMultiplexer *getMultiplexer();
 protected:
-    tEchoClientSocket *socket;
-    char buffer[ECHO_BUFLEN];
+    tEchoSocketMultiplexer *socketMultiplexer;
     tEchoServer *owner;
     tEchoLog *log;
 };

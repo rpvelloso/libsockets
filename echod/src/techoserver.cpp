@@ -17,6 +17,7 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "techoserver.h"
+#include "techosocketmultiplexer.h"
 
 tEchoServer::tEchoServer() : tObject() {
 	serverSocket = new tEchoServerSocket();
@@ -44,7 +45,7 @@ tEchoServer::~tEchoServer() {
 
 void tEchoServer::run(const char *addr, unsigned short port) {
 	tEchoClientSocket *client_socket;
-	tEchoThread *client_thread;
+	tEchoThread *client_thread=NULL;
 
 	if (serverSocket->Open(addr, port)) {
 		cerr << "Error: could not listen on " << addr << ":" << port <<endl;
@@ -54,9 +55,12 @@ void tEchoServer::run(const char *addr, unsigned short port) {
 			client_socket = serverSocket->Accept();
 			if (client_socket) {
 				client_socket->setLog(log);
-				client_thread = new tEchoThread(1, this, client_socket);
-				addThread(client_thread);
-				client_thread->start();
+				if (!client_thread) {
+					client_thread = new tEchoThread(1, this);
+					addThread(client_thread);
+					client_thread->start();
+				}
+				client_thread->getMultiplexer()->addSocket(client_socket);
 			} else {
 				perror("Accept()");
 			}

@@ -17,23 +17,25 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "techothread.h"
+#include "techosocketmultiplexer.h"
 
-tEchoThread::tEchoThread(int sd, tEchoServer *o, tEchoClientSocket *s) : tThread(sd) {
-	socket = s;
+tEchoThread::tEchoThread(int sd, tEchoServer *o) : tThread(sd) {
 	owner = o;
 	log = owner->getLog();
+	socketMultiplexer = new tEchoSocketMultiplexer();
 }
 
 tEchoThread::~tEchoThread() {
+	delete socketMultiplexer;
 	stop();
 }
 
 void tEchoThread::execute() {
-	int len;
+	socketMultiplexer->waitForData();
+}
 
-	while ((len = socket->receive(buffer, ECHO_BUFLEN)) > 0) {
-		socket->Send(buffer, len);
-	}
+tEchoSocketMultiplexer *tEchoThread::getMultiplexer() {
+	return socketMultiplexer;
 }
 
 void tEchoThread::onStart() {
@@ -46,5 +48,4 @@ void tEchoThread::onStop() {
 		owner->removeThread(this);
 	}
 	log->log("thread [%x] terminated.\n",threadId);
-	delete socket;
 }
