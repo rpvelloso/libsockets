@@ -111,20 +111,24 @@ int tSocket::setLinger(int onoff, int ll) {
 
 int tSocket::toggleNonBlockingIO() {
 	unsigned long int socketFlags;
-	nonBlockingIO = !nonBlockingIO;
-	socketFlags = nonBlockingIO;
-	return ioctlsocket(socketFd,FIONBIO,&socketFlags);
+	int r;
+
+	socketFlags = !nonBlockingIO;
+	if (((r=ioctlsocket(socketFd,FIONBIO,&socketFlags)) != -1) nonBlockingIO = !nonBlockingIO;
+	return r;
 }
 
 #else
 
 int tSocket::toggleNonBlockingIO() {
-	int socketFlags;
+	int socketFlags,r;
+
 	socketFlags=fcntl(socketFd,F_GETFL,0);
-	nonBlockingIO = !nonBlockingIO;
-	if (nonBlockingIO) socketFlags |= O_NONBLOCK;
+	if (!nonBlockingIO) socketFlags |= O_NONBLOCK;
 	else socketFlags &= ~O_NONBLOCK;
-	return fcntl(socketFd,F_SETFL,socketFlags);
+
+	if ((r=fcntl(socketFd,F_SETFL,socketFlags)) != -1) nonBlockingIO = !nonBlockingIO;;
+	return r;
 }
 
 #endif
