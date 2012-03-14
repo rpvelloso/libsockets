@@ -44,215 +44,238 @@ enum tSocketMultiplexerState {
 	tSoscketMultiplexerWaiting
 };
 
+static int INTR_WAIT = 0x00;
+static int EXIT_WAIT = 0x01;
+
 #ifdef WIN32
-	template <class C> // tClientSocket derived class
-	class tSocketMultiplexer : public tObject {
-	public:
-		tSocketMultiplexer() : tObject() {
-			state = tSocketMultiplexerIdle;
-			socketListMutex = new tMutex();
-			IoCP = CreateIoCompletionPort(INVALID_HANDLE_VALUE,NULL,NULL,0);
-		};
+static int socketpair (int domain, int rawtype, int protocol, int sv[2])
+{
+  struct sockaddr_storage serverfd_addr, outsock_addr;
+  socklen_t addr_len = sizeof (struct sockaddr_storage);
+  struct addrinfo hints, *res;
+  int getaddrinfo_r;
+  int serverfd;
+  int saved_errno;
+  int insock, outsock;
+  int type;
+  int cloexecflag;
 
-		virtual ~tSocketMultiplexer() {
-			typename list<C *>::iterator i;
+  /* filter out cloexec flag */
+  type = type & ~SOCK_CLOEXEC;
+  cloexecflag = type & SOCK_CLOEXEC;
 
-			while (state != tSocketMultiplexerIdle);
 
-			socketListMutex->lock();
-			for (i=socketList.begin();i!=socketList.end();i++) {
-				delete (*i);
-			}
-			socketList.clear();
-			socketListMutex->unlock();
-			delete socketListMutex;
-			CloseHandle(IoCP);
-		};
+  /* filter out protocol */
+  if (!(domain == AF_INET || domain == AF_INET6))
+    {
+      errno = EOPNOTSUPP;
+      return -1;
+    }
 
-		void addSocket(C *socket) {
-			if (socket->getBlockingIOState() == tBlocking) socket->toggleNonBlockingIO();
-			socketListMutex->lock();
-			socketList.push_back(socket);
-			socketListMutex->unlock();
-			CreateIoCompletionPort((HANDLE)_get_osfhandle(socket->getSocketFd()),IoCP,(ULONG_PTR)socket,0);
-		};
+  /* get loopback address */
+  memset (&hints, 0, sizeof (hints));
+  hints.ai_family = domain;
+  hints.ai_socktype = type;
+  hints.ai_protocol = protocol;
+  hints.ai_flags = 0;
 
-		void removeSocket(C *socket) {
-			socketListMutex->lock();
-			socketList.remove(socket);
-			socketListMutex->unlock();
-			delete socket;
-		};
+  getaddrinfo_r = getaddrinfo (NULL, "0", &hints, &res);
+  /* fake errno */
+  switch (getaddrinfo_r)
+    {
+    case 0:
+      break;
+    case EAI_FAMILY:
+      errno = EAFNOSUPPORT;
+      return -1;
+    case EAI_MEMORY:
+      errno = ENOMEM;
+      return -1;
+    default:
+      errno = EIO;
+      return -1;
+    }
 
-		int waitForData() {
-			DWORD n;
-			int r;
-			typename list<C *>::iterator i;
-			C *s;
-			LPOVERLAPPED ovp = NULL;
+  serverfd = socket (res->ai_family, res->ai_socktype, res->ai_protocol);
+  if (-1 == serverfd)
+    goto out_bind_fail;
 
-			if (IoCP) {
-				state = tSoscketMultiplexerWaiting;
-				do {
-					socketListMutex->lock();
-					for (i=socketList.begin();i!=socketList.end();i++) {
-						CreateIoCompletionPort((HANDLE)_get_osfhandle((*i)->getSocketFd()),IoCP,(ULONG_PTR)(*i),0);
-					}
-					socketListMutex->unlock();
+  if (-1 == bind (serverfd, res->ai_addr, res->ai_addrlen))
+    goto out_close_serverfd;
 
-					if ((r = GetQueuedCompletionStatus(IoCP,&n,(PULONG_PTR)&s,&ovp,INFINITE))) {;
-						if (ovp) {
-							if (s->hasOutput()) onOutputAvailable(s);
-							else onInputAvailable(s);
-						}
-					} else {
-						cerr << "GetQueuedCompletionStatus " << GetLastError() << endl;
-						return -1;
-					}
+  if (-1 ==
+      getsockname (serverfd, (struct sockaddr *) &serverfd_addr, &addr_len))
+    goto out_close_serverfd;
 
-					socketListMutex->lock();
-					for (i=socketList.begin();i!=socketList.end();i++) {
-						if ((*i)->hasOutput() && ((*i)!=s))  onOutputAvailable(s);
-					}
-					socketListMutex->unlock();
+  if (type != SOCK_DGRAM)
+    if (-1 == listen (serverfd, 1))
+      goto out_close_serverfd;
 
-				} while (r);
-			} else {
-				cerr << "IoCP NULL " << endl;
-				return -1;
-			}
-			state = tSocketMultiplexerIdle;
-			return 0;
-		};
+  outsock = socket (res->ai_family, res->ai_socktype, res->ai_protocol);
+  if (-1 == outsock)
+    goto out_close_serverfd;
 
-		tSocketMultiplexerState getState() {
-			return state;
-		};
+  if (type == SOCK_DGRAM)
+    {
+      if (-1 == bind (outsock, res->ai_addr, res->ai_addrlen))
+	goto out_close_outsock;
+      if (-1 ==
+	  getsockname (outsock, (struct sockaddr *) &outsock_addr, &addr_len))
+	goto out_close_outsock;
+    }
 
-		size_t getSocketCount() { return socketList.size(); };
-		virtual void onInputAvailable(C *socket) = 0;
-		virtual void onOutputAvailable(C *socket) = 0;
-	protected:
-		HANDLE IoCP;
-		list<C *> socketList;
-		tSocketMultiplexerState state;
-		tMutex *socketListMutex;
+  if (-1 == connect (outsock, (struct sockaddr *) &serverfd_addr, addr_len))
+    goto out_close_outsock;
+
+  if (type != SOCK_DGRAM)
+    {
+      insock = accept (serverfd, NULL, NULL);
+      if (-1 == outsock)
+	goto out_close_insock;
+      /* do not check error, at most we leak serverfd */
+      (void) close (serverfd);
+    }
+  else
+    {
+      if (-1 ==
+	  connect (serverfd, (struct sockaddr *) &outsock_addr, addr_len))
+	goto out_close_outsock;
+      insock = serverfd;
+    }
+
+  sv[0] = insock;
+  sv[1] = outsock;
+  freeaddrinfo (res);
+  return 0;
+out_close_insock:
+  saved_errno = errno;
+  (void) close (outsock);
+  errno = saved_errno;
+out_close_outsock:
+  saved_errno = errno;
+  (void) close (insock);
+  errno = saved_errno;
+out_close_serverfd:
+  saved_errno = errno;
+  (void) close (serverfd);
+  errno = saved_errno;
+out_bind_fail:
+  errno = filtererrno (errno);
+  freeaddrinfo (res);
+  return -1;
+}
+#endif
+
+#define cancelWait() write(ctrlPipe[1],(void *)&INTR_WAIT,1)
+
+template <class C> // tClientSocket derived class
+class tSocketMultiplexer : public tObject {
+public:
+	tSocketMultiplexer() : tObject() {
+		state = tSocketMultiplexerIdle;
+		socketListMutex = new tMutex();
+		socketpair(AF_INET, SOCK_STREAM, IPPROTO_TCP, ctrlPipe);
 	};
-#else
-	static int INTR_WAIT = 0x00;
-	static int EXIT_WAIT = 0x01;
 
-	#define cancelWait() write(ctrlPipe[1],(void *)&INTR_WAIT,1)
+	virtual ~tSocketMultiplexer() {
+		typename list<C *>::iterator i;
 
-	template <class C> // tClientSocket derived class
-	class tSocketMultiplexer : public tObject {
-	public:
-		tSocketMultiplexer() : tObject() {
-			state = tSocketMultiplexerIdle;
-			socketListMutex = new tMutex();
-			pipe(ctrlPipe);
-		};
+		stopWaiting();
 
-		virtual ~tSocketMultiplexer() {
-			typename list<C *>::iterator i;
+		while (state != tSocketMultiplexerIdle);
 
-			stopWaiting();
+		close(ctrlPipe[1]);
+		close(ctrlPipe[0]);
 
-			while (state != tSocketMultiplexerIdle);
+		socketListMutex->lock();
+		for (i=socketList.begin();i!=socketList.end();i++) {
+			delete (*i);
+		}
+		socketList.clear();
+		socketListMutex->unlock();
+		delete socketListMutex;
+	};
 
-			close(ctrlPipe[1]);
-			close(ctrlPipe[0]);
+	void addSocket(C *socket) {
+		if (socket->getBlockingIOState() == tBlocking) socket->toggleNonBlockingIO();
+		socketListMutex->lock();
+		socketList.push_back(socket);
+		socketListMutex->unlock();
+		cancelWait();
+	};
 
+	void removeSocket(C *socket) {
+		socketListMutex->lock();
+		socketList.remove(socket);
+		socketListMutex->unlock();
+		cancelWait();
+		delete socket;
+	};
+
+	int waitForData() {
+		fd_set rfds,wfds;
+		int maxFd=ctrlPipe[0],fd,r=0;
+		typename list<C *>::iterator i;
+
+		state = tSoscketMultiplexerWaiting;
+		while (r>=0) {
+			FD_ZERO(&rfds);
+			FD_ZERO(&wfds);
+			FD_SET(ctrlPipe[0],&rfds);
 			socketListMutex->lock();
 			for (i=socketList.begin();i!=socketList.end();i++) {
-				delete (*i);
+				fd = (*i)->getSocketFd();
+				FD_SET(fd,&rfds);
+				if ((*i)->hasOutput()) FD_SET(fd,&wfds);
+				if (fd>maxFd) maxFd = fd;
 			}
-			socketList.clear();
 			socketListMutex->unlock();
-			delete socketListMutex;
-		};
 
-		void addSocket(C *socket) {
-			if (socket->getBlockingIOState() == tBlocking) socket->toggleNonBlockingIO();
-			socketListMutex->lock();
-			socketList.push_back(socket);
-			socketListMutex->unlock();
-			cancelWait();
-		};
+			r = select(maxFd + 1, &rfds, &wfds, NULL, NULL);
+			if (r>0) {
+				list<C *> rs,ws;
+				char c;
 
-		void removeSocket(C *socket) {
-			socketListMutex->lock();
-			socketList.remove(socket);
-			socketListMutex->unlock();
-			cancelWait();
-			delete socket;
-		};
-
-		int waitForData() {
-			fd_set rfds,wfds;
-			int maxFd=ctrlPipe[0],fd,r=0;
-			typename list<C *>::iterator i;
-
-			state = tSoscketMultiplexerWaiting;
-			while (r>=0) {
-				FD_ZERO(&rfds);
-				FD_ZERO(&wfds);
-				FD_SET(ctrlPipe[0],&rfds);
 				socketListMutex->lock();
 				for (i=socketList.begin();i!=socketList.end();i++) {
 					fd = (*i)->getSocketFd();
-					FD_SET(fd,&rfds);
-					if ((*i)->hasOutput()) FD_SET(fd,&wfds);
-					if (fd>maxFd) maxFd = fd;
+					if (FD_ISSET(fd,&wfds)) ws.push_back(*i); // half-duplex
+					else if (FD_ISSET(fd,&rfds) && !((*i)->hasOutput())) rs.push_back(*i);
 				}
 				socketListMutex->unlock();
 
-				r = select(maxFd + 1, &rfds, &wfds, NULL, NULL);
-				if (r>0) {
-					list<C *> rs,ws;
-					char c;
+				for (i=ws.begin();i!=ws.end();i++) onOutputAvailable(*i);
+				for (i=rs.begin();i!=rs.end();i++) onInputAvailable(*i);
+				rs.clear();
+				ws.clear();
 
-					socketListMutex->lock();
-					for (i=socketList.begin();i!=socketList.end();i++) {
-						fd = (*i)->getSocketFd();
-						if (FD_ISSET(fd,&wfds)) ws.push_back(*i); // half-duplex
-						else if (FD_ISSET(fd,&rfds) && !((*i)->hasOutput())) rs.push_back(*i);
-					}
-					socketListMutex->unlock();
-
-					for (i=ws.begin();i!=ws.end();i++) onOutputAvailable(*i);
-					for (i=rs.begin();i!=rs.end();i++) onInputAvailable(*i);
-					rs.clear();
-					ws.clear();
-
-					if (FD_ISSET(ctrlPipe[0],&rfds)) {
-						read(ctrlPipe[0],&c,1);
-						if (c) break;
-					}
-				} else {
-					if (errno == EINTR) r = 0;
+				if (FD_ISSET(ctrlPipe[0],&rfds)) {
+					read(ctrlPipe[0],&c,1);
+					if (c) break;
 				}
+			} else {
+				if (errno == EINTR) r = 0;
 			}
-			state = tSocketMultiplexerIdle;
-		};
-
-		tSocketMultiplexerState getState() {
-			return state;
-		};
-
-		void stopWaiting() {
-			write(ctrlPipe[1],(const void *)&EXIT_WAIT,1);
-		};
-
-		size_t getSocketCount() { return socketList.size(); };
-		virtual void onInputAvailable(C *socket) = 0;
-		virtual void onOutputAvailable(C *socket) = 0;
-	protected:
-		int ctrlPipe[2];
-		list<C *> socketList;
-		tSocketMultiplexerState state;
-		tMutex *socketListMutex;
+		}
+		state = tSocketMultiplexerIdle;
 	};
-#endif
+
+	tSocketMultiplexerState getState() {
+		return state;
+	};
+
+	void stopWaiting() {
+		write(ctrlPipe[1],(const void *)&EXIT_WAIT,1);
+	};
+
+	size_t getSocketCount() { return socketList.size(); };
+	virtual void onInputAvailable(C *socket) = 0;
+	virtual void onOutputAvailable(C *socket) = 0;
+protected:
+	int ctrlPipe[2];
+	list<C *> socketList;
+	tSocketMultiplexerState state;
+	tMutex *socketListMutex;
+};
 
 #endif /* TSOCKETMULTIPLEXER_H_ */
