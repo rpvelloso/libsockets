@@ -27,25 +27,22 @@
 	#define EWOULDBLOCK WSAEWOULDBLOCK
 #endif
 
-#define ECHO_BUFLEN 4096
-
 class tEchoSocketMultiplexer : public tSocketMultiplexer<tEchoClientSocket> {
 public:
 	tEchoSocketMultiplexer() : tSocketMultiplexer() {};
 
 	~tEchoSocketMultiplexer() {};
 
-	void onOutputAvailable(tEchoClientSocket *socket) {
-		int len;
-
-		if ((len = socket->receive(buffer, ECHO_BUFLEN)) > 0) {
-			socket->Send(buffer, len);
-		} else {
+	void onInputAvailable(tEchoClientSocket *socket) {
+		if (socket->receive(buffer, ECHO_BUFLEN) <= 0) {
 			if ((errno != EINTR) && (errno != EWOULDBLOCK)) removeSocket(socket);
 		}
 	};
 
-	void onInputAvailable(tEchoClientSocket *socket) {};
+	void onOutputAvailable(tEchoClientSocket *socket) {
+		socket->processOutput();
+	};
+
 protected:
     char buffer[ECHO_BUFLEN];
 };
