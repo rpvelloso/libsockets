@@ -16,6 +16,9 @@
     You should have received a copy of the GNU General Public License
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+// TODO: create a class for exception handling to deal with all error situations in the library using throw()
+
 #include "tobject.h"
 
 tObject::tObject() {

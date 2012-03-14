@@ -17,7 +17,6 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-// TODO: criar classe para excecoes e tratar todas as situacoes de erros da lib com throw()
 #ifndef LIBSOCKETS_H_
 #define LIBSOCKETS_H_
 
