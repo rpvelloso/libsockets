@@ -40,11 +40,12 @@ void tEchoClientSocket::onSend(void *buf, size_t *size) {
 }
 
 void tEchoClientSocket::onReceive(void *buf, size_t size) {
-	char s[ECHO_BUFLEN+1];
-
-	memcpy(s,buf,size);
-	s[size] = 0;
-	log->log("received from %s: %s\n",getHostname(),s);
+	memcpy(echoBuffer,buf,size);
+	echoBuffer[size] = 0;
+	buflen = size;
+	bufpos = 0;
+	hasOutp = 1;
+	log->log("received from %s: %s\n",getHostname(),echoBuffer);
 }
 
 void tEchoClientSocket::onConnect() {
@@ -52,4 +53,17 @@ void tEchoClientSocket::onConnect() {
 
 void tEchoClientSocket::onDisconnect() {
 	log->log("connection to %s closed.\n",getHostname());
+}
+
+void tEchoClientSocket::processOutput() {
+	size_t l;
+
+	if (hasOutp && buflen) {
+		if ((l=Send(&(echoBuffer[bufpos]),buflen)) >= 0) {
+			buflen -= l;
+			bufpos += l - 1;
+			if (buflen < 0) buflen = 0;
+		}
+		if (!buflen) hasOutp = 0;
+	}
 }
