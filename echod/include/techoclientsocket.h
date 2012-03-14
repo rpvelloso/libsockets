@@ -22,6 +22,8 @@
 #include <libsockets/libsockets.h>
 #include "techolog.h"
 
+#define ECHO_BUFLEN 4096
+
 class tEchoClientSocket : public tClientSocket {
 public:
 	tEchoClientSocket(int, sockaddr_in *);
@@ -31,9 +33,11 @@ public:
     void onReceive(void *, size_t);
     void onConnect();
     void onDisconnect();
-
+    void processOutput();
 protected:
     tEchoLog *log;
+    char echoBuffer[ECHO_BUFLEN+1];
+    size_t buflen,bufpos;
 };
 
 #endif
