@@ -7,9 +7,9 @@ RM = rm
 RMFLAGS = -rf
 CP = cp
 OBJS = main.o techoclientsocket.o techolog.o techoserver.o \
-techoserversocket.o techothread.o
+techoserversocket.o techothread.o techosocketmultiplexer.o
 SRCS = main.cpp techoclientsocket.cpp techolog.cpp techoserver.cpp \
-techoserversocket.cpp techothread.cpp
+techoserversocket.cpp techothread.cpp techosocketmultiplexer.cpp
 
 %.o:	%.cpp
 	$(CXX) $(CXXFLAGS) $< -o $@
