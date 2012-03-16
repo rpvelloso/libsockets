@@ -24,6 +24,8 @@
 #include "techolog.h"
 #include "techoserversocket.h"
 
+#define THREAD_POOL_SIZE 4
+
 class tEchoThread;
 
 class tEchoServer : public tObject {
@@ -35,6 +37,8 @@ public:
 	void removeThread(tEchoThread *);
 	void addThread(tEchoThread *);
 	tEchoLog *getLog();
+	void createThreadPool();
+	tEchoThread *getThread();
 protected:
 	tEchoServerSocket *serverSocket;
 	list<tEchoThread *> threads;

@@ -25,6 +25,7 @@ tEchoServer::tEchoServer() : tObject() {
 	log->Open();
 	serverSocket->setLog(log);
 	threadsMutex = new tMutex();
+	createThreadPool();
 }
 
 tEchoServer::~tEchoServer() {
@@ -55,12 +56,13 @@ void tEchoServer::run(const char *addr, unsigned short port) {
 			client_socket = serverSocket->Accept();
 			if (client_socket) {
 				client_socket->setLog(log);
-				if (!client_thread) {
-					client_thread = new tEchoThread(1, this);
-					addThread(client_thread);
-					client_thread->start();
+				client_thread = getThread();
+				if (client_thread) {
+					client_thread->getMultiplexer()->addSocket(client_socket);
+					log->log("new client added to thread [%x]\n",client_thread->getThreadId());
+				} else {
+					delete client_socket;
 				}
-				client_thread->getMultiplexer()->addSocket(client_socket);
 			} else {
 				perror("Accept()");
 			}
@@ -86,4 +88,35 @@ void tEchoServer::addThread(tEchoThread *t) {
 
 tEchoLog *tEchoServer::getLog() {
 	return log;
+}
+
+void tEchoServer::createThreadPool() {
+	tEchoThread *t;
+
+	for (int i=0;i<THREAD_POOL_SIZE;i++) {
+		t = new tEchoThread(1, this);
+		addThread(t);
+		t->start();
+	}
+}
+
+tEchoThread *tEchoServer::getThread() {
+	size_t sockCount=~0;
+	tEchoThread *t=NULL;
+	list<tEchoThread *>::iterator i;
+
+	threadsMutex->lock();
+	for (i=threads.begin();i!=threads.end();i++) {
+		if (t) {
+			if ((*i)->getMultiplexer()->getSocketCount() < sockCount) {
+				sockCount = (*i)->getMultiplexer()->getSocketCount();
+				t = (*i);
+			}
+		} else {
+			t = (*i);
+			sockCount = (*i)->getMultiplexer()->getSocketCount();
+		}
+	}
+	threadsMutex->unlock();
+	return t;
 }
