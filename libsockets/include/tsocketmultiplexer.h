@@ -46,8 +46,8 @@ enum tSocketMultiplexerState {
 	tSoscketMultiplexerWaiting
 };
 
-static char INTR_WAIT = 0x00;
-static char EXIT_WAIT = 0x01;
+static int INTR_WAIT = 0x00;
+static int EXIT_WAIT = 0x01;
 
 template <class C> // tClientSocket derived class
 class tSocketMultiplexer : public tObject {
@@ -55,7 +55,13 @@ public:
 	tSocketMultiplexer() : tObject() {
 		state = tSocketMultiplexerIdle;
 		socketListMutex = new tMutex();
-		socketpair(AF_INET, SOCK_STREAM, IPPROTO_TCP, ctrlSockets);
+#ifdef WIN32
+		if ((socketpair(AF_INET, SOCK_STREAM, IPPROTO_TCP, ctrlSockets)) == -1) {
+#else
+		if ((socketpair(AF_LOCAL, SOCK_STREAM, 0, ctrlSockets)) == -1) {
+#endif
+			perror("socketpair()");
+		}
 	};
 
 	virtual ~tSocketMultiplexer() {
@@ -65,13 +71,15 @@ public:
 
 		while (state != tSocketMultiplexerIdle);
 
-		shutdown(ctrlSockets[0],SD_BOTH);
-		shutdown(ctrlSockets[1],SD_BOTH);
 #ifdef WIN32
+		shutdown(ctrlSockets[0],SD_BOTH);
 		closesocket(ctrlSockets[0]);
+		shutdown(ctrlSockets[1],SD_BOTH);
 		closesocket(ctrlSockets[1]);
 #else
+		shutdown(ctrlSockets[0],SHUT_RDWR);
 		close(ctrlSockets[0]);
+		shutdown(ctrlSockets[1],SHUT_RDWR);
 		close(ctrlSockets[1]);
 #endif
 
