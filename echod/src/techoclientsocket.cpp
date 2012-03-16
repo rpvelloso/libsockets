@@ -36,7 +36,7 @@ void tEchoClientSocket::onSend(void *buf, size_t *size) {
 
 	memcpy(s,buf,*size);
 	s[*size] = 0;
-	log->log("sent to %s: %s\n",getHostname(),s);
+	log->log("sent to %s:%d: %s\n",getHostname(),getPort(),s);
 }
 
 void tEchoClientSocket::onReceive(void *buf, size_t size) {
@@ -45,7 +45,7 @@ void tEchoClientSocket::onReceive(void *buf, size_t size) {
 	buflen = size;
 	bufpos = 0;
 	hasOutp = 1;
-	log->log("received from %s: %s\n",getHostname(),echoBuffer);
+	log->log("received from %s:%d: %s\n",getHostname(),getPort(),echoBuffer);
 }
 
 void tEchoClientSocket::onConnect() {
