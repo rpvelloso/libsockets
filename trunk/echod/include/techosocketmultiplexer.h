@@ -19,7 +19,6 @@
 #ifndef TECHOSOCKETMULTIPLEXER_H_
 #define TECHOSOCKETMULTIPLEXER_H_
 
-#include <errno.h>
 #include <libsockets/libsockets.h>
 #include "techoclientsocket.h"
 
@@ -29,19 +28,10 @@
 
 class tEchoSocketMultiplexer : public tSocketMultiplexer<tEchoClientSocket> {
 public:
-	tEchoSocketMultiplexer() : tSocketMultiplexer() {};
-
-	~tEchoSocketMultiplexer() {};
-
-	void onInputAvailable(tEchoClientSocket *socket) {
-		if (socket->receive(buffer, ECHO_BUFLEN) <= 0) {
-			if ((errno != EINTR) && (errno != EWOULDBLOCK)) removeSocket(socket);
-		}
-	};
-
-	void onOutputAvailable(tEchoClientSocket *socket) {
-		socket->processOutput();
-	};
+	tEchoSocketMultiplexer();
+	~tEchoSocketMultiplexer();
+	void onInputAvailable(tEchoClientSocket *);
+	void onOutputAvailable(tEchoClientSocket *);
 
 protected:
     char buffer[ECHO_BUFLEN];
