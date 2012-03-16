@@ -34,9 +34,11 @@
 #ifdef DEVEL_ENV
 	#include "tobject.h"
 	#include "tmutex.h"
+	#include "utils.h"
 #else
 	#include <libsockets/tobject.h>
 	#include <libsockets/tmutex.h>
+	#include <libsockets/utils.h>
 #endif
 
 enum tSocketMultiplexerState {
@@ -44,129 +46,8 @@ enum tSocketMultiplexerState {
 	tSoscketMultiplexerWaiting
 };
 
-static int INTR_WAIT = 0x00;
-static int EXIT_WAIT = 0x01;
-
-#ifdef WIN32
-static int socketpair (int domain, int rawtype, int protocol, int sv[2])
-{
-  struct sockaddr_storage serverfd_addr, outsock_addr;
-  socklen_t addr_len = sizeof (struct sockaddr_storage);
-  struct addrinfo hints, *res;
-  int getaddrinfo_r;
-  int serverfd;
-  int saved_errno;
-  int insock, outsock;
-  int type;
-  int cloexecflag;
-
-  /* filter out cloexec flag */
-  type = type & ~SOCK_CLOEXEC;
-  cloexecflag = type & SOCK_CLOEXEC;
-
-
-  /* filter out protocol */
-  if (!(domain == AF_INET || domain == AF_INET6))
-    {
-      errno = EOPNOTSUPP;
-      return -1;
-    }
-
-  /* get loopback address */
-  memset (&hints, 0, sizeof (hints));
-  hints.ai_family = domain;
-  hints.ai_socktype = type;
-  hints.ai_protocol = protocol;
-  hints.ai_flags = 0;
-
-  getaddrinfo_r = getaddrinfo (NULL, "0", &hints, &res);
-  /* fake errno */
-  switch (getaddrinfo_r)
-    {
-    case 0:
-      break;
-    case EAI_FAMILY:
-      errno = EAFNOSUPPORT;
-      return -1;
-    case EAI_MEMORY:
-      errno = ENOMEM;
-      return -1;
-    default:
-      errno = EIO;
-      return -1;
-    }
-
-  serverfd = socket (res->ai_family, res->ai_socktype, res->ai_protocol);
-  if (-1 == serverfd)
-    goto out_bind_fail;
-
-  if (-1 == bind (serverfd, res->ai_addr, res->ai_addrlen))
-    goto out_close_serverfd;
-
-  if (-1 ==
-      getsockname (serverfd, (struct sockaddr *) &serverfd_addr, &addr_len))
-    goto out_close_serverfd;
-
-  if (type != SOCK_DGRAM)
-    if (-1 == listen (serverfd, 1))
-      goto out_close_serverfd;
-
-  outsock = socket (res->ai_family, res->ai_socktype, res->ai_protocol);
-  if (-1 == outsock)
-    goto out_close_serverfd;
-
-  if (type == SOCK_DGRAM)
-    {
-      if (-1 == bind (outsock, res->ai_addr, res->ai_addrlen))
-	goto out_close_outsock;
-      if (-1 ==
-	  getsockname (outsock, (struct sockaddr *) &outsock_addr, &addr_len))
-	goto out_close_outsock;
-    }
-
-  if (-1 == connect (outsock, (struct sockaddr *) &serverfd_addr, addr_len))
-    goto out_close_outsock;
-
-  if (type != SOCK_DGRAM)
-    {
-      insock = accept (serverfd, NULL, NULL);
-      if (-1 == outsock)
-	goto out_close_insock;
-      /* do not check error, at most we leak serverfd */
-      (void) close (serverfd);
-    }
-  else
-    {
-      if (-1 ==
-	  connect (serverfd, (struct sockaddr *) &outsock_addr, addr_len))
-	goto out_close_outsock;
-      insock = serverfd;
-    }
-
-  sv[0] = insock;
-  sv[1] = outsock;
-  freeaddrinfo (res);
-  return 0;
-out_close_insock:
-  saved_errno = errno;
-  (void) close (outsock);
-  errno = saved_errno;
-out_close_outsock:
-  saved_errno = errno;
-  (void) close (insock);
-  errno = saved_errno;
-out_close_serverfd:
-  saved_errno = errno;
-  (void) close (serverfd);
-  errno = saved_errno;
-out_bind_fail:
-  errno = filtererrno (errno);
-  freeaddrinfo (res);
-  return -1;
-}
-#endif
-
-#define cancelWait() write(ctrlPipe[1],(void *)&INTR_WAIT,1)
+static char INTR_WAIT = 0x00;
+static char EXIT_WAIT = 0x01;
 
 template <class C> // tClientSocket derived class
 class tSocketMultiplexer : public tObject {
@@ -174,7 +55,7 @@ public:
 	tSocketMultiplexer() : tObject() {
 		state = tSocketMultiplexerIdle;
 		socketListMutex = new tMutex();
-		socketpair(AF_INET, SOCK_STREAM, IPPROTO_TCP, ctrlPipe);
+		socketpair(AF_INET, SOCK_STREAM, IPPROTO_TCP, ctrlSockets);
 	};
 
 	virtual ~tSocketMultiplexer() {
@@ -184,8 +65,15 @@ public:
 
 		while (state != tSocketMultiplexerIdle);
 
-		close(ctrlPipe[1]);
-		close(ctrlPipe[0]);
+		shutdown(ctrlSockets[0],SD_BOTH);
+		shutdown(ctrlSockets[1],SD_BOTH);
+#ifdef WIN32
+		closesocket(ctrlSockets[0]);
+		closesocket(ctrlSockets[1]);
+#else
+		close(ctrlSockets[0]);
+		close(ctrlSockets[1]);
+#endif
 
 		socketListMutex->lock();
 		for (i=socketList.begin();i!=socketList.end();i++) {
@@ -214,14 +102,14 @@ public:
 
 	int waitForData() {
 		fd_set rfds,wfds;
-		int maxFd=ctrlPipe[0],fd,r=0;
+		int maxFd=ctrlSockets[0],fd,r=0;
 		typename list<C *>::iterator i;
 
 		state = tSoscketMultiplexerWaiting;
 		while (r>=0) {
 			FD_ZERO(&rfds);
 			FD_ZERO(&wfds);
-			FD_SET(ctrlPipe[0],&rfds);
+			FD_SET(ctrlSockets[0],&rfds);
 			socketListMutex->lock();
 			for (i=socketList.begin();i!=socketList.end();i++) {
 				fd = (*i)->getSocketFd();
@@ -249,8 +137,8 @@ public:
 				rs.clear();
 				ws.clear();
 
-				if (FD_ISSET(ctrlPipe[0],&rfds)) {
-					read(ctrlPipe[0],&c,1);
+				if (FD_ISSET(ctrlSockets[0],&rfds)) {
+					recv(ctrlSockets[0],&c,1,0);
 					if (c) break;
 				}
 			} else {
@@ -265,14 +153,21 @@ public:
 	};
 
 	void stopWaiting() {
-		write(ctrlPipe[1],(const void *)&EXIT_WAIT,1);
+		if (state != tSocketMultiplexerIdle)
+			send(ctrlSockets[1],&EXIT_WAIT,1,0);
 	};
+
+	void cancelWait() {
+		if (state != tSocketMultiplexerIdle)
+			send(ctrlSockets[1],&INTR_WAIT,1,0);
+	}
+
 
 	size_t getSocketCount() { return socketList.size(); };
 	virtual void onInputAvailable(C *socket) = 0;
 	virtual void onOutputAvailable(C *socket) = 0;
 protected:
-	int ctrlPipe[2];
+	int ctrlSockets[2];
 	list<C *> socketList;
 	tSocketMultiplexerState state;
 	tMutex *socketListMutex;

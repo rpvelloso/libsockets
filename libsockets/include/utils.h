@@ -34,6 +34,11 @@ using namespace std;
 #define upperCase(s) std::transform(s.begin(), s.end(), s.begin(), (int(*)(int))std::toupper)
 #define lowerCase(s) std::transform(s.begin(), s.end(), s.begin(), (int(*)(int))std::tolower)
 
-string stringTok(string *, string);
+extern string stringTok(string *, string);
 
+#ifdef WIN32
+
+extern int socketpair(int, int, int, int[2]);
+
+#endif
 #endif /* UTILS_H_ */
