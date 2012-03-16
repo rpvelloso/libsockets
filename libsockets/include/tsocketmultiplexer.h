@@ -46,8 +46,8 @@ enum tSocketMultiplexerState {
 	tSoscketMultiplexerWaiting
 };
 
-static int INTR_WAIT = 0x00;
-static int EXIT_WAIT = 0x01;
+static char INTR_WAIT = 0x00;
+static char EXIT_WAIT = 0x01;
 
 template <class C> // tClientSocket derived class
 class tSocketMultiplexer : public tObject {
