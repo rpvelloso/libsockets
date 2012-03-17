@@ -386,7 +386,7 @@ void tHTTPClientSocket::CGICall()
 		} else fclose(stdin);
 
 		dup2(fileno(tmpRespData),fileno(stdout));
-		dup2(fileno(tmpRespData),fileno(stderr));
+		//dup2(fileno(tmpRespData),fileno(stderr));
 		execve(argv[0],argv,envp);
 		LOG("execve() error: %s\n",strerror_r(errno,strerr,ERR_STR_LEN));
 		exit(-1);
@@ -462,7 +462,8 @@ void tHTTPClientSocket::CGICall()
 	ZeroMemory(&processInfo, sizeof(PROCESS_INFORMATION));
 	ZeroMemory(&startUpInfo, sizeof(STARTUPINFO));
 	startUpInfo.cb = sizeof(STARTUPINFO);
-	startUpInfo.hStdError = (HANDLE)_get_osfhandle(fileno(tmpRespData));
+	//startUpInfo.hStdError = (HANDLE)_get_osfhandle(fileno(tmpRespData));
+	startUpInfo.hStdError = (HANDLE)_get_osfhandle(fileno(stderr));
 	startUpInfo.hStdOutput = (HANDLE)_get_osfhandle(fileno(tmpRespData));
 	startUpInfo.hStdInput = (HANDLE)_get_osfhandle(tmpPostData?fileno(tmpPostData):fileno(stdin));
 	startUpInfo.dwFlags |= STARTF_USESTDHANDLES;
