@@ -91,6 +91,7 @@ int main(int argc, char *argv[])
 
 		while ((t=stringTok(search,","))!="") {
 			lowerCase(t);
+			cout << t << endl;
 			d->searchTag(t);
 		}
 	} else {
