@@ -285,11 +285,27 @@ int tDOM::treeMatch(tNode *t, tNode *p) {
 
 void tDOM::search(tNode *n, string t) {
 	list<tNode *>::iterator i;
+	int j;
+	string s = t;
 
 	if (n) {
 		i = n->nodes.begin();
 		for (;i!=n->nodes.end();i++) {
-			if ((*i)->tagName == t) onTagFound(*i);
+			if ((s[0] == '*') && (s[s.size()-1] == '*')) {
+				s.erase(s.size()-1);
+				s.erase(0);
+				j = ((*i)->tagName.find(s) != string::npos);
+			} else if (s[0] == '*') {
+				s.erase(0);
+				j = ((*i)->tagName.find(s) == (*i)->tagName.size() - s.size());
+			} else if (s[s.size()-1] == '*') {
+				s.erase(s.size()-1);
+				j = ((*i)->tagName.find(s) == 0);
+			} else {
+				j = ((*i)->tagName == t);
+			}
+			cout << s << endl;
+			if (j) onTagFound(*i);
 			search(*i,t);
 		}
 	}
