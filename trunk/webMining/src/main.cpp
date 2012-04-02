@@ -32,7 +32,7 @@ void printUsage(char *p)
 	cout << "usage: "<<p<<" [-i input_file] [-p pattern file] [-s search_string]"<<endl;
 	cout << "-i input file (default stdin)"<<endl;
 	cout << "-p pattern file to search for"<<endl;
-	cout << "-s search string: a lista of tags to search for (tag1,tag2,...)"<<endl;
+	cout << "-s search string: a list of tags to search for (tag1,tag2,...)"<<endl;
 	exit(-1);
 }
 
@@ -64,12 +64,24 @@ int main(int argc, char *argv[])
 
 	if (pattern != "") {
 		patternFile.open(pattern.c_str());
-		p->scan(patternFile);
+		if (patternFile.is_open()) p->scan(patternFile);
+		else {
+			delete d;
+			delete p;
+			perror("open");
+			return -1;
+		}
 	}
 
 	if (inp != "") {
 		inputFile.open(inp.c_str());
-		d->scan(inputFile);
+		if (inputFile.is_open()) d->scan(inputFile);
+		else {
+			delete d;
+			delete p;
+			perror("open");
+			return -1;
+		}
 	} else {
 		d->scan(cin);
 	}
@@ -78,6 +90,7 @@ int main(int argc, char *argv[])
 		string t;
 
 		while ((t=stringTok(search,","))!="") {
+			lowerCase(t);
 			d->searchTag(t);
 		}
 	} else {
