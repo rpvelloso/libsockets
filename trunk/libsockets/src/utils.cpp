@@ -22,18 +22,17 @@
 #endif
 #include "utils.h"
 
-string stringTok(string *s, string d) {
-	string tok="",s1=*s;
+string stringTok(string &s, string d) {
+	string tok="";
 	unsigned int i=0;
 
-	while ((d.find(s1[i++])!=string::npos) && (i<s1.size()));
-	for (--i;i<s1.size();i++) {
-		if (d.find(s1[i])==string::npos) tok = tok + s1[i];
+	while ((d.find(s[i++])!=string::npos) && (i<s.size()));
+	for (--i;i<s.size();i++) {
+		if (d.find(s[i])==string::npos) tok = tok + s[i];
 		else break;
 	}
-	while ((d.find(s1[i++])!=string::npos) && (i<s1.size()));
-	s1.erase(0,--i);
-	*s = s1;
+	while ((d.find(s[i++])!=string::npos) && (i<s.size()));
+	s.erase(0,--i);
 	return tok;
 }
 
