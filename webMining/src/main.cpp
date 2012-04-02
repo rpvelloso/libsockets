@@ -64,10 +64,10 @@ int main(int argc, char *argv[])
 
 	if (pattern != "") {
 		patternFile.open(pattern.c_str());
-		if (patternFile.is_open()) p->scan(patternFile);
-		else {
-			delete d;
-			delete p;
+		if (patternFile.is_open()) {
+			p->scan(patternFile);
+			patternFile.close();
+		} else {
 			perror("open");
 			return -1;
 		}
@@ -75,10 +75,10 @@ int main(int argc, char *argv[])
 
 	if (inp != "") {
 		inputFile.open(inp.c_str());
-		if (inputFile.is_open()) d->scan(inputFile);
-		else {
-			delete d;
-			delete p;
+		if (inputFile.is_open()) {
+			d->scan(inputFile);
+			inputFile.close();
+		} else {
 			perror("open");
 			return -1;
 		}
