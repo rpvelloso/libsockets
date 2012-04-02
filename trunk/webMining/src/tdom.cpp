@@ -79,7 +79,26 @@ tDOM::~tDOM() {
 };
 
 void tDOM::onTagFound(tNode *n) {
-	if (n->type != 1) cout << n->text << endl;
+	switch (n->type) {
+	case 0:
+		cout << "<" << n->tagName;
+		if (n->text.size()>0) cout << " " << n->text;
+		cout << ">" <<endl;
+		break;
+	case 1:
+		cout << "</" << n->tagName;
+		if (n->text.size()>0) cout << " " << n->text;
+		cout << ">" << endl;
+		break;
+	case 2:
+	case 3:
+		cout << n->tagName;
+		if (n->text.size()>0) cout << " " << n->text;
+		cout << endl;
+		break;
+	default:
+		break;
+	}
 }
 
 void tDOM::searchTag(string tag) {
@@ -204,6 +223,7 @@ int tDOM::scan(istream &htmlInput) {
 			break;
 		default:
 			PARSE_ERROR(line,col,state);
+			break;
 		}
 
 		if (state == 3) close = 1;
