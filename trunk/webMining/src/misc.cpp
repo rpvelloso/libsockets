@@ -27,3 +27,16 @@ string &trim(string &s) {
 	return s;
 }
 
+string stringTok(string &s, string d) {
+	string tok="";
+	unsigned int i=0;
+
+	while ((d.find(s[i++])!=string::npos) && (i<s.size()));
+	for (--i;i<s.size();i++) {
+		if (d.find(s[i])==string::npos) tok = tok + s[i];
+		else break;
+	}
+	while ((d.find(s[i++])!=string::npos) && (i<s.size()));
+	s.erase(0,--i);
+	return tok;
+}
