@@ -209,28 +209,28 @@ void tHTTPClientSocket::processHttpHeader() {
 	contentLength = 0;
 
 	do { // TODO: parse header params better
-		line = stringTok(&msg,"\n\r"); i++;
+		line = stringTok(msg,"\n\r"); i++;
 		lineAux = line;
 		cout << line << endl;
 		if (i == 1) { // request line
-			method = stringTok(&line," ");
-			scriptName = request = stringTok(&line," ");
-			scriptName = unescapeUri(stringTok(&scriptName,"?"));
+			method = stringTok(line," ");
+			scriptName = request = stringTok(line," ");
+			scriptName = unescapeUri(stringTok(scriptName,"?"));
 			if (request[0]=='/') request.erase(0,1);
 			request = unescapeUri(owner->getDocumentRoot() + request);
-			uri = stringTok(&request,"?");
+			uri = stringTok(request,"?");
 			query = request;
 			httpVersion = line;
 		} else { // header lines
-			parm = stringTok(&line,": ");
+			parm = stringTok(line,": ");
 			upperCase(parm);
 			if (parm == "HOST") {
 				host = line;
 			} else if (parm == "USER-AGENT") {
 				userAgent = line;
 			} else if (parm == "CONTENT-TYPE") {
-				contentType = stringTok(&line,"; ");
-				stringTok(&line,"=");
+				contentType = stringTok(line,"; ");
+				stringTok(line,"=");
 				boundary = line;
 			} else if (parm == "CONTENT-LENGTH") {
 				cl << line;
@@ -344,7 +344,7 @@ void tHTTPClientSocket::CGICall()
 		envp = (char **)malloc(sizeof(void *) * j);
 
 		i = 0; q = query;
-		while (q != "") envp[i++] = strdup(stringTok(&q,"&").c_str());
+		while (q != "") envp[i++] = strdup(stringTok(q,"&").c_str());
 
 		sstr << "CONTENT_LENGTH=" << contentLength;
 		envp[i] = strdup(sstr.str().c_str());
@@ -424,7 +424,7 @@ void tHTTPClientSocket::CGICall()
 	uri = DRIVE + uri;
 
 	i = 0; q = query;
-	while (q != "") envStr << stringTok(&q,"&") << '\0';
+	while (q != "") envStr << stringTok(q,"&") << '\0';
 	envStr << "CONTENT_LENGTH=" << contentLength << '\0'
 	<< "CONTENT_TYPE=" << contentType;
 	if (boundary != "")	envStr << "; boundary=" << boundary;
