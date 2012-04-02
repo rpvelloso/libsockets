@@ -34,7 +34,7 @@ using namespace std;
 #define upperCase(s) std::transform(s.begin(), s.end(), s.begin(), (int(*)(int))std::toupper)
 #define lowerCase(s) std::transform(s.begin(), s.end(), s.begin(), (int(*)(int))std::tolower)
 
-extern string stringTok(string *, string);
+extern string stringTok(string &, string);
 
 #ifdef WIN32
 
