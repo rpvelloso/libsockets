@@ -25,6 +25,7 @@
 #define lowerCase(s) std::transform(s.begin(), s.end(), s.begin(), (int(*)(int))std::tolower)
 
 string &trim(string &);
+string stringTok(string &, string);
 
 template <class K, class V>
 int multimap_pair_search(multimap<K,V> &mm, K k, V v) {

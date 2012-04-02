@@ -20,40 +20,72 @@
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
-#include <string>
-#include <list>
-#include <set>
-#include <map>
+#include <unistd.h>
 #include "tnode.h"
 #include "tdom.h"
 #include "misc.h"
 
 using namespace std;
 
-/* --- main --- */
+void printUsage(char *p)
+{
+	cout << "usage: "<<p<<" [-i input_file] [-p pattern file] [-s search_string]"<<endl;
+	cout << "-i input file (default stdin)"<<endl;
+	cout << "-p pattern file to search for"<<endl;
+	cout << "-s search string: a lista of tags to search for (tag1,tag2,...)"<<endl;
+	exit(-1);
+}
+
 int main(int argc, char *argv[])
 {
+	int opt;
+	string inp="",search="",pattern="";
 	tDOM *d = new tDOM();
 	tDOM *p = new tDOM();
-	fstream patternFile;
-	int r;
+	fstream patternFile,inputFile;
 
-	//patternFile.open("p.html");
-	//p->scan(patternFile);
+	while ((opt = getopt(argc, argv, "i:s:p:h")) != -1) {
+		switch (opt) {
+		case 'i':
+			inp = optarg;
+			break;
+		case 's':
+			search = optarg;
+			break;
+		case 'p':
+			pattern = optarg;
+			break;
+		case 'h':
+		default:
+	    	printUsage(argv[0]);
+	    break;
+		}
+	}
 
-	r = d->scan(cin);
+	if (pattern != "") {
+		patternFile.open(pattern.c_str());
+		p->scan(patternFile);
+	}
 
-	d->printDOM();
-	//p->printDOM();
-	//cout << "TM: " << d->treeMatch(d->root,p->root) << endl;
+	if (inp != "") {
+		inputFile.open(inp.c_str());
+		d->scan(inputFile);
+	} else {
+		d->scan(cin);
+	}
 
-	/*d->searchTag("a");
-	d->searchTag("img");
-	d->searchTag("link");*/
-	/*d->searchTag("#text");
-	d->searchTag("#comment");*/
+	if (search != "") {
+		string t;
+
+		while ((t=stringTok(search,","))!="") {
+			d->searchTag(t);
+		}
+	} else {
+		d->printDOM();
+	}
 
 	delete d;
-	//delete p;
-	return r;
+	delete p;
+
+	return 0;
 }
