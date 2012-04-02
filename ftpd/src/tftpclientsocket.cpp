@@ -105,19 +105,19 @@ string tFTPClientSocket::resolvePath(string p) {
 		cpath = "";
 	}
 
-	t = stringTok(&ccwd,DIR_DELIM_STR);
+	t = stringTok(ccwd,DIR_DELIM_STR);
 	while (!t.empty()) {
 		if ((t == "..") && (path.size()>0)) path.remove(path.back());
 		else if (t != ".") path.push_back(t);
-		t = stringTok(&ccwd,DIR_DELIM_STR);
+		t = stringTok(ccwd,DIR_DELIM_STR);
 	}
 
 	if (!cpath.empty()) {
-		t = stringTok(&cpath,DIR_DELIM_STR);
+		t = stringTok(cpath,DIR_DELIM_STR);
 		while (!t.empty()) {
 			if (t == "..") path.remove(path.back());
 			else if (t != ".") path.push_back(t);
-			t = stringTok(&cpath,DIR_DELIM_STR);
+			t = stringTok(cpath,DIR_DELIM_STR);
 		}
 	}
 
@@ -142,8 +142,8 @@ void tFTPClientSocket::processCommand() {
 	string buf = commandBuffer;
 
 	LOG("%s\n",commandBuffer);
-	cmd = stringTok(&buf,STR_DELIM);
-	parm = stringTok(&buf,CMD_DELIM_STR);
+	cmd = stringTok(buf,STR_DELIM);
+	parm = stringTok(buf,CMD_DELIM_STR);
 	upperCase(cmd);
 	if      (cmd == "QUIT") QUIT();
 	else if (cmd == "USER") USER(parm);
@@ -261,10 +261,10 @@ void tFTPClientSocket::PORT(string a) {
 	stringstream ip;
 
 	if (!a.empty()) {
-		port_char = stringTok(&a,PORT_DELIM);
+		port_char = stringTok(a,PORT_DELIM);
 		while (!port_char.empty() && (x < 6)) {
 			port_param[x++] = atoi(port_char.c_str());
-			port_char = stringTok(&a,PORT_DELIM);
+			port_char = stringTok(a,PORT_DELIM);
 		}
 		if (x != 6) Send(R501);
 		else {

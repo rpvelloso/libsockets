@@ -161,7 +161,7 @@ void tFTPServer::loadLogins(string f) {
 		logins.getline(buf,256);
 		if (buf[0] != '#') {
 			line = buf;
-			t = stringTok(&line,":");
+			t = stringTok(line,":");
 			i = 0;
 			while ((!t.empty()) && (i<=2)) {
 				switch (i) {
@@ -181,7 +181,7 @@ void tFTPServer::loadLogins(string f) {
 					i++;
 					break;
 				}
-				t = stringTok(&line,":");
+				t = stringTok(line,":");
 			}
 		}
 	}
