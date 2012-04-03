@@ -56,3 +56,17 @@ void tNode::addNode(tNode *n) {
 	nodes.push_back(n);
 };
 
+int tNode::getType() {
+	return type;
+}
+
+string& tNode::getText() {
+	return text;
+}
+
+string& tNode::getTagName() {
+	return tagName;
+}
+
+
+
