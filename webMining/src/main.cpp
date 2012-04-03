@@ -52,8 +52,8 @@ public:
 		default:
 			break;
 		}
-	}
-
+	};
+	virtual void onPatternFound(tNode *n) { printNode(n,0); };
 };
 
 void printUsage(char *p)
@@ -122,7 +122,13 @@ int main(int argc, char *argv[])
 			lowerCase(t);
 			d->searchTag(t);
 		}
-	} else {
+	}
+
+	if (pattern != "") {
+		d->searchPattern(p);
+	}
+
+	if (search == "" && pattern == "") {
 		d->printDOM();
 	}
 

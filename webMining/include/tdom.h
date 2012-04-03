@@ -33,17 +33,21 @@ public:
 	tDOM();
 	virtual ~tDOM();
 	virtual void onTagFound(tNode *) = 0;
+	virtual void onPatternFound(tNode *) = 0;
 	void searchTag(string);
+	void searchPattern(tDOM *);
 	void addNode(int, string);
 	void printDOM();
 	int scan(istream &);
-	int treeMatch(tNode *, tNode *);
+	tNode *getRoot();
 
 protected:
-	tNode *root;
-	void search(tNode *, string);
+	int treeMatch(tNode *, tNode *);
+	void searchTree(tNode *, tNode *);
+	void searchString(tNode *, string);
 	void printNode(tNode *, int);
 
+	tNode *root;
 	tNode *current;
 };
 
