@@ -79,7 +79,11 @@ tDOM::~tDOM() {
 };
 
 void tDOM::searchTag(string tag) {
-	search(root,tag);
+	searchString(root,tag);
+}
+
+void tDOM::searchPattern(tDOM *p) {
+	searchTree(root,p->getRoot()->nodes.front());
 }
 
 void tDOM::addNode(int tp, string tx) {
@@ -242,54 +246,68 @@ int tDOM::scan(istream &htmlInput) {
 	return 0;
 }
 
+/* EXACT tree matching - order matters */
 int tDOM::treeMatch(tNode *t, tNode *p) {
-	list<tNode *>::iterator i,j;
-
 	if (t->tagName == p->tagName) {
-		int r=1;
+		if (t->nodes.size() == p->nodes.size()) {
+			list<tNode *>::iterator i,j;
+			size_t m=0;
 
-		i = t->nodes.begin();
-		for (;i!=t->nodes.end();i++) {
+			i = t->nodes.begin();
 			j = p->nodes.begin();
-			for (;j!=p->nodes.end();j++) {
-				if ((*i)->tagName == (*j)->tagName) r += treeMatch(*i,*j);
+			for (; i!=t->nodes.end(); i++, j++) {
+				if ((*i)->tagName == (*j)->tagName) m += treeMatch(*i,*j);
 			}
+			return (m == t->nodes.size());
 		}
-		return r;
 	}
 	return 0;
 }
 
-void tDOM::search(tNode *n, string t) {
+void tDOM::searchTree(tNode *n, tNode *p) {
+	list<tNode *>::iterator i;
+
+	if (n) {
+		for (i = n->nodes.begin();i!=n->nodes.end();i++) {
+			if (treeMatch(n,p)) onPatternFound(n);
+			searchTree(*i,p);
+		}
+	}
+}
+
+void tDOM::searchString(tNode *n, string t) {
 	list<tNode *>::iterator i;
 	int j;
 	string s = t;
 
 	if (n) {
-		i = n->nodes.begin();
-		for (;i!=n->nodes.end();i++) {
+		for (i = n->nodes.begin();i!=n->nodes.end();i++) {
 			j = 0;
-			if ((s[0] == '*') && (s[s.size()-1] == '*')) { // search in the middle
+			if ((s[0] == '*') && (s[s.size()-1] == '*')) { // searchString in the middle
 				s.erase(s.size()-1,1);
 				s.erase(0,1);
 				j = ((*i)->tagName.find(s) != string::npos);
-			} else if (s[0] == '*') { // search sufix
+			} else if (s[0] == '*') { // searchString sufix
 				size_t p;
 
 				s.erase(0,1);
 				p = (*i)->tagName.rfind(s);
 				j = ((p != string::npos) &&
 					(p == ((*i)->tagName.size() - s.size())));
-			} else if (s[s.size()-1] == '*') { // search prefix
+			} else if (s[s.size()-1] == '*') { // searchString prefix
 				s.erase(s.size()-1,1);
 				j = ((*i)->tagName.find(s) == 0);
-			} else { // search exact match
+			} else { // searchString exact match
 				j = ((*i)->tagName == t);
 			}
 			if (j) onTagFound(*i);
-			search(*i,t);
+			searchString(*i,t);
 		}
 	}
+}
+
+tNode *tDOM::getRoot() {
+	return root;
 }
 
 void tDOM::printNode(tNode *n, int lvl) {
