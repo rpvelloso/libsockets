@@ -32,13 +32,12 @@ class tDOM {
 public:
 	tDOM();
 	virtual ~tDOM();
-	virtual void onTagFound(tNode *);
+	virtual void onTagFound(tNode *) = 0;
 	void searchTag(string);
 	void addNode(int, string);
 	void printDOM();
 	int scan(istream &);
 	int treeMatch(tNode *, tNode *);
-	tNode *getRoot();
 
 protected:
 	tNode *root;

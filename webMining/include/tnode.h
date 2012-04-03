@@ -34,6 +34,9 @@ public:
 	tNode(int, string);
 	virtual ~tNode();
 	void addNode(tNode *);
+	int getType();
+	string &getText();
+	string &getTagName();
 
 protected:
 	list<tNode *> nodes;

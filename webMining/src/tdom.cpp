@@ -78,29 +78,6 @@ tDOM::~tDOM() {
 	delete root;
 };
 
-void tDOM::onTagFound(tNode *n) {
-	switch (n->type) {
-	case 0:
-		cout << "<" << n->tagName;
-		if (n->text.size()>0) cout << " " << n->text;
-		cout << ">" <<endl;
-		break;
-	case 1:
-		cout << "</" << n->tagName;
-		if (n->text.size()>0) cout << " " << n->text;
-		cout << ">" << endl;
-		break;
-	case 2:
-	case 3:
-		cout << n->tagName;
-		if (n->text.size()>0) cout << " " << n->text;
-		cout << endl;
-		break;
-	default:
-		break;
-	}
-}
-
 void tDOM::searchTag(string tag) {
 	search(root,tag);
 }

@@ -27,6 +27,35 @@
 
 using namespace std;
 
+class tCustomDOM : public tDOM {
+public:
+	tCustomDOM() : tDOM() {};
+	virtual ~tCustomDOM() {};
+	virtual void onTagFound(tNode *n) {
+		switch (n->getType()) {
+		case 0:
+			cout << "<" << n->getTagName();
+			if (n->getText().size()>0) cout << " " << n->getText();
+			cout << ">" <<endl;
+			break;
+		case 1:
+			cout << "</" << n->getTagName();
+			if (n->getText().size()>0) cout << " " << n->getText();
+			cout << ">" << endl;
+			break;
+		case 2:
+		case 3:
+			cout << n->getTagName();
+			if (n->getText().size()>0) cout << " " << n->getText();
+			cout << endl;
+			break;
+		default:
+			break;
+		}
+	}
+
+};
+
 void printUsage(char *p)
 {
 	cout << "usage: "<<p<<" [-i input_file] [-p pattern file] [-s search_string]"<<endl;
@@ -40,8 +69,8 @@ int main(int argc, char *argv[])
 {
 	int opt;
 	string inp="",search="",pattern="";
-	tDOM *d = new tDOM();
-	tDOM *p = new tDOM();
+	tCustomDOM *d = new tCustomDOM();
+	tCustomDOM *p = new tCustomDOM();
 	fstream patternFile,inputFile;
 
 	while ((opt = getopt(argc, argv, "i:s:p:h")) != -1) {
@@ -91,7 +120,6 @@ int main(int argc, char *argv[])
 
 		while ((t=stringTok(search,","))!="") {
 			lowerCase(t);
-			cout << t << endl;
 			d->searchTag(t);
 		}
 	} else {
