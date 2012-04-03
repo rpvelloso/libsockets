@@ -291,20 +291,24 @@ void tDOM::search(tNode *n, string t) {
 	if (n) {
 		i = n->nodes.begin();
 		for (;i!=n->nodes.end();i++) {
-			if ((s[0] == '*') && (s[s.size()-1] == '*')) {
-				s.erase(s.size()-1);
-				s.erase(0);
+			j = 0;
+			if ((s[0] == '*') && (s[s.size()-1] == '*')) { // search in the middle
+				s.erase(s.size()-1,1);
+				s.erase(0,1);
 				j = ((*i)->tagName.find(s) != string::npos);
-			} else if (s[0] == '*') {
-				s.erase(0);
-				j = ((*i)->tagName.find(s) == (*i)->tagName.size() - s.size());
-			} else if (s[s.size()-1] == '*') {
-				s.erase(s.size()-1);
+			} else if (s[0] == '*') { // search sufix
+				size_t p;
+
+				s.erase(0,1);
+				p = (*i)->tagName.rfind(s);
+				j = ((p != string::npos) &&
+					(p == ((*i)->tagName.size() - s.size())));
+			} else if (s[s.size()-1] == '*') { // search prefix
+				s.erase(s.size()-1,1);
 				j = ((*i)->tagName.find(s) == 0);
-			} else {
+			} else { // search exact match
 				j = ((*i)->tagName == t);
 			}
-			cout << s << endl;
 			if (j) onTagFound(*i);
 			search(*i,t);
 		}
