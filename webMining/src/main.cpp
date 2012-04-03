@@ -53,7 +53,7 @@ public:
 			break;
 		}
 	};
-	virtual void onPatternFound(tNode *n) { printNode(n,0); };
+	virtual void onPatternFound(tNode *n) { onTagFound(n); };
 };
 
 void printUsage(char *p)

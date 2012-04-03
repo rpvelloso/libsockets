@@ -249,28 +249,29 @@ int tDOM::scan(istream &htmlInput) {
 /* EXACT tree matching - order matters */
 int tDOM::treeMatch(tNode *t, tNode *p) {
 	if (t->tagName == p->tagName) {
-		if (t->nodes.size() == p->nodes.size()) {
+		if (t->nodes.size() >= p->nodes.size()) {
 			list<tNode *>::iterator i,j;
 			size_t m=0;
 
 			i = t->nodes.begin();
 			j = p->nodes.begin();
-			for (; i!=t->nodes.end(); i++, j++) {
+			for (; j!=p->nodes.end(); i++, j++) {
 				if ((*i)->tagName == (*j)->tagName) m += treeMatch(*i,*j);
 			}
-			return (m == t->nodes.size());
+			return (m == p->nodes.size());
 		}
 	}
 	return 0;
 }
 
-void tDOM::searchTree(tNode *n, tNode *p) {
+void tDOM::searchTree(tNode *n, tNode *t) {
 	list<tNode *>::iterator i;
 
 	if (n) {
+		if (treeMatch(n,t)) onPatternFound(n);
 		for (i = n->nodes.begin();i!=n->nodes.end();i++) {
-			if (treeMatch(n,p)) onPatternFound(n);
-			searchTree(*i,p);
+			//cout << (*i)->tagName << " " << t->tagName << endl;
+			searchTree(*i,t);
 		}
 	}
 }
