@@ -17,10 +17,14 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cstdlib>
+#include <iostream>
 #include <string>
 #include <list>
 #include "tnode.h"
 #include "misc.h"
+
+using namespace std;
 
 tNode::tNode(int tp, string tx) {
 	type = tp;
@@ -70,7 +74,9 @@ string& tNode::getTagName() {
 
 int tNode::compare(string s)
 {
-	if ((s[0] == '*') && (s[s.size()-1] == '*')) { // search in the middle
+	if (s == "*") {
+		return 1;
+	} else if ((s[0] == '*') && (s[s.size()-1] == '*')) { // search in the middle
 		s.erase(s.size()-1,1);
 		s.erase(0,1);
 		return tagName.find(s) != string::npos;
