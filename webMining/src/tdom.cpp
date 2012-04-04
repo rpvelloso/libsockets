@@ -248,7 +248,7 @@ int tDOM::scan(istream &htmlInput) {
 
 /* EXACT tree matching - order matters */
 int tDOM::treeMatch(tNode *t, tNode *p) {
-	if (t->tagName == p->tagName) {
+	if (t->compare(p->tagName)) {
 		if (t->nodes.size() >= p->nodes.size()) {
 			list<tNode *>::iterator i,j;
 			size_t m=0;
