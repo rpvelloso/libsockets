@@ -68,5 +68,27 @@ string& tNode::getTagName() {
 	return tagName;
 }
 
+int tNode::compare(string s)
+{
+	if ((s[0] == '*') && (s[s.size()-1] == '*')) { // search in the middle
+		s.erase(s.size()-1,1);
+		s.erase(0,1);
+		return tagName.find(s) != string::npos;
+	} else if (s[0] == '*') { // search for suffix
+		size_t p;
+
+		s.erase(0,1);
+		p = tagName.rfind(s);
+		return ((p != string::npos) &&
+				(p == (tagName.size() - s.size())));
+	} else if (s[s.size()-1] == '*') { // search for prefix
+		s.erase(s.size()-1,1);
+		return (tagName.find(s) == 0);
+	}
+	return tagName == s; // exact match
+}
+
+
+
 
 
