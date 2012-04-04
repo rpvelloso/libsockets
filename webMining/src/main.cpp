@@ -53,7 +53,12 @@ public:
 			break;
 		}
 	};
-	virtual void onPatternFound(tNode *n) { onTagFound(n); };
+
+	virtual void onPatternFound(tNode *n) {
+		cout << "* --- Pattern found: " << endl;
+		printNode(n,0);
+		cout << "* --- Pattern end --- *" << endl << endl;
+	};
 };
 
 void printUsage(char *p)
