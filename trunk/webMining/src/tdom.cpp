@@ -256,7 +256,7 @@ int tDOM::treeMatch(tNode *t, tNode *p) {
 			i = t->nodes.begin();
 			j = p->nodes.begin();
 			for (; j!=p->nodes.end(); i++, j++) {
-				if ((*i)->tagName == (*j)->tagName) m += treeMatch(*i,*j);
+				if ((*i)->compare((*j)->tagName)) m += treeMatch(*i,*j);
 			}
 			return (m == p->nodes.size());
 		}
@@ -278,30 +278,10 @@ void tDOM::searchTree(tNode *n, tNode *t) {
 
 void tDOM::searchString(tNode *n, string t) {
 	list<tNode *>::iterator i;
-	int j;
-	string s = t;
 
 	if (n) {
 		for (i = n->nodes.begin();i!=n->nodes.end();i++) {
-			j = 0;
-			if ((s[0] == '*') && (s[s.size()-1] == '*')) { // searchString in the middle
-				s.erase(s.size()-1,1);
-				s.erase(0,1);
-				j = ((*i)->tagName.find(s) != string::npos);
-			} else if (s[0] == '*') { // searchString sufix
-				size_t p;
-
-				s.erase(0,1);
-				p = (*i)->tagName.rfind(s);
-				j = ((p != string::npos) &&
-					(p == ((*i)->tagName.size() - s.size())));
-			} else if (s[s.size()-1] == '*') { // searchString prefix
-				s.erase(s.size()-1,1);
-				j = ((*i)->tagName.find(s) == 0);
-			} else { // searchString exact match
-				j = ((*i)->tagName == t);
-			}
-			if (j) onTagFound(*i);
+			if ((*i)->compare(t)) onTagFound(*i);
 			searchString(*i,t);
 		}
 	}

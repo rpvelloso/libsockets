@@ -37,6 +37,7 @@ public:
 	int getType();
 	string &getText();
 	string &getTagName();
+	int compare(string);
 
 protected:
 	list<tNode *> nodes;
