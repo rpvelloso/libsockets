@@ -29,7 +29,7 @@ using namespace std;
 
 class tCustomDOM : public tDOM {
 public:
-	tCustomDOM() : tDOM() {};
+	tCustomDOM() : tDOM() { c = 0; };
 	virtual ~tCustomDOM() {};
 	virtual void onTagFound(tNode *n) {
 		switch (n->getType()) {
@@ -54,11 +54,14 @@ public:
 		}
 	};
 
-	virtual void onPatternFound(tNode *n) {
-		cout << "* --- Pattern found: " << endl;
-		printNode(n,0);
+	virtual void onPatternFound(tNode *n, tNode *p) {
+		cout << ++c << " * --- Pattern found: " << endl;
+		printNode(n,1);
+		cout << STM(n,p) << endl;
 		cout << "* --- Pattern end --- *" << endl << endl;
 	};
+
+	int c;
 };
 
 void printUsage(char *p)
@@ -67,6 +70,7 @@ void printUsage(char *p)
 	cout << "-i input file (default stdin)"<<endl;
 	cout << "-p pattern file to search for"<<endl;
 	cout << "-s search string: a list of tags to search for (tag1,tag2,...)"<<endl;
+	cout << "-t value. Similarity threshold for pattern search. default 100%. Ex.: -t 90.7 (90.7%)";
 	exit(-1);
 }
 
@@ -77,8 +81,9 @@ int main(int argc, char *argv[])
 	tCustomDOM *d = new tCustomDOM();
 	tCustomDOM *p = new tCustomDOM();
 	fstream patternFile,inputFile;
+	float st=100;
 
-	while ((opt = getopt(argc, argv, "i:s:p:h")) != -1) {
+	while ((opt = getopt(argc, argv, "i:t:s:p:h")) != -1) {
 		switch (opt) {
 		case 'i':
 			inp = optarg;
@@ -88,6 +93,9 @@ int main(int argc, char *argv[])
 			break;
 		case 'p':
 			pattern = optarg;
+			break;
+		case 't':
+			st = atof(optarg);
 			break;
 		case 'h':
 		default:
@@ -130,7 +138,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (pattern != "") {
-		d->searchPattern(p);
+		d->searchPattern(p,st);
 	}
 
 	if (search == "" && pattern == "") {
