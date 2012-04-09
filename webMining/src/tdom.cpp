@@ -72,6 +72,7 @@ multimap<string,string> listItemMap(limap,limap+20);
 
 tDOM::tDOM() {
 	root = current = new tNode(-1,"");
+	count = 0;
 };
 
 tDOM::~tDOM() {
@@ -82,8 +83,12 @@ void tDOM::searchTag(string tag) {
 	searchString(root,tag);
 }
 
-void tDOM::searchPattern(tDOM *p) {
-	searchTree(root,p->getRoot()->nodes.front());
+void tDOM::searchPattern(tDOM *p, float st) {
+	if (st > 0) {
+		if (st > 100) st = 100;
+		st = st / 100;
+		searchTree(root,p->getRoot()->nodes.front(),st,p->count);
+	}
 }
 
 void tDOM::addNode(int tp, string tx) {
@@ -114,6 +119,7 @@ void tDOM::addNode(int tp, string tx) {
 			if (singleTags.find(n->tagName) == singleTags.end())
 				if (n->text[n->text.size()-1] != '/') current = n;
 
+			count ++;
 			break;
 
 		case 1: /* close */
@@ -122,19 +128,21 @@ void tDOM::addNode(int tp, string tx) {
 				current = current->parent;
 			if (current->tagName == n->tagName) {
 				if (current != root) current = current->parent;
-				current->addNode(n); /* dont create nodes for close tags to minimize tree size */
+				//current->addNode(n); /* dont create nodes for close tags to minimize tree size */
 			} else {
 				current = c; /* ignores unmatched close tag */
 			}
-			//delete n;
+			delete n;
 			break;
 
 		case 2: /* text */
 			current->addNode(n);
+			count ++;
 			break;
 
 		case 3: /* comment */
 			current->addNode(n);
+			count ++;
 			break;
 		default: break;
 	}
@@ -142,6 +150,7 @@ void tDOM::addNode(int tp, string tx) {
 
 void tDOM::printDOM() {
 	printNode(root,0);
+	cout << "Node count: " << count << endl;
 }
 
 int tDOM::scan(istream &htmlInput) {
@@ -162,6 +171,7 @@ int tDOM::scan(istream &htmlInput) {
 	if (root) {
 		delete root;
 		root = current = new tNode(-1,"");
+		count = 0;
 	}
 
 	c = htmlInput.get();
@@ -246,7 +256,6 @@ int tDOM::scan(istream &htmlInput) {
 	return 0;
 }
 
-/* EXACT tree matching - order matters */
 int tDOM::treeMatch(tNode *t, tNode *p) {
 	if (t->compare(p->tagName)) {
 		if (t->nodes.size() >= p->nodes.size()) {
@@ -264,15 +273,42 @@ int tDOM::treeMatch(tNode *t, tNode *p) {
 	return 0;
 }
 
-void tDOM::searchTree(tNode *n, tNode *t) {
+size_t tDOM::STM(tNode *a, tNode *b)
+{
+	if (!a->compare(b->getTagName())) return 0;
+	else {
+		int k=a->nodes.size();
+		int n=b->nodes.size();
+		int m[k+1][n+1],i,j;
+		list<tNode *>::iterator x,y;
+
+		for (i=0;i<=k;i++) m[i][0]=0;
+		for (j=0;j<=n;j++) m[0][j]=0;
+
+		x = a->nodes.begin();
+		for (i=1;i<=k;i++, x++) {
+			y = b->nodes.begin();
+			for (j=1;j<=n;j++, y++) {
+				int z = m[i-1][j-1]+STM(*x,*y);
+
+				m[i][j] = max(max(m[i][j-1], m[i-1][j]),z);
+			}
+		}
+		return m[k][n]+1;
+	}
+}
+
+void tDOM::searchTree(tNode *n, tNode *t, float st, size_t s) {
 	list<tNode *>::iterator i;
 
 	if (n) {
-		if (treeMatch(n,t)) onPatternFound(n);
-		for (i = n->nodes.begin();i!=n->nodes.end();i++) {
-			//cout << (*i)->tagName << " " << t->tagName << endl;
-			searchTree(*i,t);
+		if (st == 100) {
+			if (treeMatch(n,t)) onPatternFound(n,t);
+		} else {
+			if (STM(n,t) >= (st * (float)s)) onPatternFound(n,t);
 		}
+		for (i = n->nodes.begin();i!=n->nodes.end();i++)
+			searchTree(*i,t,st,s);
 	}
 }
 
