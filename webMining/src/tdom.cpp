@@ -280,16 +280,16 @@ size_t tDOM::STM(tNode *a, tNode *b)
 		int k=a->nodes.size();
 		int n=b->nodes.size();
 		int m[k+1][n+1],i,j;
-		list<tNode *>::iterator x,y;
+		list<tNode *>::iterator ii,jj;
 
 		for (i=0;i<=k;i++) m[i][0]=0;
 		for (j=0;j<=n;j++) m[0][j]=0;
 
-		x = a->nodes.begin();
-		for (i=1;i<=k;i++, x++) {
-			y = b->nodes.begin();
-			for (j=1;j<=n;j++, y++) {
-				int z = m[i-1][j-1]+STM(*x,*y);
+		ii = a->nodes.begin();
+		for (i=1;i<=k;i++, ii++) {
+			jj = b->nodes.begin();
+			for (j=1;j<=n;j++, jj++) {
+				int z = m[i-1][j-1]+STM(*ii,*jj);
 
 				m[i][j] = max(max(m[i][j-1], m[i-1][j]),z);
 			}
