@@ -73,6 +73,7 @@ multimap<string,string> listItemMap(limap,limap+20);
 tDOM::tDOM() {
 	root = current = new tNode(-1,"");
 	count = 0;
+	verbose = 0;
 };
 
 tDOM::~tDOM() {
@@ -118,6 +119,8 @@ void tDOM::addNode(int tp, string tx) {
 
 			if (singleTags.find(n->tagName) == singleTags.end())
 				if (n->text[n->text.size()-1] != '/') current = n;
+
+			if (n->text[n->text.size()-1] == '/') n->text.erase(n->text.size()-1,1);
 
 			count ++;
 			break;
@@ -347,8 +350,8 @@ void tDOM::printNode(tNode *n, int lvl) {
 		if (n->type != -1) {
 			if (n->tagName != "") cout << n->tagName;
 			if (n->text.size() > 0) {
-				cout << " " << n->text.substr(0,MAX_TXT_SIZE);
-				if (n->text.size() > MAX_TXT_SIZE) cout << " ...";
+				cout << " " << (verbose?n->text:n->text.substr(0,MAX_TXT_SIZE));
+				if (!verbose && (n->text.size() > MAX_TXT_SIZE)) cout << " ...";
 			}
 			if (n->type == 3) cout << "--";
 			if (n->type != 2) cout << ">";
@@ -357,5 +360,21 @@ void tDOM::printNode(tNode *n, int lvl) {
 
 		i = n->nodes.begin();
 		for (;i!=n->nodes.end();i++) printNode(*i,lvl+1);
+
+		// close current tag
+		if (singleTags.find(n->tagName) == singleTags.end()) {
+			if (n->type != 2) for (int j=1;j<lvl;j++) cout << " ";
+			if (n->type == 3) cout << "-->" << endl;
+			else if (n->type != 2) {
+				cout << "</" << n->tagName << ">" << endl;
+			}
+		}
 	}
 }
+
+void tDOM::setVerbose(int v)
+{
+    verbose = v;
+}
+
+

@@ -41,6 +41,7 @@ public:
 	int scan(istream &);
 	tNode *getRoot();
 	size_t STM(tNode *, tNode *);
+    void setVerbose(int);
 
 protected:
 	int treeMatch(tNode *, tNode *);
@@ -51,6 +52,7 @@ protected:
 	tNode *root;
 	tNode *current;
 	size_t count;
+	int verbose;
 };
 
 #endif /* TDOM_H_ */
