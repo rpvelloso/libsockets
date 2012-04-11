@@ -392,12 +392,9 @@ void tDOM::combineAndCompare(tNode *p) {
 			b->nodes.clear();
 			j = f;
 			for (int jj=0;j!=p->nodes.end();j++,jj++) {
-				if ((jj%(i+1)) == 0) n = !n;
-				if (n) {
-					a->nodes.push_back(*j);
-				} else {
-					b->nodes.push_back(*j);
-				}
+				if (!(jj%i)) n = !n;
+				if (n) a->nodes.push_back(*j);
+				else b->nodes.push_back(*j);
 				if (a->nodes.size() == b->nodes.size()) STM(a,b);
 			}
 		}
