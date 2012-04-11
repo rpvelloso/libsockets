@@ -55,10 +55,9 @@ public:
 	};
 
 	virtual void onPatternFound(tNode *n, tNode *p) {
-		cout << ++c << " * --- Pattern found: " << endl;
+		cout << "<DIV> " << ++c << endl;
 		printNode(n,1);
-		cout << STM(n,p) << endl;
-		cout << "* --- Pattern end --- *" << endl << endl;
+		cout << "</DIV>" << endl << endl;
 	};
 
 	int c;
@@ -70,7 +69,8 @@ void printUsage(char *p)
 	cout << "-i input file (default stdin)"<<endl;
 	cout << "-p pattern file to search for"<<endl;
 	cout << "-s search string: a list of tags to search for (tag1,tag2,...)"<<endl;
-	cout << "-t value. Similarity threshold for pattern search. default 100%. Ex.: -t 90.7 (90.7%)";
+	cout << "-t value. Similarity threshold. default 100%. Ex.: -t 90.7 (90.7%)" << endl;
+	cout << "-v Verbose (do not abbreviate tags/text content." << endl;
 	exit(-1);
 }
 
@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 	fstream patternFile,inputFile;
 	float st=100;
 
-	while ((opt = getopt(argc, argv, "i:t:s:p:h")) != -1) {
+	while ((opt = getopt(argc, argv, "i:t:s:p:hv")) != -1) {
 		switch (opt) {
 		case 'i':
 			inp = optarg;
@@ -96,6 +96,9 @@ int main(int argc, char *argv[])
 			break;
 		case 't':
 			st = atof(optarg);
+			break;
+		case 'v':
+			d->setVerbose(1);
 			break;
 		case 'h':
 		default:
