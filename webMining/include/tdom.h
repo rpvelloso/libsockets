@@ -40,11 +40,12 @@ public:
 	void printDOM();
 	int scan(istream &);
 	tNode *getRoot();
-	size_t STM(tNode *, tNode *);
     void setVerbose(int);
+    void combineAndCompare(tNode *p);
 
 protected:
 	int treeMatch(tNode *, tNode *);
+	size_t STM(tNode *, tNode *);
 	void searchTree(tNode *, tNode *, float, size_t);
 	void searchString(tNode *, string);
 	void printNode(tNode *, int);

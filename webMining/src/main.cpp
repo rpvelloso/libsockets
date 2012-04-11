@@ -60,6 +60,7 @@ public:
 		cout << "</DIV>" << endl << endl;
 	};
 
+private:
 	int c;
 };
 

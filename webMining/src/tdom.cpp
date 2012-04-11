@@ -42,8 +42,8 @@ static string itags[] = {
 		"colgroup","p"};
 set<string> itemTags(itags,itags+13);
 
-static string stags[] = {"img","br","meta","param","area"}; // tags without subtree
-set<string> singleTags(stags,stags+5);
+static string stags[] = {"img","br","meta","param","area","link"}; // tags without subtree
+set<string> singleTags(stags,stags+6);
 
 /* maps an item to it's containers */
 static pair<string,string> limap[] = {
@@ -348,7 +348,7 @@ void tDOM::printNode(tNode *n, int lvl) {
 		}
 
 		if (n->type != -1) {
-			if (n->tagName != "") cout << n->tagName;
+			if (n->type < 2) cout << n->tagName;
 			if (n->text.size() > 0) {
 				cout << " " << (verbose?n->text:n->text.substr(0,MAX_TXT_SIZE));
 				if (!verbose && (n->text.size() > MAX_TXT_SIZE)) cout << " ...";
@@ -362,7 +362,7 @@ void tDOM::printNode(tNode *n, int lvl) {
 		for (;i!=n->nodes.end();i++) printNode(*i,lvl+1);
 
 		// close current tag
-		if (singleTags.find(n->tagName) == singleTags.end()) {
+		if ((n->type != -1) && (singleTags.find(n->tagName) == singleTags.end())) {
 			if (n->type != 2) for (int j=1;j<lvl;j++) cout << " ";
 			if (n->type == 3) cout << "-->" << endl;
 			else if (n->type != 2) {
@@ -377,4 +377,32 @@ void tDOM::setVerbose(int v)
     verbose = v;
 }
 
+void tDOM::combineAndCompare(tNode *p) {
+	tNode *a,*b;
+	int n=0,k = p->nodes.size() / 2;
+	list<tNode *>::iterator j,f;
+
+	a = new tNode(0,"");
+	b = new tNode(0,"");
+
+	f = p->nodes.begin();
+	for (int ff=0;f!=p->nodes.end();f++, ff++) {
+		for (int i=1;i<=k;i++) {
+			a->nodes.clear();
+			b->nodes.clear();
+			j = f;
+			for (int jj=0;j!=p->nodes.end();j++,jj++) {
+				if ((jj%(i+1)) == 0) n = !n;
+				if (n) {
+					a->nodes.push_back(*j);
+				} else {
+					b->nodes.push_back(*j);
+				}
+				if (a->nodes.size() == b->nodes.size()) STM(a,b);
+			}
+		}
+	}
+	delete a;
+	delete b;
+};
 
