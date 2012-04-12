@@ -450,7 +450,7 @@ void tDOM::combineAndCompare(tNode *p, float st) {
 					}
 				} else {
 					if (DRFound) {
-						curDR[2]=yy+(2*(xx-1))-curDR[1]+1; // node count
+						curDR[2]=(yy-1)+(xx*2) - curDR[1]; // node count
 
 						if ((curDR[2] > bestDR[2]) &&
 							((curDR[1] <= bestDR[1]) || (bestDR[2] == 0)))
