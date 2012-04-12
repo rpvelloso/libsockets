@@ -96,6 +96,13 @@ int tNode::compare(string s)
 	return tagName == s; // exact match
 }
 
+int tNode::compare(tNode *n)
+{
+	return (compare(n->tagName) && (type == n->type));
+}
+
+
+
 
 
 

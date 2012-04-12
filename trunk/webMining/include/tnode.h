@@ -38,6 +38,7 @@ public:
 	string &getText();
 	string &getTagName();
 	int compare(string);
+	int compare(tNode *);
 
 protected:
 	list<tNode *> nodes;
