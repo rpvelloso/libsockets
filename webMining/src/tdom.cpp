@@ -17,6 +17,7 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <string.h>
 #include <string>
 #include <iostream>
 #include "tdom.h"
@@ -86,8 +87,7 @@ void tDOM::searchTag(string tag) {
 
 void tDOM::searchPattern(tDOM *p, float st) {
 	if (st > 0) {
-		if (st > 100) st = 100;
-		st = st / 100;
+		if (st > 1) st = 1;
 		searchTree(root,p->getRoot()->nodes.front(),st);
 	}
 }
@@ -261,7 +261,7 @@ int tDOM::scan(istream &htmlInput) {
 }
 
 int tDOM::treeMatch(tNode *t, tNode *p) {
-	if (t->compare(p->tagName)) {
+	if (t->compare(p)) {
 		if (t->nodes.size() >= p->nodes.size()) {
 			list<tNode *>::iterator i,j;
 			size_t m=0;
@@ -269,7 +269,7 @@ int tDOM::treeMatch(tNode *t, tNode *p) {
 			i = t->nodes.begin();
 			j = p->nodes.begin();
 			for (; j!=p->nodes.end(); i++, j++) {
-				if ((*i)->compare((*j)->tagName)) m += treeMatch(*i,*j);
+				if ((*i)->compare(*j)) m += treeMatch(*i,*j);
 			}
 			return (m == p->nodes.size());
 		}
@@ -279,7 +279,7 @@ int tDOM::treeMatch(tNode *t, tNode *p) {
 
 size_t tDOM::STM(tNode *a, tNode *b)
 {
-	if (!a->compare(b->getTagName())) return 0;
+	if (!a->compare(b)) return 0;
 	else {
 		int k=a->nodes.size();
 		int n=b->nodes.size();
@@ -306,10 +306,11 @@ void tDOM::searchTree(tNode *n, tNode *t, float st) {
 	list<tNode *>::iterator i;
 
 	if (n) {
-		if (st == 100) {
-			if (treeMatch(n,t)) onPatternFound(n,t);
+		if (st == 1) {
+			if (treeMatch(n,t)) onPatternFound(n,t,1);
 		} else {
-			if (STM(n,t) >= (st * (float)t->size)) onPatternFound(n,t);
+			float sim=(float)STM(n,t) / (float)t->size;
+			if (sim >= st) onPatternFound(n,t,sim);
 		}
 		for (i = n->nodes.begin();i!=n->nodes.end();i++)
 			searchTree(*i,t,st);
@@ -378,30 +379,35 @@ void tDOM::setVerbose(int v)
     verbose = v;
 }
 
-void tDOM::combineAndCompare(tNode *p) {
+void tDOM::combineAndCompare(tNode *p, float st) {
 	tNode *a,*b;
 	int n=0,k = p->nodes.size() / 2;
 	list<tNode *>::iterator j,f;
+	float sim[k+1][p->nodes.size()];
+
+	for (int xx=1;xx<=k;xx++)
+		for (size_t yy=0;yy<p->nodes.size();yy++) sim[xx][yy]=0;
 
 	a = new tNode(0,"");
 	b = new tNode(0,"");
 
 	f = p->nodes.begin();
-	for (int ff=0;f!=p->nodes.end();f++, ff++) {
-		for (int i=ff+1;i<=k;i++) {
-			cout << "k=" << ff+1 << "." << i << "/" << k << endl;
-			j = f;
+	for (int ff=0;f!=p->nodes.end();f++, ff++) { // percorre todos os filhos de 'p'
+		for (int i=ff+1;i<=k;i++) { // inicia as comparacoes a partir do nr. do filho atual ateh K
 			a->nodes.clear(); a->size = 1;
 			b->nodes.clear(); b->size = 1;
-			for (int jj=0;j!=p->nodes.end();j++,jj++) {
-				if (!(jj%i)) n = !n;
+			j = f;
+			for (int jj=0;j!=p->nodes.end();j++,jj++) { // percorre do filho atual ateh o ultimo
+
+				if (!(jj%i)) n = !n; // combina os filhos em dois grupos (a e b) de i elementos
 				if (n) a->addNode(*j);
 				else b->addNode(*j);
+
 				if (a->nodes.size() == b->nodes.size()) {
 					int score = STM(a,b);
-					float sim = ((float)score / (float)max(a->size,b->size)) * 100;
 
-					cout << "nr. " << jj << ") " << score << " " << a->size << " " << b->size << " " << sim << endl;
+					sim[i][((jj+ff)-2*i)+1] = ((float)score / (float)max(a->size,b->size));
+
 					if (!n) {
 						a->nodes.clear();
 						a->size = 1;
@@ -417,6 +423,49 @@ void tDOM::combineAndCompare(tNode *p) {
 	b->nodes.clear();
 	delete a;
 	delete b;
+
+	for (int xx=1;xx<=k;xx++) {
+		for (size_t yy=0;yy<p->nodes.size();yy++) {
+			cout << (sim[xx][yy])*100 << ";";
+		}
+		cout << endl;
+	}
+
+	for (size_t zz=0;zz<p->nodes.size();zz++) {
+		int bestDR[3];
+		int curDR[3];
+
+		memset(bestDR,0,sizeof(int)*3);
+		memset(curDR,0,sizeof(int)*3);
+
+		for (int xx=1;xx<=k;xx++) {
+			int DRFound=0;
+
+			for (size_t yy=zz;yy<p->nodes.size();yy++) {
+				if (sim[xx][yy] >= st) {
+					if (!DRFound) {
+						curDR[0]=xx; // k
+						curDR[1]=yy; // start node
+						DRFound = 1;
+					}
+				} else {
+					if (DRFound) {
+						curDR[2]=yy+(2*(xx-1))-curDR[1]+1; // node count
+
+						if ((curDR[2] > bestDR[2]) &&
+							((curDR[1] <= bestDR[1]) || (bestDR[2] == 0)))
+							memcpy(bestDR,curDR,sizeof(int)*3);
+
+						cout << curDR[0] << ": " << curDR[1] << "-" << curDR[2] << endl;
+
+						break;
+					}
+				}
+			}
+		}
+		cout << "*" << bestDR[0] << ": " << bestDR[1] << "-" << bestDR[2] << endl;
+		zz=bestDR[1]+bestDR[2]-1;
+	}
 };
 
 int tDOM::treeSize(tNode* n) {

@@ -54,8 +54,8 @@ public:
 		}
 	};
 
-	virtual void onPatternFound(tNode *n, tNode *p) {
-		cout << "<DIV> " << ++c << endl;
+	virtual void onPatternFound(tNode *n, tNode *p, float s) {
+		cout << "<DIV> " << ++c << " Similarity " << (s*100.0) << "%" << endl;
 		printNode(n,1);
 		cout << "</DIV>" << endl << endl;
 	};
@@ -82,7 +82,7 @@ int main(int argc, char *argv[])
 	tCustomDOM *d = new tCustomDOM();
 	tCustomDOM *p = new tCustomDOM();
 	fstream patternFile,inputFile;
-	float st=100;
+	float st=1.0;
 
 	while ((opt = getopt(argc, argv, "i:t:s:p:hv")) != -1) {
 		switch (opt) {
@@ -96,7 +96,7 @@ int main(int argc, char *argv[])
 			pattern = optarg;
 			break;
 		case 't':
-			st = atof(optarg);
+			st = atof(optarg)/100;
 			break;
 		case 'v':
 			d->setVerbose(1);
@@ -147,7 +147,7 @@ int main(int argc, char *argv[])
 
 	if (search == "" && pattern == "") {
 		d->printDOM();
-		d->combineAndCompare(d->getRoot());
+		d->combineAndCompare(d->getRoot(),st);
 	}
 
 	delete d;

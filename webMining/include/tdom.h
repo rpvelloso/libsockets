@@ -33,7 +33,7 @@ public:
 	tDOM();
 	virtual ~tDOM();
 	virtual void onTagFound(tNode *) = 0;
-	virtual void onPatternFound(tNode *, tNode *) = 0;
+	virtual void onPatternFound(tNode *, tNode *, float) = 0;
 	void searchTag(string);
 	void searchPattern(tDOM *,float);
 	void addNode(int, string);
@@ -41,7 +41,7 @@ public:
 	int scan(istream &);
 	tNode *getRoot();
     void setVerbose(int);
-    void combineAndCompare(tNode *p);
+    void combineAndCompare(tNode *, float);
 
 protected:
 	int treeMatch(tNode *, tNode *);
