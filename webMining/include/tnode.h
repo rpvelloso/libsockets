@@ -42,7 +42,7 @@ public:
 protected:
 	list<tNode *> nodes;
 	tNode *parent;
-	int type;
+	int type,size;
 	string text, tagName;
 };
 

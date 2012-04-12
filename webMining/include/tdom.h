@@ -46,9 +46,10 @@ public:
 protected:
 	int treeMatch(tNode *, tNode *);
 	size_t STM(tNode *, tNode *);
-	void searchTree(tNode *, tNode *, float, size_t);
+	void searchTree(tNode *, tNode *, float);
 	void searchString(tNode *, string);
 	void printNode(tNode *, int);
+	int treeSize(tNode *);
 
 	tNode *root;
 	tNode *current;
