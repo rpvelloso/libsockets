@@ -387,7 +387,7 @@ void tDOM::combineAndCompare(tNode *p) {
 
 	f = p->nodes.begin();
 	for (int ff=0;f!=p->nodes.end();f++, ff++) {
-		for (int i=1;i<=k;i++) {
+		for (int i=ff+1;i<=k;i++) {
 			a->nodes.clear();
 			b->nodes.clear();
 			j = f;
