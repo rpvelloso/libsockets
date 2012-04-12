@@ -43,6 +43,7 @@ tNode::tNode(int tp, string tx) {
 			default: tagName = "#"; break;
 		}
 	}
+	size = 1;
 }
 
 tNode::~tNode() {
@@ -58,6 +59,7 @@ tNode::~tNode() {
 void tNode::addNode(tNode *n) {
 	n->parent = this;
 	nodes.push_back(n);
+	size += n->size;
 };
 
 int tNode::getType() {

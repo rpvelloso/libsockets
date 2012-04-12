@@ -147,6 +147,7 @@ int main(int argc, char *argv[])
 
 	if (search == "" && pattern == "") {
 		d->printDOM();
+		d->combineAndCompare(d->getRoot());
 	}
 
 	delete d;

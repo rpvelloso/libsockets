@@ -88,7 +88,7 @@ void tDOM::searchPattern(tDOM *p, float st) {
 	if (st > 0) {
 		if (st > 100) st = 100;
 		st = st / 100;
-		searchTree(root,p->getRoot()->nodes.front(),st,p->count);
+		searchTree(root,p->getRoot()->nodes.front(),st);
 	}
 }
 
@@ -256,6 +256,7 @@ int tDOM::scan(istream &htmlInput) {
 	if (!((state >= 0) && (state < TTL_STA))) {
 			PARSE_ERROR(line,col,state);
 	}
+	treeSize(root);
 	return 0;
 }
 
@@ -301,17 +302,17 @@ size_t tDOM::STM(tNode *a, tNode *b)
 	}
 }
 
-void tDOM::searchTree(tNode *n, tNode *t, float st, size_t s) {
+void tDOM::searchTree(tNode *n, tNode *t, float st) {
 	list<tNode *>::iterator i;
 
 	if (n) {
 		if (st == 100) {
 			if (treeMatch(n,t)) onPatternFound(n,t);
 		} else {
-			if (STM(n,t) >= (st * (float)s)) onPatternFound(n,t);
+			if (STM(n,t) >= (st * (float)t->size)) onPatternFound(n,t);
 		}
 		for (i = n->nodes.begin();i!=n->nodes.end();i++)
-			searchTree(*i,t,st,s);
+			searchTree(*i,t,st);
 	}
 }
 
@@ -388,18 +389,45 @@ void tDOM::combineAndCompare(tNode *p) {
 	f = p->nodes.begin();
 	for (int ff=0;f!=p->nodes.end();f++, ff++) {
 		for (int i=ff+1;i<=k;i++) {
-			a->nodes.clear();
-			b->nodes.clear();
+			cout << "k=" << ff+1 << "." << i << "/" << k << endl;
 			j = f;
+			a->nodes.clear(); a->size = 1;
+			b->nodes.clear(); b->size = 1;
 			for (int jj=0;j!=p->nodes.end();j++,jj++) {
 				if (!(jj%i)) n = !n;
-				if (n) a->nodes.push_back(*j);
-				else b->nodes.push_back(*j);
-				if (a->nodes.size() == b->nodes.size()) STM(a,b);
+				if (n) a->addNode(*j);
+				else b->addNode(*j);
+				if (a->nodes.size() == b->nodes.size()) {
+					int score = STM(a,b);
+					float sim = ((float)score / (float)max(a->size,b->size)) * 100;
+
+					cout << "nr. " << jj << ") " << score << " " << a->size << " " << b->size << " " << sim << endl;
+					if (!n) {
+						a->nodes.clear();
+						a->size = 1;
+					} else {
+						b->nodes.clear();
+						b->size = 1;
+					}
+				}
 			}
 		}
 	}
+	a->nodes.clear();
+	b->nodes.clear();
 	delete a;
 	delete b;
 };
+
+int tDOM::treeSize(tNode* n) {
+	list<tNode *>::iterator i;
+	int s=0;
+
+	for (i=n->nodes.begin();i!=n->nodes.end();i++) {
+		s += treeSize(*i);
+	}
+	n->size = s + 1;
+	return n->size;
+}
+
 
