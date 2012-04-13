@@ -40,6 +40,8 @@ public:
 	int compare(string);
 	int compare(tNode *);
 	void clear();
+	int getSize();
+	int getDepth();
 
 protected:
 	list<tNode *> nodes;

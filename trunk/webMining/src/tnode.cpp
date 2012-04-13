@@ -108,6 +108,20 @@ void tNode::clear()
 	size = 1;
 }
 
+int tNode::getSize()
+{
+	return size;
+}
+
+int tNode::getDepth()
+{
+	return depth;
+}
+
+
+
+
+
 
 
 

@@ -144,10 +144,10 @@ void tDOM::addNode(int tp, string tx) {
 			count ++;
 			break;
 
-		case 3: /* comment */
+		/*case 3: // comment
 			current->addNode(n);
 			count ++;
-			break;
+			break;*/
 		default: break;
 	}
 }
@@ -238,7 +238,7 @@ int tDOM::scan(istream &htmlInput) {
 			trim(text);
 			trim(comment);
 			if (text != "") addNode(2, text);
-			//if (comment != "") addNode(3, comment);
+			if (comment != "") addNode(3, comment);
 			if (tagName != "") addNode(close == 1, tagName);
 
 			tagName = "";
@@ -251,7 +251,7 @@ int tDOM::scan(istream &htmlInput) {
 	trim(text);
 	trim(comment);
 	if (text != "") addNode(2, text);
-	//if (comment != "") addNode(3, comment);
+	if (comment != "") addNode(3, comment);
 	if (tagName != "") addNode(close == 1, tagName);
 
 	if (!((state >= 0) && (state < TTL_STA))) {
@@ -388,7 +388,7 @@ void tDOM::setVerbose(int v)
 
 void tDOM::MDR(tNode *p, int k, float st) {
 
-	if (p->depth >= 3) {
+	if (p->depth >= 4) {
 		tNode *a,*b;
 		int n=0,DRFound,xx;
 		size_t r=0,yy,zz;
@@ -420,7 +420,7 @@ void tDOM::MDR(tNode *p, int k, float st) {
 					if (a->nodes.size() == b->nodes.size()) {
 						int score = STM(a,b);
 
-						simTable[i][jj-(2*i)+ff+1] = ((float)score / (float)max(a->size,b->size));
+						simTable[i][ff+jj-(2*i)+1] = ((float)score / (float)max(a->size,b->size));
 
 						if (!n) a->clear();
 						else b->clear();
@@ -497,7 +497,7 @@ void tDOM::MDR(tNode *p, int k, float st) {
 
 		if (p->nodes.size()>1) cerr << "* --- end --- *" << endl << endl;
 
-		for (r=0;r < v.size();r++) MDR(v[r],k,st);
+		for (r=0;r<v.size();r++) MDR(v[r],k,st);
 	}
 };
 
