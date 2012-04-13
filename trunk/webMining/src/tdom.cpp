@@ -258,6 +258,7 @@ int tDOM::scan(istream &htmlInput) {
 			PARSE_ERROR(line,col,state);
 	}
 	treeSize(root);
+	treeDepth(root);
 	return 0;
 }
 
@@ -387,18 +388,17 @@ void tDOM::setVerbose(int v)
 
 void tDOM::MDR(tNode *p, int k, float st) {
 
-	if (p->size >= 35) {
+	if (p->depth >= 3) {
 		tNode *a,*b;
-		int n=0;
-		size_t r=0;
+		int n=0,DRFound,xx;
+		size_t r=0,yy,zz;
 		list<tNode *>::iterator j,f;
-		float simTable[k+1][p->nodes.size()-1];
+		float simTable[k+1][p->nodes.size()];
 		vector<tNode *>v(p->nodes.begin(),p->nodes.end()); // Remaining children, not covered by any DR, to call MDR recursively
 
-		cerr << p->size << endl;
 		// *** Initialize similarity table
-		for (int xx=1;xx<=k;xx++)
-			for (size_t yy=0;yy<p->nodes.size()-1;yy++) simTable[xx][yy]=0;
+		for (xx=1;xx<=k;xx++)
+			for (yy=0;yy<p->nodes.size();yy++) simTable[xx][yy]=0;
 
 		// *** Create fake parent nodes to group children nodes of 'p' for STM()
 		a = new tNode(0,"");
@@ -406,12 +406,12 @@ void tDOM::MDR(tNode *p, int k, float st) {
 
 		// *** Combine & Compare
 		f = p->nodes.begin();
-		for (int ff=0;f!=p->nodes.end();f++, ff++) { // iterate all children of 'p'
+		for (int ff=0;f!=p->nodes.end();f++, ff++) { // iterate the start child of 'p'
 			for (int i=ff+1;i<=k;i++) { // iterate group size
-				a->nodes.clear(); a->size = 1;
-				b->nodes.clear(); b->size = 1;
-				j = f;
-				for (int jj=0;j!=p->nodes.end();j++,jj++) { // iterate children
+				a->clear();
+				b->clear();
+				j = f; n = 0;
+				for (int jj=0;j!=p->nodes.end();j++,jj++) { // iterate from 'f' child to the end
 
 					if (!(jj%i)) n = !n; // Combine nodes under fake parents (a and b) in groups of size 'i'
 					if (n) a->addNode(*j);
@@ -420,33 +420,32 @@ void tDOM::MDR(tNode *p, int k, float st) {
 					if (a->nodes.size() == b->nodes.size()) {
 						int score = STM(a,b);
 
-						simTable[i][((jj+ff)-2*i)+1] = ((float)score / (float)max(a->size,b->size));
+						simTable[i][jj-(2*i)+ff+1] = ((float)score / (float)max(a->size,b->size));
 
-						if (!n) {
-							a->nodes.clear();
-							a->size = 1;
-						} else {
-							b->nodes.clear();
-							b->size = 1;
-						}
+						if (!n) a->clear();
+						else b->clear();
 					}
 				}
 			}
 		}
-		a->nodes.clear();
-		b->nodes.clear();
+		a->clear();
+		b->clear();
 		delete a;
 		delete b;
 
-		/*for (int xx=1;xx<=k;xx++) {
-			for (size_t yy=0;yy<p->nodes.size()-1;yy++) {
-				cout << (simTable[xx][yy])*100 << ";";
+		if (p->nodes.size()>1) {
+			cerr << "* --- Sim Table --- *" << endl;
+			for (xx=1;xx<=k;xx++) {
+				for (yy=0;yy<p->nodes.size()-1;yy++) {
+					cerr << (simTable[xx][yy])*100 << ";";
+				}
+				cerr << endl;
 			}
-			cout << endl;
-		}*/
+			cerr << endl;
+		}
 
 		// *** Identify Data Regions
-		for (size_t zz=0;zz<p->nodes.size()-1;zz++) {
+		for (zz=0;zz<p->nodes.size()-1;zz++) {
 
 			struct DR_t {
 				size_t groupSize; // group size
@@ -455,23 +454,24 @@ void tDOM::MDR(tNode *p, int k, float st) {
 				size_t end;
 			} bestDR, currentDR;
 
-			memset(&currentDR,0,sizeof(currentDR));
-			memset(&bestDR,0,sizeof(bestDR));
+			memset(&currentDR,(size_t)0,sizeof(currentDR));
+			memset(&bestDR,(size_t)0,sizeof(bestDR));
 
-			for (int xx=1;xx<=k;xx++) {
-				int DRFound=0;
-
-				for (size_t yy=zz;yy<p->nodes.size();yy+=xx) {
+			for (xx=1;xx<=k;xx++) {
+				DRFound = 0;
+				for (yy=zz;yy<p->nodes.size();yy+=xx) {
 					if (simTable[xx][yy] >= st) {
 						if (!DRFound) {
-							currentDR.groupSize=xx; // size of region
+							currentDR.groupSize=xx; // number of combined nodes to form the data region
 							currentDR.start=yy; // start node
 							DRFound = 1;
 						}
 					} else {
 						if (DRFound) {
 							currentDR.end=yy+xx-1; // end node
-							currentDR.DRLength = currentDR.end - currentDR.start; // length of DR
+							currentDR.DRLength = currentDR.end - currentDR.start + 1; // length of DR
+
+							cerr << currentDR.groupSize << ") " << currentDR.start << " - " << currentDR.end << endl;
 
 							if ((currentDR.DRLength > bestDR.DRLength) &&
 								((currentDR.start <= bestDR.start) || (bestDR.DRLength == 0)))
@@ -483,16 +483,19 @@ void tDOM::MDR(tNode *p, int k, float st) {
 				}
 			}
 			if (bestDR.DRLength) {
+				cerr << bestDR.groupSize << ": " << bestDR.start << " - " << bestDR.end << endl;
 				onDataRegionFound(
-						p,
-						std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.start-r]),
-						++(std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.end-r])),
-						bestDR.groupSize);
+					p,
+					std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.start-r]),
+					++(std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.end-r])),
+					bestDR.groupSize);
 				v.erase(v.begin()+bestDR.start-r,v.begin()+bestDR.end-r+1);
 				r += bestDR.end - bestDR.start + 1;
 				zz=bestDR.end;
 			}
 		}
+
+		if (p->nodes.size()>1) cerr << "* --- end --- *" << endl << endl;
 
 		for (r=0;r < v.size();r++) MDR(v[r],k,st);
 	}
@@ -509,4 +512,14 @@ int tDOM::treeSize(tNode* n) {
 	return n->size;
 }
 
+int tDOM::treeDepth(tNode* n) {
+	list<tNode *>::iterator i;
+	int d=0,d1;
 
+	for (i=n->nodes.begin();i!=n->nodes.end();i++) {
+		d1 = treeDepth(*i);
+		if (d1>d) d = d1;
+	}
+	n->depth = d+1;
+	return n->depth;
+}

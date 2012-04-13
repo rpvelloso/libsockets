@@ -77,7 +77,7 @@ private:
 
 void printUsage(char *p)
 {
-	cout << "usage: "<<p<<" [-i input_file] [-p pattern file] [-s search_string]"<<endl;
+	cout << "usage: "<<p<<" [-i input_file] [-p pattern file] [-s search_string] [-v] [-t ###.##] [-m]"<<endl;
 	cout << "-i input file (default stdin)"<<endl;
 	cout << "-p pattern file to search for"<<endl;
 	cout << "-s search string: a list of tags to search for (tag1,tag2,...)"<<endl;
