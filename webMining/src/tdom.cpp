@@ -20,6 +20,7 @@
 #include <string.h>
 #include <string>
 #include <iostream>
+#include <vector>
 #include "tdom.h"
 #include "misc.h"
 
@@ -81,8 +82,8 @@ tDOM::~tDOM() {
 	delete root;
 };
 
-void tDOM::searchTag(string tag) {
-	searchString(root,tag);
+int tDOM::searchTag(string tag) {
+	return searchString(root,tag);
 }
 
 void tDOM::searchPattern(tDOM *p, float st) {
@@ -237,7 +238,7 @@ int tDOM::scan(istream &htmlInput) {
 			trim(text);
 			trim(comment);
 			if (text != "") addNode(2, text);
-			if (comment != "") addNode(3, comment);
+			//if (comment != "") addNode(3, comment);
 			if (tagName != "") addNode(close == 1, tagName);
 
 			tagName = "";
@@ -250,7 +251,7 @@ int tDOM::scan(istream &htmlInput) {
 	trim(text);
 	trim(comment);
 	if (text != "") addNode(2, text);
-	if (comment != "") addNode(3, comment);
+	//if (comment != "") addNode(3, comment);
 	if (tagName != "") addNode(close == 1, tagName);
 
 	if (!((state >= 0) && (state < TTL_STA))) {
@@ -290,9 +291,9 @@ size_t tDOM::STM(tNode *a, tNode *b)
 		for (j=0;j<=n;j++) m[0][j]=0;
 
 		ii = a->nodes.begin();
-		for (i=1;i<=k;i++, ii++) {
+		for (i=1;i<=k;i++,ii++) {
 			jj = b->nodes.begin();
-			for (j=1;j<=n;j++, jj++) {
+			for (j=1;j<=n;j++,jj++) {
 				int z = m[i-1][j-1]+STM(*ii,*jj);
 
 				m[i][j] = max(max(m[i][j-1], m[i-1][j]),z);
@@ -317,15 +318,20 @@ void tDOM::searchTree(tNode *n, tNode *t, float st) {
 	}
 }
 
-void tDOM::searchString(tNode *n, string t) {
+int tDOM::searchString(tNode *n, string t) {
 	list<tNode *>::iterator i;
+	int r=0;
 
 	if (n) {
 		for (i = n->nodes.begin();i!=n->nodes.end();i++) {
-			if ((*i)->compare(t)) onTagFound(*i);
-			searchString(*i,t);
+			if ((*i)->compare(t)) {
+				onTagFound(*i);
+				r++;
+			}
+			r += searchString(*i,t);
 		}
 	}
+	return r;
 }
 
 tNode *tDOM::getRoot() {
@@ -379,92 +385,116 @@ void tDOM::setVerbose(int v)
     verbose = v;
 }
 
-void tDOM::combineAndCompare(tNode *p, float st) {
-	tNode *a,*b;
-	int n=0,k = p->nodes.size() / 2;
-	list<tNode *>::iterator j,f;
-	float sim[k+1][p->nodes.size()];
+void tDOM::MDR(tNode *p, int k, float st) {
 
-	for (int xx=1;xx<=k;xx++)
-		for (size_t yy=0;yy<p->nodes.size();yy++) sim[xx][yy]=0;
+	if (p->size >= 35) {
+		tNode *a,*b;
+		int n=0;
+		size_t r=0;
+		list<tNode *>::iterator j,f;
+		float simTable[k+1][p->nodes.size()-1];
+		vector<tNode *>v(p->nodes.begin(),p->nodes.end()); // Remaining children, not covered by any DR, to call MDR recursively
 
-	a = new tNode(0,"");
-	b = new tNode(0,"");
+		cerr << p->size << endl;
+		// *** Initialize similarity table
+		for (int xx=1;xx<=k;xx++)
+			for (size_t yy=0;yy<p->nodes.size()-1;yy++) simTable[xx][yy]=0;
 
-	f = p->nodes.begin();
-	for (int ff=0;f!=p->nodes.end();f++, ff++) { // percorre todos os filhos de 'p'
-		for (int i=ff+1;i<=k;i++) { // inicia as comparacoes a partir do nr. do filho atual ateh K
-			a->nodes.clear(); a->size = 1;
-			b->nodes.clear(); b->size = 1;
-			j = f;
-			for (int jj=0;j!=p->nodes.end();j++,jj++) { // percorre do filho atual ateh o ultimo
+		// *** Create fake parent nodes to group children nodes of 'p' for STM()
+		a = new tNode(0,"");
+		b = new tNode(0,"");
 
-				if (!(jj%i)) n = !n; // combina os filhos em dois grupos (a e b) de i elementos
-				if (n) a->addNode(*j);
-				else b->addNode(*j);
+		// *** Combine & Compare
+		f = p->nodes.begin();
+		for (int ff=0;f!=p->nodes.end();f++, ff++) { // iterate all children of 'p'
+			for (int i=ff+1;i<=k;i++) { // iterate group size
+				a->nodes.clear(); a->size = 1;
+				b->nodes.clear(); b->size = 1;
+				j = f;
+				for (int jj=0;j!=p->nodes.end();j++,jj++) { // iterate children
 
-				if (a->nodes.size() == b->nodes.size()) {
-					int score = STM(a,b);
+					if (!(jj%i)) n = !n; // Combine nodes under fake parents (a and b) in groups of size 'i'
+					if (n) a->addNode(*j);
+					else b->addNode(*j);
 
-					sim[i][((jj+ff)-2*i)+1] = ((float)score / (float)max(a->size,b->size));
+					if (a->nodes.size() == b->nodes.size()) {
+						int score = STM(a,b);
 
-					if (!n) {
-						a->nodes.clear();
-						a->size = 1;
+						simTable[i][((jj+ff)-2*i)+1] = ((float)score / (float)max(a->size,b->size));
+
+						if (!n) {
+							a->nodes.clear();
+							a->size = 1;
+						} else {
+							b->nodes.clear();
+							b->size = 1;
+						}
+					}
+				}
+			}
+		}
+		a->nodes.clear();
+		b->nodes.clear();
+		delete a;
+		delete b;
+
+		/*for (int xx=1;xx<=k;xx++) {
+			for (size_t yy=0;yy<p->nodes.size()-1;yy++) {
+				cout << (simTable[xx][yy])*100 << ";";
+			}
+			cout << endl;
+		}*/
+
+		// *** Identify Data Regions
+		for (size_t zz=0;zz<p->nodes.size()-1;zz++) {
+
+			struct DR_t {
+				size_t groupSize; // group size
+				size_t DRLength;
+				size_t start;
+				size_t end;
+			} bestDR, currentDR;
+
+			memset(&currentDR,0,sizeof(currentDR));
+			memset(&bestDR,0,sizeof(bestDR));
+
+			for (int xx=1;xx<=k;xx++) {
+				int DRFound=0;
+
+				for (size_t yy=zz;yy<p->nodes.size();yy+=xx) {
+					if (simTable[xx][yy] >= st) {
+						if (!DRFound) {
+							currentDR.groupSize=xx; // size of region
+							currentDR.start=yy; // start node
+							DRFound = 1;
+						}
 					} else {
-						b->nodes.clear();
-						b->size = 1;
+						if (DRFound) {
+							currentDR.end=yy+xx-1; // end node
+							currentDR.DRLength = currentDR.end - currentDR.start; // length of DR
+
+							if ((currentDR.DRLength > bestDR.DRLength) &&
+								((currentDR.start <= bestDR.start) || (bestDR.DRLength == 0)))
+								bestDR=currentDR;
+
+							break;
+						}
 					}
 				}
 			}
-		}
-	}
-	a->nodes.clear();
-	b->nodes.clear();
-	delete a;
-	delete b;
-
-	for (int xx=1;xx<=k;xx++) {
-		for (size_t yy=0;yy<p->nodes.size();yy++) {
-			cout << (sim[xx][yy])*100 << ";";
-		}
-		cout << endl;
-	}
-
-	for (size_t zz=0;zz<p->nodes.size();zz++) {
-		int bestDR[3];
-		int curDR[3];
-
-		memset(bestDR,0,sizeof(int)*3);
-		memset(curDR,0,sizeof(int)*3);
-
-		for (int xx=1;xx<=k;xx++) {
-			int DRFound=0;
-
-			for (size_t yy=zz;yy<p->nodes.size();yy++) {
-				if (sim[xx][yy] >= st) {
-					if (!DRFound) {
-						curDR[0]=xx; // k
-						curDR[1]=yy; // start node
-						DRFound = 1;
-					}
-				} else {
-					if (DRFound) {
-						curDR[2]=(yy-1)+(xx*2) - curDR[1]; // node count
-
-						if ((curDR[2] > bestDR[2]) &&
-							((curDR[1] <= bestDR[1]) || (bestDR[2] == 0)))
-							memcpy(bestDR,curDR,sizeof(int)*3);
-
-						cout << curDR[0] << ": " << curDR[1] << "-" << curDR[2] << endl;
-
-						break;
-					}
-				}
+			if (bestDR.DRLength) {
+				onDataRegionFound(
+						p,
+						std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.start-r]),
+						++(std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.end-r])),
+						bestDR.groupSize);
+				v.erase(v.begin()+bestDR.start-r,v.begin()+bestDR.end-r+1);
+				r += bestDR.end - bestDR.start + 1;
+				zz=bestDR.end;
 			}
 		}
-		cout << "*" << bestDR[0] << ": " << bestDR[1] << "-" << bestDR[2] << endl;
-		zz=bestDR[1]+bestDR[2]-1;
+
+		for (r=0;r < v.size();r++) MDR(v[r],k,st);
 	}
 };
 
