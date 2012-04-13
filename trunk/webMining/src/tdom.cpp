@@ -132,7 +132,7 @@ void tDOM::addNode(int tp, string tx) {
 				current = current->parent;
 			if (current->tagName == n->tagName) {
 				if (current != root) current = current->parent;
-				//current->addNode(n); /* dont create nodes for close tags to minimize tree size */
+				//current->addNode(n); /* don't create close tags nodes to minimize tree size */
 			} else {
 				current = c; /* ignores unmatched close tag */
 			}

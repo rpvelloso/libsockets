@@ -66,7 +66,7 @@ public:
 
 		for (;n!=e;n++, i++) {
 			if (!(i%l)) j = 0;
-			if ((*n)->getSize() > 20) {
+			if ((*n)->getSize() > 5) {
 				j++;
 				if (j==1) cout << "<DIV class=\"DataRegion\"> " << ++c << endl;
 				printNode(*n,1);
