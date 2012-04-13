@@ -39,11 +39,12 @@ public:
 	string &getTagName();
 	int compare(string);
 	int compare(tNode *);
+	void clear();
 
 protected:
 	list<tNode *> nodes;
 	tNode *parent;
-	int type,size;
+	int type,size,depth;
 	string text, tagName;
 };
 

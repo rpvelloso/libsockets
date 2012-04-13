@@ -44,6 +44,7 @@ tNode::tNode(int tp, string tx) {
 		}
 	}
 	size = 1;
+	depth = 0;
 }
 
 tNode::~tNode() {
@@ -100,6 +101,14 @@ int tNode::compare(tNode *n)
 {
 	return (compare(n->tagName) && (type == n->type));
 }
+
+void tNode::clear()
+{
+	nodes.clear();
+	size = 1;
+}
+
+
 
 
 

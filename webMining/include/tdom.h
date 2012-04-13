@@ -51,6 +51,7 @@ protected:
 	int searchString(tNode *, string);
 	void printNode(tNode *, int);
 	int treeSize(tNode *);
+	int treeDepth(tNode *);
 
 	tNode *root;
 	tNode *current;
