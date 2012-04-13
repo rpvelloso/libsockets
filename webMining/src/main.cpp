@@ -62,12 +62,16 @@ public:
 
 	virtual void onDataRegionFound(tNode *p, list<tNode *>::iterator s, list<tNode *>::iterator e, int l) {
 		list<tNode *>::iterator n=s;
-		int i=0;
+		int i=0,j;
 
-		for (;n!=e;n++,i++) {
-			if (!(i%l)) cout << "<DIV class=\"DataRegion\"> " << ++c << endl;
-			printNode(*n,1);
-			if ((i%l)==l-1) cout << "</DIV>" << endl;
+		for (;n!=e;n++, i++) {
+			if (!(i%l)) j = 0;
+			if ((*n)->getSize() > 20) {
+				j++;
+				if (j==1) cout << "<DIV class=\"DataRegion\"> " << ++c << endl;
+				printNode(*n,1);
+			}
+			if (j&&(i%l)==l-1) cout << "</DIV>" << endl;
 		}
 	};
 
