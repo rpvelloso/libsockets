@@ -55,9 +55,20 @@ public:
 	};
 
 	virtual void onPatternFound(tNode *n, tNode *p, float s) {
-		cout << "<DIV> " << ++c << " Similarity " << (s*100.0) << "%" << endl;
+		cout << "<DIV class=\"Pattern\"> " << ++c << " Similarity " << (s*100.0) << "%" << endl;
 		printNode(n,1);
 		cout << "</DIV>" << endl << endl;
+	};
+
+	virtual void onDataRegionFound(tNode *p, list<tNode *>::iterator s, list<tNode *>::iterator e, int l) {
+		list<tNode *>::iterator n=s;
+		int i=0;
+
+		for (;n!=e;n++,i++) {
+			if (!(i%l)) cout << "<DIV class=\"DataRegion\"> " << ++c << endl;
+			printNode(*n,1);
+			if ((i%l)==l-1) cout << "</DIV>" << endl;
+		}
 	};
 
 private:
@@ -72,19 +83,20 @@ void printUsage(char *p)
 	cout << "-s search string: a list of tags to search for (tag1,tag2,...)"<<endl;
 	cout << "-t value. Similarity threshold. default 100%. Ex.: -t 90.7 (90.7%)" << endl;
 	cout << "-v Verbose (do not abbreviate tags/text content." << endl;
+	cout << "-m run MDR" << endl;
 	exit(-1);
 }
 
 int main(int argc, char *argv[])
 {
-	int opt;
+	int opt,mdr=0;
 	string inp="",search="",pattern="";
 	tCustomDOM *d = new tCustomDOM();
 	tCustomDOM *p = new tCustomDOM();
 	fstream patternFile,inputFile;
 	float st=1.0;
 
-	while ((opt = getopt(argc, argv, "i:t:s:p:hv")) != -1) {
+	while ((opt = getopt(argc, argv, "i:t:s:p:hvm")) != -1) {
 		switch (opt) {
 		case 'i':
 			inp = optarg;
@@ -100,6 +112,9 @@ int main(int argc, char *argv[])
 			break;
 		case 'v':
 			d->setVerbose(1);
+			break;
+		case 'm':
+			mdr = 1;
 			break;
 		case 'h':
 		default:
@@ -145,10 +160,11 @@ int main(int argc, char *argv[])
 		d->searchPattern(p,st);
 	}
 
-	if (search == "" && pattern == "") {
+	if (search == "" && pattern == "" && !mdr) {
 		d->printDOM();
-		d->combineAndCompare(d->getRoot(),st);
 	}
+
+	if (mdr) d->MDR(d->getRoot(),10,st);
 
 	delete d;
 	delete p;
