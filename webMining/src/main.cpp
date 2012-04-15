@@ -66,10 +66,10 @@ public:
 		int j=0;
 
 		for (;i!=e;i++) {
-			//if (searchString(*i,"#text","$",0)) {
+			if (searchString(*i,"#text","$",0)) {
 				if (!j++) cout << "<DIV class=\"record\" length=\"" << l << "\"> " << ++c << endl;
 				printNode(*i,1);
-			//}
+			}
 		}
 		if (j) cout << "</DIV>" << endl;
 	};
