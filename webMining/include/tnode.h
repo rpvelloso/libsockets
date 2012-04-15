@@ -30,6 +30,7 @@ class tDOM;
 
 class tNode {
 friend class tDOM;
+friend class tCustomDOM;
 public:
 	tNode(int, string);
 	virtual ~tNode();
@@ -42,6 +43,7 @@ public:
 	void clear();
 	int getSize();
 	int getDepth();
+	void setDepth(int);
 
 protected:
 	list<tNode *> nodes;

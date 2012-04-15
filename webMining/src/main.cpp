@@ -25,6 +25,7 @@
 #include "tdom.h"
 #include "misc.h"
 
+
 using namespace std;
 
 class tCustomDOM : public tDOM {
@@ -55,24 +56,22 @@ public:
 	};
 
 	virtual void onPatternFound(tNode *n, tNode *p, float s) {
-		cout << "<DIV class=\"Pattern\"> " << ++c << " Similarity " << (s*100.0) << "%" << endl;
+		cout << "<DIV class=\"pattern\"> " << ++c << " Similarity " << (s*100.0) << "%" << endl;
 		printNode(n,1);
 		cout << "</DIV>" << endl << endl;
 	};
 
-	virtual void onDataRegionFound(tNode *p, list<tNode *>::iterator s, list<tNode *>::iterator e, int l) {
-		list<tNode *>::iterator n=s;
-		int i=0,j;
+	virtual void onDataRecordFound(tNode *p, list<tNode *>::iterator s, list<tNode *>::iterator e, int l) {
+		list<tNode *>::iterator i=s;
+		int j=0;
 
-		for (;n!=e;n++, i++) {
-			if (!(i%l)) j = 0;
-			if ((*n)->getSize() > 5) {
-				j++;
-				if (j==1) cout << "<DIV class=\"DataRegion\"> " << ++c << endl;
-				printNode(*n,1);
+		for (;i!=e;i++) {
+			if (searchString(*i,"#text","$",0)) {
+				if (!j++) cout << "<DIV class=\"record\"> " << ++c << endl;
+				printNode(*i,1);
 			}
-			if (j&&(i%l)==l-1) cout << "</DIV>" << endl;
 		}
+		if (j) cout << "</DIV>" << endl;
 	};
 
 private:
@@ -87,18 +86,20 @@ void printUsage(char *p)
 	cout << "-s search string: a list of tags to search for (tag1,tag2,...)"<<endl;
 	cout << "-t value. Similarity threshold. default 100%. Ex.: -t 90.7 (90.7%)" << endl;
 	cout << "-v Verbose (do not abbreviate tags/text content." << endl;
-	cout << "-m run MDR" << endl;
+	cout << "-m performs MDR" << endl;
 	exit(-1);
 }
+
+#define K 10
 
 int main(int argc, char *argv[])
 {
 	int opt,mdr=0;
+	float st=1.0; // similarity threshold
 	string inp="",search="",pattern="";
 	tCustomDOM *d = new tCustomDOM();
 	tCustomDOM *p = new tCustomDOM();
 	fstream patternFile,inputFile;
-	float st=1.0;
 
 	while ((opt = getopt(argc, argv, "i:t:s:p:hvm")) != -1) {
 		switch (opt) {
@@ -168,7 +169,7 @@ int main(int argc, char *argv[])
 		d->printDOM();
 	}
 
-	if (mdr) d->MDR(d->getRoot(),10,st);
+	if (mdr) d->MDR(d->getRoot(),K,st,0);
 
 	delete d;
 	delete p;

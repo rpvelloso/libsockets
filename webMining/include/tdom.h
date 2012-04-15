@@ -32,9 +32,6 @@ class tDOM {
 public:
 	tDOM();
 	virtual ~tDOM();
-	virtual void onTagFound(tNode *) = 0;
-	virtual void onPatternFound(tNode *, tNode *, float) = 0;
-	virtual void onDataRegionFound(tNode *,list<tNode *>::iterator,list<tNode *>::iterator, int) = 0;
 	int searchTag(string);
 	void searchPattern(tDOM *,float);
 	void addNode(int, string);
@@ -42,16 +39,21 @@ public:
 	int scan(istream &);
 	tNode *getRoot();
     void setVerbose(int);
-    void MDR(tNode *, int, float);
+    int MDR(tNode *, int, float, int);
 
 protected:
 	int treeMatch(tNode *, tNode *);
 	size_t STM(tNode *, tNode *);
 	void searchTree(tNode *, tNode *, float);
-	int searchString(tNode *, string);
+	int searchString(tNode *, string, string, int);
 	void printNode(tNode *, int);
 	int treeSize(tNode *);
 	int treeDepth(tNode *);
+
+	virtual void onTagFound(tNode *) = 0;
+	virtual void onPatternFound(tNode *, tNode *, float) = 0;
+	virtual void onDataRecordFound(tNode *,list<tNode *>::iterator,list<tNode *>::iterator, int) = 0;
+	void onDataRegionFound(tNode *,list<tNode *>::iterator,list<tNode *>::iterator, int, float, int);
 
 	tNode *root;
 	tNode *current;
