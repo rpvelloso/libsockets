@@ -83,7 +83,7 @@ tDOM::~tDOM() {
 };
 
 int tDOM::searchTag(string tag) {
-	return searchString(root,tag);
+	return searchString(root,tag,"",1);
 }
 
 void tDOM::searchPattern(tDOM *p, float st) {
@@ -308,7 +308,7 @@ void tDOM::searchTree(tNode *n, tNode *t, float st) {
 	list<tNode *>::iterator i;
 
 	if (n) {
-		if (st == 1) {
+		if (st == 1) { // threshold = 100%, exact match
 			if (treeMatch(n,t)) onPatternFound(n,t,1);
 		} else {
 			float sim=(float)STM(n,t) / (float)t->size;
@@ -319,17 +319,17 @@ void tDOM::searchTree(tNode *n, tNode *t, float st) {
 	}
 }
 
-int tDOM::searchString(tNode *n, string t) {
+int tDOM::searchString(tNode *n, string t, string tt, int callEvent) {
 	list<tNode *>::iterator i;
 	int r=0;
 
 	if (n) {
 		for (i = n->nodes.begin();i!=n->nodes.end();i++) {
-			if ((*i)->compare(t)) {
-				onTagFound(*i);
+			if ((*i)->compare(t) && (tt=="" || (*i)->text.find(tt)!=string::npos)) {
+				if (callEvent) onTagFound(*i);
 				r++;
 			}
-			r += searchString(*i,t);
+			r += searchString(*i,t,tt,callEvent);
 		}
 	}
 	return r;
@@ -363,7 +363,10 @@ void tDOM::printNode(tNode *n, int lvl) {
 				if (!verbose && (n->text.size() > MAX_TXT_SIZE)) cout << " ...";
 			}
 			if (n->type == 3) cout << "--";
-			if (n->type != 2) cout << ">";
+			if (n->type != 2) {
+				if (!verbose) cout << " (" << n->depth << ", " << n->size << ")";
+				cout << ">";
+			}
 			cout << endl;
 		}
 
@@ -386,7 +389,7 @@ void tDOM::setVerbose(int v)
     verbose = v;
 }
 
-void tDOM::MDR(tNode *p, int k, float st) {
+int tDOM::MDR(tNode *p, int k, float st, int mineRecords) {
 
 	if (p->depth >= 4) {
 		tNode *a,*b;
@@ -484,11 +487,23 @@ void tDOM::MDR(tNode *p, int k, float st) {
 			}
 			if (bestDR.DRLength) {
 				cerr << bestDR.groupSize << ": " << bestDR.start << " - " << bestDR.end << endl;
-				onDataRegionFound(
-					p,
-					std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.start-r]),
-					++(std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.end-r])),
-					bestDR.groupSize);
+				if (!mineRecords) {
+					onDataRegionFound(
+						p,
+						std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.start-r]),
+						++(std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.end-r])),
+						bestDR.groupSize,st,k);
+				} else {
+					if (p->nodes.size() == bestDR.DRLength) {
+						cerr << "record!!!" << endl;
+						onDataRecordFound(
+							p,
+							std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.start-r]),
+							++(std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.end-r])),
+							bestDR.groupSize);
+						return 0;
+					}
+				}
 				v.erase(v.begin()+bestDR.start-r,v.begin()+bestDR.end-r+1);
 				r += bestDR.end - bestDR.start + 1;
 				zz=bestDR.end;
@@ -497,9 +512,43 @@ void tDOM::MDR(tNode *p, int k, float st) {
 
 		if (p->nodes.size()>1) cerr << "* --- end --- *" << endl << endl;
 
-		for (r=0;r<v.size();r++) MDR(v[r],k,st);
+		if (!mineRecords) {
+			for (r=0;r<v.size();r++) MDR(v[r],k,st,mineRecords);
+		}
 	}
+	return -mineRecords;
 };
+
+void tDOM::onDataRegionFound(tNode *p, list<tNode *>::iterator s, list<tNode *>::iterator e, int l, float st, int K) {
+	/* This event is used to mine data records from data regions */
+
+	list<tNode *>::iterator i=s,j,end=e;
+	tNode *n = new tNode(0,"");
+	size_t count;
+	int m=0;
+
+	n->setDepth((*s)->getDepth());
+	for (;i!=end;i++,m++) {
+		if ((m%l)==0) {
+			n->clear();
+			count = (*i)->nodes.size();
+		}
+		j = (*i)->nodes.begin();
+		while ((j!=(*i)->nodes.end()) && ((*j)->nodes.size() == count)) {
+			n->addNode(*j);
+			j++;
+		}
+		if ((m%l)==l-1) {
+			e = i; e++;
+			if (n->nodes.size() == count*l) {
+				if (MDR(n,K,st,1) == -1) onDataRecordFound(p,s,e,l);
+			} else onDataRecordFound(p,s,e,l);
+			s = e;
+		}
+	}
+	n->clear();
+	delete n;
+}
 
 int tDOM::treeSize(tNode* n) {
 	list<tNode *>::iterator i;

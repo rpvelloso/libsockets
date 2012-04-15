@@ -58,7 +58,7 @@ tNode::~tNode() {
 }
 
 void tNode::addNode(tNode *n) {
-	n->parent = this;
+	if (!n->parent) n->parent = this;
 	nodes.push_back(n);
 	size += n->size;
 };
@@ -117,6 +117,11 @@ int tNode::getDepth()
 {
 	return depth;
 }
+
+void tNode::setDepth(int d) {
+	depth = d;
+}
+
 
 
 
