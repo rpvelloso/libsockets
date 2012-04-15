@@ -495,7 +495,6 @@ int tDOM::MDR(tNode *p, int k, float st, int mineRecords) {
 						bestDR.groupSize,st,k);
 				} else {
 					if (p->nodes.size() == bestDR.DRLength) {
-						cerr << "record!!!" << endl;
 						onDataRecordFound(
 							p,
 							std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.start-r]),
@@ -527,11 +526,14 @@ void tDOM::onDataRegionFound(tNode *p, list<tNode *>::iterator s, list<tNode *>:
 	size_t count;
 	int m=0;
 
-	n->setDepth((*s)->getDepth());
 	for (;i!=end;i++,m++) {
 		if ((m%l)==0) {
 			n->clear();
 			count = (*i)->nodes.size();
+			n->depth = (*i)->depth;
+			n->text = (*i)->text;
+			n->type = (*i)->type;
+			n->tagName = (*i)->tagName;
 		}
 		j = (*i)->nodes.begin();
 		while ((j!=(*i)->nodes.end()) && ((*j)->nodes.size() == count)) {
