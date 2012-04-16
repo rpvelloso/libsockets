@@ -450,7 +450,7 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 		}
 
 		// *** Identify Data Regions
-		for (zz=0;zz<p->nodes.size();zz++) {
+		for (zz=0;zz<p->nodes.size()-1;zz++) {
 			bestDR.clear();
 			for (xx=1;xx<=k;xx++) {
 				currentDR.clear();
