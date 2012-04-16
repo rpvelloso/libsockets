@@ -25,6 +25,7 @@
 #include <set>
 #include <map>
 #include "tnode.h"
+#include "tdataregion.h"
 
 using namespace std;
 
@@ -32,14 +33,14 @@ class tDOM {
 public:
 	tDOM();
 	virtual ~tDOM();
-	int searchTag(string);
+	int searchTag(string, string);
 	void searchPattern(tDOM *,float);
 	void addNode(int, string);
 	void printDOM();
 	int scan(istream &);
 	tNode *getRoot();
     void setVerbose(int);
-    int MDR(tNode *, int, float, int);
+    list<tDataRegion> MDR(tNode *, int, float, int);
 
 protected:
 	int treeMatch(tNode *, tNode *);
@@ -52,8 +53,8 @@ protected:
 
 	virtual void onTagFound(tNode *) = 0;
 	virtual void onPatternFound(tNode *, tNode *, float) = 0;
-	virtual void onDataRecordFound(tNode *,list<tNode *>::iterator,list<tNode *>::iterator, int) = 0;
-	void onDataRegionFound(tNode *,list<tNode *>::iterator,list<tNode *>::iterator, int, float, int);
+	virtual void onDataRecordFound(tDataRegion) = 0;
+	virtual void onDataRegionFound(tDataRegion, float, int);
 
 	tNode *root;
 	tNode *current;

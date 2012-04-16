@@ -33,6 +33,7 @@ public:
 	tCustomDOM() : tDOM() {
 		c = 0;
 		filterStr = "";
+		filterTag = "";
 	};
 	virtual ~tCustomDOM() {};
 	virtual void onTagFound(tNode *n) {
@@ -64,13 +65,13 @@ public:
 		cout << "</DIV>" << endl << endl;
 	};
 
-	virtual void onDataRecordFound(tNode *p, list<tNode *>::iterator s, list<tNode *>::iterator e, int l) {
-		list<tNode *>::iterator i=s;
+	virtual void onDataRecordFound(tDataRegion dr) {
+		list<tNode *>::iterator i=dr.s;
 		int j=0;
 
-		for (;i!=e;i++) {
+		for (;i!=dr.e;i++) {
 			if (filter(*i)) {
-				if (!j++) cout << "<DIV class=\"record\" length=\"" << l << "\"> " << ++c << endl;
+				if (!j++) cout << "<DIV class=\"record\" length=\"" << dr.groupSize << "\"> " << ++c << endl;
 				printNode(*i,1);
 			}
 		}
@@ -78,12 +79,12 @@ public:
 	};
 
 	int filter(tNode *n) {
-		if (filterStr != "") return searchString(n,"#text",filterStr,0);
-		else return 1;
+		if (filterStr == "" && filterTag == "") return 1;
+		else return searchString(n,filterTag,filterStr,0);
 	};
 
 	int c;
-	string filterStr;
+	string filterStr,filterTag;
 };
 
 void printUsage(char *p)
@@ -95,7 +96,7 @@ void printUsage(char *p)
 	cout << "-t value. Similarity threshold. default 100%. Ex.: -t 90.7 (90.7%)" << endl;
 	cout << "-v Verbose (do not abbreviate tags/text content." << endl;
 	cout << "-m performs MDR" << endl;
-	cout << "-f MDR result filter string" << endl;
+	cout << "-f text filter string" << endl;
 	exit(-1);
 }
 
@@ -105,7 +106,7 @@ int main(int argc, char *argv[])
 {
 	int opt,mdr=0;
 	float st=1.0; // similarity threshold
-	string inp="",search="",pattern="",mdrFilter="";
+	string inp="",search="",pattern="",filterStr="";
 	tCustomDOM *d = new tCustomDOM();
 	tCustomDOM *p = new tCustomDOM();
 	fstream patternFile,inputFile;
@@ -131,7 +132,7 @@ int main(int argc, char *argv[])
 			mdr = 1;
 			break;
 		case 'f':
-			mdrFilter = optarg;
+			filterStr = optarg;
 			break;
 		case 'h':
 		default:
@@ -164,16 +165,16 @@ int main(int argc, char *argv[])
 		d->scan(cin);
 	}
 
-	if (search != "") {
+	if (!mdr && search != "") {
 		string t;
 
 		while ((t=stringTok(search,","))!="") {
 			lowerCase(t);
-			d->searchTag(t);
+			d->searchTag(t,filterStr);
 		}
 	}
 
-	if (pattern != "") {
+	if (!mdr && pattern != "") {
 		d->searchPattern(p,st);
 	}
 
@@ -182,8 +183,9 @@ int main(int argc, char *argv[])
 	}
 
 	if (mdr) {
-		d->filterStr = mdrFilter;
-		d->MDR(d->getRoot(),K,st,0);
+		d->filterTag = search!=""?search:"#text";
+		d->filterStr = filterStr;
+		d->MDR(d->getRoot(),K,st,1);
 	}
 
 	delete d;
