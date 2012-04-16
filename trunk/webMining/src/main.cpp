@@ -30,7 +30,10 @@ using namespace std;
 
 class tCustomDOM : public tDOM {
 public:
-	tCustomDOM() : tDOM() { c = 0; };
+	tCustomDOM() : tDOM() {
+		c = 0;
+		filterStr = "";
+	};
 	virtual ~tCustomDOM() {};
 	virtual void onTagFound(tNode *n) {
 		switch (n->getType()) {
@@ -66,7 +69,7 @@ public:
 		int j=0;
 
 		for (;i!=e;i++) {
-			if (searchString(*i,"#text","$",0)) {
+			if (filter(*i)) {
 				if (!j++) cout << "<DIV class=\"record\" length=\"" << l << "\"> " << ++c << endl;
 				printNode(*i,1);
 			}
@@ -74,19 +77,25 @@ public:
 		if (j) cout << "</DIV>" << endl;
 	};
 
-private:
+	int filter(tNode *n) {
+		if (filterStr != "") return searchString(n,"#text",filterStr,0);
+		else return 1;
+	};
+
 	int c;
+	string filterStr;
 };
 
 void printUsage(char *p)
 {
-	cout << "usage: "<<p<<" [-i input_file] [-p pattern file] [-s search_string] [-v] [-t ###.##] [-m]"<<endl;
+	cout << "usage: "<<p<<" [-i input_file] [-p pattern file] [-s search_string] [-v] [-t ###.##] [-m] [-f str]"<<endl;
 	cout << "-i input file (default stdin)"<<endl;
 	cout << "-p pattern file to search for"<<endl;
 	cout << "-s search string: a list of tags to search for (tag1,tag2,...)"<<endl;
 	cout << "-t value. Similarity threshold. default 100%. Ex.: -t 90.7 (90.7%)" << endl;
 	cout << "-v Verbose (do not abbreviate tags/text content." << endl;
 	cout << "-m performs MDR" << endl;
+	cout << "-f MDR result filter string" << endl;
 	exit(-1);
 }
 
@@ -96,12 +105,12 @@ int main(int argc, char *argv[])
 {
 	int opt,mdr=0;
 	float st=1.0; // similarity threshold
-	string inp="",search="",pattern="";
+	string inp="",search="",pattern="",mdrFilter="";
 	tCustomDOM *d = new tCustomDOM();
 	tCustomDOM *p = new tCustomDOM();
 	fstream patternFile,inputFile;
 
-	while ((opt = getopt(argc, argv, "i:t:s:p:hvm")) != -1) {
+	while ((opt = getopt(argc, argv, "i:t:s:p:f:mhv")) != -1) {
 		switch (opt) {
 		case 'i':
 			inp = optarg;
@@ -120,6 +129,9 @@ int main(int argc, char *argv[])
 			break;
 		case 'm':
 			mdr = 1;
+			break;
+		case 'f':
+			mdrFilter = optarg;
 			break;
 		case 'h':
 		default:
@@ -169,7 +181,10 @@ int main(int argc, char *argv[])
 		d->printDOM();
 	}
 
-	if (mdr) d->MDR(d->getRoot(),K,st,0);
+	if (mdr) {
+		d->filterStr = mdrFilter;
+		d->MDR(d->getRoot(),K,st,0);
+	}
 
 	delete d;
 	delete p;
