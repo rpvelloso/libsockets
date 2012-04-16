@@ -389,6 +389,13 @@ void tDOM::setVerbose(int v)
     verbose = v;
 }
 
+typedef struct DR_t {
+	size_t groupSize; // group size
+	size_t DRLength;
+	size_t start;
+	size_t end;
+} region_t;
+
 int tDOM::MDR(tNode *p, int k, float st, int mineRecords) {
 
 	if (p->depth >= 4) {
@@ -449,13 +456,10 @@ int tDOM::MDR(tNode *p, int k, float st, int mineRecords) {
 
 		// *** Identify Data Regions
 		for (zz=0;zz<p->nodes.size()-1;zz++) {
+			region_t bestDR, currentDR;
 
-			struct DR_t {
-				size_t groupSize; // group size
-				size_t DRLength;
-				size_t start;
-				size_t end;
-			} bestDR, currentDR;
+			std::vector<region_t> regions;
+			size_t totalNodes=0;
 
 			memset(&currentDR,(size_t)0,sizeof(currentDR));
 			memset(&bestDR,(size_t)0,sizeof(bestDR));
@@ -493,20 +497,28 @@ int tDOM::MDR(tNode *p, int k, float st, int mineRecords) {
 						std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.start-r]),
 						++(std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.end-r])),
 						bestDR.groupSize,st,k);
+					v.erase(v.begin()+bestDR.start-r,v.begin()+bestDR.end-r+1);
+					r += bestDR.end - bestDR.start + 1;
 				} else {
-					if (p->nodes.size() == bestDR.DRLength) {
-						onDataRecordFound(
-							p,
-							std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.start-r]),
-							++(std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.end-r])),
-							bestDR.groupSize);
+					regions.push_back(bestDR);
+					totalNodes += bestDR.DRLength;
+					if (totalNodes == p->nodes.size()) {
+						for (size_t rr=0;rr<regions.size();rr++) {
+							bestDR = regions[rr];
+							onDataRecordFound(
+								p,
+								std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.start-r]),
+								++(std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.end-r])),
+								bestDR.groupSize);
+							v.erase(v.begin()+bestDR.start-r,v.begin()+bestDR.end-r+1);
+							r += bestDR.end - bestDR.start + 1;
+						}
 						return 0;
 					}
 				}
-				v.erase(v.begin()+bestDR.start-r,v.begin()+bestDR.end-r+1);
-				r += bestDR.end - bestDR.start + 1;
 				zz=bestDR.end;
 			}
+
 		}
 
 		if (p->nodes.size()>1) cerr << "* --- end --- *" << endl << endl;
