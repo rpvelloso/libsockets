@@ -82,8 +82,8 @@ tDOM::~tDOM() {
 	delete root;
 };
 
-int tDOM::searchTag(string tag) {
-	return searchString(root,tag,"",1);
+int tDOM::searchTag(string tag, string text) {
+	return searchString(root,tag,text,1);
 }
 
 void tDOM::searchPattern(tDOM *p, float st) {
@@ -389,14 +389,8 @@ void tDOM::setVerbose(int v)
     verbose = v;
 }
 
-typedef struct DR_t {
-	size_t groupSize; // group size
-	size_t DRLength;
-	size_t start;
-	size_t end;
-} region_t;
-
-int tDOM::MDR(tNode *p, int k, float st, int mineRecords) {
+list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
+	list<tDataRegion> ret;
 
 	if (p->depth >= 4) {
 		tNode *a,*b;
@@ -456,13 +450,10 @@ int tDOM::MDR(tNode *p, int k, float st, int mineRecords) {
 
 		// *** Identify Data Regions
 		for (zz=0;zz<p->nodes.size()-1;zz++) {
-			region_t bestDR, currentDR;
+			tDataRegion bestDR, currentDR;
 
-			std::vector<region_t> regions;
-			size_t totalNodes=0;
-
-			memset(&currentDR,(size_t)0,sizeof(currentDR));
-			memset(&bestDR,(size_t)0,sizeof(bestDR));
+			bestDR.clear();
+			currentDR.clear();
 
 			for (xx=1;xx<=k;xx++) {
 				DRFound = 0;
@@ -490,56 +481,40 @@ int tDOM::MDR(tNode *p, int k, float st, int mineRecords) {
 				}
 			}
 			if (bestDR.DRLength) {
-				cerr << bestDR.groupSize << ": " << bestDR.start << " - " << bestDR.end << endl;
-				if (!mineRecords) {
-					onDataRegionFound(
-						p,
-						std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.start-r]),
-						++(std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.end-r])),
-						bestDR.groupSize,st,k);
-					v.erase(v.begin()+bestDR.start-r,v.begin()+bestDR.end-r+1);
-					r += bestDR.end - bestDR.start + 1;
-				} else {
-					regions.push_back(bestDR);
-					totalNodes += bestDR.DRLength;
-					if (totalNodes == p->nodes.size()) {
-						for (size_t rr=0;rr<regions.size();rr++) {
-							bestDR = regions[rr];
-							onDataRecordFound(
-								p,
-								std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.start-r]),
-								++(std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.end-r])),
-								bestDR.groupSize);
-							v.erase(v.begin()+bestDR.start-r,v.begin()+bestDR.end-r+1);
-							r += bestDR.end - bestDR.start + 1;
-						}
-						return 0;
-					}
-				}
+				cerr << bestDR.groupSize << "* " << bestDR.start << " - " << bestDR.end << endl;
+				bestDR.s = std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.start-r]);
+				bestDR.e = ++std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.end-r]);
+				bestDR.p = p;
+				v.erase(v.begin()+bestDR.start-r,v.begin()+bestDR.end-r+1);
+				r += bestDR.end - bestDR.start + 1;
 				zz=bestDR.end;
+				ret.push_back(bestDR);
+				if (mineRegions) onDataRegionFound(bestDR,st,k);
+				else onDataRecordFound(bestDR);
 			}
 
 		}
 
 		if (p->nodes.size()>1) cerr << "* --- end --- *" << endl << endl;
 
-		if (!mineRecords) {
-			for (r=0;r<v.size();r++) MDR(v[r],k,st,mineRecords);
+		for (r=0;r<v.size();r++) {
+			list<tDataRegion> dr = MDR(v[r],k,st,mineRegions);
+			ret.insert(ret.end(),dr.begin(),dr.end());
 		}
 	}
-	return -mineRecords;
+	return ret;
 };
 
-void tDOM::onDataRegionFound(tNode *p, list<tNode *>::iterator s, list<tNode *>::iterator e, int l, float st, int K) {
-	/* This event is used to mine data records from data regions */
+void tDOM::onDataRegionFound(tDataRegion dr, float st, int K) {
+	// This event is used to mine data records from data regions
 
-	list<tNode *>::iterator i=s,j,end=e;
+	list<tNode *>::iterator i=dr.s,j,end=dr.e;
 	tNode *n = new tNode(0,"");
 	size_t count;
 	int m=0;
 
 	for (;i!=end;i++,m++) {
-		if ((m%l)==0) {
+		if ((m%dr.groupSize)==0) {
 			n->clear();
 			count = (*i)->nodes.size();
 			n->depth = (*i)->depth;
@@ -552,12 +527,15 @@ void tDOM::onDataRegionFound(tNode *p, list<tNode *>::iterator s, list<tNode *>:
 			n->addNode(*j);
 			j++;
 		}
-		if ((m%l)==l-1) {
-			e = i; e++;
-			if (n->nodes.size() == count*l) {
-				if (MDR(n,K,st,1) == -1) onDataRecordFound(p,s,e,l);
-			} else onDataRecordFound(p,s,e,l);
-			s = e;
+		if ((m%dr.groupSize)==dr.groupSize-1) {
+			dr.e = i; dr.e++;
+			if (n->nodes.size() == count*dr.groupSize) {
+				list<tDataRegion>::iterator rec;
+				list<tDataRegion> records = MDR(n,K,st,0);
+
+				if (!records.size()) onDataRecordFound(dr);
+			} else onDataRecordFound(dr);
+			dr.s = dr.e;
 		}
 	}
 	n->clear();
