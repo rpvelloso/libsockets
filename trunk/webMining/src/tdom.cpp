@@ -398,6 +398,7 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 		size_t r=0,yy,zz;
 		list<tNode *>::iterator j,f;
 		float simTable[k+1][p->nodes.size()];
+		tDataRegion bestDR, currentDR;
 		vector<tNode *>v(p->nodes.begin(),p->nodes.end()); // Remaining children, not covered by any DR, to call MDR recursively
 
 		// *** Initialize similarity table
@@ -449,13 +450,10 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 		}
 
 		// *** Identify Data Regions
-		for (zz=0;zz<p->nodes.size()-1;zz++) {
-			tDataRegion bestDR, currentDR;
-
+		for (zz=0;zz<p->nodes.size();zz++) {
 			bestDR.clear();
-			currentDR.clear();
-
 			for (xx=1;xx<=k;xx++) {
+				currentDR.clear();
 				DRFound = 0;
 				for (yy=zz;yy<p->nodes.size();yy+=xx) {
 					if (simTable[xx][yy] >= st) {
@@ -487,12 +485,11 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 				bestDR.p = p;
 				v.erase(v.begin()+bestDR.start-r,v.begin()+bestDR.end-r+1);
 				r += bestDR.end - bestDR.start + 1;
-				zz=bestDR.end;
 				ret.push_back(bestDR);
 				if (mineRegions) onDataRegionFound(bestDR,st,k);
 				else onDataRecordFound(bestDR);
+				zz=bestDR.end;
 			}
-
 		}
 
 		if (p->nodes.size()>1) cerr << "* --- end --- *" << endl << endl;
