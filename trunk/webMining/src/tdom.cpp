@@ -392,7 +392,7 @@ void tDOM::setVerbose(int v)
 list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 	list<tDataRegion> ret;
 
-	if (p->depth >= 4) {
+	if (p->depth >= 3) {
 		tNode *a,*b;
 		int n=0,DRFound,xx;
 		size_t r=0,yy,zz;
@@ -455,19 +455,20 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 			for (xx=1;xx<=k;xx++) {
 				currentDR.clear();
 				DRFound = 0;
-				for (yy=zz;yy<p->nodes.size();yy+=xx) {
+				for (yy=zz;yy<p->nodes.size();yy++/*=xx*/) {
 					if (simTable[xx][yy] >= st) {
 						if (!DRFound) {
 							currentDR.groupSize=xx; // number of combined nodes to form the data region
 							currentDR.start=yy; // start node
 							DRFound = 1;
 						}
+						yy+=xx-1;
 					} else {
 						if (DRFound) {
 							currentDR.end=yy+xx-1; // end node
 							currentDR.DRLength = currentDR.end - currentDR.start + 1; // length of DR
 
-							cerr << currentDR.groupSize << ") " << currentDR.start << " - " << currentDR.end << endl;
+							cerr << "L(" << currentDR.groupSize << ") - [" << currentDR.start << "," << currentDR.end << "]" << endl;
 
 							if ((currentDR.DRLength > bestDR.DRLength) &&
 								((currentDR.start <= bestDR.start) || (bestDR.DRLength == 0)))
@@ -479,7 +480,7 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 				}
 			}
 			if (bestDR.DRLength) {
-				cerr << bestDR.groupSize << "* " << bestDR.start << " - " << bestDR.end << endl;
+				cerr << "best: L(" << bestDR.groupSize << ") [" << bestDR.start << "," << bestDR.end << "]" << endl;
 				bestDR.s = std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.start-r]);
 				bestDR.e = ++std::find(p->nodes.begin(),p->nodes.end(),v[bestDR.end-r]);
 				bestDR.p = p;
@@ -495,8 +496,10 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 		if (p->nodes.size()>1) cerr << "* --- end --- *" << endl << endl;
 
 		for (r=0;r<v.size();r++) {
-			list<tDataRegion> dr = MDR(v[r],k,st,mineRegions);
-			ret.insert(ret.end(),dr.begin(),dr.end());
+			if (v[r]->nodes.size()) {
+				list<tDataRegion> dr = MDR(v[r],k,st,mineRegions);
+				ret.insert(ret.end(),dr.begin(),dr.end());
+			}
 		}
 	}
 	return ret;

@@ -35,7 +35,9 @@ public:
 		filterStr = "";
 		filterTag = "";
 	};
-	virtual ~tCustomDOM() {};
+	virtual ~tCustomDOM() {
+		if (c) cerr << "Found " << c << " results." << endl;
+	};
 	virtual void onTagFound(tNode *n) {
 		switch (n->getType()) {
 		case 0:
@@ -186,6 +188,7 @@ int main(int argc, char *argv[])
 		d->filterTag = search!=""?search:"#text";
 		d->filterStr = filterStr;
 		d->MDR(d->getRoot(),K,st,1);
+		cerr << "Similarity threshold used: " << st << endl;
 	}
 
 	delete d;
