@@ -452,10 +452,12 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 		// *** Identify Data Regions
 		for (zz=0;zz<p->nodes.size()-1;zz++) {
 			bestDR.clear();
+			bestDR.start = p->nodes.size();
 			for (xx=1;xx<=k;xx++) {
 				currentDR.clear();
 				DRFound = 0;
 				for (yy=zz;yy<p->nodes.size();yy++/*=xx*/) {
+					if (!DRFound && (yy > bestDR.start)) break; // interrupts if nothing was found before 'best' DR
 					if (simTable[xx][yy] >= st) {
 						if (!DRFound) {
 							currentDR.groupSize=xx; // number of combined nodes to form the data region
