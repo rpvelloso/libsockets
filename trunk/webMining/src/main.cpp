@@ -81,8 +81,11 @@ public:
 	};
 
 	int filter(tNode *n) {
-		if (filterStr == "" && filterTag == "") return 1;
-		else return searchString(n,filterTag,filterStr,0);
+		int ret;
+
+		if (filterStr == "" && filterTag == "") ret = 1;
+		else ret = searchString(n,filterTag,filterStr,0);
+		return ret && n->size>10;
 	};
 
 	int c;
