@@ -476,8 +476,6 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 								((currentDR.start <= bestDR.start) || (bestDR.DRLength == 0)))
 								bestDR=currentDR;
 
-							yy = currentDR.start;
-
 							break;
 						}
 					}
