@@ -394,16 +394,16 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 
 	if (p->depth >= 3) {
 		tNode *a,*b;
-		int n=0,DRFound,xx;
-		size_t r=0,yy,zz;
+		int n=0,DRFound;
+		size_t r=0;
 		list<tNode *>::iterator j,f;
 		float simTable[k+1][p->nodes.size()];
 		tDataRegion bestDR, currentDR;
 		vector<tNode *>v(p->nodes.begin(),p->nodes.end()); // Remaining children, not covered by any DR, to call MDR recursively
 
 		// *** Initialize similarity table
-		for (xx=1;xx<=k;xx++)
-			for (yy=0;yy<p->nodes.size();yy++) simTable[xx][yy]=0;
+		for (int x=1;x<=k;x++)
+			for (size_t y=0;y<p->nodes.size();y++) simTable[x][y]=0;
 
 		// *** Create fake parent nodes to group children nodes of 'p' for STM()
 		a = new tNode(0,"");
@@ -440,9 +440,9 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 
 		if (p->nodes.size()>1) {
 			cerr << "* --- Sim Table --- *" << endl;
-			for (xx=1;xx<=k;xx++) {
-				for (yy=0;yy<p->nodes.size()-1;yy++) {
-					cerr << (simTable[xx][yy])*100 << ";";
+			for (int x=1;x<=k;x++) {
+				for (size_t y=0;y<p->nodes.size()-1;y++) {
+					cerr << (simTable[x][y])*100 << ";";
 				}
 				cerr << endl;
 			}
@@ -450,24 +450,24 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 		}
 
 		// *** Identify Data Regions
-		for (zz=0;zz<p->nodes.size()-1;zz++) {
+		for (size_t x=0;x<p->nodes.size()-1;x++) {
 			bestDR.clear();
 			bestDR.start = p->nodes.size();
-			for (xx=1;xx<=k;xx++) {
+			for (int y=1;y<=k;y++) {
 				currentDR.clear();
 				DRFound = 0;
-				for (yy=zz;yy<p->nodes.size();yy++/*=xx*/) {
-					if (!DRFound && (yy > bestDR.start)) break; // interrupts if nothing was found before 'best' DR
-					if (simTable[xx][yy] >= st) {
+				for (size_t z=x;z<p->nodes.size();z++/*=y*/) {
+					if (!DRFound && (z > bestDR.start)) break; // interrupts if nothing was found before 'best' DR
+					if (simTable[y][z] >= st) {
 						if (!DRFound) {
-							currentDR.groupSize=xx; // number of combined nodes to form the data region
-							currentDR.start=yy; // start node
+							currentDR.groupSize=y; // number of combined nodes to form the data region
+							currentDR.start=z; // start node
 							DRFound = 1;
 						}
-						yy+=xx-1;
+						z+=y-1;
 					} else {
 						if (DRFound) {
-							currentDR.end=yy+xx-1; // end node
+							currentDR.end=z+y-1; // end node
 							currentDR.DRLength = currentDR.end - currentDR.start + 1; // length of DR
 
 							cerr << "L(" << currentDR.groupSize << ") - [" << currentDR.start << "," << currentDR.end << "]" << endl;
@@ -491,7 +491,7 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 				ret.push_back(bestDR);
 				if (mineRegions) onDataRegionFound(bestDR,st,k);
 				else onDataRecordFound(bestDR);
-				zz=bestDR.end;
+				x=bestDR.end;
 			}
 		}
 
