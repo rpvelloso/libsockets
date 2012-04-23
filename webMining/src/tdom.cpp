@@ -425,7 +425,7 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 					if (a->nodes.size() == b->nodes.size()) {
 						int score = STM(a,b)-1; // subtract 1 match (a=b)
 
-						simTable[i][ff+jj-(2*i)+1] = ((float)score / ((float)max(a->size,b->size)-1)); // subtract 1 node from size (the fake root)
+						simTable[i][ff+jj-(2*i)+1] = ((float)score / ((float)max(a->size,b->size)-1)); // subtract 1 node from size (the fake parent)
 
 						if (!n) a->clear();
 						else b->clear();
