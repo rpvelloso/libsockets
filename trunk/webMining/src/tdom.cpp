@@ -297,7 +297,7 @@ size_t tDOM::STM(tNode *a, tNode *b)
 			for (j=1;j<=n;j++,jj++) {
 				int z = m[i-1][j-1]+STM(*ii,*jj);
 
-				m[i][j] = max(max(m[i][j-1], m[i-1][j]),z);
+				m[i][j] = max(max(m[i][j-1],m[i-1][j]),z);
 			}
 		}
 		return m[k][n]+1;
@@ -423,9 +423,9 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 					else b->addNode(*j);
 
 					if (a->nodes.size() == b->nodes.size()) {
-						int score = STM(a,b);
+						int score = STM(a,b)-1;
 
-						simTable[i][ff+jj-(2*i)+1] = ((float)score / (float)max(a->size,b->size));
+						simTable[i][ff+jj-(2*i)+1] = ((float)score / ((float)max(a->size,b->size)-1));
 
 						if (!n) a->clear();
 						else b->clear();
