@@ -73,19 +73,23 @@ public:
 
 		for (;i!=dr.e;i++) {
 			if (filter(*i)) {
-				if (!j++) cout << "<DIV class=\"record\" length=\"" << dr.groupSize << "\"> " << ++c << endl;
+				if (!j++) cout << "<DIV class=\"region\" length=\"" << dr.DRLength << "\"> " << endl;
+				cout << "<SPAN class=\"record\"> " << ++c << endl;
 				printNode(*i,1);
+				cout << "</SPAN>" << endl;
 			}
 		}
 		if (j) cout << "</DIV>" << endl;
 	};
 
 	int filter(tNode *n) {
-		int ret;
+		int ret=1;
 
-		if (filterStr == "" && filterTag == "") ret = 1;
-		else ret = searchString(n,filterTag,filterStr,0);
-		return ret && n->size>10;
+		if ((filterStr != "") || (filterTag != "")) {
+			if (filterTag == "") filterTag = "#text";
+			ret = searchString(n,filterTag,filterStr,0);
+		}
+		return ret;// && n->size>10;
 	};
 
 	int c;
@@ -188,7 +192,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (mdr) {
-		d->filterTag = search!=""?search:"#text";
+		d->filterTag = search;
 		d->filterStr = filterStr;
 		d->MDR(d->getRoot(),K,st,1);
 		cerr << "Similarity threshold used: " << st << endl;
