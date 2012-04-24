@@ -89,7 +89,7 @@ public:
 			if (filterTag == "") filterTag = "#text";
 			ret = searchString(n,filterTag,filterStr,0);
 		}
-		return ret;// && n->size>10;
+		return ret && n->size>10;
 	};
 
 	int c;
@@ -175,9 +175,9 @@ int main(int argc, char *argv[])
 	}
 
 	if (!mdr && search != "") {
-		string t;
+		string t,s=search;
 
-		while ((t=stringTok(search,","))!="") {
+		while ((t=stringTok(s,","))!="") {
 			lowerCase(t);
 			d->searchTag(t,filterStr);
 		}
