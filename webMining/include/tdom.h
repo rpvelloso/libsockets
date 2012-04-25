@@ -60,6 +60,7 @@ protected:
 	tNode *current;
 	size_t count;
 	int verbose;
+	string ignoring;
 };
 
 #endif /* TDOM_H_ */
