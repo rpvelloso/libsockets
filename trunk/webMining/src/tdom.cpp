@@ -44,8 +44,11 @@ static string itags[] = {
 		"colgroup","p"};
 set<string> itemTags(itags,itags+13);
 
-static string stags[] = {"img","br","meta","param","area","link"}; // tags without subtree
-set<string> singleTags(stags,stags+6);
+static string stags[] = {"img","br","meta","param","area","link","doctype"}; // tags without subtree
+set<string> singleTags(stags,stags+7);
+
+static string igtags[] = {"script","head","doctype"};
+set<string> ignoreTags(igtags,igtags+3);
 
 /* maps an item to it's containers */
 static pair<string,string> limap[] = {
@@ -76,6 +79,7 @@ tDOM::tDOM() {
 	root = current = new tNode(-1,"");
 	count = 0;
 	verbose = 0;
+	ignoring = "";
 };
 
 tDOM::~tDOM() {
@@ -96,60 +100,68 @@ void tDOM::searchPattern(tDOM *p, float st) {
 void tDOM::addNode(int tp, string tx) {
 	tNode *c, *n = new tNode(tp,tx);
 
-	switch (n->type) {
-		case 0: /* open */
-
-			/* auto close tags when nesting occurs */
-			if (itemTags.find(n->tagName) != itemTags.end()) {
-				c = current;
-				while (1) {
-					if (current == root) {
-						current = c;
-						break;
-					}
-					if (!multimap_pair_search(listItemMap,n->tagName,current->tagName)) break;
-					if (current->tagName == n->tagName) {
-						current = current->parent;
-						break;
-					}
-					current = current->parent;
-				}
-			}
-
-			current->addNode(n);
-
-			if (singleTags.find(n->tagName) == singleTags.end())
-				if (n->text[n->text.size()-1] != '/') current = n;
-
-			if (n->text[n->text.size()-1] == '/') n->text.erase(n->text.size()-1,1);
-
-			count ++;
-			break;
-
-		case 1: /* close */
-			c = current;
-			while ((current != root) && (current->tagName != n->tagName))
-				current = current->parent;
-			if (current->tagName == n->tagName) {
-				if (current != root) current = current->parent;
-				//current->addNode(n); /* don't create close tags nodes to minimize tree size */
-			} else {
-				current = c; /* ignores unmatched close tag */
-			}
-			delete n;
-			break;
-
-		case 2: /* text */
-			current->addNode(n);
-			count ++;
-			break;
-
-		/*case 3: // comment
-			current->addNode(n);
-			count ++;
-			break;*/
-		default: break;
+	if (ignoreTags.find(n->tagName) != ignoreTags.end()) {
+		if ((ignoring == "") && (n->type == 0)) ignoring = n->tagName;
+		else if ((ignoring == n->tagName) && (n->type == 1)) ignoring = "";
 	}
+
+	if (ignoring == "") {
+		switch (n->type) {
+			case 0: /* open */
+
+				/* auto close tags when nesting occurs */
+				if (itemTags.find(n->tagName) != itemTags.end()) {
+					c = current;
+					while (1) {
+						if (current == root) {
+							current = c;
+							break;
+						}
+						if (!multimap_pair_search(listItemMap,n->tagName,current->tagName)) break;
+						if (current->tagName == n->tagName) {
+							current = current->parent;
+							break;
+						}
+						current = current->parent;
+					}
+				}
+
+				current->addNode(n);
+
+				if (singleTags.find(n->tagName) == singleTags.end())
+					if (n->text[n->text.size()-1] != '/') current = n;
+
+				if (n->text[n->text.size()-1] == '/') n->text.erase(n->text.size()-1,1);
+
+				count ++;
+				break;
+
+			case 1: /* close */
+				c = current;
+				while ((current != root) && (current->tagName != n->tagName))
+					current = current->parent;
+				if (current->tagName == n->tagName) {
+					if (current != root) current = current->parent;
+					//current->addNode(n); /* don't create close tags nodes to minimize tree size */
+				} else {
+					current = c; /* ignores unmatched close tag */
+				}
+				delete n;
+				break;
+
+			case 2: /* text */
+				current->addNode(n);
+				count ++;
+				break;
+
+			/*case 3: // comment
+				current->addNode(n);
+				count ++;
+				break;*/
+			default: break;
+		}
+	} else
+		if (singleTags.find(ignoring) != singleTags.end()) ignoring = "";
 }
 
 void tDOM::printDOM() {
