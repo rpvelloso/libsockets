@@ -326,6 +326,11 @@ int tHTTPClientSocket::checkURI()
 
 #ifndef WIN32
 
+/*
+ * TODO: replace the stdin file redirection to. Use a pipe,
+ * instead of a file, redirecting to the client on the fly
+ * */
+
 void tHTTPClientSocket::CGICall()
 {
 	char **envp=NULL,*argv[3] = { NULL, NULL, NULL };
