@@ -519,6 +519,19 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 	return ret;
 };
 
+tNode *tDOM::getFirst(tNode *n, string t) {
+	list<tNode *>::iterator i;
+	tNode * r=NULL;
+
+	if (n) {
+		for (i = n->nodes.begin();i!=n->nodes.end();i++) {
+			if ((*i)->compare(t)) return (*i);
+			if ((r=getFirst(*i,t))) return r;
+		}
+	}
+	return r;
+}
+
 void tDOM::onDataRegionFound(tDataRegion dr, float st, int K) {
 	// This event is used to mine data records from data regions
 
@@ -580,4 +593,19 @@ int tDOM::treeDepth(tNode* n) {
 	}
 	n->depth = d+1;
 	return n->depth;
+}
+
+void tDOM::printTagPath(string s, tNode *n) {
+	list<tNode *>::iterator i = n->nodes.begin();
+
+	s = s + "/" + n->getTagName();
+	if (!(n->nodes.size())) {
+		cout << s << endl;
+		return;
+	}
+
+	for (;i!=n->nodes.end();i++) {
+		cout << s << endl;
+		printTagPath(s,*i);
+	}
 }
