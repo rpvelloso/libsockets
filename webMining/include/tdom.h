@@ -39,9 +39,10 @@ public:
 	void printDOM();
 	int scan(istream &);
 	tNode *getRoot();
+	tNode *getFirst(tNode *, string);
     void setVerbose(int);
     list<tDataRegion> MDR(tNode *, int, float, int);
-
+    void printTagPath(string, tNode *);
 protected:
 	int treeMatch(tNode *, tNode *);
 	size_t STM(tNode *, tNode *);
