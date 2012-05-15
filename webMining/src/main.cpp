@@ -98,13 +98,17 @@ public:
 		return ret && n->size>10;
 	};
 
+	void mineForms() {
+
+	};
+
 	int c;
 	string filterStr,filterTag;
 };
 
 void printUsage(char *p)
 {
-	cout << "usage: "<<p<<" [-i input_file] [-p pattern file] [-s search_string] [-v] [-t ###.##] [-m] [-f str]"<<endl;
+	cout << "usage: "<<p<<" [-i input_file] [-p pattern file] [-s search_string] [-v] [-t ###.##] [-m] [-f str] [-x] [-d]"<<endl;
 	cout << "-i input file (default stdin)"<<endl;
 	cout << "-p pattern file to search for"<<endl;
 	cout << "-s search string: a list of tags to search for (tag1,tag2,...)"<<endl;
@@ -113,6 +117,7 @@ void printUsage(char *p)
 	cout << "-m performs MDR" << endl;
 	cout << "-f text filter string" << endl;
 	cout << "-x display tag path of input" << endl;
+	cout << "-d mine forms and fields" << endl;
 	exit(-1);
 }
 
@@ -120,14 +125,14 @@ void printUsage(char *p)
 
 int main(int argc, char *argv[])
 {
-	int opt,mdr=0,tp=0;
+	int opt,mdr=0,tp=0,mineForms=0;
 	float st=1.0; // similarity threshold
 	string inp="",search="",pattern="",filterStr="";
 	tCustomDOM *d = new tCustomDOM();
 	tCustomDOM *p = new tCustomDOM();
 	fstream patternFile,inputFile;
 
-	while ((opt = getopt(argc, argv, "i:t:s:p:f:mhvx")) != -1) {
+	while ((opt = getopt(argc, argv, "i:t:s:p:f:mhvxd")) != -1) {
 		switch (opt) {
 		case 'i':
 			inp = optarg;
@@ -152,6 +157,9 @@ int main(int argc, char *argv[])
 			break;
 		case 'x':
 			tp = 1;
+			break;
+		case 'd':
+			mineForms = 1;
 			break;
 		case 'h':
 		default:
@@ -185,7 +193,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (tp) {
-		d->printTagPath("",d->getFirst(d->getRoot(),"body"));
+		d->printTagPath("",d->findNext(NULL,"body"));
 	}
 
 	if (!tp && !mdr && search != "") {

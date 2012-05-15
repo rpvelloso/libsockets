@@ -35,14 +35,14 @@
 static string ltags[] = {
 		"table","tbody","tfoot","thead","tr",
 		"ul","ol","dl","frameset","colgroup",
-		"dir","menu"};
-set<string> listTags(ltags,ltags+12);
+		"dir","menu","select"};
+set<string> listTags(ltags,ltags+13);
 
 static string itags[] = {
 		"tr","th","td","li","dt","dd","frame",
 		"noframes","tbody","tfoot","thead","col",
-		"colgroup","p"};
-set<string> itemTags(itags,itags+13);
+		"colgroup","p","option"};
+set<string> itemTags(itags,itags+14);
 
 static string stags[] = {"img","br","meta","param","area","link","doctype"}; // tags without subtree
 set<string> singleTags(stags,stags+7);
@@ -54,6 +54,7 @@ set<string> ignoreTags(igtags,igtags+3);
 static pair<string,string> limap[] = {
 	pair<string,string>("frame","frameset"),
 	pair<string,string>("noframes","frameset"),
+	pair<string,string>("option","select"),
 	pair<string,string>("li","ul"),
 	pair<string,string>("li","ol"),
 	pair<string,string>("li","dl"),
@@ -73,7 +74,7 @@ static pair<string,string> limap[] = {
 	pair<string,string>("col","colgroup"),
 	pair<string,string>("colgroup","table")
 };
-multimap<string,string> listItemMap(limap,limap+20);
+multimap<string,string> listItemMap(limap,limap+21);
 
 tDOM::tDOM() {
 	root = current = new tNode(-1,"");
@@ -271,6 +272,7 @@ int tDOM::scan(istream &htmlInput) {
 	}
 	treeSize(root);
 	treeDepth(root);
+	current = root;
 	return 0;
 }
 
@@ -519,14 +521,15 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 	return ret;
 };
 
-tNode *tDOM::getFirst(tNode *n, string t) {
+tNode *tDOM::findNext(tNode *n, string t) {
 	list<tNode *>::iterator i;
 	tNode * r=NULL;
 
+	if (!n) n = current;
 	if (n) {
 		for (i = n->nodes.begin();i!=n->nodes.end();i++) {
 			if ((*i)->compare(t)) return (*i);
-			if ((r=getFirst(*i,t))) return r;
+			if ((r=findNext(*i,t))) return r;
 		}
 	}
 	return r;
