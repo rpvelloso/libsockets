@@ -39,25 +39,31 @@ public:
 		if (c) cerr << "Found " << c << " results." << endl;
 	};
 	virtual void onTagFound(tNode *n) {
-		switch (n->getType()) {
-		case 0:
-			cout << "<" << n->getTagName();
-			if (n->getText().size()>0) cout << " " << n->getText();
-			cout << ">" <<endl;
-			break;
-		case 1:
-			cout << "</" << n->getTagName();
-			if (n->getText().size()>0) cout << " " << n->getText();
-			cout << ">" << endl;
-			break;
-		case 2:
-		case 3:
-			cout << n->getTagName();
-			if (n->getText().size()>0) cout << " " << n->getText();
+		c++;
+		if (verbose) {
+			printNode(n,1);
 			cout << endl;
-			break;
-		default:
-			break;
+		} else {
+			switch (n->getType()) {
+			case 0:
+				cout << "<" << n->getTagName();
+				if (n->getText().size()>0) cout << " " << n->getText();
+				cout << ">" <<endl;
+				break;
+			case 1:
+				cout << "</" << n->getTagName();
+				if (n->getText().size()>0) cout << " " << n->getText();
+				cout << ">" << endl;
+				break;
+			case 2:
+			case 3:
+				cout << n->getTagName();
+				if (n->getText().size()>0) cout << " " << n->getText();
+				cout << endl;
+				break;
+			default:
+				break;
+			}
 		}
 	};
 
