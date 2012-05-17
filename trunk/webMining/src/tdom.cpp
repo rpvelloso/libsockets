@@ -35,14 +35,14 @@
 static string ltags[] = {
 		"table","tbody","tfoot","thead","tr",
 		"ul","ol","dl","frameset","colgroup",
-		"dir","menu","select","form"};
-set<string> listTags(ltags,ltags+14);
+		"dir","menu","select"};
+set<string> listTags(ltags,ltags+13);
 
 static string itags[] = {
 		"tr","th","td","li","dt","dd","frame",
 		"noframes","tbody","tfoot","thead","col",
-		"colgroup","p","option","input","textarea"};
-set<string> itemTags(itags,itags+17);
+		"colgroup","p","option"};
+set<string> itemTags(itags,itags+15);
 
 static string stags[] = {"img","br","meta","param","area","link","doctype"}; // tags without subtree
 set<string> singleTags(stags,stags+7);
@@ -118,7 +118,8 @@ void tDOM::addNode(int tp, string tx) {
 							current = c;
 							break;
 						}
-						if (!multimap_pair_search(listItemMap,n->tagName,current->tagName)) break;
+						if (current->tagName == "form" || !multimap_pair_search(listItemMap,n->tagName,current->tagName))
+							break;
 						if (current->tagName == n->tagName) {
 							current = current->parent;
 							break;
