@@ -44,6 +44,7 @@ public:
 	int getSize();
 	int getDepth();
 	void setDepth(int);
+	list<tNode *> &getNodes();
 
 protected:
 	list<tNode *> nodes;

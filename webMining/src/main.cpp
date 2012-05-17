@@ -28,6 +28,57 @@
 
 using namespace std;
 
+class tFormExtractDOM : public tDOM {
+public:
+	tFormExtractDOM() : tDOM() {};
+	//virtual ~tCustomDOM() {};
+	virtual void onTagFound(tNode *n) {
+		if (n->getTagName() == "form") {
+			cout << n->getTagName()
+			<< ";" << getAttribute("action",n->getText())
+			<< ";" << getAttribute("method",n->getText())
+			<< ";" << getAttribute("name",n->getText())
+			<< endl;
+			cout << "tag;type;value;name;size" << endl;
+			searchForm(n);
+		}
+		cout << endl;
+	}
+	virtual void onPatternFound(tNode *n, tNode *p, float s) {};
+	virtual void onDataRecordFound(tDataRegion dr) {};
+protected:
+	void searchForm(tNode *n) {
+		list<tNode *>::iterator i = n->getNodes().begin();
+
+		for (;i!=n->getNodes().end();i++) {
+			if (((*i)->getTagName() == "input") ||
+				((*i)->getTagName() == "select") ||
+				((*i)->getTagName() == "option") ||
+				((*i)->getTagName() == "textarea"))
+				cout << (*i)->getTagName()
+				<< ";" << getAttribute("type",(*i)->getText())
+				<< ";" << getAttribute("value",(*i)->getText())
+				<< ";" << getAttribute("name",(*i)->getText())
+				<< ";" << getAttribute("size",(*i)->getText())
+				<< endl;
+			searchForm(*i);
+		}
+	}
+
+	string getAttribute(string attr, string s) {
+		lowerCase(attr);
+		while (s.size() > 1) {
+			string a = stringTok(s," ");
+			string b = stringTok(a,"=");
+			lowerCase(b);
+			if (b == attr) {
+				return a;
+			}
+		}
+		return "";
+	}
+};
+
 class tCustomDOM : public tDOM {
 public:
 	tCustomDOM() : tDOM() {
@@ -98,10 +149,6 @@ public:
 		return ret && n->size>10;
 	};
 
-	void mineForms() {
-
-	};
-
 	int c;
 	string filterStr,filterTag;
 };
@@ -130,6 +177,7 @@ int main(int argc, char *argv[])
 	string inp="",search="",pattern="",filterStr="";
 	tCustomDOM *d = new tCustomDOM();
 	tCustomDOM *p = new tCustomDOM();
+	tFormExtractDOM *fe = new tFormExtractDOM();
 	fstream patternFile,inputFile;
 
 	while ((opt = getopt(argc, argv, "i:t:s:p:f:mhvxd")) != -1) {
@@ -190,6 +238,12 @@ int main(int argc, char *argv[])
 		}
 	} else {
 		d->scan(cin);
+	}
+
+	if (mineForms) {
+		fe->setRoot(d->getRoot());
+		fe->searchTag("form","");
+		return 0;
 	}
 
 	if (tp) {

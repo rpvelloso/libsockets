@@ -35,14 +35,14 @@
 static string ltags[] = {
 		"table","tbody","tfoot","thead","tr",
 		"ul","ol","dl","frameset","colgroup",
-		"dir","menu","select"};
-set<string> listTags(ltags,ltags+13);
+		"dir","menu","select","form"};
+set<string> listTags(ltags,ltags+14);
 
 static string itags[] = {
 		"tr","th","td","li","dt","dd","frame",
 		"noframes","tbody","tfoot","thead","col",
-		"colgroup","p","option"};
-set<string> itemTags(itags,itags+14);
+		"colgroup","p","option","input","textarea"};
+set<string> itemTags(itags,itags+17);
 
 static string stags[] = {"img","br","meta","param","area","link","doctype"}; // tags without subtree
 set<string> singleTags(stags,stags+7);
@@ -533,6 +533,11 @@ tNode *tDOM::findNext(tNode *n, string t) {
 		}
 	}
 	return r;
+}
+
+void tDOM::setRoot(tNode *r)
+{
+	root = r;
 }
 
 void tDOM::onDataRegionFound(tDataRegion dr, float st, int K) {
