@@ -39,6 +39,7 @@ public:
 	void printDOM();
 	int scan(istream &);
 	tNode *getRoot();
+	void setRoot(tNode *);
 	tNode *findNext(tNode *, string);
     void setVerbose(int);
     list<tDataRegion> MDR(tNode *, int, float, int);

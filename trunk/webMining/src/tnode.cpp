@@ -122,6 +122,12 @@ void tNode::setDepth(int d) {
 	depth = d;
 }
 
+list<tNode*> &tNode::getNodes() {
+	return nodes;
+}
+
+
+
 
 
 
