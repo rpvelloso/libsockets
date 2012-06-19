@@ -63,6 +63,7 @@ protected:
 	size_t count;
 	int verbose;
 	string ignoring;
+	int formOpen;
 };
 
 #endif /* TDOM_H_ */
