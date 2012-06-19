@@ -81,6 +81,7 @@ tDOM::tDOM() {
 	count = 0;
 	verbose = 0;
 	ignoring = "";
+	formOpen = 0;
 };
 
 tDOM::~tDOM() {
@@ -109,6 +110,11 @@ void tDOM::addNode(int tp, string tx) {
 	if (ignoring == "") {
 		switch (n->type) {
 			case 0: /* open */
+
+				if (n->tagName=="form") {
+					if (formOpen) break;
+					else formOpen=1;
+				}
 
 				/* auto close tags when nesting occurs */
 				if (itemTags.find(n->tagName) != itemTags.end()) {
@@ -139,6 +145,7 @@ void tDOM::addNode(int tp, string tx) {
 				break;
 
 			case 1: /* close */
+				if (n->tagName == "form") formOpen=0;
 				c = current;
 				while ((current != root) && (current->tagName != n->tagName))
 					current = current->parent;
