@@ -165,7 +165,7 @@ void printUsage(char *p)
 	cout << "-f text filter string" << endl;
 	cout << "-x display tag path of input" << endl;
 	cout << "-d mine forms and fields" << endl;
-	exit(-1);
+	exit (-1);
 }
 
 #define K 10
