@@ -56,8 +56,6 @@
 #define LF '\n'
 #define CRLF "\r\n"
 
-#define HTDOCS "/home/roberto/workspace.2/httpd/Debug/htdocs/"
-
 static string weekDays[7] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 static string months[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
