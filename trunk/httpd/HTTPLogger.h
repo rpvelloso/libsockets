@@ -28,7 +28,7 @@ public:
 	HTTPLogger(string);
 	virtual ~HTTPLogger();
 	void log(const char *fmt, va_list);
-	int openLog();
+	bool openLog();
 	void closeLog();
 protected:
 	fstream logFile;

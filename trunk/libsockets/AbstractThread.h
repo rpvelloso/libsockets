@@ -34,7 +34,7 @@ friend void *pthread_execute(void *);
 public:
 	AbstractThread();
 	virtual ~AbstractThread();
-    int start();
+    bool start();
     void stop();
     ThreadStatus getThreadStatus();
     pthread_t getThreadId();

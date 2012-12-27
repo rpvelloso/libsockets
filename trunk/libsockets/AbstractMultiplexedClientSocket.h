@@ -33,7 +33,7 @@ public:
 	AbstractMultiplexedClientSocket();
 	AbstractMultiplexedClientSocket(int, sockaddr_in *);
 	virtual ~AbstractMultiplexedClientSocket();
-	int hasDataToSend();
+	bool hasDataToSend();
     void sendBufferedData(void *, streamsize);
     void sendBufferedData(string);
     void commitBuffer();

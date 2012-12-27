@@ -29,7 +29,7 @@ public:
 	virtual ~EchoLogger();
 	virtual void LOG(const char *fmt,...);
 	virtual void log(const char *fmt, va_list);
-	virtual int openLog();
+	virtual bool openLog();
 	virtual void closeLog();
 protected:
 	fstream logFile;

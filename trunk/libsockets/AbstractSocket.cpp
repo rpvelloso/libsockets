@@ -32,7 +32,7 @@ AbstractSocket::AbstractSocket() : Object() {
     socketFd = socket(PF_INET,SOCK_STREAM,0/*IPPROTO_TCP*/);
     socketStatus = SOCKET_CLOSED;
     hostname = "";
-    nonBlocking = 0;
+    nonBlocking = false;
     linger = -1;
 }
 
@@ -41,13 +41,13 @@ AbstractSocket::~AbstractSocket() {
 
 #define GETHOSTBYNAME_BUFSIZE 4096
 
-int AbstractSocket::resolveHost(string host) {
+bool AbstractSocket::resolveHost(string host) {
 #ifdef WIN32
     struct hostent *hp;
 
     memset((void *)&socketAddress,0,sizeof(socketAddress));
     socketAddress.sin_family = AF_INET;
-    if ((hp=gethostbyname(host.c_str()))==NULL) return -1;
+    if ((hp=gethostbyname(host.c_str()))==NULL) return false;
     memcpy((void *)&socketAddress.sin_addr,(void *)hp->h_addr,hp->h_length);
 #else
     struct hostent h, *hp;
@@ -56,10 +56,10 @@ int AbstractSocket::resolveHost(string host) {
 
     memset((void *)&socketAddress,0,sizeof(socketAddress));
     socketAddress.sin_family = AF_INET;
-    if (gethostbyname_r(host.c_str(),&h,hbuf,GETHOSTBYNAME_BUFSIZE,&hp,&h_errno)) return -1;
+    if (gethostbyname_r(host.c_str(),&h,hbuf,GETHOSTBYNAME_BUFSIZE,&hp,&h_errno)) return false;
     memcpy((void *)&(socketAddress.sin_addr.s_addr),(void *)h.h_addr,h.h_length);
 #endif
-    return 0;
+    return true;
 }
 
 string AbstractSocket::getHostname() {
@@ -100,7 +100,7 @@ string AbstractSocket::getIPAddress() {
 	return ret.str();
 }
 
-int AbstractSocket::setLinger(int onoff, int ll) {
+bool AbstractSocket::setLinger(int onoff, int ll) {
 	struct linger l;
 	int r;
 
@@ -108,7 +108,7 @@ int AbstractSocket::setLinger(int onoff, int ll) {
 	l.l_linger = ll;
 
 	if ((r=setsockopt(socketFd,SOL_SOCKET,SO_LINGER,(char *)&l,sizeof(l))) != -1) onoff?linger = ll:linger = -1;
-	return r;
+	return r==0;
 }
 
 int AbstractSocket::getLinger() {
@@ -117,18 +117,18 @@ int AbstractSocket::getLinger() {
 
 #ifdef WIN32
 
-int AbstractSocket::setNonBlocking(int nb) {
+bool AbstractSocket::setNonBlocking(bool nb) {
 	unsigned long int socketFlags;
 	int r;
 
-	socketFlags = nb;
+	socketFlags = nb?1:0;
 	if ((r=ioctlsocket(socketFd,FIONBIO,&socketFlags)) != -1) nonBlocking = nb;
-	return r;
+	return r==0;
 }
 
 #else
 
-int AbstractSocket::setNonBlocking(int nb) {
+bool AbstractSocket::setNonBlocking(bool nb) {
 	int socketFlags,r;
 
 	socketFlags=fcntl(socketFd,F_GETFL,0);
@@ -136,12 +136,12 @@ int AbstractSocket::setNonBlocking(int nb) {
 	else socketFlags &= ~O_NONBLOCK;
 
 	if ((r=fcntl(socketFd,F_SETFL,socketFlags)) != -1) nonBlocking = nb;
-	return r;
+	return r==0;
 }
 
 #endif
 
-int AbstractSocket::getNonBlocking() {
+bool AbstractSocket::getNonBlocking() {
 	return nonBlocking;
 }
 

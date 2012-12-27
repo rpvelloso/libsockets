@@ -48,7 +48,7 @@ void HTTPLogger::log(const char* fmt, va_list arglist) {
 	mutex->unlock();
 }
 
-int HTTPLogger::openLog() {
+bool HTTPLogger::openLog() {
 	logFile.open(fileName.c_str());
 	return logFile.fail();
 }

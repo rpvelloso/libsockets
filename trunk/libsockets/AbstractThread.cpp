@@ -30,8 +30,8 @@ AbstractThread::~AbstractThread() {
 	stop();
 }
 
-int AbstractThread::start() {
-    return pthread_create(&threadId, NULL, pthread_execute, (void *)this);
+bool AbstractThread::start() {
+    return pthread_create(&threadId, NULL, pthread_execute, (void *)this)==0;
 }
 
 void AbstractThread::stop() {

@@ -27,9 +27,9 @@ class Mutex: public Object {
 public:
 	Mutex();
 	virtual ~Mutex();
-    int lock();
-    int tryLock();
-    int unlock();
+    bool lock();
+    bool tryLock();
+    bool unlock();
 protected:
      pthread_mutex_t mutex;
 };

@@ -27,16 +27,16 @@ Mutex::~Mutex() {
     pthread_mutex_destroy(&mutex);
 }
 
-int Mutex::lock() {
-    return pthread_mutex_lock(&mutex);
+bool Mutex::lock() {
+    return pthread_mutex_lock(&mutex)==0;
 }
 
-int Mutex::tryLock() {
-    return pthread_mutex_trylock(&mutex);
+bool Mutex::tryLock() {
+    return pthread_mutex_trylock(&mutex)==0;
 }
 
-int Mutex::unlock() {
-    return pthread_mutex_unlock(&mutex);
+bool Mutex::unlock() {
+    return pthread_mutex_unlock(&mutex)==0;
 }
 
 

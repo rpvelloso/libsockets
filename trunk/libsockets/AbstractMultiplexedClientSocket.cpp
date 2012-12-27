@@ -34,7 +34,7 @@ AbstractMultiplexedClientSocket::AbstractMultiplexedClientSocket(int fd, sockadd
 AbstractMultiplexedClientSocket::~AbstractMultiplexedClientSocket() {
 }
 
-int AbstractMultiplexedClientSocket::hasDataToSend() {
+bool AbstractMultiplexedClientSocket::hasDataToSend() {
 	return outputBuffer->rdbuf()->in_avail() > 0;
 }
 
