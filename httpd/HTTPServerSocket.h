@@ -34,7 +34,7 @@ public:
 		logger->openLog();
 	};
 	virtual ~HTTPServerSocket() { delete logger; };
-	void onServerUp() { log("(*) Server started.\n"); };
+	void onServerUp() { log("(*) Server started. Addr: %s:%d, root directory: %s\n",getIPAddress().c_str(),getPort(),rootDir.c_str()); };
     void onServerDown() { log("(*) Server ended.\n"); };
 	void onClientConnect(HTTPClientSocket *c) {
 		log("(+) Client connected from %s:%d.\n",c->getIPAddress().c_str(),c->getPort());
