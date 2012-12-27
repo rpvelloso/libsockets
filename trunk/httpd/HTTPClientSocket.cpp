@@ -503,9 +503,6 @@ void HTTPClientSocket::setDocumentRoot(string d) {
 	documentRoot = d;
 }
 
-#define ENV_VAR_COUNT 20
-#define PHP_BIN "/usr/bin/php-cgi"
-
 class CGIThread : public AbstractThread {
 public:
 	CGIThread(HTTPClientSocket *c) : AbstractThread() {clientSocket = c;};
@@ -545,9 +542,12 @@ protected:
     HTTPClientSocket *clientSocket;
 };
 
+#define ENV_VAR_COUNT 20
+#define PHP_BIN "/usr/bin/php-cgi"
+
 void HTTPClientSocket::CGICall() {
 	char **envp=NULL,*argv[3] = { NULL, NULL, NULL };
-	size_t i=0,j=0;
+	size_t i=-1,j=ENV_VAR_COUNT+1;
 	string q,mt;
 	stringstream sstr;
 
@@ -567,39 +567,38 @@ void HTTPClientSocket::CGICall() {
 	if (!(CGIPid=fork())) {
 
 		if (query[0] == '?') query.erase(0,1); // remove char '?'
-		while (i<query.length()) if (query[i++] == '&') j++;
-		j += j?ENV_VAR_COUNT+1:ENV_VAR_COUNT;
+		while ((i=query.find('&',++i))!=string::npos) j++;
 		envp = (char **)malloc(sizeof(void *) * j);
 
 		i = 0; q = query;
 		while (!q.empty()) envp[i++] = strdup(stringTok(q,"&").c_str());
 
 		sstr << "CONTENT_LENGTH=" << contentLength;
-		envp[i] = strdup(sstr.str().c_str());
+		envp[i++] = strdup(sstr.str().c_str());
 		if (!boundary.empty())
-			envp[i+ 1] = strdup(("CONTENT_TYPE=" + contentType + "; boundary=" + boundary).c_str());
+			envp[i++] = strdup(("CONTENT_TYPE=" + contentType + "; boundary=" + boundary).c_str());
 		else
-			envp[i+ 1] = strdup(("CONTENT_TYPE=" + contentType).c_str());
+			envp[i++] = strdup(("CONTENT_TYPE=" + contentType).c_str());
 		sstr.str(""); sstr << "REMOTE_PORT=" << this->getPort();
-		envp[i+ 2] = strdup(sstr.str().c_str());
+		envp[i++] = strdup(sstr.str().c_str());
 		sstr.str(""); sstr << "SERVER_PORT=" << serverSocket->getPort();
-		envp[i+ 3] = strdup(sstr.str().c_str());
-		envp[i+ 4] = strdup(("REMOTE_ADDR=" + getIPAddress()).c_str());
-		envp[i+ 5] = strdup(("SERVER_ADDR=" + serverSocket->getIPAddress()).c_str());
-		envp[i+ 6] = strdup(("REQUEST_METHOD=" + method).c_str());
-		envp[i+ 7] = strdup(("HTTP_HOST=" + host).c_str());
-		envp[i+ 8] = strdup(("SERVER_NAME=" + host).c_str());
-		envp[i+ 9] = strdup(("HTTP_USER_AGENT=" + userAgent).c_str());
-		envp[i+10] = strdup("GATEWAY_INTERFACE=CGI/1.1");
-		envp[i+11] = strdup(("QUERY_STRING=" + query).c_str());
-		envp[i+12] = strdup(("REQUEST_URI=" + URI).c_str());
-		envp[i+13] = strdup(("SERVER_PROTOCOL=" + httpVersion).c_str());
-		envp[i+14] = strdup(("SCRIPT_FILENAME=" + URI).c_str());
-		envp[i+15] = strdup(("SCRIPT_NAME=" + scriptName).c_str());
-		envp[i+16] = strdup(("DOCUMENT_ROOT=" + documentRoot).c_str());
-		envp[i+17] = strdup(("HTTP_REFERER=" + referer).c_str());
-		envp[i+18] = strdup(("HTTP_COOKIE=" + cookie).c_str());
-		envp[i+19] = NULL;
+		envp[i++] = strdup(sstr.str().c_str());
+		envp[i++] = strdup(("REMOTE_ADDR=" + getIPAddress()).c_str());
+		envp[i++] = strdup(("SERVER_ADDR=" + serverSocket->getIPAddress()).c_str());
+		envp[i++] = strdup(("REQUEST_METHOD=" + method).c_str());
+		envp[i++] = strdup(("HTTP_HOST=" + host).c_str());
+		envp[i++] = strdup(("SERVER_NAME=" + host).c_str());
+		envp[i++] = strdup(("HTTP_USER_AGENT=" + userAgent).c_str());
+		envp[i++] = strdup("GATEWAY_INTERFACE=CGI/1.1");
+		envp[i++] = strdup(("QUERY_STRING=" + query).c_str());
+		envp[i++] = strdup(("REQUEST_URI=" + URI).c_str());
+		envp[i++] = strdup(("SERVER_PROTOCOL=" + httpVersion).c_str());
+		envp[i++] = strdup(("SCRIPT_FILENAME=" + URI).c_str());
+		envp[i++] = strdup(("SCRIPT_NAME=" + scriptName).c_str());
+		envp[i++] = strdup(("DOCUMENT_ROOT=" + documentRoot).c_str());
+		envp[i++] = strdup(("HTTP_REFERER=" + referer).c_str());
+		envp[i++] = strdup(("HTTP_COOKIE=" + cookie).c_str());
+		envp[i] = NULL;
 
 		mt = mimeType(URI);
 
@@ -616,15 +615,17 @@ void HTTPClientSocket::CGICall() {
 
 		dup2(((fdbuf *)CGIOutput.rdbuf())->fd(),fileno(stdout));
 		execve(argv[0],argv,envp);
-		//LOG("execve() error: %s\n",strerror_r(errno,strerr,ERR_STR_LEN));
+		log("(.) execve() error.\n");
 		exit(-1);
 	} else if (CGIPid == -1) {
 		requestState = HTTP_REQUEST_ENDED;
 		if (CGIOutput.is_open()) CGIOutput.close();
 		if (CGIInput.is_open()) CGIInput.close();
+		log("(.) CGI process not started.\n");
 		reply(500);
 	} else {
-		(new CGIThread(this))->start();
+		if (!((new CGIThread(this))->start()))
+			log("(.) CGI thread not started.\n");
 	}
 }
 
