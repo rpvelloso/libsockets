@@ -1,0 +1,66 @@
+/*
+    Copyright 2011 Roberto Panerai Velloso.
+
+    This file is part of libsockets.
+
+    libsockets is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    libsockets is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#ifndef ABSTRACTSOCKET_H_
+#define ABSTRACTSOCKET_H_
+
+#include <string>
+#ifdef WIN32
+#include <winsock2.h>
+#else
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#endif
+#include "Object.h"
+
+enum SocketStatus {
+     SOCKET_OPENED,
+     SOCKET_CLOSED,
+     SOCKET_LISTENING
+};
+
+class AbstractSocket : public Object {
+public:
+	AbstractSocket();
+	virtual ~AbstractSocket();
+    virtual int openSocket(string, unsigned short) = 0;
+    virtual void closeSocket() = 0;
+    int resolveHost(string);
+    string getHostname();
+    unsigned short getPort();
+    string getIPAddress();
+    int setLinger(int,int);
+    int getLinger();
+    int setNonBlocking(int);
+    int getNonBlocking();
+    int getSocketFd();
+    SocketStatus getSocketStatus();
+protected:
+    int socketFd;
+    SocketStatus socketStatus;
+    sockaddr_in socketAddress;
+    string hostname;
+    int nonBlocking;
+    int linger;
+};
+
+
+#endif /* ABSTRACTSOCKET_H_ */
