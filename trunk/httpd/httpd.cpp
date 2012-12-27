@@ -44,7 +44,7 @@ void printUsage(char *p) {
 	cout << "usage: "<<p<<" [-a bind_addr] [-p bind_port]"<<endl;
 	cout << "-a bind_addr: the IP address to bind the server to. Default 127.0.0.1"<<endl;
 	cout << "-p bind_port: the server port number. Default 80"<<endl;
-	cout << "-r dir: document root directory, must by an absolute path. Default \"/\"."<<endl;
+	cout << "-r dir: document root directory. Default $PWD."<<endl;
 	exit(-1);
 }
 
@@ -55,12 +55,15 @@ int WinSocketStartup() {
 }
 #endif
 
-string rootDir="/";
+string rootDir;
 
 int main(int argc, char **argv) {
 	int opt;
 	string bindAddr="127.0.0.1";
 	unsigned short bindPort=80;
+	char cwd[BUFSIZ];
+
+	rootDir = getcwd(cwd,BUFSIZ);
 
 	while ((opt = getopt(argc, argv, "a:p:r:h")) != -1) {
 		switch (opt) {
@@ -71,8 +74,11 @@ int main(int argc, char **argv) {
 			bindPort = atoi(optarg);
 			break;
 		case 'r':
-			rootDir = optarg;
-			if (rootDir[rootDir.length()-1]!='/') rootDir = rootDir + '/';
+			if (optarg) {
+				if (optarg[0]=='/') rootDir = optarg;
+				else rootDir = rootDir + "/" + optarg;
+				if (rootDir[rootDir.length()-1]!='/') rootDir = rootDir + '/';
+			}
 			break;
 		case 'h':
 		default:
@@ -81,8 +87,9 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	if (rootDir.empty() || (bindPort == 0) ||
-		bindAddr.empty() || (rootDir[0] != '/')) {
+	if (rootDir.empty()		||
+		bindAddr.empty()	||
+		(bindPort == 0)) {
     	printUsage(argv[0]);
 	} else {
 #ifdef WIN32
