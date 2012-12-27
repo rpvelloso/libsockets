@@ -35,17 +35,17 @@ AbstractClientSocket::AbstractClientSocket(int fd, sockaddr_in* sin) {
 AbstractClientSocket::~AbstractClientSocket() {
 }
 
-int AbstractClientSocket::openSocket(string addr, unsigned short port) {
+bool AbstractClientSocket::openSocket(string addr, unsigned short port) {
     if (socketStatus == SOCKET_CLOSED) {
-       if (resolveHost(addr)) return -1;
+       if (!resolveHost(addr)) return false;
        socketAddress.sin_port = htons(port);
        if (connect(socketFd,(sockaddr *)&socketAddress,sizeof(socketAddress))==0) {
           socketStatus = SOCKET_OPENED;
           onConnect();
-          return 0;
+          return true;
        }
     }
-    return -1;
+    return false;
 }
 
 void AbstractClientSocket::closeSocket() {

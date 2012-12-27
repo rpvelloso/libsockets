@@ -30,7 +30,7 @@ public:
 	AbstractClientSocket();
 	AbstractClientSocket(int, sockaddr_in *);
 	virtual ~AbstractClientSocket();
-    int openSocket(string, unsigned short);
+    bool openSocket(string, unsigned short);
     void closeSocket();
     int sendData(void *, size_t);
     int sendData(string);

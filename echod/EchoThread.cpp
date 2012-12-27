@@ -17,14 +17,15 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "EchoLogger.h"
 #include "EchoThread.h"
 
-extern LoggerInterface *logger;
+extern EchoLogger *logger;
 
 void EchoThread::onStart() {
-	logger->log("%s\n","THREAD: iniciada.");
+	logger->LOG("%s\n","THREAD: iniciada.");
 }
 
 void EchoThread::onStop() {
-	logger->log("%s\n","THREAD: terminada.");
+	logger->LOG("%s\n","THREAD: terminada.");
 }

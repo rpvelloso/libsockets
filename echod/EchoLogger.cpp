@@ -53,7 +53,7 @@ void EchoLogger::log(const char* fmt, va_list arglist) {
 	mutex->unlock();
 }
 
-int EchoLogger::openLog() {
+bool EchoLogger::openLog() {
 	logFile.open(fileName.c_str());
 	return logFile.fail();
 }

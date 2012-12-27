@@ -41,7 +41,7 @@ public:
 
 	virtual ~AbstractServerSocket() {};
 
-    virtual int openSocket(string addr, unsigned short port) {
+    virtual bool openSocket(string addr, unsigned short port) {
  #ifdef WIN32
     	int size = sizeof(socketAddress);
  #else
@@ -49,16 +49,16 @@ public:
  #endif
 
     	if (socketStatus == SOCKET_CLOSED) {
-    		if (resolveHost(addr)) return -1;
+    		if (!resolveHost(addr)) return false;
     		socketAddress.sin_port = htons(port);
-			if (bind(socketFd,(struct sockaddr *)&socketAddress,sizeof(socketAddress))) return -1;
-			if (listen(socketFd,SERVER_BACKLOG)) return -1;
+			if (bind(socketFd,(struct sockaddr *)&socketAddress,sizeof(socketAddress))) return false;
+			if (listen(socketFd,SERVER_BACKLOG)) return false;
 			getsockname(socketFd,(struct sockaddr *)&socketAddress,&size);
 			socketStatus = SOCKET_LISTENING;
 			onServerUp();
-			return 0;
+			return true;
     	}
-    	return -1;
+    	return false;
     };
 
     virtual void closeSocket() {

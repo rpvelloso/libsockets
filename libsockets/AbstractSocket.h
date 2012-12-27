@@ -41,16 +41,16 @@ class AbstractSocket : public Object {
 public:
 	AbstractSocket();
 	virtual ~AbstractSocket();
-    virtual int openSocket(string, unsigned short) = 0;
+    virtual bool openSocket(string, unsigned short) = 0;
     virtual void closeSocket() = 0;
-    int resolveHost(string);
+    bool resolveHost(string);
     string getHostname();
     unsigned short getPort();
     string getIPAddress();
-    int setLinger(int,int);
+    bool setLinger(int,int);
     int getLinger();
-    int setNonBlocking(int);
-    int getNonBlocking();
+    bool setNonBlocking(bool);
+    bool getNonBlocking();
     int getSocketFd();
     SocketStatus getSocketStatus();
 protected:
@@ -58,7 +58,7 @@ protected:
     SocketStatus socketStatus;
     sockaddr_in socketAddress;
     string hostname;
-    int nonBlocking;
+    bool nonBlocking;
     int linger;
 };
 
