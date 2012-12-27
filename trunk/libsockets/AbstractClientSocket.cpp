@@ -85,9 +85,7 @@ int AbstractClientSocket::sendData(string buf) {
 	ssize_t r;
 
     if (socketStatus == SOCKET_OPENED) {
-    	size_t len=-1;
-
-   		onSend(&buf,len);
+   		onSend(&buf,0);
    		r = send(socketFd,buf.c_str(),buf.size(),0);
    		if (r>0) bytesOut += r;
    		return r;
