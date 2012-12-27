@@ -32,7 +32,7 @@ EchoClientSocket::EchoClientSocket(int fd, sockaddr_in* sin) : AbstractMultiplex
 }
 
 void EchoClientSocket::onSend(void *buf, size_t size) {
-	if (size==-1) {
+	if (!size) { // buf points to a string object
 		logger->LOG("CLIENT: Enviando mensagem: %s\n",*((string *)buf)->c_str());
 	} else {
 		((char *)buf)[size]='\0';
