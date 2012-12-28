@@ -92,10 +92,16 @@ int main(int argc, char **argv) {
 		(bindPort == 0)) {
     	printUsage(argv[0]);
 	} else {
+		sigset_t sigset;
+
+		sigemptyset(&sigset);
+		sigaddset(&sigset,SIGCHLD);
+		sigprocmask(SIG_BLOCK,&sigset,NULL); // needed by CGIControlThread.
+
 #ifdef WIN32
 		WinSocketStartup();
 #endif
-    	server = new HTTPServer(3);
+    	server = new HTTPServer(5);
 
     	signal(SIGINT,signalHandler);
     	signal(SIGTERM,signalHandler);

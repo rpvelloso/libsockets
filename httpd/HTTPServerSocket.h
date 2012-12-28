@@ -24,6 +24,7 @@
 #include <libsockets.h>
 #include "HTTPClientSocket.h"
 #include "HTTPLogger.h"
+#include "CGIControlThread.h"
 
 extern string rootDir;
 
@@ -32,19 +33,41 @@ public:
 	HTTPServerSocket() : AbstractServerSocket<HTTPClientSocket>() {
 		logger = new HTTPLogger("/dev/stderr");
 		logger->openLog();
+		cgiControlThread = new CGIControlThread();
+		cgiControlThread->start();
 	};
-	virtual ~HTTPServerSocket() { delete logger; };
-	void onServerUp() { log("(*) Server started. Addr: %s:%d, root directory: %s\n",getIPAddress().c_str(),getPort(),rootDir.c_str()); };
-    void onServerDown() { log("(*) Server ended.\n"); };
+
+	virtual ~HTTPServerSocket() {
+		delete logger;
+		cgiControlThread->stop();
+		delete cgiControlThread;
+	};
+
+	void onServerUp() {
+		log("(*) Server started. Addr: %s:%d, root directory: %s\n",getIPAddress().c_str(),getPort(),rootDir.c_str());
+	};
+
+    void onServerDown() {
+    	log("(*) Server ended.\n");
+    };
+
 	void onClientConnect(HTTPClientSocket *c) {
 		log("(+) Client connected from %s:%d.\n",c->getIPAddress().c_str(),c->getPort());
 		c->setDocumentRoot(rootDir);
 		c->setServerSocket(this);
-	}
-	LoggerInterface* getLogger() { return logger; }
-	void setLogger(LoggerInterface* l) { logger = l; }
+	};
+
+	LoggerInterface* getLogger() {
+		return logger;
+	};
+
+	CGIControlThread *getCGIControlThread() {
+		return cgiControlThread;
+	};
+
 protected:
     LoggerInterface *logger;
+    CGIControlThread *cgiControlThread;
 
     void log(const char *fmt, ...) {
     	va_list arglist;
