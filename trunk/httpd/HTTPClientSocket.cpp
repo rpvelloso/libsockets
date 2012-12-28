@@ -260,7 +260,7 @@ void HTTPClientSocket::processInput() {
 						fstream::trunc	|
 						fstream::binary);
 					if (CGIInput.fail()) {
-						reply(500);
+						reply(REPLY_500_INTERNAL_SERVER_ERROR);
 						requestState = HTTP_REQUEST_ENDED;
 					} else {
 						while (inputBuffer.rdbuf()->in_avail()) {
@@ -355,7 +355,7 @@ void HTTPClientSocket::processRequest() {
 	connection = "close";
 	if (URI != "*") {
 		if (checkURI()) {
-			reply(404);
+			reply(REPLY_404_NOT_FOUND);
 			return;
 		}
 	}
@@ -369,7 +369,7 @@ void HTTPClientSocket::processRequest() {
 	else if (method == "DELETE")  DEL();
 	else if (method == "TRACE")   TRACE();
 	else if (method == "CONNECT") CONNECT();
-	else reply(501);
+	else reply(REPLY_501_NOT_IMPLEMENTED);
 
 	commitBuffer();
 }
@@ -380,27 +380,27 @@ void HTTPClientSocket::GET() {
 	if ((mt == "application/php") ||
 		((!query.empty()) && !access(URI.c_str(),X_OK))) {
 
-		CGICall();
+		executeCGI();
 
 	} else {
 
-		if (!HEAD()) {
+		if (HEAD()) {
 			file.open(URI.c_str(),fstream::in | fstream::binary);
-			if (file.fail()) reply(500);
+			if (file.fail()) reply(REPLY_500_INTERNAL_SERVER_ERROR);
 			else if (outputBuffer->rdbuf()->in_avail() == 0) setOutputBuffer(&file);
 		}
 
 	}
 }
 
-int HTTPClientSocket::HEAD() {
+bool HTTPClientSocket::HEAD() {
 	struct stat st;
 	stringstream len;
 
 	stat(URI.c_str(),&st);
 	if (access(URI.c_str(),R_OK)) {
-		reply(403);
-		return -1;
+		reply(REPLY_403_FORBIDDEN);
+		return false;
 	}
 	len << st.st_size;
 	contentLength = st.st_size;
@@ -412,7 +412,7 @@ int HTTPClientSocket::HEAD() {
 	sendBufferedData("Last-modified: " + time2str(st.st_mtime) + CRLF);
 	sendBufferedData("Accept-ranges: bytes" CRLF);
 	sendBufferedData(CRLF);
-	return 0;
+	return true;
 }
 
 void HTTPClientSocket::POST() {
@@ -429,40 +429,40 @@ void HTTPClientSocket::OPTIONS() {
 }
 
 void HTTPClientSocket::PUT() {
-	reply(501);
+	reply(REPLY_501_NOT_IMPLEMENTED);
 }
 
 void HTTPClientSocket::DEL() {
-	reply(501);
+	reply(REPLY_501_NOT_IMPLEMENTED);
 }
 
 void HTTPClientSocket::TRACE() {
-	reply(501);
+	reply(REPLY_501_NOT_IMPLEMENTED);
 }
 
 void HTTPClientSocket::CONNECT() {
-	reply(501);
+	reply(REPLY_501_NOT_IMPLEMENTED);
 }
 
-void HTTPClientSocket::reply(int r) {
+void HTTPClientSocket::reply(HTTPReply r) {
 	string html;
 	stringstream len;
 
 	log("(.) Replied %d to client %s:%d.\n",r,getIPAddress().c_str(),getPort());
 	switch (r) {
-		case 403:
+		case REPLY_403_FORBIDDEN:
 			html = REPLY_403;
 			sendBufferedData(httpVersion + " 403 Forbidden." CRLF);
 			break;
-		case 404:
+		case REPLY_404_NOT_FOUND:
 			html = REPLY_404;
 			sendBufferedData(httpVersion + " 404 Not Found." CRLF);
 			break;
-		case 500:
+		case REPLY_500_INTERNAL_SERVER_ERROR:
 			html = REPLY_500;
 			sendBufferedData(httpVersion + " 500 Internal Server Error." CRLF);
 			break;
-		case 501:
+		case REPLY_501_NOT_IMPLEMENTED:
 			html = REPLY_501;
 			sendBufferedData(httpVersion + " 501 Not Implemented." CRLF);
 			break;
@@ -545,7 +545,7 @@ protected:
 #define ENV_VAR_COUNT 20
 #define PHP_BIN "/usr/bin/php-cgi"
 
-void HTTPClientSocket::CGICall() {
+void HTTPClientSocket::executeCGI() {
 	char **envp=NULL,*argv[3] = { NULL, NULL, NULL };
 	size_t i=-1,j=ENV_VAR_COUNT+1;
 	string q,mt;
@@ -560,7 +560,7 @@ void HTTPClientSocket::CGICall() {
 			fstream::binary);
 
 	if (CGIOutput.fail()) {
-		reply(500);
+		reply(REPLY_500_INTERNAL_SERVER_ERROR);
 		return;
 	}
 
@@ -568,9 +568,9 @@ void HTTPClientSocket::CGICall() {
 
 		if (query[0] == '?') query.erase(0,1); // remove char '?'
 		while ((i=query.find('&',++i))!=string::npos) j++;
-		envp = (char **)malloc(sizeof(void *) * j);
-
-		i = 0; q = query;
+		envp = new char *[j];
+		i = 0;
+		q = query;
 		while (!q.empty()) envp[i++] = strdup(stringTok(q,"&").c_str());
 
 		sstr << "CONTENT_LENGTH=" << contentLength;
@@ -618,15 +618,19 @@ void HTTPClientSocket::CGICall() {
 		log("(.) execve() error.\n");
 		exit(-1);
 	} else if (CGIPid == -1) {
-		requestState = HTTP_REQUEST_ENDED;
-		if (CGIOutput.is_open()) CGIOutput.close();
-		if (CGIInput.is_open()) CGIInput.close();
 		log("(.) CGI process not started.\n");
-		reply(500);
 	} else {
-		if (!((new CGIThread(this))->start()))
+		if (!((new CGIThread(this))->start())) {
+			kill(CGIPid,9);
 			log("(.) CGI thread not started.\n");
+		} else return;
 	}
+
+	requestState = HTTP_REQUEST_ENDED;
+	if (CGIOutput.is_open()) CGIOutput.close();
+	if (CGIInput.is_open()) CGIInput.close();
+	log("(.) CGI process not started.\n");
+	reply(REPLY_500_INTERNAL_SERVER_ERROR);
 }
 
 void HTTPClientSocket::setOutputBuffer(iostream* b) {
