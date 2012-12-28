@@ -33,6 +33,13 @@ enum HTTPRequestState {
 	HTTP_REQUEST_ENDED
 };
 
+enum HTTPReply {
+	REPLY_403_FORBIDDEN=403,
+	REPLY_404_NOT_FOUND=404,
+	REPLY_500_INTERNAL_SERVER_ERROR=500,
+	REPLY_501_NOT_IMPLEMENTED=501
+};
+
 class CGIThread;
 
 class HTTPClientSocket: public AbstractMultiplexedClientSocket {
@@ -60,12 +67,12 @@ private:
 	int checkURI();
 	void log(const char *, ...);
 
-	void reply(int);
+	void reply(HTTPReply);
 	void replyServer();
 	void replyDate();
 
 	void GET();
-	int  HEAD();
+	bool HEAD();
 	void POST();
 	void OPTIONS();
 	void PUT();
@@ -73,7 +80,7 @@ private:
 	void TRACE();
 	void CONNECT();
 
-	void CGICall();
+	void executeCGI();
 
 	void setOutputBuffer(iostream *);
 	void restoreOutputBuffer();
