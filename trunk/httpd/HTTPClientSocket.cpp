@@ -24,7 +24,6 @@
 #include <cstring>
 #include <sys/stat.h>
 #include <sys/wait.h>
-#include <algorithm>
 #include <string>
 #include "HTTPClientSocket.h"
 #include "HTTPServerSocket.h"
@@ -49,13 +48,6 @@
 	"<HEAD><TITLE>Not Implemented</TITLE></HEAD>" CRLF \
 	"<BODY><H1>Not Implemented</H1>This server does not implement the requested method.</BODY>" CRLF \
 	"</HTML>"
-
-#define upperCase(s) std::transform(s.begin(), s.end(), s.begin(), (int(*)(int))std::toupper)
-#define lowerCase(s) std::transform(s.begin(), s.end(), s.begin(), (int(*)(int))std::tolower)
-
-#define CR '\r'
-#define LF '\n'
-#define CRLF "\r\n"
 
 static string weekDays[7] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 static string months[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
@@ -253,7 +245,6 @@ void HTTPClientSocket::processInput() {
 
 			if (line.length() <= 1) {
 				if (contentLength > 0) {
-					//if (CGIInput.is_open()) CGIInput.close();
 					if (CGIInput.is_open()) CGIInput.tmp_close();
 					/*CGIInput.open(tmpFileName().c_str(),
 						fstream::in		|
@@ -503,44 +494,6 @@ void HTTPClientSocket::setDocumentRoot(string d) {
 	documentRoot = d;
 }
 
-class CGIThread : public AbstractThread {
-public:
-	CGIThread(HTTPClientSocket *c) : AbstractThread() {clientSocket = c;};
-    virtual void onStart() {};
-    virtual void onStop() {};
-
-    virtual void execute() {
-    	int cgiRet;
-
-		waitpid(clientSocket->CGIPid,&cgiRet,0);
-		//if (clientSocket->CGIInput.is_open()) clientSocket->CGIInput.close();
-		if (clientSocket->CGIInput.is_open()) clientSocket->CGIInput.tmp_close();
-		clientSocket->CGIOutput.seekg(0);
-		if (clientSocket->CGIOutput.rdbuf()->in_avail() > 0) {
-			string l,L;
-
-			getline(clientSocket->CGIOutput,l);
-			L = l.substr(0,11);
-			upperCase(L);
-			if (L.substr(0,8) == "STATUS: ") {
-				clientSocket->sendBufferedData(clientSocket->httpVersion + L.substr(7,4) + CRLF);
-				clientSocket->sendBufferedData("Connection: " + clientSocket->connection + CRLF);
-			} else if (L.substr(0,5) != "HTTP/") {
-				clientSocket->sendBufferedData(clientSocket->httpVersion + " 200 OK" + CRLF);
-				clientSocket->sendBufferedData("Connection: " + clientSocket->connection + CRLF);
-				clientSocket->CGIOutput.seekg(0);
-			} else clientSocket->sendBufferedData(l);
-		} else {
-			clientSocket->CGIOutput.close();
-			clientSocket->requestState = HTTP_REQUEST_ENDED;
-		}
-		clientSocket->CGIPid = -1;
-		clientSocket->commitBuffer();
-    };
-protected:
-    HTTPClientSocket *clientSocket;
-};
-
 #define ENV_VAR_COUNT 20
 #define PHP_BIN "/usr/bin/php-cgi"
 
@@ -552,7 +505,6 @@ void HTTPClientSocket::executeCGI() {
 
 	connection = "close";
 
-	//if (CGIOutput.is_open()) CGIOutput.close();
 	if (CGIOutput.is_open()) CGIOutput.tmp_close();
 
 	/*CGIOutput.open(tmpFileName().c_str(),
@@ -568,12 +520,11 @@ void HTTPClientSocket::executeCGI() {
 	}
 
 	if (!(CGIPid=fork())) {
-
 		if (query[0] == '?') query.erase(0,1); // remove char '?'
 		while ((i=query.find('&',++i))!=string::npos) j++;
-		envp = new char *[j];
 		i = 0;
 		q = query;
+		envp = new char *[j];
 		while (!q.empty()) envp[i++] = strdup(stringTok(q,"&").c_str());
 
 		sstr << "CONTENT_LENGTH=" << contentLength;
@@ -622,19 +573,11 @@ void HTTPClientSocket::executeCGI() {
 		exit(-1);
 	} else if (CGIPid == -1) {
 		log("(.) CGI process not started.\n");
-	} else {
-		if (!((new CGIThread(this))->start())) {
-			kill(CGIPid,SIGKILL);
-			log("(.) CGI thread not started.\n");
-		} else return;
-	}
-
-	requestState = HTTP_REQUEST_ENDED;
-	//if (CGIOutput.is_open()) CGIOutput.close();
-	//if (CGIInput.is_open()) CGIInput.close();
-	if (CGIOutput.is_open()) CGIOutput.tmp_close();
-	if (CGIInput.is_open()) CGIInput.tmp_close();
-	reply(REPLY_500_INTERNAL_SERVER_ERROR);
+		requestState = HTTP_REQUEST_ENDED;
+		if (CGIOutput.is_open()) CGIOutput.tmp_close();
+		if (CGIInput.is_open()) CGIInput.tmp_close();
+		reply(REPLY_500_INTERNAL_SERVER_ERROR);
+	} else serverSocket->getCGIControlThread()->addPID(CGIPid,this);
 }
 
 void HTTPClientSocket::setOutputBuffer(iostream* b) {

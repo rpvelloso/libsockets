@@ -23,7 +23,9 @@
 #include <cstdlib>
 #include <sstream>
 #include <fstream>
+#include <algorithm>
 #include <libsockets.h>
+#include "CGIControlThread.h"
 
 class HTTPServerSocket;
 
@@ -40,6 +42,13 @@ enum HTTPReply {
 	REPLY_500_INTERNAL_SERVER_ERROR=500,
 	REPLY_501_NOT_IMPLEMENTED=501
 };
+
+#define upperCase(s) std::transform(s.begin(), s.end(), s.begin(), (int(*)(int))std::toupper)
+#define lowerCase(s) std::transform(s.begin(), s.end(), s.begin(), (int(*)(int))std::tolower)
+
+#define CR '\r'
+#define LF '\n'
+#define CRLF "\r\n"
 
 // tmpfile() C++ replacement
 class tmpfstream : public fstream {
@@ -70,7 +79,7 @@ private:
 class CGIThread;
 
 class HTTPClientSocket: public AbstractMultiplexedClientSocket {
-friend class CGIThread;
+friend class CGIControlThread;
 public:
 	HTTPClientSocket();
 	HTTPClientSocket(int, sockaddr_in*);
