@@ -612,8 +612,8 @@ void HTTPClientSocket::executeCGI() {
 			CGIInput.seekg(0);
 			dup2(((fdbuf *)CGIInput.rdbuf())->fd(),fileno(stdin));
 		} else fclose(stdin);
-
 		dup2(((fdbuf *)CGIOutput.rdbuf())->fd(),fileno(stdout));
+		//fclose(stderr);
 		execve(argv[0],argv,envp);
 		log("(.) execve() error.\n");
 		exit(-1);
