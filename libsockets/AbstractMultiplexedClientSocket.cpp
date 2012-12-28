@@ -17,7 +17,7 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
+#include <cstdio>
 #include "ClientSocketMultiplexer.h"
 #include "AbstractMultiplexedClientSocket.h"
 

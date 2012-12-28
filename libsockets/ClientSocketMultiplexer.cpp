@@ -17,8 +17,8 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdio.h>
-#include <errno.h>
+#include <cstdio>
+#include <cerrno>
 #ifdef WIN32
 #include <winsock2.h>
 #else

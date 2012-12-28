@@ -17,8 +17,8 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <stdlib.h>
-#include <signal.h>
+#include <cstdlib>
+#include <csignal>
 #include <libsockets.h>
 #include "EchoClientSocket.h"
 #include "EchoServerSocket.h"
