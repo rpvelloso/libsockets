@@ -621,7 +621,7 @@ void HTTPClientSocket::executeCGI() {
 		log("(.) CGI process not started.\n");
 	} else {
 		if (!((new CGIThread(this))->start())) {
-			kill(CGIPid,9);
+			kill(CGIPid,SIGKILL);
 			log("(.) CGI thread not started.\n");
 		} else return;
 	}
