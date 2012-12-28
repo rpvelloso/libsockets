@@ -96,9 +96,9 @@ string mimeType(string f) {
 	size_t p,p2;
 	string ret,ext="";
 
-	p = f.find_last_of(".",f.length());
+	p = f.find_last_of(".");
 	if (p != string::npos) {
-		p2 = f.find_last_of('/',f.length());
+		p2 = f.find_last_of('/');
 		if ((p2 != string::npos) && (p>p2)) {
 			ext = f.substr(p+1,f.length()-p);
 			lowerCase(ext);
@@ -107,7 +107,7 @@ string mimeType(string f) {
 	if (ext.empty()) return "application/octet-stream";
 	else {
 		for (int i=0;!mime[i][0].empty();i++) {
-			if (mime[i][0].find(ext,0)!=string::npos) {
+			if (mime[i][0].find(ext)!=string::npos) {
 				ret = mime[i][1];
 				if (ret[ret.length()-1] == '/') ret = ret + ext;
 				return ret;
@@ -217,7 +217,7 @@ string HTTPClientSocket::unescapeUri(string u) {
 	string hex;
 	char c,*s;
 
-	while ((p=u.find('%',0)) != string::npos) {
+	while ((p=u.find('%')) != string::npos) {
 		hex = "0x" + u.substr(p+1,2);
 		c = strtol(hex.c_str(),&s,16);
 		u.replace(p,3,1,c);
