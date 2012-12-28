@@ -115,7 +115,7 @@ ClientSocketMultiplexer::ClientSocketMultiplexer() : Object() {
 }
 
 ClientSocketMultiplexer::~ClientSocketMultiplexer() {
-	set<AbstractMultiplexedClientSocket *>::iterator i;
+	list<AbstractMultiplexedClientSocket *>::iterator i;
 
 	cancelWait();
 
@@ -145,7 +145,7 @@ ClientSocketMultiplexer::~ClientSocketMultiplexer() {
 void ClientSocketMultiplexer::addSocket(AbstractMultiplexedClientSocket* s) {
 	s->setNonBlocking(1);
 	mutex->lock();
-	sockets.insert(s);
+	sockets.push_back(s);
 	s->setMultiplexer(this);
 	mutex->unlock();
 	interruptWaiting();
@@ -154,7 +154,7 @@ void ClientSocketMultiplexer::addSocket(AbstractMultiplexedClientSocket* s) {
 void ClientSocketMultiplexer::removeSocket(AbstractMultiplexedClientSocket* s) {
 	mutex->lock();
 	s->setMultiplexer(NULL);
-	sockets.erase(s);
+	sockets.remove(s);
 	mutex->unlock();
 	interruptWaiting();
 	delete s;
@@ -181,7 +181,7 @@ MultiplexerState ClientSocketMultiplexer::getMultiplexerState() {
 void ClientSocketMultiplexer::waitForData() {
 	fd_set rfds,wfds;
 	int maxFd,fd,r=0;
-	set<AbstractMultiplexedClientSocket *>::iterator i;
+	list<AbstractMultiplexedClientSocket *>::iterator i;
 	char buffer[BUFSIZ];
 
 	multiplexerState = MULTIPLEXER_WAITING;
@@ -203,21 +203,21 @@ void ClientSocketMultiplexer::waitForData() {
 
 		r = select(maxFd + 1, &rfds, &wfds, NULL, NULL);
 		if (r>0) {
-			set<AbstractMultiplexedClientSocket *> rs,ws;
+			list<AbstractMultiplexedClientSocket *> rs,ws;
 			char c;
 
 			mutex->lock();
 			for (i=sockets.begin();i!=sockets.end();i++) {
 				fd = ((AbstractMultiplexedClientSocket *)(*i))->getSocketFd();
-				if (FD_ISSET(fd,&wfds)) ws.insert(*i);
-				if (FD_ISSET(fd,&rfds)) rs.insert(*i);
+				if (FD_ISSET(fd,&wfds)) ws.push_back(*i);
+				if (FD_ISSET(fd,&rfds)) rs.push_back(*i);
 			}
 			mutex->unlock();
 
 			for (i=rs.begin();i!=rs.end();i++) {
 				(*i)->receiveData((void *)buffer,BUFSIZ);
 				if ((*i)->getSocketStatus() != SOCKET_OPENED) {
-					ws.erase((*i));
+					ws.remove((*i));
 					removeSocket((*i));
 				}
 			}
@@ -234,8 +234,15 @@ void ClientSocketMultiplexer::waitForData() {
 				if (c) break;
 			}
 		} else {
-			if (errno == EINTR) r = 0;
-			else perror("select()");
+			switch (errno) {
+				case EINTR:
+				case EBADFD:
+					r = 0;
+					break;
+				default:
+					perror("select()");
+					break;
+			}
 		}
 	}
 	multiplexerState = MULTIPLEXER_IDLE;

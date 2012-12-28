@@ -20,7 +20,7 @@
 #ifndef SERVER_H_
 #define SERVER_H_
 
-#include <set>
+#include <list>
 #include "AbstractThread.h"
 #include "AbstractServer.h"
 #include "ClientSocketMultiplexer.h"
@@ -31,13 +31,13 @@ public:
 	MultiplexedServer(int threadCount) : AbstractServer<C,S>() {
 		for (int i=0;i<threadCount;i++) {
 			T *t = new T();
-			threads.insert(t);
+			threads.push_back(t);
 			t->start();
 		}
 	};
 
 	virtual ~MultiplexedServer() {
-		typename set<T *>::iterator i;
+		typename list<T *>::iterator i;
 
 		for (i=threads.begin();i!=threads.end();i++) {
 			(*i)->getMultiplexer()->cancelWait();
@@ -60,7 +60,7 @@ public:
 	}
 
 	virtual T *getThread() {
-		typename set<T *>::iterator i;
+		typename list<T *>::iterator i;
 		T *thread = NULL;
 		ClientSocketMultiplexer *multiplexer;
 		size_t count=0xFFFFFFFF;
@@ -82,7 +82,7 @@ public:
 	}
 
 protected:
-	set<T *> threads;
+	list<T *> threads;
 };
 
 #endif /* SERVER_H_ */
