@@ -18,6 +18,7 @@
  */
 
 //TODO: redirecionar CGIOutput antes do termino da execucao
+//TODO: fazer autenticacao com crypt() e arquivo .htaccess
 
 #include <cstdarg>
 #include <cstring>
@@ -77,7 +78,6 @@ string tmpFileName() {
 	return r;
 }
 
-// TODO: add more MIME types
 static string mime[][2] = {
 		{".txt","text/plain"},
 		{".htm.html","text/html"},
