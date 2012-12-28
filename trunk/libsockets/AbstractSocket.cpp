@@ -17,15 +17,15 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <sstream>
 #include <fcntl.h>
-#include <stdio.h>
+#include <cstdio>
+#include <cstring>
+#include <sstream>
 #ifdef WIN32
 #include <winsock2.h>
 #else
 #include <netdb.h>
 #endif
-#include <string.h>
 #include "AbstractSocket.h"
 
 AbstractSocket::AbstractSocket() : Object() {

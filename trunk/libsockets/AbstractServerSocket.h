@@ -20,12 +20,12 @@
 #ifndef ABSTRACTSERVERSOCKET_H_
 #define ABSTRACTSERVERSOCKET_H_
 
+#include <cstdio>
 #ifdef WIN32
 #include <winsock2.h>
 #else
 #include <arpa/inet.h>
 #endif
-#include <stdio.h>
 #include "AbstractSocket.h"
 
 #define SERVER_BACKLOG 5

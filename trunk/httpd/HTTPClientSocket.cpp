@@ -19,12 +19,12 @@
 
 //TODO: redirecionar CGIOutput antes do termino da execucao
 
+#include <cstdarg>
 #include <cstring>
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <algorithm>
 #include <string>
-#include <cstdarg>
 #include "HTTPClientSocket.h"
 #include "HTTPServerSocket.h"
 

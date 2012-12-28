@@ -19,8 +19,8 @@
 
 //TODO: arrumar passagem do parametro 'rootDir', fazer get/set nas classes server e client
 
-#include <signal.h>
-#include <stdlib.h>
+#include <cstdlib>
+#include <csignal>
 #include <libsockets.h>
 #include "HTTPClientSocket.h"
 #include "HTTPServerSocket.h"
