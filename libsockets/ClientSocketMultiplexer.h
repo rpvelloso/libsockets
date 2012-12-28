@@ -20,7 +20,7 @@
 #ifndef CLIENTSOCKETMULTIPLEXER_H_
 #define CLIENTSOCKETMULTIPLEXER_H_
 
-#include <set>
+#include <list>
 #include "Mutex.h"
 #include "AbstractMultiplexedClientSocket.h"
 
@@ -43,7 +43,7 @@ public:
 protected:
 	int controlSockets[2];
 	Mutex *mutex;
-	set<AbstractMultiplexedClientSocket *> sockets;
+	list<AbstractMultiplexedClientSocket *> sockets;
 	MultiplexerState multiplexerState;
 };
 
