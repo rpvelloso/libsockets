@@ -20,6 +20,7 @@
 #ifndef HTTPCLIENTSOCKET_H_
 #define HTTPCLIENTSOCKET_H_
 
+#include <cstdlib>
 #include <sstream>
 #include <fstream>
 #include <libsockets.h>
@@ -38,6 +39,32 @@ enum HTTPReply {
 	REPLY_404_NOT_FOUND=404,
 	REPLY_500_INTERNAL_SERVER_ERROR=500,
 	REPLY_501_NOT_IMPLEMENTED=501
+};
+
+// tmpfile() C++ replacement
+class tmpfstream : public fstream {
+public:
+	void tmp_open() {
+		if (!(this->is_open())) {
+			char *fn = tempnam(NULL,NULL);
+			tmpfilename = fn;
+			free(fn);
+			this->open(tmpfilename.c_str(),
+					fstream::in		|
+					fstream::out	|
+					fstream::trunc	|
+					fstream::binary);
+		}
+	};
+
+	void tmp_close() {
+		if (this->is_open()) {
+			this->close();
+			remove(tmpfilename.c_str());
+		}
+	};
+private:
+	string tmpfilename;
 };
 
 class CGIThread;
@@ -94,7 +121,8 @@ private:
 	ssize_t contentLength;
 	string method,request,scriptName,URI,query,httpVersion,
 		host,userAgent,contentType,boundary,referer,cookie,connection;
-	fstream file,CGIOutput,CGIInput;
+	fstream file;
+	tmpfstream CGIOutput,CGIInput;
 	iostream *saveOutputBuffer;
 	string documentRoot;
 
