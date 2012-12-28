@@ -352,7 +352,6 @@ int HTTPClientSocket::checkURI() {
 
 void HTTPClientSocket::processRequest() {
 	headerLineNo = 0;
-	connection = "close";
 	if (URI != "*") {
 		if (checkURI()) {
 			reply(REPLY_404_NOT_FOUND);
@@ -529,14 +528,12 @@ public:
 				clientSocket->sendBufferedData("Connection: " + clientSocket->connection + CRLF);
 				clientSocket->CGIOutput.seekg(0);
 			} else clientSocket->sendBufferedData(l);
-			clientSocket->commitBuffer();
-
-			if (clientSocket->outputBuffer->rdbuf()->in_avail() == 0) clientSocket->setOutputBuffer(&(clientSocket->CGIOutput));
 		} else {
 			clientSocket->CGIOutput.close();
 			clientSocket->requestState = HTTP_REQUEST_ENDED;
 		}
 		clientSocket->CGIPid = -1;
+		clientSocket->commitBuffer();
     };
 protected:
     HTTPClientSocket *clientSocket;
@@ -550,6 +547,8 @@ void HTTPClientSocket::executeCGI() {
 	size_t i=-1,j=ENV_VAR_COUNT+1;
 	string q,mt;
 	stringstream sstr;
+
+	connection = "close";
 
 	if (CGIOutput.is_open()) CGIOutput.close();
 
