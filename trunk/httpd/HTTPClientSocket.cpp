@@ -629,7 +629,6 @@ void HTTPClientSocket::executeCGI() {
 	requestState = HTTP_REQUEST_ENDED;
 	if (CGIOutput.is_open()) CGIOutput.close();
 	if (CGIInput.is_open()) CGIInput.close();
-	log("(.) CGI process not started.\n");
 	reply(REPLY_500_INTERNAL_SERVER_ERROR);
 }
 
