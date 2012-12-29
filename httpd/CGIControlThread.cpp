@@ -36,7 +36,9 @@ void CGIControlThread::execute() {
 		sigwait(&waitset,&sig);
 		while ((pid = wait(&ret)) > 0) {
 			HTTPClientSocket *s = removeSocket(pid);
-			if (s) processCGIOutput(s);
+			if (s) {
+				if (s->getSocketStatus() == SOCKET_OPENED) processCGIOutput(s);
+			}
 		}
 	}
 }

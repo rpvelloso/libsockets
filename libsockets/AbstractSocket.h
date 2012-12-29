@@ -49,6 +49,7 @@ public:
     string getIPAddress();
     bool setLinger(int,int);
     int getLinger();
+    static bool setNonBlocking(int, bool);
     bool setNonBlocking(bool);
     bool getNonBlocking();
     int getSocketFd();
@@ -60,6 +61,7 @@ protected:
     string hostname;
     bool nonBlocking;
     int linger;
+
 };
 
 

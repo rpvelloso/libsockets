@@ -112,6 +112,9 @@ ClientSocketMultiplexer::ClientSocketMultiplexer() : Object() {
 	if ((socketpair(AF_LOCAL, SOCK_STREAM, 0, controlSockets)) == -1) {
 #endif
 		perror("socketpair()");
+	} else {
+		AbstractSocket::setNonBlocking(controlSockets[0],true);
+		AbstractSocket::setNonBlocking(controlSockets[1],true);
 	}
 }
 
@@ -209,7 +212,7 @@ void ClientSocketMultiplexer::waitForData() {
 		r = select(maxFd + 1, &rfds, &wfds, NULL, NULL);
 		if (r>0) {
 			list<AbstractMultiplexedClientSocket *> rs,ws;
-			char c;
+			char c=0;
 
 			mutex->lock();
 			for (i=sockets.begin();i!=sockets.end();i++) {
@@ -235,7 +238,7 @@ void ClientSocketMultiplexer::waitForData() {
 			ws.clear();
 
 			if (FD_ISSET(controlSockets[0],&rfds)) {
-				recv(controlSockets[0],&c,1,0);
+				while ((recv(controlSockets[0],&c,1,0) == 1) && !c);
 				if (c) break;
 			}
 		} else {
