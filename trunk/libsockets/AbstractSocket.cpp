@@ -117,29 +117,33 @@ int AbstractSocket::getLinger() {
 
 #ifdef WIN32
 
-bool AbstractSocket::setNonBlocking(bool nb) {
+static bool AbstractSocket::setNonBlocking(int fd, bool nb) {
 	unsigned long int socketFlags;
-	int r;
 
 	socketFlags = nb?1:0;
-	if ((r=ioctlsocket(socketFd,FIONBIO,&socketFlags)) != -1) nonBlocking = nb;
-	return r==0;
+	return (ioctlsocket(fd,FIONBIO,&socketFlags) == 0);
 }
 
 #else
 
-bool AbstractSocket::setNonBlocking(bool nb) {
-	int socketFlags,r;
+bool AbstractSocket::setNonBlocking(int fd, bool nb) {
+	int socketFlags;
 
-	socketFlags=fcntl(socketFd,F_GETFL,0);
+	socketFlags=fcntl(fd,F_GETFL,0);
 	if (nb) socketFlags |= O_NONBLOCK;
 	else socketFlags &= ~O_NONBLOCK;
 
-	if ((r=fcntl(socketFd,F_SETFL,socketFlags)) != -1) nonBlocking = nb;
-	return r==0;
+	return (fcntl(fd,F_SETFL,socketFlags) == 0);
 }
 
 #endif
+
+bool AbstractSocket::setNonBlocking(bool nb) {
+	bool r = setNonBlocking(socketFd,nb);
+
+	if (r) nonBlocking = nb;
+	return r;
+}
 
 bool AbstractSocket::getNonBlocking() {
 	return nonBlocking;
