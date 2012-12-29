@@ -34,8 +34,7 @@ void CGIControlThread::execute() {
 
 	while (true) {
 		sigwait(&waitset,&sig);
-		pid = wait(&ret);
-		if (pid > 0) {
+		while ((pid = wait(&ret)) > 0) {
 			HTTPClientSocket *s = removeSocket(pid);
 			if (s) processCGIOutput(s);
 		}

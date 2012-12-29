@@ -19,6 +19,7 @@
 
 #include <cstdio>
 #include <cerrno>
+#include <fcntl.h>
 #ifdef WIN32
 #include <winsock2.h>
 #else
@@ -143,8 +144,8 @@ ClientSocketMultiplexer::~ClientSocketMultiplexer() {
 }
 
 void ClientSocketMultiplexer::addSocket(AbstractMultiplexedClientSocket* s) {
-	s->setNonBlocking(1);
 	mutex->lock();
+	s->setNonBlocking(true);
 	sockets.push_back(s);
 	s->setMultiplexer(this);
 	mutex->unlock();
@@ -153,11 +154,10 @@ void ClientSocketMultiplexer::addSocket(AbstractMultiplexedClientSocket* s) {
 
 void ClientSocketMultiplexer::removeSocket(AbstractMultiplexedClientSocket* s) {
 	mutex->lock();
-	s->setMultiplexer(NULL);
 	sockets.remove(s);
 	mutex->unlock();
-	interruptWaiting();
 	delete s;
+	interruptWaiting();
 }
 
 void ClientSocketMultiplexer::interruptWaiting() {
@@ -178,6 +178,8 @@ MultiplexerState ClientSocketMultiplexer::getMultiplexerState() {
     return multiplexerState;
 }
 
+#define fd_is_valid(fd) ((fcntl(fd,F_GETFD) != -1) || (errno != EBADF))
+
 void ClientSocketMultiplexer::waitForData() {
 	fd_set rfds,wfds;
 	int maxFd,fd,r=0;
@@ -193,10 +195,13 @@ void ClientSocketMultiplexer::waitForData() {
 		mutex->lock();
 		for (i=sockets.begin();i!=sockets.end();i++) {
 			fd = (*i)->getSocketFd();
-			if (fd != -1) {
+			if (fd_is_valid(fd)) {
 				FD_SET(fd,&rfds);
 				if ((*i)->hasDataToSend()) FD_SET(fd,&wfds);
 				if (fd>maxFd) maxFd = fd;
+			} else {
+				sockets.remove((*i));
+				delete (*i);
 			}
 		}
 		mutex->unlock();
@@ -236,10 +241,11 @@ void ClientSocketMultiplexer::waitForData() {
 		} else {
 			switch (errno) {
 				case EINTR:
-				case EBADFD:
+				case EBADF:
 					r = 0;
 					break;
 				default:
+					cout << "errno: " << errno << endl;
 					perror("select()");
 					break;
 			}
