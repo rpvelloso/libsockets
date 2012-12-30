@@ -24,7 +24,7 @@ public:
     void execute();
 
     void addPID(pid_t, HTTPClientSocket *);
-    HTTPClientSocket *removeSocket(pid_t);
+    HTTPClientSocket *removePID(pid_t);
     void processCGIOutput(HTTPClientSocket *);
 protected:
     Mutex *mutex;

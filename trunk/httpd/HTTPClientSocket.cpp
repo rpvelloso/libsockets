@@ -144,6 +144,12 @@ HTTPClientSocket::HTTPClientSocket(int fd, sockaddr_in *sin) : AbstractMultiplex
 }
 
 HTTPClientSocket::~HTTPClientSocket() {
+	if (CGIPid != -1) kill(CGIPid,SIGKILL);
+	restoreOutputBuffer();
+	delete outputBuffer;
+	if (CGIOutput.is_open()) CGIOutput.tmp_close();
+	if (CGIInput.is_open()) CGIInput.tmp_close();
+	if (file.is_open()) file.close();
 }
 
 void HTTPClientSocket::onSend(void *buf, size_t size) {

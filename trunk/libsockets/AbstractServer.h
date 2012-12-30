@@ -42,7 +42,7 @@ public:
 		serverSocket->openSocket(addr,port);
 		while (serverSocket->getSocketStatus() == SOCKET_LISTENING) {
 			clientSocket = serverSocket->acceptConnection();
-			onClientConnect(clientSocket);
+			if (clientSocket) onClientConnect(clientSocket);
 		}
 	};
 

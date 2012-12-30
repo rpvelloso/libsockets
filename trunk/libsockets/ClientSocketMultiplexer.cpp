@@ -137,29 +137,26 @@ ClientSocketMultiplexer::~ClientSocketMultiplexer() {
 	close(controlSockets[1]);
 #endif
 
-	mutex->lock();
-	for (i=sockets.begin();i!=sockets.end();i++) {
+	updateSockets();
+	for (i=sockets.begin();i!=sockets.end();i++)
 		delete (*i);
-	}
+
 	sockets.clear();
-	mutex->unlock();
+
 	delete mutex;
 }
 
 void ClientSocketMultiplexer::addSocket(AbstractMultiplexedClientSocket* s) {
 	mutex->lock();
-	s->setNonBlocking(true);
-	sockets.push_back(s);
-	s->setMultiplexer(this);
+	insertedSockets.push_front(s);
 	mutex->unlock();
 	interruptWaiting();
 }
 
 void ClientSocketMultiplexer::removeSocket(AbstractMultiplexedClientSocket* s) {
 	mutex->lock();
-	sockets.remove(s);
+	removedSockets.push_front(s);
 	mutex->unlock();
-	delete s;
 	interruptWaiting();
 }
 
@@ -174,19 +171,22 @@ void ClientSocketMultiplexer::cancelWait() {
 }
 
 size_t ClientSocketMultiplexer::getSocketCount() {
-	return sockets.size();
+	size_t r;
+
+	mutex->lock();
+	r = sockets.size() + insertedSockets.size() - removedSockets.size();
+	mutex->unlock();
+	return r;
 }
 
 MultiplexerState ClientSocketMultiplexer::getMultiplexerState() {
     return multiplexerState;
 }
 
-#define fd_is_valid(fd) ((fcntl(fd,F_GETFD) != -1) || (errno != EBADF))
-
 void ClientSocketMultiplexer::waitForData() {
+	list<AbstractMultiplexedClientSocket *>::iterator i;
 	fd_set rfds,wfds;
 	int maxFd,fd,r=0;
-	list<AbstractMultiplexedClientSocket *>::iterator i;
 	char buffer[BUFSIZ];
 
 	multiplexerState = MULTIPLEXER_WAITING;
@@ -195,67 +195,90 @@ void ClientSocketMultiplexer::waitForData() {
 		FD_ZERO(&wfds);
 		FD_SET(controlSockets[0],&rfds);
 		maxFd=controlSockets[0];
-		mutex->lock();
-		for (i=sockets.begin();i!=sockets.end();i++) {
+
+		updateSockets();
+		for (i=sockets.begin();i!=sockets.end();++i) {
 			fd = (*i)->getSocketFd();
-			if (fd_is_valid(fd)) {
-				FD_SET(fd,&rfds);
-				if ((*i)->hasDataToSend()) FD_SET(fd,&wfds);
-				if (fd>maxFd) maxFd = fd;
-			} else {
-				sockets.remove((*i));
-				delete (*i);
-			}
+			FD_SET(fd,&rfds);
+			if ((*i)->hasDataToSend()) FD_SET(fd,&wfds);
+			if (fd>maxFd) maxFd = fd;
 		}
-		mutex->unlock();
 
 		r = select(maxFd + 1, &rfds, &wfds, NULL, NULL);
 		if (r>0) {
-			list<AbstractMultiplexedClientSocket *> rs,ws;
+			list<AbstractMultiplexedClientSocket *> readSet,writeSet;
 			char c=0;
 
-			mutex->lock();
-			for (i=sockets.begin();i!=sockets.end();i++) {
+			for (i=sockets.begin();i!=sockets.end();++i) {
 				fd = ((AbstractMultiplexedClientSocket *)(*i))->getSocketFd();
-				if (FD_ISSET(fd,&wfds)) ws.push_back(*i);
-				if (FD_ISSET(fd,&rfds)) rs.push_back(*i);
+				if (FD_ISSET(fd,&wfds)) writeSet.push_front((*i));
+				if (FD_ISSET(fd,&rfds)) readSet.push_front((*i));
 			}
-			mutex->unlock();
 
-			for (i=rs.begin();i!=rs.end();i++) {
+			for (i=readSet.begin();i!=readSet.end();++i) {
 				(*i)->receiveData((void *)buffer,BUFSIZ);
 				if ((*i)->getSocketStatus() != SOCKET_OPENED) {
-					ws.remove((*i));
+					writeSet.remove((*i));
 					removeSocket((*i));
 				}
 			}
-			for (i=ws.begin();i!=ws.end();i++) {
+			for (i=writeSet.begin();i!=writeSet.end();++i) {
 				(*i)->transmitBuffer();
 				if ((*i)->getSocketStatus() != SOCKET_OPENED) removeSocket((*i));
 			}
 
-			rs.clear();
-			ws.clear();
+			readSet.clear();
+			writeSet.clear();
 
 			if (FD_ISSET(controlSockets[0],&rfds)) {
 				while ((recv(controlSockets[0],&c,1,0) == 1) && !c);
 				if (c) break;
 			}
 		} else {
-			switch (errno) {
-				case EINTR:
-				case EBADF:
-					r = 0;
-					break;
-				default:
-					cout << "errno: " << errno << endl;
-					perror("select()");
-					break;
-			}
+			cerr << errno << endl;
+			perror("select()");
+			r = 0;
 		}
 	}
 	multiplexerState = MULTIPLEXER_IDLE;
 }
 
+#define fd_is_valid(fd) ((fcntl(fd,F_GETFL) != -1) || (errno != EBADF))
 
+void ClientSocketMultiplexer::updateSockets() {
+	list<AbstractMultiplexedClientSocket *>::iterator i;
+	int fd;
 
+	mutex->lock();
+
+	// inserted sockets
+	for (i=insertedSockets.begin();i!=insertedSockets.end();++i) {
+		fd = (*i)->getSocketFd();
+		if (fd_is_valid(fd)) {
+			sockets.push_front((*i));
+			(*i)->setNonBlocking(true);
+			(*i)->setMultiplexer(this);
+		}
+	}
+	insertedSockets.clear();
+
+	// removed sockets
+	for (i=removedSockets.begin();i!=removedSockets.end();++i) {
+		//if (sockets.find((*i))!=sockets.end()) {
+			sockets.remove((*i));
+			delete (*i);
+		//}
+	}
+	removedSockets.clear();
+
+	// remove bad fd's
+	for (i=sockets.begin();i!=sockets.end();++i) {
+		fd = (*i)->getSocketFd();
+		if (!fd_is_valid(fd)) {
+			sockets.remove((*i));
+			delete (*i);
+		}
+	}
+
+	mutex->unlock();
+}

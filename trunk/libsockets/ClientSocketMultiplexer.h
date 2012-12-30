@@ -44,7 +44,11 @@ protected:
 	int controlSockets[2];
 	Mutex *mutex;
 	list<AbstractMultiplexedClientSocket *> sockets;
+	list<AbstractMultiplexedClientSocket *> insertedSockets;
+	list<AbstractMultiplexedClientSocket *> removedSockets;
 	MultiplexerState multiplexerState;
+
+	void updateSockets();
 };
 
 #endif /* CLIENTSOCKETMULTIPLEXER_H_ */

@@ -50,27 +50,28 @@ public:
 		ClientSocketMultiplexer *multiplexer;
 		T *thread;
 
-		if (clientSocket) {
-			thread = getThread();
-			if (thread) {
-				multiplexer = thread->getMultiplexer();
-				if (multiplexer) multiplexer->addSocket(clientSocket);
+		if ((thread = getThread())) {
+			if ((multiplexer = thread->getMultiplexer())) {
+				multiplexer->addSocket(clientSocket);
+				return;
 			}
 		}
+		delete clientSocket;
 	}
 
 	virtual T *getThread() {
 		typename list<T *>::iterator i;
 		T *thread = NULL;
 		ClientSocketMultiplexer *multiplexer;
-		size_t count=0xFFFFFFFF;
+		size_t count=~0;
 
-		for (i=threads.begin();i!=threads.end();i++) {
+		for (i=threads.begin();i!=threads.end();++i) {
 			multiplexer = (*i)->getMultiplexer();
 			if (multiplexer) {
-				if (multiplexer->getSocketCount() <= count) {
+				size_t sc = multiplexer->getSocketCount();
+				if (sc <= count) {
 					thread = (*i);
-					count = multiplexer->getSocketCount();
+					count = sc;
 				}
 			}
 		}

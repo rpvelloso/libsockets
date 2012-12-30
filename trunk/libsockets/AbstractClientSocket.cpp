@@ -59,7 +59,6 @@ void AbstractClientSocket::closeSocket() {
         close(socketFd);
 #endif
         socketStatus = SOCKET_CLOSED;
-        socketFd = -1;
     }
 }
 

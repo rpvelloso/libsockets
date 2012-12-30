@@ -35,7 +35,7 @@ void CGIControlThread::execute() {
 	while (true) {
 		sigwait(&waitset,&sig);
 		while ((pid = wait(&ret)) > 0) {
-			HTTPClientSocket *s = removeSocket(pid);
+			HTTPClientSocket *s = removePID(pid);
 			if (s) {
 				if (s->getSocketStatus() == SOCKET_OPENED) processCGIOutput(s);
 			}
@@ -49,7 +49,7 @@ void CGIControlThread::addPID(pid_t p, HTTPClientSocket* s) {
 	mutex->unlock();
 }
 
-HTTPClientSocket* CGIControlThread::removeSocket(pid_t p) {
+HTTPClientSocket* CGIControlThread::removePID(pid_t p) {
 	HTTPClientSocket *s;
 
 	mutex->lock();
