@@ -81,6 +81,6 @@ void CGIControlThread::processCGIOutput(HTTPClientSocket *clientSocket) {
 		clientSocket->CGIOutput.close();
 		clientSocket->requestState = HTTP_REQUEST_ENDED;
 	}
-	clientSocket->CGIPid = -1;
+	clientSocket->CGIPID = -1;
 	clientSocket->commitBuffer();
 }
