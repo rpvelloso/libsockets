@@ -153,21 +153,23 @@ HTTPClientSocket::~HTTPClientSocket() {
 }
 
 void HTTPClientSocket::onSend(void *buf, size_t size) {
-	if ((CGIPid == -1) && (outputBuffer->rdbuf()->in_avail() == 0)) {
-		if (requestState == HTTP_PROCESS_REQUEST) {
-			if (saveOutputBuffer == NULL) {
-				if (file.is_open()) setOutputBuffer(&file);
-				else if (CGIOutput.is_open()) setOutputBuffer(&CGIOutput);
-				else requestState = HTTP_REQUEST_ENDED;
-			} else {
-				restoreOutputBuffer();
-				requestState = HTTP_REQUEST_ENDED;
+	if (outputBuffer->rdbuf()->in_avail() == 0) {
+		if (CGIPid == -1) {
+			if (requestState == HTTP_PROCESS_REQUEST) {
+				if (saveOutputBuffer == NULL) {
+					if (file.is_open()) setOutputBuffer(&file);
+					else if (CGIOutput.is_open()) setOutputBuffer(&CGIOutput);
+					else requestState = HTTP_REQUEST_ENDED;
+				} else {
+					restoreOutputBuffer();
+					requestState = HTTP_REQUEST_ENDED;
+				}
 			}
-		}
 
-		if (requestState == HTTP_REQUEST_ENDED) {
-			if (connection != "keep-alive") closeSocket();
-			else requestState = HTTP_RECEIVE_HEADER;
+			if (requestState == HTTP_REQUEST_ENDED) {
+				if (connection != "keep-alive") closeSocket();
+				else requestState = HTTP_RECEIVE_HEADER;
+			}
 		}
 	}
 }
@@ -253,11 +255,6 @@ void HTTPClientSocket::processInput() {
 			if (line.length() <= 1) {
 				if (contentLength > 0) {
 					if (CGIInput.is_open()) CGIInput.tmp_close();
-					/*CGIInput.open(tmpFileName().c_str(),
-						fstream::in		|
-						fstream::out	|
-						fstream::trunc	|
-						fstream::binary);*/
 					CGIInput.tmp_open();
 					if (CGIInput.fail()) {
 						reply(REPLY_500_INTERNAL_SERVER_ERROR);
@@ -513,12 +510,6 @@ void HTTPClientSocket::executeCGI() {
 	connection = "close";
 
 	if (CGIOutput.is_open()) CGIOutput.tmp_close();
-
-	/*CGIOutput.open(tmpFileName().c_str(),
-			fstream::in		|
-			fstream::out	|
-			fstream::trunc	|
-			fstream::binary);*/
 	CGIOutput.tmp_open();
 
 	if (CGIOutput.fail()) {
@@ -585,12 +576,16 @@ void HTTPClientSocket::executeCGI() {
 		if (CGIOutput.is_open()) CGIOutput.tmp_close();
 		if (CGIInput.is_open()) CGIInput.tmp_close();
 		reply(REPLY_500_INTERNAL_SERVER_ERROR);
-	} else serverSocket->getCGIControlThread()->addPID(CGIPid,this);
+	} else {
+		serverSocket->getCGIControlThread()->addPID(CGIPid,this);
+	}
 }
 
 void HTTPClientSocket::setOutputBuffer(iostream* b) {
-	saveOutputBuffer = b;
-	swap(outputBuffer,saveOutputBuffer);
+	if (saveOutputBuffer == NULL) {
+		saveOutputBuffer = b;
+		swap(outputBuffer,saveOutputBuffer);
+	}
 }
 
 void HTTPClientSocket::restoreOutputBuffer() {
