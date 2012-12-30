@@ -137,7 +137,7 @@ private:
 
 	HTTPServerSocket *serverSocket;
 
-	pid_t CGIPid;
+	pid_t CGIPID;
 
 	LoggerInterface *logger;
 };

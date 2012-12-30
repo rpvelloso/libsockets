@@ -125,7 +125,7 @@ HTTPClientSocket::HTTPClientSocket() : AbstractMultiplexedClientSocket() {
 	saveOutputBuffer = NULL;
 	documentRoot = "";
 	serverSocket = NULL;
-	CGIPid = -1;
+	CGIPID = -1;
 	logger = NULL;
 }
 
@@ -139,12 +139,12 @@ HTTPClientSocket::HTTPClientSocket(int fd, sockaddr_in *sin) : AbstractMultiplex
 	saveOutputBuffer = NULL;
 	documentRoot = "";
 	serverSocket = NULL;
-	CGIPid = -1;
+	CGIPID = -1;
 	logger = NULL;
 }
 
 HTTPClientSocket::~HTTPClientSocket() {
-	if (CGIPid != -1) kill(CGIPid,SIGKILL);
+	if (CGIPID != -1) kill(CGIPID,SIGKILL);
 	restoreOutputBuffer();
 	delete outputBuffer;
 	if (CGIOutput.is_open()) CGIOutput.tmp_close();
@@ -154,7 +154,7 @@ HTTPClientSocket::~HTTPClientSocket() {
 
 void HTTPClientSocket::onSend(void *buf, size_t size) {
 	if (outputBuffer->rdbuf()->in_avail() == 0) {
-		if (CGIPid == -1) {
+		if (CGIPID == -1) {
 			if (requestState == HTTP_PROCESS_REQUEST) {
 				if (saveOutputBuffer == NULL) {
 					if (file.is_open()) setOutputBuffer(&file);
@@ -517,7 +517,7 @@ void HTTPClientSocket::executeCGI() {
 		return;
 	}
 
-	if (!(CGIPid=fork())) {
+	if (!(CGIPID=fork())) {
 		if (query[0] == '?') query.erase(0,1); // remove char '?'
 		while ((i=query.find('&',++i))!=string::npos) j++;
 		i = 0;
@@ -570,14 +570,14 @@ void HTTPClientSocket::executeCGI() {
 		execve(argv[0],argv,envp);
 		log("(.) execve() error.\n");
 		exit(-1);
-	} else if (CGIPid == -1) {
+	} else if (CGIPID == -1) {
 		log("(.) CGI process not started.\n");
 		requestState = HTTP_REQUEST_ENDED;
 		if (CGIOutput.is_open()) CGIOutput.tmp_close();
 		if (CGIInput.is_open()) CGIInput.tmp_close();
 		reply(REPLY_500_INTERNAL_SERVER_ERROR);
 	} else {
-		serverSocket->getCGIControlThread()->addPID(CGIPid,this);
+		serverSocket->getCGIControlThread()->addPID(CGIPID,this);
 	}
 }
 
