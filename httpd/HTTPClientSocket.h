@@ -128,7 +128,7 @@ private:
 	stringstream inputBuffer;
 	int headerLineNo;
 	ssize_t contentLength;
-	string method,request,scriptName,URI,query,httpVersion,
+	string method,requestURI,scriptFileName,scriptName,query,httpVersion,
 		host,userAgent,contentType,boundary,referer,cookie,connection;
 	fstream file;
 	tmpfstream CGIOutput,CGIInput;

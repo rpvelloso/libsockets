@@ -30,11 +30,11 @@
 
 #define REPLY_403 \
 	"<HEAD><TITLE>Forbidden</TITLE></HEAD>" CRLF \
-	"<H1>Forbidden</H1> You don\'t have permission to access " + URI + " on this server."
+	"<H1>Forbidden</H1> You don\'t have permission to access " + scriptName + " on this server."
 
 #define REPLY_404 \
 	"<HEAD><TITLE>Not Found</TITLE></HEAD>" CRLF \
-	"<H1>Not Found</H1> The requested object " + URI + " does not exist on this server."
+	"<H1>Not Found</H1> The requested object " + scriptName + " does not exist on this server."
 
 #define REPLY_500 \
 	"<HTML>" CRLF \
@@ -120,7 +120,7 @@ HTTPClientSocket::HTTPClientSocket() : AbstractMultiplexedClientSocket() {
 	requestState = HTTP_RECEIVE_HEADER;
 	headerLineNo = 0;
 	contentLength = 0;
-	method = request = scriptName = URI = query = httpVersion =	host =
+	method = requestURI = scriptFileName = scriptName = query = httpVersion =	host =
 	userAgent = contentType = boundary = referer = cookie = connection = "";
 	saveOutputBuffer = NULL;
 	documentRoot = "";
@@ -134,7 +134,7 @@ HTTPClientSocket::HTTPClientSocket(int fd, sockaddr_in *sin) : AbstractMultiplex
 	requestState = HTTP_RECEIVE_HEADER;
 	headerLineNo = 0;
 	contentLength = 0;
-	method = request = scriptName = URI = query = httpVersion = host =
+	method = requestURI = scriptFileName = scriptName = query = httpVersion = host =
 	userAgent = contentType = boundary = referer = cookie = connection = "";
 	saveOutputBuffer = NULL;
 	documentRoot = "";
@@ -238,12 +238,13 @@ void HTTPClientSocket::processInput() {
 			host = userAgent = contentType = boundary =
 			referer = cookie = connection = "";
 			method = stringTok(line," ");
-			scriptName = request = stringTok(line," ");
-			scriptName = unescapeUri(stringTok(scriptName,"?"));
-			while (request[0]=='/') request.erase(0,1);
-			request = unescapeUri(documentRoot + request);
-			URI = stringTok(request,"?");
-			query = request;
+			scriptFileName = requestURI = stringTok(line," ");
+			while (scriptFileName[0]=='/') scriptFileName.erase(0,1);
+			scriptFileName = unescapeUri(documentRoot + stringTok(scriptFileName,"?"));
+			scriptName = stringTok(requestURI,"?");
+			query = requestURI;
+			requestURI = scriptName;
+			if (query[0]=='?') requestURI = requestURI + '?';
 			httpVersion = line;
 		} else {
 			string parm;
@@ -282,8 +283,7 @@ void HTTPClientSocket::processInput() {
 				else if (parm == "CONNECTION") {
 					connection = line;
 					lowerCase(connection);
-				}
-				else if (parm == "CONTENT-TYPE") {
+				} else if (parm == "CONTENT-TYPE") {
 					contentType = stringTok(line,"; ");
 					stringTok(line,"=");
 					boundary = line;
@@ -316,7 +316,7 @@ void HTTPClientSocket::processInput() {
 			"Referer....: \'%s\'\n" \
 			"Connection.: \'%s\'\n" \
 			"Cookie.....: \'%s\'\n\n",
-			method.c_str(),URI.c_str(),query.c_str(),httpVersion.c_str(),host.c_str(),
+			method.c_str(),scriptFileName.c_str(),query.c_str(),httpVersion.c_str(),host.c_str(),
 			userAgent.c_str(),contentLength,contentType.c_str(),boundary.c_str(),
 			scriptName.c_str(),referer.c_str(),connection.c_str(),cookie.c_str());*/
 		processRequest();
@@ -335,12 +335,13 @@ int HTTPClientSocket::checkURI() {
 	string index;
 	int i=0;
 
-	if (!stat(URI.c_str(),&st)) {
+	if (!stat(scriptFileName.c_str(),&st)) {
 		if (S_ISDIR(st.st_mode)) {
 			while (!idx[i].empty()) {
-				index = URI + idx[i++];
+				index = scriptFileName + idx[i++];
 				if (!stat(index.c_str(),&st) && !S_ISDIR(st.st_mode)) {
-					URI = index;
+					scriptFileName = index;
+					scriptName = scriptName + idx[i-1];
 					return 0;
 				}
 			}
@@ -351,7 +352,7 @@ int HTTPClientSocket::checkURI() {
 
 void HTTPClientSocket::processRequest() {
 	headerLineNo = 0;
-	if (URI != "*") {
+	if (scriptName != "*") {
 		if (checkURI()) {
 			reply(REPLY_404_NOT_FOUND);
 			return;
@@ -373,17 +374,17 @@ void HTTPClientSocket::processRequest() {
 }
 
 void HTTPClientSocket::GET() {
-	string mt = mimeType(URI);
+	string mt = mimeType(scriptName);
 
 	if ((mt == "application/php") ||
-		((!query.empty()) && !access(URI.c_str(),X_OK))) {
+		((!query.empty()) && !access(scriptFileName.c_str(),X_OK))) {
 
 		executeCGI();
 
 	} else {
 
 		if (HEAD()) {
-			file.open(URI.c_str(),fstream::in | fstream::binary);
+			file.open(scriptFileName.c_str(),fstream::in | fstream::binary);
 			if (file.fail()) reply(REPLY_500_INTERNAL_SERVER_ERROR);
 		}
 
@@ -394,8 +395,8 @@ bool HTTPClientSocket::HEAD() {
 	struct stat st;
 	stringstream len;
 
-	stat(URI.c_str(),&st);
-	if (access(URI.c_str(),R_OK)) {
+	stat(scriptFileName.c_str(),&st);
+	if (access(scriptFileName.c_str(),R_OK)) {
 		reply(REPLY_403_FORBIDDEN);
 		return false;
 	}
@@ -405,7 +406,7 @@ bool HTTPClientSocket::HEAD() {
 	replyServer();
 	replyDate();
 	sendBufferedData("Content-length: " + len.str() + CRLF);
-	sendBufferedData("Content-type: " + mimeType(URI) + CRLF);
+	sendBufferedData("Content-type: " + mimeType(scriptName) + CRLF);
 	sendBufferedData("Last-modified: " + time2str(st.st_mtime) + CRLF);
 	sendBufferedData("Accept-ranges: bytes" CRLF);
 	sendBufferedData(CRLF);
@@ -500,7 +501,7 @@ void HTTPClientSocket::setDocumentRoot(string d) {
 	documentRoot = d;
 }
 
-#define ENV_VAR_COUNT 20
+#define ENV_VAR_COUNT 21
 #define PHP_BIN "/usr/bin/php-cgi"
 
 void HTTPClientSocket::executeCGI() {
@@ -535,37 +536,38 @@ void HTTPClientSocket::executeCGI() {
 
 		sstr << "CONTENT_LENGTH=" << contentLength;
 		envp[i++] = strdup(sstr.str().c_str());
+		envp[i++] = strdup(("HTTP_REFERER=" + referer).c_str());
+		envp[i++] = strdup(("HTTP_HOST=" + host).c_str());
+		envp[i++] = strdup(("HTTP_USER_AGENT=" + userAgent).c_str());
+		envp[i++] = strdup(("HTTP_COOKIE=" + cookie).c_str());
+		envp[i++] = strdup("SERVER_SOFTWARE=HTTPD");
+		envp[i++] = strdup(("SERVER_NAME=" + host).c_str());
+		envp[i++] = strdup(("SERVER_ADDR=" + serverSocket->getIPAddress()).c_str());
+		sstr.str(""); sstr << "SERVER_PORT=" << serverSocket->getPort();
+		envp[i++] = strdup(sstr.str().c_str());
+		envp[i++] = strdup(("REMOTE_ADDR=" + getIPAddress()).c_str());
+		envp[i++] = strdup(("DOCUMENT_ROOT=" + documentRoot).c_str());
+		envp[i++] = strdup(("SCRIPT_FILENAME=" + scriptFileName).c_str());
+		sstr.str(""); sstr << "REMOTE_PORT=" << this->getPort();
+		envp[i++] = strdup(sstr.str().c_str());
+		envp[i++] = strdup("GATEWAY_INTERFACE=CGI/1.1");
+		envp[i++] = strdup(("SERVER_PROTOCOL=" + httpVersion).c_str());
+		envp[i++] = strdup(("REQUEST_METHOD=" + method).c_str());
+		envp[i++] = strdup(("QUERY_STRING=" + query).c_str());
+		envp[i++] = strdup(("REQUEST_URI=" + requestURI).c_str());
+		envp[i++] = strdup(("SCRIPT_NAME=" + scriptName).c_str());
 		if (!boundary.empty())
 			envp[i++] = strdup(("CONTENT_TYPE=" + contentType + "; boundary=" + boundary).c_str());
 		else
 			envp[i++] = strdup(("CONTENT_TYPE=" + contentType).c_str());
-		sstr.str(""); sstr << "REMOTE_PORT=" << this->getPort();
-		envp[i++] = strdup(sstr.str().c_str());
-		sstr.str(""); sstr << "SERVER_PORT=" << serverSocket->getPort();
-		envp[i++] = strdup(sstr.str().c_str());
-		envp[i++] = strdup(("REMOTE_ADDR=" + getIPAddress()).c_str());
-		envp[i++] = strdup(("SERVER_ADDR=" + serverSocket->getIPAddress()).c_str());
-		envp[i++] = strdup(("REQUEST_METHOD=" + method).c_str());
-		envp[i++] = strdup(("HTTP_HOST=" + host).c_str());
-		envp[i++] = strdup(("SERVER_NAME=" + host).c_str());
-		envp[i++] = strdup(("HTTP_USER_AGENT=" + userAgent).c_str());
-		envp[i++] = strdup("GATEWAY_INTERFACE=CGI/1.1");
-		envp[i++] = strdup(("QUERY_STRING=" + query).c_str());
-		envp[i++] = strdup(("REQUEST_URI=" + URI).c_str());
-		envp[i++] = strdup(("SERVER_PROTOCOL=" + httpVersion).c_str());
-		envp[i++] = strdup(("SCRIPT_FILENAME=" + URI).c_str());
-		envp[i++] = strdup(("SCRIPT_NAME=" + scriptName).c_str());
-		envp[i++] = strdup(("DOCUMENT_ROOT=" + documentRoot).c_str());
-		envp[i++] = strdup(("HTTP_REFERER=" + referer).c_str());
-		envp[i++] = strdup(("HTTP_COOKIE=" + cookie).c_str());
 		envp[i] = NULL;
 
-		mt = mimeType(URI);
+		mt = mimeType(scriptName);
 
 		if (mt == "application/php") {
 			argv[0] = strdup(PHP_BIN);
-			argv[1] = strdup(URI.c_str());
-		} else argv[0] = strdup(URI.c_str());
+			argv[1] = strdup(scriptFileName.c_str());
+		} else argv[0] = strdup(scriptFileName.c_str());
 
 		if ((CGIInput.is_open()) && (contentLength > 0) && (method == "POST")) {
 			CGIInput.flush();
@@ -573,7 +575,7 @@ void HTTPClientSocket::executeCGI() {
 			dup2(((fdbuf *)CGIInput.rdbuf())->fd(),fileno(stdin));
 		} else fclose(stdin);
 		dup2(((fdbuf *)CGIOutput.rdbuf())->fd(),fileno(stdout));
-		fclose(stderr);
+		//fclose(stderr);
 		execve(argv[0],argv,envp);
 		log("(.) execve() error.\n");
 		exit(-1);
