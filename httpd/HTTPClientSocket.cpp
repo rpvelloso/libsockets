@@ -109,12 +109,6 @@ string mimeType(string f) {
 	return ("application/"+ext);
 }
 
-// class to enable access to fstream file fd
-class fdbuf : public filebuf {
-public:
-	int fd() { return _M_file.fd(); }
-};
-
 HTTPClientSocket::HTTPClientSocket() : AbstractMultiplexedClientSocket() {
 	outputBuffer = new stringstream;
 	requestState = HTTP_RECEIVE_HEADER;
@@ -152,6 +146,9 @@ HTTPClientSocket::~HTTPClientSocket() {
 	if (file.is_open()) file.close();
 }
 
+void HTTPClientSocket::beforeSend(void *buf, size_t *size) {
+}
+
 void HTTPClientSocket::onSend(void *buf, size_t size) {
 	if (outputBuffer->rdbuf()->in_avail() == 0) {
 		if (CGIPID == -1) {
@@ -170,6 +167,9 @@ void HTTPClientSocket::onSend(void *buf, size_t size) {
 				if (connection != "keep-alive") closeSocket();
 				else requestState = HTTP_RECEIVE_HEADER;
 			}
+		} else {
+			setOutputBuffer(&CGIOutput);
+			commitBuffer();
 		}
 	}
 }
@@ -186,6 +186,36 @@ void HTTPClientSocket::onConnect() {
 
 void HTTPClientSocket::onDisconnect() {
 	log("(-) Client disconnected from %s:%d.\n",getIPAddress().c_str(),getPort());
+}
+
+void HTTPClientSocket::onCGIEnd() {
+	if (CGIInput.is_open()) CGIInput.tmp_close();
+	setOutputBuffer(&CGIOutput);
+	commitBuffer();
+	CGIPID = -1;
+
+	/*if (CGIInput.is_open()) CGIInput.tmp_close();
+	CGIOutput.seekg(0);
+	if (CGIOutput.rdbuf()->in_avail() > 0) {
+		string l,L;
+
+		getline(CGIOutput,l);
+		L = l.substr(0,11);
+		upperCase(L);
+		if (L.substr(0,8) == "STATUS: ") {
+			sendBufferedData(httpVersion + L.substr(7,4) + CRLF);
+			sendBufferedData("Connection: " + connection + CRLF);
+		} else if (L.substr(0,5) != "HTTP/") {
+			sendBufferedData(httpVersion + " 200 OK" + CRLF);
+			sendBufferedData("Connection: " + connection + CRLF);
+			CGIOutput.seekg(0);
+		} else sendBufferedData(l);
+	} else {
+		CGIOutput.close();
+		requestState = HTTP_REQUEST_ENDED;
+	}
+	CGIPID = -1;
+	commitBuffer();*/
 }
 
 string HTTPClientSocket::stringTok(string &s, string d) {
@@ -321,9 +351,9 @@ void HTTPClientSocket::processInput() {
 }
 
 static string idx[] = {
-		"/index.php",
-		"/index.htm",
-		"/index.html",
+		"index.php",
+		"index.htm",
+		"index.html",
 		""
 };
 
@@ -577,6 +607,8 @@ void HTTPClientSocket::executeCGI() {
 		if (CGIInput.is_open()) CGIInput.tmp_close();
 		reply(REPLY_500_INTERNAL_SERVER_ERROR);
 	} else {
+		sendBufferedData(httpVersion + " 200 OK" + CRLF);
+		CGIOutput.tmp_reopen(fstream::in);
 		serverSocket->getCGIControlThread()->addPID(CGIPID,this);
 	}
 }
@@ -585,6 +617,7 @@ void HTTPClientSocket::setOutputBuffer(iostream* b) {
 	if (saveOutputBuffer == NULL) {
 		saveOutputBuffer = b;
 		swap(outputBuffer,saveOutputBuffer);
+		outputBuffer->flush();
 	}
 }
 

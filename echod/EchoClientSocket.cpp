@@ -38,7 +38,7 @@ void EchoClientSocket::onSend(void *buf, size_t size) {
 		((char *)buf)[size]='\0';
 		logger->LOG("CLIENT: Enviando mensagem: %s\n",(char *)buf);
 	}
-};
+}
 
 void EchoClientSocket::onReceive(void *buf, size_t size) {
 	((char *)buf)[size]='\0';
@@ -46,7 +46,14 @@ void EchoClientSocket::onReceive(void *buf, size_t size) {
 	sendBufferedData(buf,size);
 	commitBuffer();
 	string msg = ((char *)buf);
-};
+}
 
 void EchoClientSocket::onConnect() { logger->LOG("%s\n","CLIENT: Conectado."); };
-void EchoClientSocket::onDisconnect() { logger->LOG("%s\n","CLIENT: Desconectado."); };
+
+void EchoClientSocket::beforeSend(void *buf, size_t size) {
+}
+
+void EchoClientSocket::onDisconnect() {
+	logger->LOG("%s\n", "CLIENT: Desconectado.");
+}
+
