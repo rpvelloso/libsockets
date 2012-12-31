@@ -63,30 +63,40 @@ void AbstractClientSocket::closeSocket() {
 }
 
 int AbstractClientSocket::sendData(void *buf, size_t size) {
-	ssize_t r;
+	ssize_t r=0;
 
     if (socketStatus == SOCKET_OPENED) {
-#ifdef WIN32
-        r = send(socketFd,(char *)buf,size,0);
-#else
-        r = send(socketFd,buf,size,0);
-#endif
-        if (r>0) {
-        	bytesOut += r;
-        	onSend(buf,r);
-        }
+    	beforeSend(buf,&size);
+    	if (size) {
+	#ifdef WIN32
+			r = send(socketFd,(char *)buf,size,0);
+	#else
+			r = send(socketFd,buf,size,0);
+	#endif
+			if (r>0) {
+				bytesOut += r;
+				onSend(buf,r);
+			}
+    	}
         return r;
     }
     return -1;
 }
 
 int AbstractClientSocket::sendData(string buf) {
-	ssize_t r;
+	ssize_t r = 0;
+	size_t size = 0;
 
     if (socketStatus == SOCKET_OPENED) {
-   		onSend(&buf,0);
-   		r = send(socketFd,buf.c_str(),buf.size(),0);
-   		if (r>0) bytesOut += r;
+    	beforeSend(&buf,&size);
+    	if (buf.size() > 0) {
+			r = send(socketFd,buf.c_str(),buf.size(),0);
+			if (r>0) {
+				string sent = buf.substr(0,r);
+				bytesOut += r;
+				onSend(&sent,0);
+			}
+    	}
    		return r;
     }
     return -1;

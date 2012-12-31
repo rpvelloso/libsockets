@@ -24,6 +24,7 @@
 #include <sstream>
 #include <fstream>
 #include <algorithm>
+#include <fcntl.h>
 #include <libsockets.h>
 #include "CGIControlThread.h"
 
@@ -50,12 +51,19 @@ enum HTTPReply {
 #define LF '\n'
 #define CRLF "\r\n"
 
+// class to enable access to fstream file fd
+class fdbuf : public filebuf {
+public:
+	int fd() { return _M_file.fd(); }
+};
+
 // tmpfile() C++ replacement
 class tmpfstream : public fstream {
 public:
 	void tmp_open() {
 		if (!(this->is_open())) {
 			char *fn = tempnam(NULL,NULL);
+
 			tmpfilename = fn;
 			free(fn);
 			this->open(tmpfilename.c_str(),
@@ -72,6 +80,14 @@ public:
 			remove(tmpfilename.c_str());
 		}
 	};
+
+	void tmp_reopen(ios_base::openmode m) {
+		if (this->is_open()) {
+			this->close();
+			this->open(tmpfilename.c_str(),m);
+		}
+	};
+
 private:
 	string tmpfilename;
 };
@@ -79,16 +95,18 @@ private:
 class CGIThread;
 
 class HTTPClientSocket: public AbstractMultiplexedClientSocket {
-friend class CGIControlThread;
 public:
 	HTTPClientSocket();
 	HTTPClientSocket(int, sockaddr_in*);
 	virtual ~HTTPClientSocket();
 
 	void onSend(void *, size_t);
-    void onReceive(void *, size_t);
+	void beforeSend(void *, size_t *);
+	void onReceive(void *, size_t);
     void onConnect();
 	void onDisconnect();
+
+	void onCGIEnd();
 
 	HTTPServerSocket* getServerSocket();
 	void setServerSocket(HTTPServerSocket *);

@@ -36,9 +36,7 @@ void CGIControlThread::execute() {
 		sigwait(&waitset,&sig);
 		while ((pid = wait(&ret)) > 0) {
 			HTTPClientSocket *s = removePID(pid);
-			if (s) {
-				if (s->getSocketStatus() == SOCKET_OPENED) processCGIOutput(s);
-			}
+			if (s) s->onCGIEnd();
 		}
 	}
 }
@@ -58,29 +56,4 @@ HTTPClientSocket* CGIControlThread::removePID(pid_t p) {
 	mutex->unlock();
 
 	return s;
-}
-
-void CGIControlThread::processCGIOutput(HTTPClientSocket *clientSocket) {
-	if (clientSocket->CGIInput.is_open()) clientSocket->CGIInput.tmp_close();
-	clientSocket->CGIOutput.seekg(0);
-	if (clientSocket->CGIOutput.rdbuf()->in_avail() > 0) {
-		string l,L;
-
-		getline(clientSocket->CGIOutput,l);
-		L = l.substr(0,11);
-		upperCase(L);
-		if (L.substr(0,8) == "STATUS: ") {
-			clientSocket->sendBufferedData(clientSocket->httpVersion + L.substr(7,4) + CRLF);
-			clientSocket->sendBufferedData("Connection: " + clientSocket->connection + CRLF);
-		} else if (L.substr(0,5) != "HTTP/") {
-			clientSocket->sendBufferedData(clientSocket->httpVersion + " 200 OK" + CRLF);
-			clientSocket->sendBufferedData("Connection: " + clientSocket->connection + CRLF);
-			clientSocket->CGIOutput.seekg(0);
-		} else clientSocket->sendBufferedData(l);
-	} else {
-		clientSocket->CGIOutput.close();
-		clientSocket->requestState = HTTP_REQUEST_ENDED;
-	}
-	clientSocket->CGIPID = -1;
-	clientSocket->commitBuffer();
 }
