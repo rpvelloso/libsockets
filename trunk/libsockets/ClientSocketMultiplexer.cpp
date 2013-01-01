@@ -114,7 +114,6 @@ ClientSocketMultiplexer::ClientSocketMultiplexer() : Object() {
 		perror("socketpair()");
 	} else {
 		AbstractSocket::setNonBlocking(controlSockets[0],true);
-		AbstractSocket::setNonBlocking(controlSockets[1],true);
 	}
 }
 
