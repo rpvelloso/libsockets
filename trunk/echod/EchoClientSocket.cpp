@@ -50,7 +50,7 @@ void EchoClientSocket::onReceive(void *buf, size_t size) {
 
 void EchoClientSocket::onConnect() { logger->LOG("%s\n","CLIENT: Conectado."); };
 
-void EchoClientSocket::beforeSend(void *buf, size_t size) {
+void EchoClientSocket::beforeSend(void *buf, size_t *size) {
 }
 
 void EchoClientSocket::onDisconnect() {
