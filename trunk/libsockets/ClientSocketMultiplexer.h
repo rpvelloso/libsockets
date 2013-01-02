@@ -20,6 +20,7 @@
 #ifndef CLIENTSOCKETMULTIPLEXER_H_
 #define CLIENTSOCKETMULTIPLEXER_H_
 
+#include <cstdio>
 #include <set>
 #include "Mutex.h"
 #include "AbstractMultiplexedClientSocket.h"
@@ -41,6 +42,7 @@ public:
 	void waitForData();
 	MultiplexerState getMultiplexerState();
 protected:
+	char buffer[BUFSIZ];
 	int controlSockets[2];
 	Mutex *mutex;
 	set<AbstractMultiplexedClientSocket *> sockets;

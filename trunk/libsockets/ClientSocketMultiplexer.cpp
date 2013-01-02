@@ -17,7 +17,6 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstdio>
 #include <cerrno>
 #include <fcntl.h>
 #ifdef WIN32
@@ -188,7 +187,6 @@ void ClientSocketMultiplexer::waitForData() {
 	set<AbstractMultiplexedClientSocket *>::iterator i;
 	fd_set rfds,wfds;
 	int maxFd,fd,r=0;
-	char buffer[BUFSIZ];
 
 	multiplexerState = MULTIPLEXER_WAITING;
 	while (r>=0) {
