@@ -17,6 +17,7 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <cerrno>
 #include <cstring>
 #include "AbstractClientSocket.h"
 
@@ -95,6 +96,14 @@ int AbstractClientSocket::sendData(string buf) {
 				string sent = buf.substr(0,r);
 				bytesOut += r;
 				onSend(&sent,0);
+			} else {
+			   if (!((r<0) && (
+					(errno == EAGAIN) ||
+					(errno == EBUSY) ||
+					(errno == EINTR)))) {
+				   socketStatus = SOCKET_CLOSED;
+				   onDisconnect();
+			   }
 			}
     	}
    		return r;
@@ -114,10 +123,14 @@ int AbstractClientSocket::receiveData(void *buf, size_t size) {
        if (r > 0) {
     	   bytesIn += r;
     	   onReceive(buf,r);
-       }
-       if (r == 0) {
-    	   socketStatus = SOCKET_CLOSED;
-    	   onDisconnect();
+       } else {
+    	   if (!((r<0) && (
+    			(errno == EAGAIN) ||
+    			(errno == EBUSY) ||
+    			(errno == EINTR)))) {
+    		   socketStatus = SOCKET_CLOSED;
+    		   onDisconnect();
+    	   }
        }
        return r;
     }

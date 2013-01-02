@@ -57,7 +57,7 @@ void AbstractMultiplexedClientSocket::transmitBuffer() {
 		size = sendData(buf,ssize);
 		if (size != -1) {
 			if (size != ssize) outputBuffer->seekg(size-ssize,ios_base::cur);
-		}
+		} else outputBuffer->seekg(-ssize,ios_base::cur);
 	}
 }
 
