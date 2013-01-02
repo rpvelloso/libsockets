@@ -77,6 +77,14 @@ int AbstractClientSocket::sendData(void *buf, size_t size) {
 			if (r>0) {
 				bytesOut += r;
 				onSend(buf,r);
+			} else {
+			   if (!((r<0) && (
+					(errno == EAGAIN) ||
+					(errno == EBUSY) ||
+					(errno == EINTR)))) {
+				   socketStatus = SOCKET_CLOSED;
+				   onDisconnect();
+			   }
 			}
     	}
         return r;
