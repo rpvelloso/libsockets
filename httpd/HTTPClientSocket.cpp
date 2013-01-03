@@ -63,13 +63,6 @@ string time2str(time_t t) {
 	return dtStr.str();
 }
 
-string tmpFileName() {
-	char *t = tempnam(NULL,NULL);
-	string r = t;
-	free(t);
-	return r;
-}
-
 static string mime[][2] = {
 		{".txt","text/plain"},
 		{".htm.html","text/html"},
