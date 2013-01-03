@@ -146,7 +146,7 @@ HTTPClientSocket::~HTTPClientSocket() {
 	if (file.is_open()) file.close();
 }
 
-void HTTPClientSocket::beforeSend(void *buf, size_t *size) {
+void HTTPClientSocket::beforeSend(void *buf, size_t &size) {
 }
 
 void HTTPClientSocket::onSend(void *buf, size_t size) {
@@ -211,7 +211,7 @@ void HTTPClientSocket::onCGIEnd() {
 			CGIOutput.seekg(0);
 		} else sendBufferedData(l);
 	} else {
-		CGIOutput.close();
+		CGIOutput.tmp_close();
 		requestState = HTTP_REQUEST_ENDED;
 	}
 	CGIPID = -1;

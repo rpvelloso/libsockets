@@ -101,7 +101,7 @@ public:
 	virtual ~HTTPClientSocket();
 
 	void onSend(void *, size_t);
-	void beforeSend(void *, size_t *);
+	void beforeSend(void *, size_t &);
 	void onReceive(void *, size_t);
     void onConnect();
 	void onDisconnect();
