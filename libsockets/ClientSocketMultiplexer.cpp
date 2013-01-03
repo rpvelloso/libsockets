@@ -17,8 +17,9 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//TODO: trocar select() por poll()
+#include <cstdlib>
 #include <cerrno>
+#include <poll.h>
 #include <fcntl.h>
 #ifdef WIN32
 #include <winsock2.h>
@@ -118,7 +119,7 @@ ClientSocketMultiplexer::ClientSocketMultiplexer() : Object() {
 }
 
 ClientSocketMultiplexer::~ClientSocketMultiplexer() {
-	set<AbstractMultiplexedClientSocket *>::iterator i;
+	map<int, AbstractMultiplexedClientSocket *>::iterator mi;
 
 	cancelWait();
 
@@ -137,8 +138,8 @@ ClientSocketMultiplexer::~ClientSocketMultiplexer() {
 #endif
 
 	updateSockets();
-	for (i=sockets.begin();i!=sockets.end();i++)
-		delete (*i);
+	for (mi=sockets.begin();mi!=sockets.end();mi++)
+		delete (*mi).second;
 
 	sockets.clear();
 
@@ -186,33 +187,42 @@ MultiplexerState ClientSocketMultiplexer::getMultiplexerState() {
 
 void ClientSocketMultiplexer::waitForData() {
 	set<AbstractMultiplexedClientSocket *>::iterator i;
-	fd_set rfds,wfds;
-	int maxFd,fd,r=0;
+	map<int, AbstractMultiplexedClientSocket *>::iterator mi;
+	AbstractMultiplexedClientSocket *s;
+	struct pollfd *fds=NULL;
+	int nfds,r=0;
 
 	multiplexerState = MULTIPLEXER_WAITING;
 	while (r>=0) {
-		FD_ZERO(&rfds);
-		FD_ZERO(&wfds);
-		FD_SET(controlSockets[0],&rfds);
-		maxFd=controlSockets[0];
-
 		updateSockets();
-		for (i=sockets.begin();i!=sockets.end();++i) {
-			fd = (*i)->getSocketFd();
-			FD_SET(fd,&rfds);
-			if ((*i)->hasDataToSend()) FD_SET(fd,&wfds);
-			if (fd>maxFd) maxFd = fd;
+
+		if (fds) free(fds);
+		if (!(fds = (struct pollfd *)malloc(sizeof(struct pollfd) * (sockets.size()+1)))) {
+			perror("malloc()");
+			exit(-1);
+		}
+		fds[0].fd = controlSockets[0];
+		fds[0].revents = 0;
+		fds[0].events = POLLIN;
+		nfds=1;
+
+		for (mi=sockets.begin();mi!=sockets.end();++mi) {
+			fds[nfds].fd = (*mi).first;
+			s = (*mi).second;
+			fds[nfds].events = 0;
+			fds[nfds].revents = 0;
+			if (s->hasDataToSend()) fds[nfds].events |= POLLOUT;
+			fds[nfds++].events |= POLLIN;
 		}
 
-		r = select(maxFd + 1, &rfds, &wfds, NULL, NULL);
+		r = poll(fds,nfds,-1);
 		if (r>0) {
 			set<AbstractMultiplexedClientSocket *> readSet,writeSet;
 			char c=0;
 
-			for (i=sockets.begin();i!=sockets.end();++i) {
-				fd = ((AbstractMultiplexedClientSocket *)(*i))->getSocketFd();
-				if (FD_ISSET(fd,&wfds)) writeSet.insert((*i));
-				if (FD_ISSET(fd,&rfds)) readSet.insert((*i));
+			for (int j=1;j<nfds;j++) {
+				if (fds[j].revents & POLLOUT) writeSet.insert(sockets[fds[j].fd]);
+				if (fds[j].revents & POLLIN) readSet.insert(sockets[fds[j].fd]);
 			}
 
 			for (i=readSet.begin();i!=readSet.end();++i) {
@@ -230,35 +240,40 @@ void ClientSocketMultiplexer::waitForData() {
 			readSet.clear();
 			writeSet.clear();
 
-			if (FD_ISSET(controlSockets[0],&rfds)) {
+			if (fds[0].revents & POLLIN) {
 				while ((recv(controlSockets[0],&c,1,0) == 1) && !c);
 				if (c) break;
 			}
 		} else {
-			perror("select()");
+			perror("poll()");
 			r = 0;
 		}
 	}
+	if (fds) free(fds);
 	multiplexerState = MULTIPLEXER_IDLE;
 }
 
 void ClientSocketMultiplexer::updateSockets() {
+	map<int, AbstractMultiplexedClientSocket *>::iterator mi;
 	set<AbstractMultiplexedClientSocket *>::iterator i;
+	AbstractMultiplexedClientSocket *s;
 	int fd;
 
 	mutex->lock();
 
 	// remove bad fd's and closed sockets
-	for (i=sockets.begin();i!=sockets.end();++i) {
-		fd = (*i)->getSocketFd();
-		if (!fd_is_valid(fd) || (*i)->getSocketStatus() != SOCKET_OPENED)
-			removedSockets.insert((*i));
+	for (mi=sockets.begin();mi!=sockets.end();++mi) {
+		fd = (*mi).first;
+		s = (*mi).second;
+		if (!fd_is_valid(fd) || s->getSocketStatus() != SOCKET_OPENED)
+			removedSockets.insert(s);
 	}
 
 	// removed sockets
 	for (i=removedSockets.begin();i!=removedSockets.end();++i) {
-		if (sockets.find((*i))!=sockets.end()) {
-			sockets.erase((*i));
+		fd = (*i)->getSocketFd();
+		if (sockets.find(fd)!=sockets.end()) {
+			sockets.erase(fd);
 			delete (*i);
 		}
 	}
@@ -268,7 +283,7 @@ void ClientSocketMultiplexer::updateSockets() {
 	for (i=insertedSockets.begin();i!=insertedSockets.end();++i) {
 		fd = (*i)->getSocketFd();
 		if (fd_is_valid(fd) && (*i)->getSocketStatus() == SOCKET_OPENED) {
-			sockets.insert((*i));
+			sockets[fd]=(*i);
 			(*i)->setNonBlocking(true);
 			(*i)->setMultiplexer(this);
 		}
