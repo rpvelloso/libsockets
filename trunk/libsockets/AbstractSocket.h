@@ -49,11 +49,12 @@ public:
     string getIPAddress();
     bool setLinger(int,int);
     int getLinger();
-    static bool setNonBlocking(int, bool);
     bool setNonBlocking(bool);
     bool getNonBlocking();
     int getSocketFd();
     SocketStatus getSocketStatus();
+
+    static bool setNonBlocking(int, bool);
     static bool setCloseOnExec(int);
 protected:
     int socketFd;
