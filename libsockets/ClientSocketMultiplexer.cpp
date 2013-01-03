@@ -204,7 +204,7 @@ void ClientSocketMultiplexer::waitForData() {
 		if (fds) free(fds);
 		if (!(fds = (struct pollfd *)malloc(sizeof(struct pollfd) * (sockets.size()+1)))) {
 			perror("malloc()");
-			exit(-1);
+			break;
 		}
 		memset(fds,0,sizeof(struct pollfd) * (sockets.size()+1));
 		fds[0].fd = controlSockets[0];
