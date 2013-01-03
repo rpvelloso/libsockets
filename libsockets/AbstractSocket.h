@@ -54,6 +54,7 @@ public:
     bool getNonBlocking();
     int getSocketFd();
     SocketStatus getSocketStatus();
+    static bool setCloseOnExec(int);
 protected:
     int socketFd;
     SocketStatus socketStatus;
