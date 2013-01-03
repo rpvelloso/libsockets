@@ -18,6 +18,7 @@
  */
 
 #include <cstdlib>
+#include <cstring>
 #include <cerrno>
 #include <poll.h>
 #include <fcntl.h>
@@ -184,6 +185,10 @@ MultiplexerState ClientSocketMultiplexer::getMultiplexerState() {
 }
 
 #define fd_is_valid(fd) ((fcntl(fd,F_GETFL) != -1) || (errno != EBADF))
+#define READY_TO_READ(x) (x.revents & POLLIN)
+#define READY_TO_WRITE(x) (x.revents & POLLOUT)
+#define POLL_READ(x) x.events |= POLLIN
+#define POLL_WRITE(x) x.events |= POLLOUT
 
 void ClientSocketMultiplexer::waitForData() {
 	set<AbstractMultiplexedClientSocket *>::iterator i;
@@ -201,18 +206,17 @@ void ClientSocketMultiplexer::waitForData() {
 			perror("malloc()");
 			exit(-1);
 		}
+		memset(fds,0,sizeof(struct pollfd) * (sockets.size()+1));
 		fds[0].fd = controlSockets[0];
-		fds[0].revents = 0;
-		fds[0].events = POLLIN;
+		POLL_READ(fds[0]);
 		nfds=1;
 
 		for (mi=sockets.begin();mi!=sockets.end();++mi) {
 			fds[nfds].fd = (*mi).first;
 			s = (*mi).second;
-			fds[nfds].events = 0;
-			fds[nfds].revents = 0;
-			if (s->hasDataToSend()) fds[nfds].events |= POLLOUT;
-			fds[nfds++].events |= POLLIN;
+			if (s->hasDataToSend()) POLL_WRITE(fds[nfds]);
+			POLL_READ(fds[nfds]);
+			nfds++;
 		}
 
 		r = poll(fds,nfds,-1);
@@ -221,8 +225,8 @@ void ClientSocketMultiplexer::waitForData() {
 			char c=0;
 
 			for (int j=1;j<nfds;j++) {
-				if (fds[j].revents & POLLOUT) writeSet.insert(sockets[fds[j].fd]);
-				if (fds[j].revents & POLLIN) readSet.insert(sockets[fds[j].fd]);
+				if (READY_TO_WRITE(fds[j])) writeSet.insert(sockets[fds[j].fd]);
+				if (READY_TO_READ(fds[j])) readSet.insert(sockets[fds[j].fd]);
 			}
 
 			for (i=readSet.begin();i!=readSet.end();++i) {
@@ -240,7 +244,7 @@ void ClientSocketMultiplexer::waitForData() {
 			readSet.clear();
 			writeSet.clear();
 
-			if (fds[0].revents & POLLIN) {
+			if (READY_TO_READ(fds[0])) {
 				while ((recv(controlSockets[0],&c,1,0) == 1) && !c);
 				if (c) break;
 			}

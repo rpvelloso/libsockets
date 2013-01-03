@@ -37,7 +37,7 @@ public:
     int receiveData(void *, size_t);
 
     virtual void onSend(void *, size_t) = 0;
-    virtual void beforeSend(void *, size_t *) = 0;
+    virtual void beforeSend(void *, size_t &) = 0;
     virtual void onReceive(void *, size_t) = 0;
     virtual void onConnect() = 0;
     virtual void onDisconnect() = 0;

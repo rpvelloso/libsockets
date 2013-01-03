@@ -67,7 +67,7 @@ int AbstractClientSocket::sendData(void *buf, size_t size) {
 	ssize_t r=0;
 
     if (socketStatus == SOCKET_OPENED) {
-    	beforeSend(buf,&size);
+    	beforeSend(buf,size);
     	if (size) {
 	#ifdef WIN32
 			r = send(socketFd,(char *)buf,size,0);
@@ -97,7 +97,7 @@ int AbstractClientSocket::sendData(string buf) {
 	size_t size = 0;
 
     if (socketStatus == SOCKET_OPENED) {
-    	beforeSend(&buf,&size);
+    	beforeSend(&buf,size);
     	if (buf.size() > 0) {
 			r = send(socketFd,buf.c_str(),buf.size(),0);
 			if (r>0) {
