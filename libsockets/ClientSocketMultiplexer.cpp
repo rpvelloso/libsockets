@@ -17,6 +17,7 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+//TODO: trocar select() por poll()
 #include <cerrno>
 #include <fcntl.h>
 #ifdef WIN32
