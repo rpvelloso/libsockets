@@ -160,9 +160,9 @@ void HTTPClientSocket::onSend(void *buf, size_t size) {
 				if (connection != "keep-alive") closeSocket();
 				else requestState = HTTP_RECEIVE_HEADER;
 			}
-		} else {
+		/*} else {
 			setOutputBuffer(&CGIOutput);
-			commitBuffer();
+			commitBuffer();*/
 		}
 	}
 }
@@ -182,12 +182,12 @@ void HTTPClientSocket::onDisconnect() {
 }
 
 void HTTPClientSocket::onCGIEnd() {
-	if (CGIInput.is_open()) CGIInput.tmp_close();
+	/*if (CGIInput.is_open()) CGIInput.tmp_close();
 	setOutputBuffer(&CGIOutput);
 	commitBuffer();
-	CGIPID = -1;
+	CGIPID = -1;*/
 
-	/*if (CGIInput.is_open()) CGIInput.tmp_close();
+	if (CGIInput.is_open()) CGIInput.tmp_close();
 	CGIOutput.seekg(0);
 	if (CGIOutput.rdbuf()->in_avail() > 0) {
 		string l,L;
@@ -208,7 +208,7 @@ void HTTPClientSocket::onCGIEnd() {
 		requestState = HTTP_REQUEST_ENDED;
 	}
 	CGIPID = -1;
-	commitBuffer();*/
+	commitBuffer();
 }
 
 string HTTPClientSocket::stringTok(string &s, string d) {
@@ -600,7 +600,7 @@ void HTTPClientSocket::executeCGI() {
 		if (CGIInput.is_open()) CGIInput.tmp_close();
 		reply(REPLY_500_INTERNAL_SERVER_ERROR);
 	} else {
-		sendBufferedData(httpVersion + " 200 OK" + CRLF);
+		//sendBufferedData(httpVersion + " 200 OK" + CRLF);
 		CGIOutput.tmp_reopen(fstream::in);
 		serverSocket->getCGIControlThread()->addPID(CGIPID,this);
 	}

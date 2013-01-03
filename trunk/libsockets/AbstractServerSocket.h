@@ -89,6 +89,7 @@ public:
      	   size = sizeof(clientAddress);
      	   clientFd = accept(socketFd,(struct sockaddr *)&clientAddress,&size);
      	   if (clientFd > 0) {
+     		   setCloseOnExec(clientFd);
      		   clientSocket = new C(clientFd,&clientAddress);
      		   clientSocket->onConnect();
      		   onClientConnect(clientSocket);

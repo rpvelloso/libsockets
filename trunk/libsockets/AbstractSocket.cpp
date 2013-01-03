@@ -29,7 +29,7 @@
 #include "AbstractSocket.h"
 
 AbstractSocket::AbstractSocket() : Object() {
-    socketFd = socket(PF_INET,SOCK_STREAM,0/*IPPROTO_TCP*/);
+    socketFd = socket(PF_INET,SOCK_STREAM|SOCK_CLOEXEC,0/*IPPROTO_TCP*/);
     socketStatus = SOCKET_CLOSED;
     hostname = "";
     nonBlocking = false;
@@ -157,3 +157,11 @@ SocketStatus AbstractSocket::getSocketStatus() {
 	return socketStatus;
 }
 
+bool AbstractSocket::setCloseOnExec(int fd) {
+	int f = fcntl(fd,F_GETFD);
+
+	if (f!=-1) {
+		f=fcntl(fd,F_SETFD,f|FD_CLOEXEC);
+	}
+	return f!=-1;
+}
