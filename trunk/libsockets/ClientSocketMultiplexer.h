@@ -22,6 +22,7 @@
 
 #include <cstdio>
 #include <set>
+#include <map>
 #include "Mutex.h"
 #include "AbstractMultiplexedClientSocket.h"
 
@@ -45,7 +46,7 @@ protected:
 	char buffer[BUFSIZ];
 	int controlSockets[2];
 	Mutex *mutex;
-	set<AbstractMultiplexedClientSocket *> sockets;
+	map<int, AbstractMultiplexedClientSocket *> sockets;
 	set<AbstractMultiplexedClientSocket *> insertedSockets;
 	set<AbstractMultiplexedClientSocket *> removedSockets;
 	MultiplexerState multiplexerState;
