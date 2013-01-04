@@ -203,12 +203,11 @@ void ClientSocketMultiplexer::waitForData() {
 	while (r>=0) {
 		updateSockets();
 
-		if (fds) free(fds);
-		if (!(fds = (struct pollfd *)malloc(sizeof(struct pollfd) * (sockets.size()+1)))) {
+		free(fds);
+		if (!(fds = (struct pollfd *)calloc(sockets.size()+1,sizeof(struct pollfd)))) {
 			perror("malloc()");
 			break;
 		}
-		memset(fds,0,sizeof(struct pollfd) * (sockets.size()+1));
 		fds[0].fd = controlSockets[0];
 		POLL_READ(fds[0]);
 		nfds=1;
@@ -255,7 +254,7 @@ void ClientSocketMultiplexer::waitForData() {
 			r = 0;
 		}
 	}
-	if (fds) free(fds);
+	free(fds);
 	multiplexerState = MULTIPLEXER_IDLE;
 }
 
