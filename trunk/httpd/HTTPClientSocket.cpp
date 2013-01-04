@@ -132,6 +132,8 @@ HTTPClientSocket::HTTPClientSocket(int fd, sockaddr_in *sin) : AbstractMultiplex
 
 HTTPClientSocket::~HTTPClientSocket() {
 	if (CGIPID != -1) kill(CGIPID,SIGKILL);
+	while (CGIPID != -1);
+	cerr << "process killed" << endl;
 	restoreOutputBuffer();
 	delete outputBuffer;
 	if (CGIOutput.is_open()) CGIOutput.tmp_close();
