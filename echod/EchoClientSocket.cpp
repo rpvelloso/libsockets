@@ -42,13 +42,15 @@ void EchoClientSocket::onSend(void *buf, size_t size) {
 
 void EchoClientSocket::onReceive(void *buf, size_t size) {
 	((char *)buf)[size]='\0';
-	logger->LOG("CLIENT: Mensagem recebida: %s\n",(char *)buf);
+	logger->LOG("CLIENT: Mensagem recebida de %s: %s\n",getHostname().c_str(),(char *)buf);
 	sendBufferedData(buf,size);
 	commitBuffer();
 	string msg = ((char *)buf);
 }
 
-void EchoClientSocket::onConnect() { logger->LOG("%s\n","CLIENT: Conectado."); };
+void EchoClientSocket::onConnect() {
+	logger->LOG("%s\n","CLIENT: Conectado.");
+};
 
 void EchoClientSocket::beforeSend(void *buf, size_t &size) {
 }

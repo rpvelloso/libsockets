@@ -22,97 +22,18 @@
 #include <cerrno>
 #include <poll.h>
 #include <fcntl.h>
-#ifdef WIN32
-#include <winsock2.h>
-#else
 #include <sys/types.h>
 #include <sys/socket.h>
-#endif
 #include "AbstractMultiplexedClientSocket.h"
 #include "ClientSocketMultiplexer.h"
 
 static char INTR_WAIT = 0x00;
 static char CNCL_WAIT = 0x01;
 
-#ifdef WIN32
-
-int socketpair(int domain, int rawtype, int protocol, int socks[2])
-{
-    union {
-       struct sockaddr_in inaddr;
-       struct sockaddr addr;
-    } a;
-    int listener;
-    int e;
-    int addrlen = sizeof(a.inaddr);
-    int reuse = 1;
-
-    if (socks == 0) {
-      WSASetLastError(WSAEINVAL);
-      return SOCKET_ERROR;
-    }
-
-    listener = socket(domain, rawtype, protocol);
-    if (listener == (int)INVALID_SOCKET)
-        return SOCKET_ERROR;
-
-    memset(&a, 0, sizeof(a));
-    a.inaddr.sin_family = AF_INET;
-    a.inaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-    a.inaddr.sin_port = 0;
-
-    socks[0] = socks[1] = INVALID_SOCKET;
-    do {
-        if (setsockopt(listener, SOL_SOCKET, SO_REUSEADDR,
-               (char*) &reuse, (int) sizeof(reuse)) == -1)
-            break;
-        if (bind(listener, &a.addr, sizeof(a.inaddr)) == SOCKET_ERROR)
-            break;
-
-        memset(&a, 0, sizeof(a));
-        if (getsockname(listener, &a.addr, &addrlen) == SOCKET_ERROR)
-            break;
-        // win32 getsockname may only set the port number, p=0.0005.
-        // ( http://msdn.microsoft.com/library/ms738543.aspx ):
-        a.inaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-        a.inaddr.sin_family = AF_INET;
-
-        if (listen(listener, 1) == SOCKET_ERROR)
-            break;
-
-        socks[0] = socket(domain, rawtype, protocol);
-        if (socks[0] == (int)INVALID_SOCKET)
-            break;
-        if (connect(socks[0], &a.addr, sizeof(a.inaddr)) == SOCKET_ERROR)
-            break;
-
-        socks[1] = accept(listener, NULL, NULL);
-        if (socks[1] == (int)INVALID_SOCKET)
-            break;
-
-        closesocket(listener);
-        return 0;
-
-    } while (0);
-
-    e = WSAGetLastError();
-    closesocket(listener);
-    closesocket(socks[0]);
-    closesocket(socks[1]);
-    WSASetLastError(e);
-    return SOCKET_ERROR;
-}
-
-#endif
-
 ClientSocketMultiplexer::ClientSocketMultiplexer() : Object() {
 	multiplexerState = MULTIPLEXER_IDLE;
 	mutex = new Mutex();
-#ifdef WIN32
-	if ((socketpair(AF_INET, SOCK_STREAM, IPPROTO_TCP, controlSockets)) == -1) {
-#else
 	if ((socketpair(AF_LOCAL, SOCK_STREAM, 0, controlSockets)) == -1) {
-#endif
 		perror("socketpair()");
 	} else {
 		AbstractSocket::setNonBlocking(controlSockets[0],true);
@@ -128,17 +49,10 @@ ClientSocketMultiplexer::~ClientSocketMultiplexer() {
 
 	while (multiplexerState != MULTIPLEXER_IDLE);
 
-#ifdef WIN32
-	shutdown(controlSockets[0],SD_BOTH);
-	closesocket(controlSockets[0]);
-	shutdown(controlSockets[1],SD_BOTH);
-	closesocket(controlSockets[1]);
-#else
 	shutdown(controlSockets[0],SHUT_RDWR);
 	close(controlSockets[0]);
 	shutdown(controlSockets[1],SHUT_RDWR);
 	close(controlSockets[1]);
-#endif
 
 	updateSockets();
 	for (mi=sockets.begin();mi!=sockets.end();mi++)

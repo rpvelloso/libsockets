@@ -21,9 +21,6 @@
 #define ABSTRACTMULTIPLEXEDCLIENTSOCKET_H_
 
 #include <iostream>
-#ifdef WIN32
-#include <winsock2.h>
-#endif
 #include "AbstractClientSocket.h"
 
 class ClientSocketMultiplexer;

@@ -21,14 +21,15 @@
 #define ECHOLOGGER_H_
 
 #include <fstream>
+#include <cstdarg>
 #include <libsockets.h>
 
 class EchoLogger: public Object, public LoggerInterface {
 public:
 	EchoLogger(string);
 	virtual ~EchoLogger();
-	virtual void LOG(const char *fmt,...);
-	virtual void log(const char *fmt, va_list);
+	virtual void LOG(const char *,...);
+	virtual void log(const char *, va_list);
 	virtual bool openLog();
 	virtual void closeLog();
 protected:

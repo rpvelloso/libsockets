@@ -52,13 +52,8 @@ bool AbstractClientSocket::openSocket(string addr, unsigned short port) {
 void AbstractClientSocket::closeSocket() {
 	if (socketStatus != SOCKET_CLOSED) {
 		onDisconnect();
-#ifdef WIN32
-        shutdown(socketFd,SD_BOTH);
-        closesocket(socketFd);
-#else
         shutdown(socketFd,SHUT_RDWR);
         close(socketFd);
-#endif
         socketStatus = SOCKET_CLOSED;
     }
 }
@@ -69,11 +64,7 @@ int AbstractClientSocket::sendData(void *buf, size_t size) {
     if (socketStatus == SOCKET_OPENED) {
     	beforeSend(buf,size);
     	if (size) {
-	#ifdef WIN32
-			r = send(socketFd,(char *)buf,size,0);
-	#else
 			r = send(socketFd,buf,size,0);
-	#endif
 			if (r>0) {
 				bytesOut += r;
 				onSend(buf,r);
@@ -123,11 +114,7 @@ int AbstractClientSocket::receiveData(void *buf, size_t size) {
     int r;
 
     if (socketStatus == SOCKET_OPENED) {
-#ifdef WIN32
-        r = recv(socketFd,(char *)buf,size,0);
-#else
         r = recv(socketFd,buf,size,0);
-#endif
        if (r > 0) {
     	   bytesIn += r;
     	   onReceive(buf,r);

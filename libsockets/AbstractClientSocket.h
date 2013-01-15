@@ -20,9 +20,6 @@
 #ifndef ABSTRACTCLIENTSOCKET_H_
 #define ABSTRACTCLIENTSOCKET_H_
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif
 #include "AbstractSocket.h"
 
 class AbstractClientSocket : public AbstractSocket {
