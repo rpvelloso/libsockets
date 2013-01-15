@@ -77,7 +77,6 @@ int main(int argc, char **argv) {
 			if (optarg) {
 				if (optarg[0]=='/') rootDir = optarg;
 				else rootDir = rootDir + "/" + optarg;
-				if (rootDir[rootDir.length()-1]!='/') rootDir = rootDir + '/';
 			}
 			break;
 		case 'h':
@@ -93,6 +92,8 @@ int main(int argc, char **argv) {
     	printUsage(argv[0]);
 	} else {
 		sigset_t sigset;
+
+		if (rootDir[rootDir.length()-1]!='/') rootDir = rootDir + '/';
 
 		sigemptyset(&sigset);
 		sigaddset(&sigset,SIGCHLD);
