@@ -36,14 +36,15 @@ public:
 		delete serverSocket;
 	};
 
-	void start(string addr,unsigned short port) {
+	bool start(string addr,unsigned short port) {
 		C *clientSocket;
 
-		serverSocket->openSocket(addr,port);
+		if (!serverSocket->openSocket(addr,port)) return false;
 		while (serverSocket->getSocketStatus() == SOCKET_LISTENING) {
 			clientSocket = serverSocket->acceptConnection();
 			if (clientSocket) onClientConnect(clientSocket);
 		}
+		return true;
 	};
 
 	void stop() {

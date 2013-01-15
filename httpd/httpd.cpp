@@ -41,10 +41,10 @@ void signalHandler(int sig) {
 }
 
 void printUsage(char *p) {
-	cout << "usage: "<<p<<" [-a bind_addr] [-p bind_port]"<<endl;
-	cout << "-a bind_addr: the IP address to bind the server to. Default 127.0.0.1"<<endl;
-	cout << "-p bind_port: the server port number. Default 80"<<endl;
-	cout << "-r dir: document root directory. Default $PWD."<<endl;
+	cout << "usage: "<<p<<" [-a bind_addr] [-p bind_port]"<< endl;
+	cout << "-a bind_addr: the IP address to bind the server to. Default 127.0.0.1"<< endl;
+	cout << "-p bind_port: the server port number. Default 80"<< endl;
+	cout << "-r dir: document root directory. Default $PWD."<< endl;
 	exit(-1);
 }
 
@@ -111,7 +111,8 @@ int main(int argc, char **argv) {
     	signal(SIGSTOP,signalHandler);
     	signal(SIGQUIT,signalHandler);
 
-		server->start(bindAddr,bindPort);
+		if (!server->start(bindAddr,bindPort))
+			perror("Could not start the server");
 		delete server;
 	}
 	exit(0);
