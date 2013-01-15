@@ -21,11 +21,7 @@
 #include <cstdio>
 #include <cstring>
 #include <sstream>
-#ifdef WIN32
-#include <winsock2.h>
-#else
 #include <netdb.h>
-#endif
 #include "AbstractSocket.h"
 
 AbstractSocket::AbstractSocket() : Object() {
@@ -39,46 +35,24 @@ AbstractSocket::AbstractSocket() : Object() {
 AbstractSocket::~AbstractSocket() {
 }
 
-#define GETHOSTBYNAME_BUFSIZE 4096
-
 bool AbstractSocket::resolveHost(string host) {
-#ifdef WIN32
-    struct hostent *hp;
+    struct addrinfo *res;
 
     memset((void *)&socketAddress,0,sizeof(socketAddress));
     socketAddress.sin_family = AF_INET;
-    if ((hp=gethostbyname(host.c_str()))==NULL) return false;
-    memcpy((void *)&socketAddress.sin_addr,(void *)hp->h_addr,hp->h_length);
-#else
-    struct hostent h, *hp;
-    int h_errno;
-    char hbuf[GETHOSTBYNAME_BUFSIZE];
-
-    memset((void *)&socketAddress,0,sizeof(socketAddress));
-    socketAddress.sin_family = AF_INET;
-    if (gethostbyname_r(host.c_str(),&h,hbuf,GETHOSTBYNAME_BUFSIZE,&hp,&h_errno)) return false;
-    memcpy((void *)&(socketAddress.sin_addr.s_addr),(void *)h.h_addr,h.h_length);
-#endif
+    if (getaddrinfo(host.c_str(),NULL,NULL,&res) != 0) return false;
+    memcpy((void *)&socketAddress,(void *)res->ai_addr,sizeof(struct sockaddr_in));
+    socketAddress.sin_addr.s_addr = ((sockaddr_in *)(res->ai_addr))->sin_addr.s_addr;
+    freeaddrinfo(res);
     return true;
 }
 
 string AbstractSocket::getHostname() {
     if (hostname=="") {
-#ifdef WIN32
-       struct hostent *hp;
+       char hn[BUFSIZ];
 
-       hp=gethostbyaddr((char *)&socketAddress.sin_addr,sizeof(socketAddress.sin_addr),AF_INET);
-       if (!hp) return NULL;
-       hostname = hp->h_name;
-#else
-       struct hostent h, *hp;
-       int h_errno;
-       char hbuf[GETHOSTBYNAME_BUFSIZE];
-
-       if (!gethostbyaddr_r((void *)&socketAddress.sin_addr,sizeof(socketAddress.sin_addr),AF_INET,&h,hbuf,GETHOSTBYNAME_BUFSIZE,&hp,&h_errno)) {
-           hostname = h.h_name;
-       }
-#endif
+       if (getnameinfo((struct sockaddr *)&socketAddress, sizeof(socketAddress),hn, BUFSIZ,NULL,0,0) == 0)
+    	   hostname = hn;
     }
     return hostname;
 }
@@ -115,17 +89,6 @@ int AbstractSocket::getLinger() {
 	return linger;
 }
 
-#ifdef WIN32
-
-static bool AbstractSocket::setNonBlocking(int fd, bool nb) {
-	unsigned long int socketFlags;
-
-	socketFlags = nb?1:0;
-	return (ioctlsocket(fd,FIONBIO,&socketFlags) == 0);
-}
-
-#else
-
 bool AbstractSocket::setNonBlocking(int fd, bool nb) {
 	int socketFlags;
 
@@ -135,8 +98,6 @@ bool AbstractSocket::setNonBlocking(int fd, bool nb) {
 
 	return (fcntl(fd,F_SETFL,socketFlags) == 0);
 }
-
-#endif
 
 bool AbstractSocket::setNonBlocking(bool nb) {
 	bool r = setNonBlocking(socketFd,nb);

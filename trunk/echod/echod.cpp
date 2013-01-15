@@ -40,18 +40,7 @@ void signalHandler(int sig) {
 	}
 }
 
-#ifdef WIN32
-int WinSocketStartup() {
-     WSADATA info;
-     return WSAStartup(MAKEWORD(2,0), &info);
-}
-#endif
-
 int main(int argc, char **argv) {
-#ifdef WIN32
-	WinSocketStartup();
-#endif
-
 	logger->openLog();
 
 	server = new EchoServer(3);
@@ -68,4 +57,3 @@ int main(int argc, char **argv) {
 	delete logger;
 	exit(0);
 }
-

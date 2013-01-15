@@ -20,10 +20,12 @@
 #ifndef LOGGERINTERFACE_H_
 #define LOGGERINTERFACE_H_
 
+#include <cstdarg>
+
 class LoggerInterface {
 public:
 	inline virtual ~LoggerInterface() {};
-	virtual void log(const char *fmt, va_list) = 0;
+	virtual void log(const char *, va_list) = 0;
 	virtual bool openLog() = 0;
 	virtual void closeLog() = 0;
 };

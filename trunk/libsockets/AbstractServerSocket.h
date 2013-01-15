@@ -21,11 +21,7 @@
 #define ABSTRACTSERVERSOCKET_H_
 
 #include <cstdio>
-#ifdef WIN32
-#include <winsock2.h>
-#else
 #include <arpa/inet.h>
-#endif
 #include "AbstractSocket.h"
 
 #define SERVER_BACKLOG 5
@@ -42,11 +38,7 @@ public:
 	virtual ~AbstractServerSocket() {};
 
     virtual bool openSocket(string addr, unsigned short port) {
- #ifdef WIN32
-    	int size = sizeof(socketAddress);
- #else
     	socklen_t size = sizeof(socketAddress);
- #endif
 
     	if (socketStatus == SOCKET_CLOSED) {
     		if (!resolveHost(addr)) return false;
@@ -64,13 +56,8 @@ public:
     virtual void closeSocket() {
         if (socketStatus != SOCKET_CLOSED) {
            onServerDown();
-#ifdef WIN32
-           shutdown(socketFd,SD_BOTH);
-           closesocket(socketFd);
-#else
            shutdown(socketFd,SHUT_RDWR);
            close(socketFd);
-#endif
            socketStatus = SOCKET_CLOSED;
         }
     };
@@ -78,11 +65,7 @@ public:
     virtual C *acceptConnection() {
         sockaddr_in clientAddress;
         int clientFd;
-#ifdef	WIN32
-        int size;
-#else
         socklen_t size;
-#endif
         C *clientSocket=NULL;
 
         if (socketStatus == SOCKET_LISTENING) {

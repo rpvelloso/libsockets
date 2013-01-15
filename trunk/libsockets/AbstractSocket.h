@@ -21,14 +21,10 @@
 #define ABSTRACTSOCKET_H_
 
 #include <string>
-#ifdef WIN32
-#include <winsock2.h>
-#else
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#endif
 #include "Object.h"
 
 enum SocketStatus {
