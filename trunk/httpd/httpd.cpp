@@ -48,13 +48,6 @@ void printUsage(char *p) {
 	exit(-1);
 }
 
-#ifdef WIN32
-int WinSocketStartup() {
-     WSADATA info;
-     return WSAStartup(MAKEWORD(2,0), &info);
-}
-#endif
-
 string rootDir;
 
 int main(int argc, char **argv) {
@@ -99,9 +92,6 @@ int main(int argc, char **argv) {
 		sigaddset(&sigset,SIGCHLD);
 		sigprocmask(SIG_BLOCK,&sigset,NULL); // needed by CGIControlThread.
 
-#ifdef WIN32
-		WinSocketStartup();
-#endif
     	server = new HTTPServer(5);
 
     	signal(SIGINT,signalHandler);
