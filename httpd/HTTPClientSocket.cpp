@@ -71,9 +71,6 @@ static string mime[][2] = {
 		{".mpeg.avi.mp4.mkv.mpg.asf.flv","video/"},
 		{".php.php3.phps","application/php"},
 		{".css","text/css"},
-#ifdef WIN32
-		{".bat.cmd","application/batch"},
-#endif
 		{"", ""}
 		};
 
