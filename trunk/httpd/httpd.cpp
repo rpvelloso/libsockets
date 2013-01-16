@@ -17,8 +17,6 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//TODO: arrumar passagem do parametro 'rootDir', fazer get/set nas classes server e client
-
 #include <cstdlib>
 #include <csignal>
 #include <libsockets.h>
@@ -28,15 +26,25 @@
 
 using namespace std;
 
-typedef MultiplexedServer<HTTPClientSocket,HTTPServerSocket,HTTPThread> HTTPServer;
-static HTTPServer *server=NULL;
+class HTTPServer : public MultiplexedServer<HTTPClientSocket,HTTPServerSocket,HTTPThread> {
+public:
+	HTTPServer(string dr, int tc) : MultiplexedServer<HTTPClientSocket,HTTPServerSocket,HTTPThread>(tc) {
+		serverSocket->setDocumentRoot(dr);
+	}
+
+	virtual ~HTTPServer() {
+
+	}
+};
+
+static HTTPServer *httpServer=NULL;
 
 void signalHandler(int sig) {
 	if ((sig == SIGINT)		||
 		(sig == SIGSTOP)	||
 		(sig == SIGTERM)	||
 		(sig == SIGQUIT)) {
-		if (server) server->stop();
+		if (httpServer) httpServer->stop();
 	}
 }
 
@@ -48,15 +56,12 @@ void printUsage(char *p) {
 	exit(-1);
 }
 
-string rootDir;
-
 int main(int argc, char **argv) {
 	int opt;
 	string bindAddr="127.0.0.1";
 	unsigned short bindPort=80;
 	char cwd[BUFSIZ];
-
-	rootDir = getcwd(cwd,BUFSIZ);
+	string rootDir = getcwd(cwd,BUFSIZ);
 
 	while ((opt = getopt(argc, argv, "a:p:r:h")) != -1) {
 		switch (opt) {
@@ -92,7 +97,7 @@ int main(int argc, char **argv) {
 		sigaddset(&sigset,SIGCHLD);
 		sigprocmask(SIG_BLOCK,&sigset,NULL); // needed by CGIControlThread.
 
-    	server = new HTTPServer(5);
+    	httpServer = new HTTPServer(rootDir, 15);
 
     	signal(SIGINT,signalHandler);
     	signal(SIGTERM,signalHandler);
@@ -101,9 +106,9 @@ int main(int argc, char **argv) {
     	signal(SIGSTOP,signalHandler);
     	signal(SIGQUIT,signalHandler);
 
-		if (!server->start(bindAddr,bindPort))
+		if (!httpServer->start(bindAddr,bindPort))
 			perror("Could not start the server");
-		delete server;
+		delete httpServer;
 	}
 	exit(0);
 }
