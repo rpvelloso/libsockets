@@ -589,7 +589,7 @@ void HTTPClientSocket::executeCGI() {
 		dup2(((fdbuf *)CGIOutput.rdbuf())->fd(),fileno(stdout));
 		//fclose(stderr);
 		execve(argv[0],argv,envp);
-		log("(.) execve() error.\n");
+		log("(.) execve(%s %s) error.\n",argv[0],argv[1]?argv[1]:"");
 		exit(-1);
 	} else if (CGIPID == -1) {
 		log("(.) CGI process not started.\n");
