@@ -125,10 +125,10 @@ public:
 	};
 
 	virtual void onDataRecordFound(tDataRegion dr) {
-		list<tNode *>::iterator i=dr.s;
-		int j=0;
+		//list<tNode *>::iterator i=dr.s;
+		//int j=0;
 
-		for (;i!=dr.e;i++) {
+		/*for (;i!=dr.e;i++) {
 			if (filter(*i)) {
 				if (!j++) cout << "<DIV class=\"region\" length=\"" << dr.DRLength << "\"> " << endl;
 				cout << "<SPAN class=\"record\"> " << ++c << endl;
@@ -136,7 +136,11 @@ public:
 				cout << "</SPAN>" << endl;
 			}
 		}
-		if (j) cout << "</DIV>" << endl;
+		if (j) cout << "</DIV>" << endl;*/
+
+		cout << ++c << "<DIV group-size=" << dr.groupSize << " length=" << dr.DRLength << ">" << endl;
+		printNode(dr.p,1);
+		cout << "</DIV>" << endl;
 	};
 
 	int filter(tNode *n) {
@@ -146,7 +150,7 @@ public:
 			if (filterTag == "") filterTag = "#text";
 			ret = searchString(n,filterTag,filterStr,0);
 		}
-		return ret && n->size>10;
+		return ret;// && n->size>10;
 	};
 
 	int c;
