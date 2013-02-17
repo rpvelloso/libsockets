@@ -82,15 +82,15 @@ protected:
 class tCustomDOM : public tDOM {
 public:
 	tCustomDOM() : tDOM() {
-		c = 0;
+		g = r = 0;
 		filterStr = "";
 		filterTag = "";
 	};
 	virtual ~tCustomDOM() {
-		if (c) cerr << "Found " << c << " results." << endl;
+		if (r) cerr << "Found " << r << " results." << endl;
 	};
 	virtual void onTagFound(tNode *n) {
-		c++;
+		r++;
 		if (verbose) {
 			printNode(n,1);
 			cout << endl;
@@ -119,28 +119,38 @@ public:
 	};
 
 	virtual void onPatternFound(tNode *n, tNode *p, float s) {
-		cout << "<DIV class=\"pattern\"> " << ++c << " Similarity " << (s*100.0) << "%" << endl;
+		cout << "<DIV class=\"pattern\"> " << ++r << " Similarity " << (s*100.0) << "%" << endl;
 		printNode(n,1);
 		cout << "</DIV>" << endl << endl;
 	};
 
 	virtual void onDataRecordFound(tDataRegion dr) {
-		//list<tNode *>::iterator i=dr.s;
-		//int j=0;
+		int recsize=0;
+		size_t j;
+		list<tNode *>::iterator i;
 
-		/*for (;i!=dr.e;i++) {
-			if (filter(*i)) {
-				if (!j++) cout << "<DIV class=\"region\" length=\"" << dr.DRLength << "\"> " << endl;
-				cout << "<SPAN class=\"record\"> " << ++c << endl;
-				printNode(*i,1);
-				cout << "</SPAN>" << endl;
-			}
+		for (j=0, i=dr.s;j<dr.groupSize;j++, i++) {
+			recsize += (*i)->size;
 		}
-		if (j) cout << "</DIV>" << endl;*/
+		if (recsize<3) return; // discards the region if it's records have size lower than 3
 
-		cout << ++c << "<DIV group-size=" << dr.groupSize << " length=" << dr.DRLength << ">" << endl;
-		printNode(dr.p,1);
-		cout << "</DIV>" << endl;
+		int rr = 0;
+		for (i=dr.s;i!=dr.e;) {
+			++r;
+			recsize=0;
+			for (j=0;j<dr.groupSize;j++, i++) {
+				if (i==dr.s) {
+					cout << "<b> REGION " << ++g << "</b><br>" << endl << "<TABLE border=1 group-size=" << dr.groupSize << " length=" << dr.DRLength << ">" << endl;
+				}
+				if (!j) {
+					cout << "<tr><td>RECORD " << ++rr << "</td><td>" << endl;
+				}
+				recsize += (*i)->size;
+				printNode(*i,1);
+			}
+			cout << endl << "</td><td>" << recsize << "</td></tr>" << endl;
+		}
+		cout << endl << "</table><br>" << endl;
 	};
 
 	int filter(tNode *n) {
@@ -150,10 +160,10 @@ public:
 			if (filterTag == "") filterTag = "#text";
 			ret = searchString(n,filterTag,filterStr,0);
 		}
-		return ret;// && n->size>10;
+		return ret && n->depth>2;
 	};
 
-	int c;
+	int g,r;
 	string filterStr,filterTag;
 };
 

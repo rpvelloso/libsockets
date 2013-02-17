@@ -56,7 +56,7 @@ protected:
 	virtual void onTagFound(tNode *) = 0;
 	virtual void onPatternFound(tNode *, tNode *, float) = 0;
 	virtual void onDataRecordFound(tDataRegion) = 0;
-	virtual void onDataRegionFound(tDataRegion, float, int);
+	virtual void onDataRegionFound(tDataRegion, int, float);
 
 	tNode *root;
 	tNode *current;
