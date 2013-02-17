@@ -511,8 +511,8 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 				v.erase(v.begin()+bestDR.start-r,v.begin()+bestDR.end-r+1);
 				r += bestDR.end - bestDR.start + 1;
 				ret.push_back(bestDR);
-				if (mineRegions) onDataRegionFound(bestDR,st,k);
-				else onDataRecordFound(bestDR);
+				if (mineRegions) onDataRegionFound(bestDR,k,st);
+				//else onDataRecordFound(bestDR);
 				x=bestDR.end;
 			}
 		}
@@ -548,65 +548,33 @@ void tDOM::setRoot(tNode *r)
 	root = r;
 }
 
-void tDOM::onDataRegionFound(tDataRegion region, float st, int K) {
+void tDOM::onDataRegionFound(tDataRegion region, int K, float st) {
 	// This event is used to mine data records from data regions
 
-	//onDataRecordFound(region);
-
-	if (region.DRLength > 1) {
+	if (region.groupSize > 1) {
 		list<tDataRegion> records;
 		tNode *n = new tNode(0,"");
 		list<tNode *>::iterator i;
+		size_t j=0,k;
 
-		for (i=region.p->nodes.begin();i!=region.p->nodes.end();i++) {
-			n->addNode(*i);
-		}
-		records = MDR(n,K,st,0);
-		n->nodes.clear();
-		delete n;
-		if (records.size() > 0) {
-			list<tDataRegion>::iterator j;
+		n->depth = 3;
 
-			for (j=records.begin();j!=records.end();j++) onDataRecordFound(*j);
-			return;
-		}
-	}
-
-	onDataRecordFound(region);
-
-/*	list<tNode *>::iterator i=dr.s,j,end=dr.e;
-	tNode *n = new tNode(0,"");
-	size_t count;
-	int m=0;
-
-	dr.DRLength = dr.groupSize;
-
-	for (;i!=end;i++,m++) {
-		if ((m%dr.groupSize)==0) {
+		i=region.s;
+		while (j<region.DRLength) {
 			n->clear();
-			count = (*i)->nodes.size();
-			n->depth = (*i)->depth;
-			n->text = (*i)->text;
-			n->type = (*i)->type;
-			n->tagName = (*i)->tagName;
+			for (k=0;k<region.groupSize;k++,j++,i++)
+				n->addNode(*i);
+			records = MDR(n,K,st,0);
+			if (records.size() == 1) {
+				region.groupSize = (*(records.begin())).groupSize;
+				region.DRLength = (*(records.begin())).DRLength;
+				break;
+			}
 		}
-
-		if ((*i)->nodes.size() == count) {
-			for (j = (*i)->nodes.begin();j!=(*i)->nodes.end();j++)
-				n->addNode(*j);
-		}
-		if ((m%region.groupSize)==region.groupSize-1) {
-			region.e = i; region.e++;
-			if (n->nodes.size() == count*region.groupSize) {
-				list<tDataRegion> records = MDR(n,K,st,0);
-
-				if (records.size() == 0) onDataRecordFound(region);
-			} else onDataRecordFound(region);
-			region.s = region.e;
-		}
+		n->clear();
+		delete n;
 	}
-	n->clear();
-	delete n;*/
+	onDataRecordFound(region);
 }
 
 int tDOM::treeSize(tNode* n) {
