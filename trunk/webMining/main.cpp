@@ -138,18 +138,19 @@ public:
 		for (i=dr.s;i!=dr.e;) {
 			++r;
 			recsize=0;
-			for (j=0;j<dr.groupSize;j++, i++) {
+			for (j=0;j<dr.groupSize; i++, j++) {
 				if (i==dr.s) {
-					cout << "<b> REGION " << ++g << "</b><br>" << endl << "<TABLE border=1 group-size=" << dr.groupSize << " length=" << dr.DRLength << ">" << endl;
+					cout << "<b> Region " << ++g << "</b><br>" << endl << "<table border=1 group-size=" << dr.groupSize << " length=" << dr.DRLength << ">" << endl;
 				}
 				if (!j) {
-					cout << "<tr><td>RECORD " << ++rr << "</td><td>" << endl;
+					cout << "<tr><td>Records " << ++rr << "</td><td>" << endl;
 				}
 				recsize += (*i)->size;
 				printNode(*i,1);
 			}
 			cout << endl << "</td><td>" << recsize << "</td></tr>" << endl;
 		}
+
 		cout << endl << "</table><br>" << endl;
 	};
 
