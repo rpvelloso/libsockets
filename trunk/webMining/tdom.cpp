@@ -552,13 +552,14 @@ void tDOM::onDataRegionFound(tDataRegion region, int K, float st) {
 	// This event is used to mine data records from data regions
 
 	list<tNode *>::iterator i=region.s;
-	size_t j=0,k;
 	tNode *n = new tNode(0,"");
 	list<tDataRegion> records;
 
 	n->depth = 3;
 
 	if (region.groupSize > 1) {
+		size_t j=0,k;
+
 		while (j<region.DRLength) {
 			n->clear();
 			for (k=0;k<region.groupSize;k++,j++,i++)
@@ -571,7 +572,7 @@ void tDOM::onDataRegionFound(tDataRegion region, int K, float st) {
 			}
 		}
 	} else {
-		while (j<region.DRLength) {
+		for (i=region.s;i!=region.e;i++) {
 			list<tNode *>::iterator l;
 
 			n->clear();
@@ -590,13 +591,12 @@ void tDOM::onDataRegionFound(tDataRegion region, int K, float st) {
 				region.s = n->nodes.begin();
 				region.e = n->nodes.end();
 				region.groupSize = records.front().groupSize;
-				region.DRLength = records.front().DRLength;
+				region.DRLength = n->nodes.size();
 				break;
 			}
-			j++;
-			i++;
 		}
 	}
+
 	onDataRecordFound(region);
 	n->clear();
 	delete n;
