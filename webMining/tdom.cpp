@@ -414,7 +414,7 @@ void tDOM::setVerbose(int v)
 list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 	list<tDataRegion> ret;
 
-	if (p->depth >= 3) {
+	if (p->depth >= 3 && p->size > 1) {
 		tNode *a,*b;
 		int n=0,DRFound;
 		size_t r=0;
@@ -512,7 +512,6 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 				r += bestDR.end - bestDR.start + 1;
 				ret.push_back(bestDR);
 				if (mineRegions) onDataRegionFound(bestDR,k,st);
-				//else onDataRecordFound(bestDR);
 				x=bestDR.end;
 			}
 		}
