@@ -570,7 +570,6 @@ void tDOM::onDataRegionFound(tDataRegion region, int K, float st) {
 				break;
 			}
 		}
-		onDataRecordFound(region);
 	} else {
 		while (j<region.DRLength) {
 			list<tNode *>::iterator l;
@@ -580,23 +579,25 @@ void tDOM::onDataRegionFound(tDataRegion region, int K, float st) {
 				n->addNode(*l);
 			records = MDR(n,K,st,0);
 			if (records.size()==1 && records.front().DRLength == n->nodes.size()) {
-				onDataRecordFound(records.front());
-			} else {
-				tDataRegion d;
-
-				d.clear();
-				d.DRLength = region.DRLength;
-				d.groupSize = region.groupSize;
-				d.p = region.p;
-				d.s = i;
-				d.e = i;
-				d.e++;
-				onDataRecordFound(d);
+				n->clear();
+				for (i=region.s;i!=region.e;i++) {
+					for (l=(*i)->nodes.begin();l!=(*i)->nodes.end();l++) {
+						n->addNode(*l);
+					}
+				}
+				region.clear();
+				region.p = n;
+				region.s = n->nodes.begin();
+				region.e = n->nodes.end();
+				region.groupSize = records.front().groupSize;
+				region.DRLength = records.front().DRLength;
+				break;
 			}
 			j++;
 			i++;
 		}
 	}
+	onDataRecordFound(region);
 	n->clear();
 	delete n;
 }
