@@ -45,8 +45,9 @@ public:
     list<tDataRegion> MDR(tNode *, int, float, int);
     void printTagPath(string, tNode *);
 protected:
+	void treeAlign(tNode*, tNode*, int **);
 	int treeMatch(tNode *, tNode *);
-	size_t STM(tNode *, tNode *);
+	size_t STM(tNode *, tNode *, int);
 	void searchTree(tNode *, tNode *, float);
 	int searchString(tNode *, string, string, int);
 	void printNode(tNode *, int);

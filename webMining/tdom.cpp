@@ -301,30 +301,109 @@ int tDOM::treeMatch(tNode *t, tNode *p) {
 	return 0;
 }
 
-size_t tDOM::STM(tNode *a, tNode *b)
+size_t tDOM::STM(tNode *a, tNode *b, int align)
 {
-	if (!a->compare(b)) return 0;
-	else {
-		int k=a->nodes.size();
-		int n=b->nodes.size();
-		int m[k+1][n+1],i,j;
-		list<tNode *>::iterator ii,jj;
+    if (!a->compare(b)) return 0;
+    else {
+        int k=a->nodes.size();
+        int n=b->nodes.size();
+        int **m /* [k+1][n+1]*/,i,j,r;
+        list<tNode *>::iterator ii,jj;
 
-		for (i=0;i<=k;i++) m[i][0]=0;
-		for (j=0;j<=n;j++) m[0][j]=0;
+        m = new int *[k+1];
+        for (i=0;i<=k;i++) m[i] = new int[n+1];
 
-		ii = a->nodes.begin();
-		for (i=1;i<=k;i++,ii++) {
-			jj = b->nodes.begin();
-			for (j=1;j<=n;j++,jj++) {
-				int z = m[i-1][j-1]+STM(*ii,*jj);
+        for (i=0;i<=k;i++) m[i][0]=0;
+        for (j=0;j<=n;j++) m[0][j]=0;
 
-				m[i][j] = max(max(m[i][j-1],m[i-1][j]),z);
-			}
-		}
-		return m[k][n]+1;
-	}
+        ii = a->nodes.begin();
+        for (i=1;i<=k;i++,ii++) {
+            jj = b->nodes.begin();
+            for (j=1;j<=n;j++,jj++) {
+                int z = m[i-1][j-1]+STM(*ii,*jj,align);
+
+                m[i][j] = max(max(m[i][j-1],m[i-1][j]),z);
+            }
+        }
+
+        if (align) treeAlign(a,b,m);
+
+        r = m[k][n]+1;
+
+        for (i=0;i<=k;i++) delete m[i];
+        delete [] m;
+
+        return r;
+    }
 }
+
+void tDOM::treeAlign(tNode* a, tNode* b, int **m) {
+    int pi,i,k=a->nodes.size();
+    int pj,j,n=b->nodes.size();
+    list<tNode *>::iterator ii,jj;
+    int insert=1;
+
+    ii = a->nodes.begin();
+    jj = b->nodes.begin();
+
+    cerr << k << "x" << n << endl << "\t\t";
+    for (j=1;j<=n;j++,jj++) cerr << (*jj)->tagName << "\t";
+    cerr << endl;
+
+    ii--;
+    for (i=0;i<=k;i++,ii++) {
+        if (!i) cerr << "\t";
+        else cerr << (*ii)->tagName << "\t";
+        for (j=0;j<=n;j++) {
+            cerr << m[i][j] << "\t";
+        }
+        cerr << endl;
+    }
+    cerr << "---" << endl;
+
+    pi = i = k;
+    pj = j = n;
+    ii = a->nodes.end();
+    jj = b->nodes.end();
+    while (m[i][j]) {
+        cerr << i << ", " << j << " ";
+        if (m[i-1][j-1] >= m[i][j-1]) {
+            if (m[i-1][j-1] >= m[i-1][j]) {
+                pi = i-1; ii--;
+                pj = j-1; jj--;
+            } else {
+                pi = i-1; ii--;
+            }
+        } else {
+            if (m[i][j-1] >= m[i-1][j]) {
+                pj = j-1; jj--;
+            } else {
+                pi = i-1; ii--;
+            }
+        }
+
+        if (m[pi][pj] == m[i][j]) {
+            if (j!=pj && i==pi) {
+                cerr << "insert" << endl;
+                if (insert) {
+                    a->nodes.insert(--ii,*jj);
+                    ii++;
+                    cerr << "jj " << (*jj)->tagName << endl;
+                }
+            } else {
+                cerr << "mismatch" << endl;
+                insert = 0;
+            }
+        } else {
+            cerr << "match" << endl;
+            cerr << "ii " << (*ii)->tagName << endl;
+            insert = 1;
+        }
+        i = pi;
+        j = pj;
+    }
+}
+
 
 void tDOM::searchTree(tNode *n, tNode *t, float st) {
 	list<tNode *>::iterator i;
@@ -333,7 +412,7 @@ void tDOM::searchTree(tNode *n, tNode *t, float st) {
 		if (st == 1) { // threshold = 100%, exact match
 			if (treeMatch(n,t)) onPatternFound(n,t,1);
 		} else {
-			float sim=(float)STM(n,t) / (float)t->size;
+			float sim=(float)STM(n,t,0) / (float)t->size;
 			if (sim >= st) onPatternFound(n,t,sim);
 		}
 		for (i = n->nodes.begin();i!=n->nodes.end();i++)
@@ -445,7 +524,7 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 					else b->addNode(*j);
 
 					if (a->nodes.size() == b->nodes.size()) {
-						int score = STM(a,b)-1; // subtract 1 match (a=b)
+						int score = STM(a,b,0)-1; // subtract 1 match (a=b)
 
 						simTable[i][ff+jj-(2*i)+1] = ((float)score / ((float)max(a->size,b->size)-1)); // subtract 1 node from size (the fake parent)
 
