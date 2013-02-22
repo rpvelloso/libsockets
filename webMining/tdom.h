@@ -44,13 +44,15 @@ public:
     void setVerbose(int);
     list<tDataRegion> MDR(tNode *, int, float, int);
     void printTagPath(string, tNode *);
+    void treeAlign(tNode *, tNode *, int **, tNode *);
+	size_t STM(tNode *, tNode *, tNode *);
+	void printNode(tNode *, int);
+	list <tNode *> getRecord(tNode *, tNode *);
 protected:
-	void treeAlign(tNode*, tNode*, int **);
+	void getAlignment(tNode *, tNode *, list<tNode *> &);
 	int treeMatch(tNode *, tNode *);
-	size_t STM(tNode *, tNode *, int);
 	void searchTree(tNode *, tNode *, float);
 	int searchString(tNode *, string, string, int);
-	void printNode(tNode *, int);
 	int treeSize(tNode *);
 	int treeDepth(tNode *);
 
