@@ -255,6 +255,34 @@ int main(int argc, char *argv[])
 		d->scan(cin);
 	}
 
+	d->getRoot()->nodes.remove(d->getRoot()->nodes.front());
+	d->STM(d->getRoot()->nodes.front(),d->getRoot()->nodes.front(),d->getRoot()->nodes.front());
+	d->STM(d->getRoot()->nodes.front(),d->getRoot()->nodes.back(),d->getRoot()->nodes.back());
+	d->printNode(d->getRoot()->nodes.front(),1);
+	do {
+		list<tNode *>::iterator i;
+
+		list<tNode *> rec = d->getRecord(d->getRoot()->nodes.front(),d->getRoot()->nodes.front());
+		for (i=rec.begin();i!=rec.end();i++) {
+			cerr << "campo) ";
+			if (*i) cerr << (*i)->getText();
+			else cerr << "nulo";
+			cerr << endl;
+		}
+		cerr << endl << "------------------" << endl;
+
+		rec = d->getRecord(d->getRoot()->nodes.front(),d->getRoot()->nodes.back());
+		for (i=rec.begin();i!=rec.end();i++) {
+			cerr << "campo) ";
+			if (*i) cerr << (*i)->getText();
+			else cerr << "nulo";
+			cerr << endl;
+		}
+
+	} while (0);
+
+	exit(0);
+
 	if (mineForms) {
 		fe->setRoot(d->getRoot());
 		fe->searchTag("form","");
