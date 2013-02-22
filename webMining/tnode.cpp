@@ -43,7 +43,7 @@ tNode::tNode(int tp, string tx) {
 			default: tagName = "#"; break;
 		}
 	}
-	size = 1;
+	size = matches = 1;
 	depth = 0;
 }
 
@@ -55,6 +55,7 @@ tNode::~tNode() {
 		delete (*i);
 	}
 	nodes.clear();
+	alignments.clear();
 }
 
 void tNode::addNode(tNode *n) {
@@ -125,19 +126,3 @@ void tNode::setDepth(int d) {
 list<tNode*> &tNode::getNodes() {
 	return nodes;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
