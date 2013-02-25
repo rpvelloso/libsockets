@@ -88,6 +88,7 @@ public:
 	};
 	virtual ~tCustomDOM() {
 		if (r) cerr << "Found " << r << " results." << endl;
+		exit(0);
 	};
 	virtual void onTagFound(tNode *n) {
 		r++;
@@ -244,52 +245,6 @@ int main(int argc, char *argv[])
 	} else {
 		d->scan(cin);
 	}
-
-	/*d->getRoot()->nodes.remove(d->getRoot()->nodes.front());
-	d->STM(d->getRoot()->nodes.front(),d->getRoot()->nodes.front(),d->getRoot()->nodes.front());
-	d->STM(d->getRoot()->nodes.front(),d->getRoot()->nodes.back(),d->getRoot()->nodes.back());
-	d->printNode(d->getRoot()->nodes.front(),1);
-	do {
-		tDataRegion dr;
-		list<tNode *>l;
-		tNode *n;
-
-		n = new tNode(0,""); n->size = 2; l.push_back(n);
-		n = new tNode(0,""); n->size = 1; l.push_back(n);
-		n = new tNode(0,""); n->size = 7; l.push_back(n);
-		n = new tNode(0,""); n->size = 12; l.push_back(n);
-		n = new tNode(0,""); n->size = 1; l.push_back(n);
-		n = new tNode(0,""); n->size = 1; l.push_back(n);
-		dr.groupSize = 2;
-		dr.DRLength = 4;
-		dr.s = l.begin();
-		dr.e = l.end();
-
-		d->partialTreeAlignment(dr);
-		exit(0);
-
-		list<tNode *>::iterator i;
-
-		list<tNode *> rec = d->getRecord(d->getRoot()->nodes.front(),d->getRoot()->nodes.front());
-		for (i=rec.begin();i!=rec.end();i++) {
-			cerr << "campo) ";
-			if (*i) cerr << (*i)->getText();
-			else cerr << "nulo";
-			cerr << endl;
-		}
-		cerr << endl << "------------------" << endl;
-
-		rec = d->getRecord(d->getRoot()->nodes.front(),d->getRoot()->nodes.back());
-		for (i=rec.begin();i!=rec.end();i++) {
-			cerr << "campo) ";
-			if (*i) cerr << (*i)->getText();
-			else cerr << "nulo";
-			cerr << endl;
-		}
-
-	} while (0);
-
-	exit(0);*/
 
 	if (mineForms) {
 		fe->setRoot(d->getRoot());

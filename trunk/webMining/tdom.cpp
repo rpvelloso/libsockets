@@ -397,15 +397,11 @@ void tDOM::treeAlign(tNode* a, tNode* b, int **m, tNode *root) {
 			cerr << "match" << endl;
 			if (ii == a->nodes.end()) {
 				ii--;
-				cerr << "ii " << (*ii)->tagName << endl;
-				(*ii)->matches++;
-				(*ii)->alignments[root]=*jj;
-				ii++;
-			} else {
-				cerr << "ii " << (*ii)->tagName << endl;
-				(*ii)->matches++;
-				(*ii)->alignments[root]=*jj;
+				pi--;
 			}
+			cerr << "ii " << (*ii)->tagName << endl;
+			(*ii)->matches++;
+			(*ii)->alignments[root]=*jj;
 			insert = 1;
 		}
 		i = pi;
