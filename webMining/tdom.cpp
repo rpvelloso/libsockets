@@ -425,7 +425,7 @@ void tDOM::getAlignment(tNode *seed, tNode *rec, list<tNode *> &attrs) {
 	list <tNode *>::iterator i;
 
 	for (i=seed->nodes.begin();i!=seed->nodes.end();i++) {
-		if ((*i)->nodes.size() == 0 && (*i)->alignments.find(rec)!=(*i)->alignments.end()) {
+		if ((*i)->nodes.size() == 0 && (*i)->alignments.size() > 0) {
 			attrs.push_back((*i)->alignments[rec]);
 		} else getAlignment(*i,rec,attrs);
 	}
