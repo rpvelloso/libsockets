@@ -675,10 +675,8 @@ vector<tNode *> tDOM::partialTreeAlignment(tDataRegion dr) {
 		}
 	} else {
 		if ((*(dr.s))->size > 1) {
-			for (;dr.s!=dr.e;dr.s++) {
-				trees.push_back(*dr.s);
-				cerr << *dr.s << endl;
-			}
+			trees.insert(trees.begin(),dr.s,dr.e);
+			for (;dr.s!=dr.e;dr.s++) cerr << *dr.s << endl;
 		}
 	}
 
