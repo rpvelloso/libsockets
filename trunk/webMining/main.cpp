@@ -125,7 +125,7 @@ public:
 	};
 
 	virtual void onDataRecordFound(tDataRegion dr) {
-		int recsize=0;
+		/*int recsize=0;
 		size_t j;
 		list<tNode *>::iterator i;
 
@@ -151,7 +151,25 @@ public:
 			cout << endl << "</td><td>" << recsize << "</td></tr>" << endl;
 		}
 
-		cout << endl << "</table><br>" << endl;
+		cout << endl << "</table><br>" << endl;*/
+
+		vector<tNode *> recs = partialTreeAlignment(dr);
+
+		if (recs.size() > 0) {
+			int rr=0;
+			cout << "<b>Region " << ++g << "</b><br>" << endl << "<table border=1>" << endl;
+			for (size_t i=0;i<recs.size();i++) {
+				list<tNode *> fields = getRecord(recs[0],recs[i]);
+				cout << "<tr><td>" << ++rr << "</td>"; ++r;
+				for (list<tNode *>::iterator j=fields.begin();j!=fields.end();j++) {
+					cout << "<td>";
+					if ((*j)) printNode(*j,1);
+					cout << "</td>";
+				}
+				cout << "</tr>" << endl;
+			}
+			cout << "</table><br>" << endl;
+		}
 	};
 
 	int filter(tNode *n) {
@@ -255,11 +273,29 @@ int main(int argc, char *argv[])
 		d->scan(cin);
 	}
 
-	d->getRoot()->nodes.remove(d->getRoot()->nodes.front());
+	/*d->getRoot()->nodes.remove(d->getRoot()->nodes.front());
 	d->STM(d->getRoot()->nodes.front(),d->getRoot()->nodes.front(),d->getRoot()->nodes.front());
 	d->STM(d->getRoot()->nodes.front(),d->getRoot()->nodes.back(),d->getRoot()->nodes.back());
 	d->printNode(d->getRoot()->nodes.front(),1);
 	do {
+		tDataRegion dr;
+		list<tNode *>l;
+		tNode *n;
+
+		n = new tNode(0,""); n->size = 2; l.push_back(n);
+		n = new tNode(0,""); n->size = 1; l.push_back(n);
+		n = new tNode(0,""); n->size = 7; l.push_back(n);
+		n = new tNode(0,""); n->size = 12; l.push_back(n);
+		n = new tNode(0,""); n->size = 1; l.push_back(n);
+		n = new tNode(0,""); n->size = 1; l.push_back(n);
+		dr.groupSize = 2;
+		dr.DRLength = 4;
+		dr.s = l.begin();
+		dr.e = l.end();
+
+		d->partialTreeAlignment(dr);
+		exit(0);
+
 		list<tNode *>::iterator i;
 
 		list<tNode *> rec = d->getRecord(d->getRoot()->nodes.front(),d->getRoot()->nodes.front());
@@ -281,7 +317,7 @@ int main(int argc, char *argv[])
 
 	} while (0);
 
-	exit(0);
+	exit(0);*/
 
 	if (mineForms) {
 		fe->setRoot(d->getRoot());

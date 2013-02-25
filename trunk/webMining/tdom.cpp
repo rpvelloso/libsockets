@@ -385,6 +385,7 @@ void tDOM::treeAlign(tNode* a, tNode* b, int **m, tNode *root) {
 				cerr << "insert" << endl;
 				if (insert) {
 					ii = a->nodes.insert(ii,*jj);
+					a->size++;
 					(*ii)->alignments[root]=*jj;
 					cerr << "jj " << (*jj)->tagName << endl;
 				}
@@ -394,9 +395,17 @@ void tDOM::treeAlign(tNode* a, tNode* b, int **m, tNode *root) {
 			}
 		} else {
 			cerr << "match" << endl;
-			cerr << "ii " << (*ii)->tagName << endl;
-			(*ii)->matches++;
-			(*ii)->alignments[root]=*jj;
+			if (ii == a->nodes.end()) {
+				ii--;
+				cerr << "ii " << (*ii)->tagName << endl;
+				(*ii)->matches++;
+				(*ii)->alignments[root]=*jj;
+				ii++;
+			} else {
+				cerr << "ii " << (*ii)->tagName << endl;
+				(*ii)->matches++;
+				(*ii)->alignments[root]=*jj;
+			}
 			insert = 1;
 		}
 		i = pi;
@@ -415,10 +424,10 @@ void tDOM::getAlignment(tNode *seed, tNode *rec, list<tNode *> &attrs) {
 	list <tNode *>::iterator i;
 
 	for (i=seed->nodes.begin();i!=seed->nodes.end();i++) {
-		getAlignment(*i,rec,attrs);
+
 		if ((*i)->nodes.size() == 0) {
 			attrs.push_back((*i)->alignments[rec]);
-		}
+		} else getAlignment(*i,rec,attrs);
 	}
 }
 
@@ -643,9 +652,47 @@ void tDOM::setRoot(tNode *r)
 	root = r;
 }
 
-void tDOM::onDataRegionFound(tDataRegion region, int K, float st) {
-	// This event is used to mine data records from data regions
+bool compareNodesSize(tNode *a, tNode *b) {
+	cerr << a << " " << b << endl;
+	return (a->getSize()>=b->getSize());
+}
 
+vector<tNode *> tDOM::partialTreeAlignment(tDataRegion dr) {
+	list<tNode *>::iterator i;
+	vector<tNode *> trees;
+	tNode *root = NULL;
+	int seedSize=-1;
+
+	trees.clear();
+	if (dr.groupSize > 1) {
+		for (i=dr.s;i!=dr.e;) {
+			root = new tNode(0,"");
+			root->depth = 3;
+			for (size_t j=0;j<dr.groupSize;j++,i++) {
+				root->addNode(*i);
+			}
+			if (root->size > 2) trees.push_back(root);
+		}
+	} else {
+		if ((*(dr.s))->size > 1)
+			trees.insert(trees.begin(),dr.s,dr.e);
+		for (;dr.s!=dr.e;dr.s++) cerr << *dr.s << endl;
+	}
+
+	if (trees.size() > 1) {
+		//std::sort(trees.begin(),trees.end(),compareNodesSize); // seed == trees[0]
+
+		STM(trees[0],trees[0],trees[0]);
+		while (seedSize != trees[0]->size) {
+			seedSize = trees[0]->size;
+			for (size_t j=1;j<trees.size();j++)
+				STM(trees[0],trees[j],trees[j]);
+		}
+	}
+	return trees;
+}
+
+void tDOM::onDataRegionFound(tDataRegion region, int K, float st) {
 	list<tNode *>::iterator i=region.s;
 	tNode *n = new tNode(0,"");
 	list<tDataRegion> records;
