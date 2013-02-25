@@ -674,13 +674,16 @@ vector<tNode *> tDOM::partialTreeAlignment(tDataRegion dr) {
 			if (root->size > 2) trees.push_back(root);
 		}
 	} else {
-		if ((*(dr.s))->size > 1)
-			trees.insert(trees.begin(),dr.s,dr.e);
-		for (;dr.s!=dr.e;dr.s++) cerr << *dr.s << endl;
+		if ((*(dr.s))->size > 1) {
+			for (;dr.s!=dr.e;dr.s++) {
+				trees.push_back(*dr.s);
+				cerr << *dr.s << endl;
+			}
+		}
 	}
 
 	if (trees.size() > 1) {
-		//std::sort(trees.begin(),trees.end(),compareNodesSize); // seed == trees[0]
+		std::stable_sort(trees.begin(),trees.end(),compareNodesSize); // seed == trees[0]
 
 		STM(trees[0],trees[0],trees[0]);
 		while (seedSize != trees[0]->size) {
