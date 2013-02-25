@@ -125,34 +125,6 @@ public:
 	};
 
 	virtual void onDataRecordFound(tDataRegion dr) {
-		/*int recsize=0;
-		size_t j;
-		list<tNode *>::iterator i;
-
-		for (j=0, i=dr.s;j<dr.groupSize;j++, i++) {
-			recsize += (*i)->size;
-		}
-		if (recsize<3) return; // discards the region if it's records have size lower than 3
-
-		int rr = 0;
-		for (i=dr.s;i!=dr.e;) {
-			++r;
-			recsize=0;
-			for (j=0;j<dr.groupSize; i++, j++) {
-				if (i==dr.s) {
-					cout << "<b> Region " << ++g << "</b><br>" << endl << "<table border=1 group-size=" << dr.groupSize << " length=" << dr.DRLength << ">" << endl;
-				}
-				if (!j) {
-					cout << "<tr><td>Records " << ++rr << "</td><td>" << endl;
-				}
-				recsize += (*i)->size;
-				printNode(*i,1);
-			}
-			cout << endl << "</td><td>" << recsize << "</td></tr>" << endl;
-		}
-
-		cout << endl << "</table><br>" << endl;*/
-
 		vector<tNode *> recs = partialTreeAlignment(dr);
 
 		if (recs.size() > 0) {
