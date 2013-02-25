@@ -361,8 +361,8 @@ void tDOM::treeAlign(tNode* a, tNode* b, int **m, tNode *root) {
 
 	pi = i = k;
 	pj = j = n;
-	ii = a->nodes.end();
-	jj = b->nodes.end();
+	ii = a->nodes.end(); //ii--;
+	jj = b->nodes.end(); //jj--;
 	while (m[i][j]) {
 		cerr << i << ", " << j << " ";
 		if (m[i-1][j-1] >= m[i][j-1]) {
@@ -395,7 +395,7 @@ void tDOM::treeAlign(tNode* a, tNode* b, int **m, tNode *root) {
 			}
 		} else {
 			cerr << "match" << endl;
-			if (ii == a->nodes.end()) {
+			if (ii==a->nodes.end()) {
 				ii--;
 				pi--;
 			}
@@ -404,6 +404,7 @@ void tDOM::treeAlign(tNode* a, tNode* b, int **m, tNode *root) {
 			(*ii)->alignments[root]=*jj;
 			insert = 1;
 		}
+
 		i = pi;
 		j = pj;
 	}
@@ -421,9 +422,8 @@ void tDOM::getAlignment(tNode *seed, tNode *rec, list<tNode *> &attrs) {
 
 	for (i=seed->nodes.begin();i!=seed->nodes.end();i++) {
 
-		if ((*i)->nodes.size() == 0) {
-			attrs.push_back((*i)->alignments[rec]);
-		} else getAlignment(*i,rec,attrs);
+		if ((*i)->nodes.size() == 0) attrs.push_back((*i)->alignments[rec]);
+		else getAlignment(*i,rec,attrs);
 	}
 }
 
