@@ -46,11 +46,12 @@ public:
 	int getDepth();
 	void setDepth(int);
 	list<tNode *> &getNodes();
-//protected:
+protected:
+	void align(tNode *, tNode *);
 	list<tNode *> nodes;
 	map<tNode *,tNode *> alignments;
 	tNode *parent;
-	int type,size,depth,matches;
+	int type,size,depth,matches,aligned;
 	string text, tagName;
 };
 

@@ -44,7 +44,7 @@ tNode::tNode(int tp, string tx) {
 		}
 	}
 	size = matches = 1;
-	depth = 0;
+	depth = aligned = 0;
 }
 
 tNode::~tNode() {
@@ -125,4 +125,11 @@ void tNode::setDepth(int d) {
 
 list<tNode*> &tNode::getNodes() {
 	return nodes;
+}
+
+void tNode::align(tNode* n, tNode* r) {
+	if (!n->aligned && alignments.find(r)==alignments.end()) {
+		alignments[r]=n;
+		n->aligned = 1;
+	}
 }

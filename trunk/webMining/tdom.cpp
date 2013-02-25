@@ -301,7 +301,7 @@ int tDOM::treeMatch(tNode *t, tNode *p) {
 	return 0;
 }
 
-size_t tDOM::STM(tNode *a, tNode *b, tNode *root)
+size_t tDOM::STM(tNode *a, tNode *b, tNode *rec)
 {
 	if (!a->compare(b)) return 0;
 	else {
@@ -319,13 +319,13 @@ size_t tDOM::STM(tNode *a, tNode *b, tNode *root)
 		for (i=1;i<=k;i++,ii++) {
 			jj = b->nodes.begin();
 			for (j=1;j<=n;j++,jj++) {
-				int z = m[i-1][j-1]+STM(*ii,*jj,root);
+				int z = m[i-1][j-1]+STM(*ii,*jj,rec);
 
 				m[i][j] = max(max(m[i][j-1],m[i-1][j]),z);
 			}
 		}
 
-		if (root) treeAlign(a,b,m,root);
+		if (rec) treeAlign(a,b,m,rec);
 
 		r = m[k][n]+1;
 
@@ -335,7 +335,7 @@ size_t tDOM::STM(tNode *a, tNode *b, tNode *root)
 	}
 }
 
-void tDOM::treeAlign(tNode* a, tNode* b, int **m, tNode *root) {
+void tDOM::treeAlign(tNode* a, tNode* b, int **m, tNode *rec) {
 	int pi,i,k=a->nodes.size();
 	int pj,j,n=b->nodes.size();
 	list<tNode *>::iterator ii,jj;
@@ -361,8 +361,8 @@ void tDOM::treeAlign(tNode* a, tNode* b, int **m, tNode *root) {
 
 	pi = i = k;
 	pj = j = n;
-	ii = a->nodes.end(); //ii--;
-	jj = b->nodes.end(); //jj--;
+	ii = a->nodes.end();
+	jj = b->nodes.end();
 	while (m[i][j]) {
 		cerr << i << ", " << j << " ";
 		if (m[i-1][j-1] >= m[i][j-1]) {
@@ -386,8 +386,7 @@ void tDOM::treeAlign(tNode* a, tNode* b, int **m, tNode *root) {
 				if (insert) {
 					ii = a->nodes.insert(ii,*jj);
 					a->size++;
-					(*ii)->alignments[root]=*jj;
-					cerr << "jj " << (*jj)->tagName << endl;
+					(*ii)->align(*jj,rec);
 				}
 			} else {
 				cerr << "mismatch" << endl;
@@ -399,9 +398,14 @@ void tDOM::treeAlign(tNode* a, tNode* b, int **m, tNode *root) {
 				ii--;
 				pi--;
 			}
-			cerr << "ii " << (*ii)->tagName << endl;
-			(*ii)->matches++;
-			(*ii)->alignments[root]=*jj;
+			if (jj==b->nodes.end()) {
+				jj--;
+				pj--;
+			}
+			if (i == j) {
+				(*ii)->matches++;
+				(*ii)->align(*jj,rec);
+			}
 			insert = 1;
 		}
 
@@ -419,9 +423,9 @@ list <tNode *> tDOM::getRecord(tNode * seed, tNode *rec) {
 
 void tDOM::getAlignment(tNode *seed, tNode *rec, list<tNode *> &attrs) {
 	list <tNode *>::iterator i;
+	map<tNode *, tNode *>::iterator j;
 
 	for (i=seed->nodes.begin();i!=seed->nodes.end();i++) {
-
 		if ((*i)->nodes.size() == 0) attrs.push_back((*i)->alignments[rec]);
 		else getAlignment(*i,rec,attrs);
 	}
@@ -501,7 +505,7 @@ void tDOM::printNode(tNode *n, int lvl) {
 			if (n->type != 2) for (int j=1;j<lvl;j++) cout << " ";
 			if (n->type == 3) cout << "-->" << endl;
 			else if (n->type != 2) {
-				cout /*<< "</" << n->tagName << ">"*/ << endl;
+				cout << "</" << n->tagName << ">" << endl;
 			}
 		}
 	}
@@ -656,18 +660,17 @@ bool compareNodesSize(tNode *a, tNode *b) {
 vector<tNode *> tDOM::partialTreeAlignment(tDataRegion dr) {
 	list<tNode *>::iterator i;
 	vector<tNode *> trees;
-	tNode *root = NULL;
+	tNode *rec = NULL;
 	int seedSize=-1;
 
-	trees.clear();
 	if (dr.groupSize > 1) {
 		for (i=dr.s;i!=dr.e;) {
-			root = new tNode(0,"");
-			root->depth = 3;
+			rec = new tNode(0,"");
+			rec->depth = 3;
 			for (size_t j=0;j<dr.groupSize;j++,i++) {
-				root->addNode(*i);
+				rec->addNode(*i);
 			}
-			if (root->size > 2) trees.push_back(root);
+			if (rec->size > 2) trees.push_back(rec);
 		}
 	} else {
 		if ((*(dr.s))->size > 1) {
@@ -684,6 +687,7 @@ vector<tNode *> tDOM::partialTreeAlignment(tDataRegion dr) {
 			seedSize = trees[0]->size;
 			for (size_t j=1;j<trees.size();j++)
 				STM(trees[0],trees[j],trees[j]);
+			//break;
 		}
 	}
 	return trees;
