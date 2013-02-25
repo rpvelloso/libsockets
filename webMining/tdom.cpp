@@ -423,11 +423,11 @@ list <tNode *> tDOM::getRecord(tNode * seed, tNode *rec) {
 
 void tDOM::getAlignment(tNode *seed, tNode *rec, list<tNode *> &attrs) {
 	list <tNode *>::iterator i;
-	map<tNode *, tNode *>::iterator j;
 
 	for (i=seed->nodes.begin();i!=seed->nodes.end();i++) {
-		if ((*i)->nodes.size() == 0) attrs.push_back((*i)->alignments[rec]);
-		else getAlignment(*i,rec,attrs);
+		if ((*i)->nodes.size() == 0 && (*i)->alignments.find(rec)!=(*i)->alignments.end()) {
+			attrs.push_back((*i)->alignments[rec]);
+		} else getAlignment(*i,rec,attrs);
 	}
 }
 
