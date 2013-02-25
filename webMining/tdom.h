@@ -24,6 +24,7 @@
 #include <iostream>
 #include <set>
 #include <map>
+#include <vector>
 #include "tnode.h"
 #include "tdataregion.h"
 
@@ -48,6 +49,7 @@ public:
 	size_t STM(tNode *, tNode *, tNode *);
 	void printNode(tNode *, int);
 	list <tNode *> getRecord(tNode *, tNode *);
+	vector<tNode *> partialTreeAlignment(tDataRegion);
 protected:
 	void getAlignment(tNode *, tNode *, list<tNode *> &);
 	int treeMatch(tNode *, tNode *);
