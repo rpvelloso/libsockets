@@ -88,6 +88,7 @@ public:
 	};
 	virtual ~tCustomDOM() {
 		if (r) cout << "<h3>Found " << r << " results in " << g << " regions.</h3>" << endl;
+		exit(0);
 	};
 	virtual void onTagFound(tNode *n) {
 		r++;
