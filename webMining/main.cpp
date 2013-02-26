@@ -88,7 +88,7 @@ public:
 	};
 	virtual ~tCustomDOM() {
 		if (r) {
-			if (xml) cout << "<region-count>" << g << "</region-count>" << endl << "<record-count>" << r << "</record-count>" << endl;
+			if (xml) cout << "<region-count>" << g << "</region-count>" << endl << "<record-count>" << r << "</record-count>" << endl << "</extraction>" << endl;
 			else cout << "<h3>Found " << r << " results in " << g << " regions.</h3></html>" << endl;
 		}
 		exit(0);
@@ -134,33 +134,34 @@ public:
 		if (recs.size() > 0) {
 			int rr=0;
 			if (!g++) {
-				if (xml) cout << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" << endl;
-				else cout << "<html>" << endl;
+				if (xml) cout << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << endl << "<extraction>" << endl;
+				else cout << "<html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'/></head>" << endl;
 			}
-			if (xml) cout << "<region number=\"" << g << "\">" << endl;
+			if (xml) cout << "\t<region number=\"" << g << "\">" << endl;
 			else cout << "<b>Region " << g << "</b><br>" << endl << "<table border=1>" << endl;
 			for (size_t i=0;i<recs.size();i++) {
 				list<tNode *> fields = getRecord(recs[0],recs[i]);
 
 				r++; rr++;
 
-				if (xml) cout << "<record number=\"" << rr << "\">" << endl;
+				if (xml) cout << "\t\t<record number=\"" << rr << "\">" << endl;
 				else cout << "<tr><td>" << rr << "</td>";
 
 				for (list<tNode *>::iterator j=fields.begin();j!=fields.end();j++) {
 					if (xml) {
-						cout << "<field " << endl;
-						if ((*j)) cout << "type=\"" << (*j)->tagName << "\">" << (*j)->text << "</field>" << endl;
+						cout << "\t\t\t<field ";
+						if ((*j)) cout << "tag=\"" << (*j)->tagName << "\">" << (*j)->text << "</field>" << endl;
+						else cout << "tag=\"\"></field>" << endl;
 					} else {
 						cout << "<td>";
 						if ((*j)) printNode(*j,1);
 						cout << "</td>";
 					}
 				}
-				if (xml) cout << "</record>" << endl;
+				if (xml) cout << "\t\t</record>" << endl;
 				else cout << "</tr>" << endl;
 			}
-			if (xml) cout << "</region>" << endl;
+			if (xml) cout << "\t</region>" << endl;
 			else cout << "</table><br>" << endl;
 		}
 	};
