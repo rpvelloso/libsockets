@@ -87,8 +87,7 @@ public:
 		filterTag = "";
 	};
 	virtual ~tCustomDOM() {
-		if (r) cerr << "Found " << r << " results." << endl;
-		//exit(0);
+		if (r) cout << "<h3>Found " << r << " results in " << g << " regions.</h3>" << endl;
 	};
 	virtual void onTagFound(tNode *n) {
 		r++;
