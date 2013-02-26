@@ -384,8 +384,7 @@ void tDOM::treeAlign(tNode* a, tNode* b, int **m, tNode *rec) {
 			if (j!=pj && i==pi) {
 				cerr << "insert" << endl;
 				if (insert) {
-					ii = a->nodes.insert(ii,*jj);
-					a->size++;
+					ii = a->addNode(ii,*jj);
 					(*ii)->align(*jj,rec);
 				}
 			} else {
@@ -403,7 +402,6 @@ void tDOM::treeAlign(tNode* a, tNode* b, int **m, tNode *rec) {
 				pj--;
 			}
 
-			(*ii)->matches++;
 			(*ii)->align(*jj,rec);
 			insert = 1;
 		}

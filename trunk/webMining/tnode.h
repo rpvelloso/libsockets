@@ -36,6 +36,7 @@ public:
 	tNode(int, string);
 	virtual ~tNode();
 	void addNode(tNode *);
+	list<tNode *>::iterator addNode(list<tNode *>::iterator, tNode *);
 	int getType();
 	string &getText();
 	string &getTagName();

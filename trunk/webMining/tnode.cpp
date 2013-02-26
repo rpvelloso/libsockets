@@ -52,8 +52,7 @@ tNode::~tNode() {
 
 	i=nodes.begin();
 	for (;i!=nodes.end();i++) {
-		if ((*i)->matches > 0) (*i)->matches--;
-		else delete (*i);
+		if ((*i)->parent == this) delete (*i);
 	}
 	nodes.clear();
 	alignments.clear();
@@ -64,6 +63,12 @@ void tNode::addNode(tNode *n) {
 	nodes.push_back(n);
 	size += n->size;
 };
+
+list<tNode *>::iterator tNode::addNode(list<tNode *>::iterator p, tNode *n) {
+	if (!n->parent) n->parent = this;
+	size += n->size;
+	return nodes.insert(p,n);
+}
 
 int tNode::getType() {
 	return type;
@@ -132,5 +137,6 @@ void tNode::align(tNode* n, tNode* r) {
 	if (!n->aligned && alignments.find(r)==alignments.end()) {
 		alignments[r]=n;
 		n->aligned = 1;
+		matches++;
 	}
 }
