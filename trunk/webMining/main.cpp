@@ -88,7 +88,7 @@ public:
 	};
 	virtual ~tCustomDOM() {
 		if (r) cerr << "Found " << r << " results." << endl;
-		exit(0);
+		//exit(0);
 	};
 	virtual void onTagFound(tNode *n) {
 		r++;

@@ -43,8 +43,8 @@ tNode::tNode(int tp, string tx) {
 			default: tagName = "#"; break;
 		}
 	}
-	size = matches = 1;
-	depth = aligned = 0;
+	size = 1;
+	depth = aligned = matches = 0;
 }
 
 tNode::~tNode() {
@@ -52,7 +52,8 @@ tNode::~tNode() {
 
 	i=nodes.begin();
 	for (;i!=nodes.end();i++) {
-		delete (*i);
+		if ((*i)->matches > 0) (*i)->matches--;
+		else delete (*i);
 	}
 	nodes.clear();
 	alignments.clear();
