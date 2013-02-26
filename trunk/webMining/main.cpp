@@ -182,17 +182,17 @@ public:
 
 void printUsage(char *p)
 {
-	cout << "usage: "<<p<<" [-i input_file] [-p pattern file] [-s search_string] [-v] [-t ###.##] [-m] [-f str] [-x] [-d]"<<endl;
-	cout << "-i input file (default stdin)"<<endl;
-	cout << "-p pattern file to search for"<<endl;
-	cout << "-s search string: a list of tags to search for (tag1,tag2,...)"<<endl;
-	cout << "-t value. Similarity threshold. default 100%. Ex.: -t 90.7 (90.7%)" << endl;
-	cout << "-v Verbose (do not abbreviate tags/text content." << endl;
-	cout << "-m performs MDR" << endl;
+	cout << "usage: "<<p<<" [-i input_file] [-p pattern file] [-s search_string] [-v] [-t ###.##] [-m] [-xml] [-f str] [-x] [-d]"<<endl;
+	cout << "-i   input file (default stdin)"<<endl;
+	cout << "-p   pattern file to search for"<<endl;
+	cout << "-s   search string: a list of tags to search for (tag1,tag2,...)"<<endl;
+	cout << "-t   value. Similarity threshold. default 100%. Ex.: -t 90.7 (90.7%)" << endl;
+	cout << "-v   Verbose (do not abbreviate tags/text content." << endl;
+	cout << "-m   performs MDR" << endl;
 	cout << "-xml outputs MDR results in XML format" << endl;
-	cout << "-f text filter string" << endl;
-	cout << "-x display tag path of input" << endl;
-	cout << "-d mine forms and fields" << endl;
+	cout << "-f   text filter string" << endl;
+	cout << "-x   display tag path of input" << endl;
+	cout << "-d   mine forms and fields" << endl;
 	exit(-1);
 }
 
