@@ -82,12 +82,15 @@ protected:
 class tCustomDOM : public tDOM {
 public:
 	tCustomDOM() : tDOM() {
-		g = r = 0;
+		g = r = xml = 0;
 		filterStr = "";
 		filterTag = "";
 	};
 	virtual ~tCustomDOM() {
-		if (r) cout << "<h3>Found " << r << " results in " << g << " regions.</h3>" << endl;
+		if (r) {
+			if (xml) cout << "<region-count>" << g << "</region-count>" << endl << "<record-count>" << r << "</record-count>" << endl;
+			else cout << "<h3>Found " << r << " results in " << g << " regions.</h3></html>" << endl;
+		}
 		exit(0);
 	};
 	virtual void onTagFound(tNode *n) {
@@ -130,18 +133,35 @@ public:
 
 		if (recs.size() > 0) {
 			int rr=0;
-			cout << "<b>Region " << ++g << "</b><br>" << endl << "<table border=1>" << endl;
+			if (!g++) {
+				if (xml) cout << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" << endl;
+				else cout << "<html>" << endl;
+			}
+			if (xml) cout << "<region number=\"" << g << "\">" << endl;
+			else cout << "<b>Region " << g << "</b><br>" << endl << "<table border=1>" << endl;
 			for (size_t i=0;i<recs.size();i++) {
 				list<tNode *> fields = getRecord(recs[0],recs[i]);
-				cout << "<tr><td>" << ++rr << "</td>"; ++r;
+
+				r++; rr++;
+
+				if (xml) cout << "<record number=\"" << rr << "\">" << endl;
+				else cout << "<tr><td>" << rr << "</td>";
+
 				for (list<tNode *>::iterator j=fields.begin();j!=fields.end();j++) {
-					cout << "<td>";
-					if ((*j)) printNode(*j,1);
-					cout << "</td>";
+					if (xml) {
+						cout << "<field " << endl;
+						if ((*j)) cout << "type=\"" << (*j)->tagName << "\">" << (*j)->text << "</field>" << endl;
+					} else {
+						cout << "<td>";
+						if ((*j)) printNode(*j,1);
+						cout << "</td>";
+					}
 				}
-				cout << "</tr>" << endl;
+				if (xml) cout << "</record>" << endl;
+				else cout << "</tr>" << endl;
 			}
-			cout << "</table><br>" << endl;
+			if (xml) cout << "</region>" << endl;
+			else cout << "</table><br>" << endl;
 		}
 	};
 
@@ -155,7 +175,7 @@ public:
 		return ret && n->depth>2;
 	};
 
-	int g,r;
+	int g,r,xml;
 	string filterStr,filterTag;
 };
 
@@ -168,6 +188,7 @@ void printUsage(char *p)
 	cout << "-t value. Similarity threshold. default 100%. Ex.: -t 90.7 (90.7%)" << endl;
 	cout << "-v Verbose (do not abbreviate tags/text content." << endl;
 	cout << "-m performs MDR" << endl;
+	cout << "-xml outputs MDR results in XML format" << endl;
 	cout << "-f text filter string" << endl;
 	cout << "-x display tag path of input" << endl;
 	cout << "-d mine forms and fields" << endl;
@@ -186,7 +207,7 @@ int main(int argc, char *argv[])
 	tFormExtractDOM *fe = new tFormExtractDOM();
 	fstream patternFile,inputFile;
 
-	while ((opt = getopt(argc, argv, "i:t:s:p:f:mhvxd")) != -1) {
+	while ((opt = getopt(argc, argv, "i:t:s:p:f:x:mhvd")) != -1) {
 		switch (opt) {
 		case 'i':
 			inp = optarg;
@@ -210,7 +231,8 @@ int main(int argc, char *argv[])
 			filterStr = optarg;
 			break;
 		case 'x':
-			tp = 1;
+			if (!optarg) tp = 1;
+			else if (string(optarg) == "ml") d->xml=1;
 			break;
 		case 'd':
 			mineForms = 1;
