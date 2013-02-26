@@ -402,10 +402,9 @@ void tDOM::treeAlign(tNode* a, tNode* b, int **m, tNode *rec) {
 				jj--;
 				pj--;
 			}
-			if (i == j) {
-				(*ii)->matches++;
-				(*ii)->align(*jj,rec);
-			}
+
+			(*ii)->matches++;
+			(*ii)->align(*jj,rec);
 			insert = 1;
 		}
 
