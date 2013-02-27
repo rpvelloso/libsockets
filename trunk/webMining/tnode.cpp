@@ -61,9 +61,8 @@ tNode::~tNode() {
 }
 
 void tNode::addNode(tNode *n) {
-	if (!n->parent) n->parent = this;
-	nodes.push_back(n);
-	size += n->size;
+	addNode(nodes.end(),n);
+	n->seed = NULL;
 };
 
 list<tNode *>::iterator tNode::addNode(list<tNode *>::iterator p, tNode *n) {
