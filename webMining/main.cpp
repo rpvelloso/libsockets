@@ -89,7 +89,7 @@ public:
 	virtual ~tCustomDOM() {
 		if (r) {
 			if (xml) cout << "<region-count>" << g << "</region-count>" << endl << "<record-count>" << r << "</record-count>" << endl << "</extraction>" << endl;
-			else cout << "<h3>Found " << r << " results in " << g << " regions.</h3></html>" << endl;
+			else cout << "<h3>Found " << r << " result(s) in " << g << " region(s).</h3></html>" << endl;
 		}
 		exit(0);
 	};
