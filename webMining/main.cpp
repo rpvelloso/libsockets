@@ -137,8 +137,8 @@ public:
 				if (xml) cout << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << endl << "<extraction>" << endl;
 				else cout << "<html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'/></head>" << endl;
 			}
-			if (xml) cout << "\t<region number=\"" << g << "\">" << endl;
-			else cout << "<b>Region " << g << "</b><br>" << endl << "<table border=1>" << endl;
+			if (xml) cout << "\t<region number=\"" << g << "\" recsize=\"" << getRecord(recs[0],recs[0]).size() << "\" reccount=\"" << recs.size() << "\">" << endl;
+			else cout << "<b>Region " << g << " / recsize " << getRecord(recs[0],recs[0]).size() << " / reccount " << recs.size() << "</b><br>" << endl << "<table border=1>" << endl;
 			for (size_t i=0;i<recs.size();i++) {
 				list<tNode *> fields = getRecord(recs[0],recs[i]);
 
