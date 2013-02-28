@@ -413,8 +413,12 @@ void tDOM::treeAlign(tNode* a, tNode* b, int **m, tNode *rec) {
 
 list <tNode *> tDOM::getRecord(tNode * seed, tNode *rec) {
 	list<tNode *> ret;
+	list<tNode *>::iterator i;
+	size_t recsize=0;
 
 	getAlignment(seed,rec,ret);
+	for (i=ret.begin();i!=ret.end();i++) recsize += ((*i)!=NULL);
+	if (!recsize) ret.clear();
 	return ret;
 }
 
@@ -422,13 +426,13 @@ void tDOM::getAlignment(tNode *seed, tNode *rec, list<tNode *> &attrs) {
 	list <tNode *>::iterator i;
 
 	for (i=seed->nodes.begin();i!=seed->nodes.end();i++) {
-		if ((*i)->nodes.size() == 0 && (*i)->alignments.size() > 0) {
-			if ((*i)->alignments[rec] != NULL) {
+		if ((*i)->nodes.size() == 0) {
+			if ((*i)->alignments.find(rec) != (*i)->alignments.end()) {
 				if ((*i)->alignments[rec]->parent->tagName == "a")
 					attrs.push_back((*i)->alignments[rec]->parent);
 				else
 					attrs.push_back((*i)->alignments[rec]);
-			}
+			} else attrs.push_back(NULL);
 		} else getAlignment(*i,rec,attrs);
 	}
 }
