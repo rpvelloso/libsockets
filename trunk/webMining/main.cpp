@@ -21,6 +21,7 @@
 #include <iostream>
 #include <fstream>
 #include <unistd.h>
+#include <cmath>
 #include "tnode.h"
 #include "tdom.h"
 #include "misc.h"
@@ -130,36 +131,46 @@ public:
 
 	virtual void onDataRecordFound(tDataRegion dr) {
 		vector<tNode *> recs = partialTreeAlignment(dr);
+		list<tNode *> alignments[recs.size()];
+		size_t reccount=0,recsize=0;
 
-		if (recs.size() > 0) {
+		for (size_t i=0;i<recs.size();i++) {
+			alignments[i] = getRecord(recs[0],recs[i]);
+			reccount += (alignments[i].size()>0);
+			recsize = max(recsize,alignments[i].size());
+		}
+
+		if (reccount > 0) {
 			int rr=0;
 			if (!g++) {
 				if (xml) cout << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" << endl << "<extraction>" << endl;
 				else cout << "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'/></head>" << endl;
 			}
-			if (xml) cout << "\t<region number=\"" << g << "\" recsize=\"" << getRecord(recs[0],recs[0]).size() << "\" reccount=\"" << recs.size() << "\">" << endl;
-			else cout << "<b>Region " << g << " / recsize " << getRecord(recs[0],recs[0]).size() << " / reccount " << recs.size() << "</b><br>" << endl << "<table border=1>" << endl;
+			if (xml) cout << "\t<region number=\"" << g << "\" recsize=\"" << recsize << "\" reccount=\"" << reccount << "\">" << endl;
+			else cout << "<b>Region " << g << " / recsize " << recsize << " / reccount " << reccount << "</b><br>" << endl << "<table border=1>" << endl;
 			for (size_t i=0;i<recs.size();i++) {
-				list<tNode *> fields = getRecord(recs[0],recs[i]);
+				list<tNode *> fields = alignments[i];
 
-				r++; rr++;
+				if (alignments[i].size() > 0) {
+					r++; rr++;
 
-				if (xml) cout << "\t\t<record number=\"" << rr << "\">" << endl;
-				else cout << "<tr><td>" << rr << "</td>";
+					if (xml) cout << "\t\t<record number=\"" << rr << "\">" << endl;
+					else cout << "<tr><td>" << rr << "</td>";
 
-				for (list<tNode *>::iterator j=fields.begin();j!=fields.end();j++) {
-					if (xml) {
-						cout << "\t\t\t<field ";
-						if ((*j)) cout << "tag=\"" << (*j)->tagName << "\">" << (*j)->text << "</field>" << endl;
-						else cout << "tag=\"\"></field>" << endl;
-					} else {
-						cout << "<td>";
-						if ((*j)) printNode(*j,1);
-						cout << "</td>";
+					for (list<tNode *>::iterator j=fields.begin();j!=fields.end();j++) {
+						if (xml) {
+							cout << "\t\t\t<field ";
+							if ((*j)) cout << "tag=\"" << (*j)->tagName << "\">" << (*j)->text << "</field>" << endl;
+							else cout << "tag=\"\"></field>" << endl;
+						} else {
+							cout << "<td>";
+							if ((*j)) printNode(*j,1);
+							cout << "</td>";
+						}
 					}
+					if (xml) cout << "\t\t</record>" << endl;
+					else cout << "</tr>" << endl;
 				}
-				if (xml) cout << "\t\t</record>" << endl;
-				else cout << "</tr>" << endl;
 			}
 			if (xml) cout << "\t</region>" << endl;
 			else cout << "</table><br>" << endl;
@@ -200,7 +211,7 @@ void printUsage(char *p)
 
 int main(int argc, char *argv[])
 {
-	int opt,mdr=0,tp=0,mineForms=0;
+	int opt,mdr=0,tp=0,mineForms=0,dbg=0;
 	float st=1.0; // similarity threshold
 	string inp="",search="",pattern="",filterStr="";
 	tCustomDOM *d = new tCustomDOM();
@@ -208,7 +219,7 @@ int main(int argc, char *argv[])
 	tFormExtractDOM *fe = new tFormExtractDOM();
 	fstream patternFile,inputFile;
 
-	while ((opt = getopt(argc, argv, "i:t:s:p:f:x:mhvd")) != -1) {
+	while ((opt = getopt(argc, argv, "i:t:s:p:f:x:d:mhv")) != -1) {
 		switch (opt) {
 		case 'i':
 			inp = optarg;
@@ -236,7 +247,8 @@ int main(int argc, char *argv[])
 			else if (string(optarg) == "ml") d->xml=1;
 			break;
 		case 'd':
-			mineForms = 1;
+			if (!optarg) mineForms = 1;
+			else if (string(optarg) == "ebug") dbg=1;
 			break;
 		case 'h':
 		default:
@@ -244,6 +256,8 @@ int main(int argc, char *argv[])
 	    break;
 		}
 	}
+
+	if (!dbg) fclose(stderr);
 
 	if (pattern != "") {
 		patternFile.open(pattern.c_str());

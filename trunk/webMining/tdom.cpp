@@ -423,7 +423,12 @@ void tDOM::getAlignment(tNode *seed, tNode *rec, list<tNode *> &attrs) {
 
 	for (i=seed->nodes.begin();i!=seed->nodes.end();i++) {
 		if ((*i)->nodes.size() == 0 && (*i)->alignments.size() > 0) {
-			attrs.push_back((*i)->alignments[rec]);
+			if ((*i)->alignments[rec] != NULL) {
+				if ((*i)->alignments[rec]->parent->tagName == "a")
+					attrs.push_back((*i)->alignments[rec]->parent);
+				else
+					attrs.push_back((*i)->alignments[rec]);
+			}
 		} else getAlignment(*i,rec,attrs);
 	}
 }
@@ -684,7 +689,6 @@ vector<tNode *> tDOM::partialTreeAlignment(tDataRegion dr) {
 			seedSize = trees[0]->size;
 			for (size_t j=1;j<trees.size();j++)
 				STM(trees[0],trees[j],trees[j]);
-			//break;
 		}
 	}
 	return trees;
