@@ -145,13 +145,13 @@ public:
 
 			if (!g++) {
 				if (xml)
-					cout << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" << endl << "<extraction>" << endl;
+					cout << "<?xml version=\"1.0\"""?>" << endl << "<extraction>" << endl;
 				else
-					cout << "<html><head><meta http-equiv='Content-Type' content='text/html; charset='iso-8859-1'/></head>" << endl;
+					cout << "<html>" << endl;
 			}
 
 			if (xml)
-				cout << "\t<region number=\"" << g << "\" recsize=\"" << recsize << "\" reccount=\"" << reccount << "\">" << endl;
+				cout << " <region number=\"" << g << "\" recsize=\"" << recsize << "\" reccount=\"" << reccount << "\">" << endl;
 			else
 				cout << "<b>Region " << g << " / recsize " << recsize << " / reccount " << reccount << "</b><br>" << endl << "<table border=1>" << endl;
 
@@ -162,15 +162,18 @@ public:
 					r++; gr++;
 
 					if (xml)
-						cout << "\t\t<record number=\"" << gr << "\">" << endl;
+						cout << "  <record number=\"" << gr << "\">" << endl;
 					else
 						cout << "<tr><td>" << gr << "</td>";
 
 					for (list<tNode *>::iterator j=fields.begin();j!=fields.end();j++) {
 						if (xml) {
-							cout << "\t\t\t<field tag=\"";
-							if ((*j)) cout << (*j)->tagName << "\">" << (*j)->text;
-							else cout << ">";
+							cout << "   <field tag=\"";
+							if ((*j)) {
+								cout << (*j)->tagName << "\"><![CDATA[";
+								printNode(*j,4);
+								cout << "]]>";
+							} else cout << "\">";
 							cout << "</field>" << endl;
 						} else {
 							cout << "<td>";
@@ -179,14 +182,14 @@ public:
 						}
 					}
 					if (xml)
-						cout << "\t\t</record>" << endl;
+						cout << "  </record>" << endl;
 					else
 						cout << "</tr>" << endl;
 				}
 			}
 
 			if (xml)
-				cout << "\t</region>" << endl;
+				cout << " </region>" << endl;
 			else
 				cout << "</table><br>" << endl;
 		}
