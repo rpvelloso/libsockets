@@ -145,9 +145,9 @@ public:
 
 			if (!g++) {
 				if (xml)
-					cout << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" << endl << "<extraction>" << endl;
+					cout << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" << endl << "<extraction>" << endl;
 				else
-					cout << "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'/></head>" << endl;
+					cout << "<html><head><meta http-equiv='Content-Type' content='text/html; charset=utf-8'/></head>" << endl;
 			}
 
 			if (xml)
@@ -178,12 +178,17 @@ public:
 							cout << "</td>";
 						}
 					}
-					if (xml) cout << "\t\t</record>" << endl;
-					else cout << "</tr>" << endl;
+					if (xml)
+						cout << "\t\t</record>" << endl;
+					else
+						cout << "</tr>" << endl;
 				}
 			}
-			if (xml) cout << "\t</region>" << endl;
-			else cout << "</table><br>" << endl;
+
+			if (xml)
+				cout << "\t</region>" << endl;
+			else
+				cout << "</table><br>" << endl;
 		}
 	};
 
