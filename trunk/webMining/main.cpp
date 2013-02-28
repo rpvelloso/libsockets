@@ -141,27 +141,37 @@ public:
 		}
 
 		if (reccount > 0) {
-			int rr=0;
+			int gr=0;
+
 			if (!g++) {
-				if (xml) cout << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" << endl << "<extraction>" << endl;
-				else cout << "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'/></head>" << endl;
+				if (xml)
+					cout << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" << endl << "<extraction>" << endl;
+				else
+					cout << "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'/></head>" << endl;
 			}
-			if (xml) cout << "\t<region number=\"" << g << "\" recsize=\"" << recsize << "\" reccount=\"" << reccount << "\">" << endl;
-			else cout << "<b>Region " << g << " / recsize " << recsize << " / reccount " << reccount << "</b><br>" << endl << "<table border=1>" << endl;
+
+			if (xml)
+				cout << "\t<region number=\"" << g << "\" recsize=\"" << recsize << "\" reccount=\"" << reccount << "\">" << endl;
+			else
+				cout << "<b>Region " << g << " / recsize " << recsize << " / reccount " << reccount << "</b><br>" << endl << "<table border=1>" << endl;
+
 			for (size_t i=0;i<recs.size();i++) {
 				list<tNode *> fields = alignments[i];
 
 				if (alignments[i].size() > 0) {
-					r++; rr++;
+					r++; gr++;
 
-					if (xml) cout << "\t\t<record number=\"" << rr << "\">" << endl;
-					else cout << "<tr><td>" << rr << "</td>";
+					if (xml)
+						cout << "\t\t<record number=\"" << gr << "\">" << endl;
+					else
+						cout << "<tr><td>" << gr << "</td>";
 
 					for (list<tNode *>::iterator j=fields.begin();j!=fields.end();j++) {
 						if (xml) {
-							cout << "\t\t\t<field ";
-							if ((*j)) cout << "tag=\"" << (*j)->tagName << "\">" << (*j)->text << "</field>" << endl;
-							else cout << "tag=\"\"></field>" << endl;
+							cout << "\t\t\t<field tag=\"";
+							if ((*j)) cout << (*j)->tagName << "\">" << (*j)->text;
+							else cout << ">";
+							cout << "</field>" << endl;
 						} else {
 							cout << "<td>";
 							if ((*j)) printNode(*j,1);
