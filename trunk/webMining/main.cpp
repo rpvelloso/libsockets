@@ -151,10 +151,10 @@ public:
 			}
 
 			if (xml) {
-				cout << " <region number=\"" << g << "\" recsize=\"" << recsize << "\" reccount=\"" << reccount << "\">" << endl;
+				cout << " <region number=\"" << g << "\" recsize=\"" << recsize << "\" reccount=\"" << reccount << "\" score=\"" << recsize*reccount << "\">" << endl;
 				cout << "  <regex><![CDATA[" + getRegEx(recs[0],reccount) + "]]></regex>" << endl;
 			} else {
-				cout << "<b>Region " << g << " / recsize " << recsize << " / reccount " << reccount << "</b><br>" << endl << "<table border=1>" << endl;
+				cout << "<b><div>Region <span>" << g << "</span> / Rec. size  <span>" << recsize << "</span> / Rec. Count <span>" << reccount << "</span> / Score <span>" << recsize*reccount << "</span></div></b><br>" << endl << "<table border=1>" << endl;
 				cout << "<tr><td>RegEx</td><td colspan=" << recsize << "><textarea>" << getRegEx(recs[0],reccount) << "</textarea></td></tr>" << endl;
 			}
 
