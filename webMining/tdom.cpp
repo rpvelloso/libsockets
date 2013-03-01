@@ -706,7 +706,7 @@ string tDOM::getRegEx(tNode* seed, int reccount, int lvl) {
 	for (list<tNode *>::iterator i=seed->nodes.begin();i!=seed->nodes.end();i++) {
 		ret = ret + "\n";
 		for (int j=0;j<lvl;j++) ret = ret + "  ";
-		ret = ret + (*i)->tagName + (((*i)->matches == reccount)?"":"?");
+		ret = ret + ((*i)->type==0?"<":"") + (*i)->tagName + ((*i)->type==0?">":"") + (((*i)->matches == reccount)?"":"?");
 		s = getRegEx((*i),(*i)->matches,lvl+1);
 		if (s != "") {
 			for (int j=0;j<=lvl;j++) s = "  " + s;
