@@ -35,7 +35,7 @@ friend class tCustomDOM;
 public:
 	tNode(int, string);
 	virtual ~tNode();
-	void addNode(tNode *);
+	tNode *addNode(tNode *);
 	list<tNode *>::iterator addNode(list<tNode *>::iterator, tNode *);
 	int getType();
 	string &getText();
