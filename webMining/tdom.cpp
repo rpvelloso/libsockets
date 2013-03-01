@@ -698,6 +698,22 @@ vector<tNode *> tDOM::partialTreeAlignment(tDataRegion dr) {
 	return trees;
 }
 
+string tDOM::getRegEx(tNode* seed, int reccount, int lvl) {
+	string ret="",s;
+
+	for (list<tNode *>::iterator i=seed->nodes.begin();i!=seed->nodes.end();i++) {
+		ret = ret + "\r\n";
+		for (int j=0;j<lvl;j++) ret = ret + "  ";
+		ret = ret + (*i)->tagName + (((*i)->matches == reccount)?"":"?");
+		s = getRegEx((*i),(*i)->matches,lvl+1);
+		if (s != "") {
+			for (int j=0;j<=lvl;j++) s = "  " + s;
+			ret = ret + "(\r\n" + s + ") ";
+		} else ret = ret + " ";
+	}
+	return trim(ret);
+}
+
 void tDOM::onDataRegionFound(tDataRegion region, int K, float st) {
 	list<tNode *>::iterator i=region.s;
 	tNode *n = new tNode(0,"");

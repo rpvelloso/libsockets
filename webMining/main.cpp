@@ -150,10 +150,13 @@ public:
 					cout << "<html>" << endl;
 			}
 
-			if (xml)
+			if (xml) {
 				cout << " <region number=\"" << g << "\" recsize=\"" << recsize << "\" reccount=\"" << reccount << "\">" << endl;
-			else
+				cout << "  <regex><![CDATA[" + getRegEx(recs[0],reccount) + "]]></regex>" << endl;
+			} else {
 				cout << "<b>Region " << g << " / recsize " << recsize << " / reccount " << reccount << "</b><br>" << endl << "<table border=1>" << endl;
+				cout << "<tr><td>RegEx</td><td colspan=" << recsize << "><textarea>" << getRegEx(recs[0],reccount) << "</textarea></td></tr>" << endl;
+			}
 
 			for (size_t i=0;i<recs.size();i++) {
 				list<tNode *> fields = alignments[i];

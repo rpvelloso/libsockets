@@ -21,6 +21,7 @@
 #define MISC_H_
 
 #include <map>
+#include <sstream>
 
 #define lowerCase(s) std::transform(s.begin(), s.end(), s.begin(), (int(*)(int))std::tolower)
 
@@ -38,6 +39,14 @@ int multimap_pair_search(multimap<K,V> &mm, K k, V v) {
 			if ((*i).second == v) return 0;
 		}
 		return -1;
+}
+
+template<typename T>
+string to_string(T val) {
+	stringstream ss;
+
+	ss << val;
+	return ss.str();
 }
 
 #endif /* MISC_H_ */
