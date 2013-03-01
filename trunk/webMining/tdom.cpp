@@ -47,8 +47,8 @@ set<string> itemTags(itags,itags+15);
 static string stags[] = {"img","br","meta","param","area","link","doctype"}; // tags without subtree
 set<string> singleTags(stags,stags+7);
 
-static string igtags[] = {"script","head","doctype"};
-set<string> ignoreTags(igtags,igtags+3);
+static string igtags[] = {"script","noscript","head","doctype"};
+set<string> ignoreTags(igtags,igtags+4);
 
 /* maps an item to it's containers */
 static pair<string,string> limap[] = {
