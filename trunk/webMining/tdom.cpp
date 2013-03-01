@@ -189,7 +189,7 @@ int tDOM::scan(istream &htmlInput) {
 		{-1, 5,-1,-1, 0,-1,-1,-1,-1,-1,-1},
 		{-1, 3,-1,-1, 0,-1,-1,-1,-1,-1,-1},
 		{-1,-1, 4,-1, 0,-1,-1, 4,-1,-1, 4},
-		{ 1,-1,-1,-1, 0,-1,-1,-1,-1,-1,-1},
+		{ 1,-1, 1,-1, 0,-1,-1,-1,-1,-1, 1},
 		{-1,-1,-1,-1, 0, 8, 7,-1, 9, 6,-1},
 	};
 
@@ -220,6 +220,7 @@ int tDOM::scan(istream &htmlInput) {
 		case 2:
 		case 10:
 			if (c == '>') ct = 3;
+			else if (c == '<') ct = 4;
 			else ct = 0;
 			break;
 		case 3:
@@ -253,6 +254,7 @@ int tDOM::scan(istream &htmlInput) {
 		if ((oldsta == 9) && (state != 9)) oc = 0;
 		if (!state && !oldsta) text += c;
 		if (oc) comment += c;
+		if (state == 1) tagName = "";
 
 		if (state == 4) {
 			trim(tagName);

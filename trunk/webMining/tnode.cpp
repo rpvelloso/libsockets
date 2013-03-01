@@ -60,11 +60,12 @@ tNode::~tNode() {
 	alignments.clear();
 }
 
-void tNode::addNode(tNode *n) {
+tNode *tNode::addNode(tNode *n) {
 	if (n) {
 		addNode(nodes.end(),n);
 		n->seed = NULL;
 	}
+	return n;
 };
 
 list<tNode *>::iterator tNode::addNode(list<tNode *>::iterator p, tNode *n) {
