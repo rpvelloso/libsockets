@@ -85,29 +85,31 @@ protected:
 class tCustomDOM : public tDOM {
 public:
 	tCustomDOM() : tDOM() {
-		g = r = xml = maxScore = 0;
+		g = r = xml = maxScore = maxCount = recCountDisplay = 0;
 		filterStr = "";
 		filterTag = "";
 	};
 	virtual ~tCustomDOM() {
-		if (r) {
-			if (xml) cout << "<scores>";
-			else cout << "<br><div id='scores'>";
+		if (!recCountDisplay) {
+			if (r) {
+				if (xml) cout << "<scores>";
+				else cout << "<br><div id='scores'>";
 
-			for (list<int>::iterator i=scores.begin();i!=scores.end();i++) {
-				cout << (*i) << ";" << 100.00*(float)(*i)/(float)maxScore << "%";
-				if (!xml) cout << "<br>";
+				for (list<int>::iterator i=scores.begin();i!=scores.end();i++) {
+					cout << (*i) << ";" << 100.00*(float)(*i)/(float)maxScore << "%";
+					if (!xml) cout << "<br>";
+					cout << endl;
+				}
+
+				if (xml) cout << "</scores>";
+				else cout << "</div>";
 				cout << endl;
+
+				scores.clear();
 			}
-
-			if (xml) cout << "</scores>";
-			else cout << "</div>";
-			cout << endl;
-
-			scores.clear();
-		}
-		if (xml) cout << "<region-count>" << g << "</region-count>" << endl << "<record-count>" << r << "</record-count>" << endl << "</extraction>" << endl;
-		else cout << "<h3>Found " << r << " result(s) in " << g << " region(s).</h3></html>" << endl;
+			if (xml) cout << "<region-count>" << g << "</region-count>" << endl << "<record-count>" << r << "</record-count>" << endl << "</extraction>" << endl;
+			else cout << "<h3>Found " << r << " result(s) in " << g << " region(s).</h3></html>" << endl;
+		} else cout << maxCount << endl;
 		exit(0);
 	};
 	virtual void onTagFound(tNode *n) {
@@ -160,60 +162,63 @@ public:
 			int gr=0,score=reccount*recsize;
 
 			maxScore = max(maxScore,score);
+			if (maxScore == score) maxCount = reccount;
 			scores.push_back(score);
 
-			if (!g++) {
-				if (xml)
-					cout << "<?xml version=\"1.0\"""?>" << endl << "<extraction>" << endl;
-				else
-					cout << "<html>" << endl;
-			}
-
-			if (xml) {
-				cout << " <region number=\"" << g << "\" recsize=\"" << recsize << "\" reccount=\"" << reccount << "\" score=\"" << recsize*reccount << "\">" << endl;
-				cout << "  <regex><![CDATA[" + getRegEx(recs[0],reccount) + "]]></regex>" << endl;
-			} else {
-				cout << "<b><div>Region <span>" << g << "</span> / Rec. size  <span>" << recsize << "</span> / Rec. Count <span>" << reccount << "</span> / Score <span>" << recsize*reccount << "</span></div></b><br>" << endl << "<table border=1>" << endl;
-				cout << "<tr><td>RegEx</td><td colspan=" << recsize << "><textarea>" << getRegEx(recs[0],reccount) << "</textarea></td></tr>" << endl;
-			}
-
-			for (size_t i=0;i<recs.size();i++) {
-				list<tNode *> fields = alignments[i];
-
-				if (alignments[i].size() > 0) {
-					r++; gr++;
-
+			if (!recCountDisplay) {
+				if (!g++) {
 					if (xml)
-						cout << "  <record number=\"" << gr << "\">" << endl;
+						cout << "<?xml version=\"1.0\"""?>" << endl << "<extraction>" << endl;
 					else
-						cout << "<tr><td>" << gr << "</td>";
-
-					for (list<tNode *>::iterator j=fields.begin();j!=fields.end();j++) {
-						if (xml) {
-							cout << "   <field tag=\"";
-							if ((*j)) {
-								cout << (*j)->tagName << "\"><![CDATA[";
-								printNode(*j,4);
-								cout << "]]>";
-							} else cout << "\">";
-							cout << "</field>" << endl;
-						} else {
-							cout << "<td>";
-							if ((*j)) printNode(*j,1);
-							cout << "</td>";
-						}
-					}
-					if (xml)
-						cout << "  </record>" << endl;
-					else
-						cout << "</tr>" << endl;
+						cout << "<html>" << endl;
 				}
-			}
 
-			if (xml)
-				cout << " </region>" << endl;
-			else
-				cout << "</table><br>" << endl;
+				if (xml) {
+					cout << " <region number=\"" << g << "\" recsize=\"" << recsize << "\" reccount=\"" << reccount << "\" score=\"" << recsize*reccount << "\">" << endl;
+					cout << "  <regex><![CDATA[" + getRegEx(recs[0],reccount) + "]]></regex>" << endl;
+				} else {
+					cout << "<b><div>Region <span>" << g << "</span> / Rec. size  <span>" << recsize << "</span> / Rec. Count <span>" << reccount << "</span> / Score <span>" << recsize*reccount << "</span></div></b><br>" << endl << "<table border=1>" << endl;
+					cout << "<tr><td>RegEx</td><td colspan=" << recsize << "><textarea>" << getRegEx(recs[0],reccount) << "</textarea></td></tr>" << endl;
+				}
+
+				for (size_t i=0;i<recs.size();i++) {
+					list<tNode *> fields = alignments[i];
+
+					if (alignments[i].size() > 0) {
+						r++; gr++;
+
+						if (xml)
+							cout << "  <record number=\"" << gr << "\">" << endl;
+						else
+							cout << "<tr><td>" << gr << "</td>";
+
+						for (list<tNode *>::iterator j=fields.begin();j!=fields.end();j++) {
+							if (xml) {
+								cout << "   <field tag=\"";
+								if ((*j)) {
+									cout << (*j)->tagName << "\"><![CDATA[";
+									printNode(*j,4);
+									cout << "]]>";
+								} else cout << "\">";
+								cout << "</field>" << endl;
+							} else {
+								cout << "<td>";
+								if ((*j)) printNode(*j,1);
+								cout << "</td>";
+							}
+						}
+						if (xml)
+							cout << "  </record>" << endl;
+						else
+							cout << "</tr>" << endl;
+					}
+				}
+
+				if (xml)
+					cout << " </region>" << endl;
+				else
+					cout << "</table><br>" << endl;
+			}
 		}
 	};
 
@@ -227,14 +232,14 @@ public:
 		return ret && n->depth>2;
 	};
 
-	int g,r,xml,maxScore;
+	int g,r,xml,maxScore,maxCount,recCountDisplay;
 	string filterStr,filterTag;
 	list<int> scores;
 };
 
 void printUsage(char *p)
 {
-	cout << "usage: "<<p<<" [-i input_file] [-o output_file] [-p pattern file] [-s search_string] [-v] [-t ###.##] [-m] [-xml] [-f str] [-x] [-d]"<<endl;
+	cout << "usage: "<<p<<" [-i input_file] [-o output_file] [-p pattern file] [-s search_string] [-v] [-t ###.##] [-m] [-xml] [-f str] [-x] [-d] [-c]"<<endl;
 	cout << "-i   input file (default stdin)"<<endl;
 	cout << "-o   output file (default stdout)"<<endl;
 	cout << "-p   pattern file to search for"<<endl;
@@ -246,6 +251,7 @@ void printUsage(char *p)
 	cout << "-f   text filter string" << endl;
 	cout << "-x   display tag path of input" << endl;
 	cout << "-d   mine forms and fields" << endl;
+	cout << "-c   displays only record count of main region." << endl;
 	exit(-1);
 }
 
@@ -261,8 +267,11 @@ int main(int argc, char *argv[])
 	tFormExtractDOM *fe = new tFormExtractDOM();
 	fstream patternFile,inputFile,outputFile;
 
-	while ((opt = getopt(argc, argv, "i:o:t:s:p:f:xx:dd:mhv")) != -1) {
+	while ((opt = getopt(argc, argv, "i:o:t:s:p:f:xx:dd:mhvc")) != -1) {
 		switch (opt) {
+		case 'c':
+			d->recCountDisplay = 1;
+			break;
 		case 'i':
 			inp = optarg;
 			break;
