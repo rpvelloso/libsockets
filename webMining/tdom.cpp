@@ -741,11 +741,8 @@ void tDOM::onDataRegionFound(tDataRegion region, int K, float st) {
 		for (i=region.s;i!=region.e;i++) {
 			list<tNode *>::iterator l;
 
-			n->clear();
-			for (l=(*i)->nodes.begin();l!=(*i)->nodes.end();l++)
-				n->addNode(*l);
-			records = MDR(n,K,st,0);
-			if (records.size()==1 && records.front().DRLength == n->nodes.size()) {
+			records = MDR((*i),K,st,0);
+			if (records.size()==1 && records.front().DRLength == (*i)->nodes.size()) {
 				n->clear();
 				for (i=region.s;i!=region.e;i++) {
 					for (l=(*i)->nodes.begin();l!=(*i)->nodes.end();l++) {

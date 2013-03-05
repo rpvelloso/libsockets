@@ -18,10 +18,12 @@
  */
 
 #include <cstdlib>
+#include <cstdio>
 #include <iostream>
 #include <fstream>
 #include <unistd.h>
 #include <cmath>
+#include <cerrno>
 #include "tnode.h"
 #include "tdom.h"
 #include "misc.h"
@@ -83,15 +85,29 @@ protected:
 class tCustomDOM : public tDOM {
 public:
 	tCustomDOM() : tDOM() {
-		g = r = xml = 0;
+		g = r = xml = maxScore = 0;
 		filterStr = "";
 		filterTag = "";
 	};
 	virtual ~tCustomDOM() {
 		if (r) {
-			if (xml) cout << "<region-count>" << g << "</region-count>" << endl << "<record-count>" << r << "</record-count>" << endl << "</extraction>" << endl;
-			else cout << "<h3>Found " << r << " result(s) in " << g << " region(s).</h3></html>" << endl;
+			if (xml) cout << "<scores>";
+			else cout << "<br><div id='scores'>";
+
+			for (list<int>::iterator i=scores.begin();i!=scores.end();i++) {
+				cout << (*i) << ";" << 100.00*(float)(*i)/(float)maxScore << "%";
+				if (!xml) cout << "<br>";
+				cout << endl;
+			}
+
+			if (xml) cout << "</scores>";
+			else cout << "</div>";
+			cout << endl;
+
+			scores.clear();
 		}
+		if (xml) cout << "<region-count>" << g << "</region-count>" << endl << "<record-count>" << r << "</record-count>" << endl << "</extraction>" << endl;
+		else cout << "<h3>Found " << r << " result(s) in " << g << " region(s).</h3></html>" << endl;
 		exit(0);
 	};
 	virtual void onTagFound(tNode *n) {
@@ -141,7 +157,10 @@ public:
 		}
 
 		if (reccount > 0) {
-			int gr=0;
+			int gr=0,score=reccount*recsize;
+
+			maxScore = max(maxScore,score);
+			scores.push_back(score);
 
 			if (!g++) {
 				if (xml)
@@ -208,14 +227,16 @@ public:
 		return ret && n->depth>2;
 	};
 
-	int g,r,xml;
+	int g,r,xml,maxScore;
 	string filterStr,filterTag;
+	list<int> scores;
 };
 
 void printUsage(char *p)
 {
-	cout << "usage: "<<p<<" [-i input_file] [-p pattern file] [-s search_string] [-v] [-t ###.##] [-m] [-xml] [-f str] [-x] [-d]"<<endl;
+	cout << "usage: "<<p<<" [-i input_file] [-o output_file] [-p pattern file] [-s search_string] [-v] [-t ###.##] [-m] [-xml] [-f str] [-x] [-d]"<<endl;
 	cout << "-i   input file (default stdin)"<<endl;
+	cout << "-o   output file (default stdout)"<<endl;
 	cout << "-p   pattern file to search for"<<endl;
 	cout << "-s   search string: a list of tags to search for (tag1,tag2,...)"<<endl;
 	cout << "-t   value. Similarity threshold. default 100%. Ex.: -t 90.7 (90.7%)" << endl;
@@ -234,16 +255,19 @@ int main(int argc, char *argv[])
 {
 	int opt,mdr=0,tp=0,mineForms=0,dbg=0;
 	float st=1.0; // similarity threshold
-	string inp="",search="",pattern="",filterStr="";
+	string inp="",outp="",search="",pattern="",filterStr="";
 	tCustomDOM *d = new tCustomDOM();
 	tCustomDOM *p = new tCustomDOM();
 	tFormExtractDOM *fe = new tFormExtractDOM();
-	fstream patternFile,inputFile;
+	fstream patternFile,inputFile,outputFile;
 
-	while ((opt = getopt(argc, argv, "i:t:s:p:f:x:d:mhv")) != -1) {
+	while ((opt = getopt(argc, argv, "i:o:t:s:p:f:xx:dd:mhv")) != -1) {
 		switch (opt) {
 		case 'i':
 			inp = optarg;
+			break;
+		case 'o':
+			outp = optarg;
 			break;
 		case 's':
 			search = optarg;
@@ -302,6 +326,15 @@ int main(int argc, char *argv[])
 		}
 	} else {
 		d->scan(cin);
+	}
+
+	if (outp != "") {
+		FILE *outf = fopen(outp.c_str(),"w");
+
+		if (outf && !errno) {
+			dup2(fileno(outf),fileno(stdout));
+			fclose(outf);
+		}
 	}
 
 	if (mineForms) {
