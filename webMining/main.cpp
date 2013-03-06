@@ -239,7 +239,7 @@ public:
 
 void printUsage(char *p)
 {
-	cout << "usage: "<<p<<" [-i input_file] [-o output_file] [-p pattern file] [-s search_string] [-v] [-t ###.##] [-m] [-xml] [-f str] [-x] [-d] [-c]"<<endl;
+	cout << "usage: "<<p<<" [-i input_file] [-o output_file] [-p pattern file] [-s search_string] [-v] [-t ###.##] [-m] [-xml] [-f str] [-a] [-g] [-c]"<<endl;
 	cout << "-i   input file (default stdin)"<<endl;
 	cout << "-o   output file (default stdout)"<<endl;
 	cout << "-p   pattern file to search for"<<endl;
@@ -249,8 +249,8 @@ void printUsage(char *p)
 	cout << "-m   performs MDR" << endl;
 	cout << "-xml outputs MDR results in XML format" << endl;
 	cout << "-f   text filter string" << endl;
-	cout << "-x   display tag path of input" << endl;
-	cout << "-d   mine forms and fields" << endl;
+	cout << "-a   display tag path of input" << endl;
+	cout << "-g   mine forms and fields" << endl;
 	cout << "-c   displays only record count of main region." << endl;
 	exit(-1);
 }
@@ -267,7 +267,7 @@ int main(int argc, char *argv[])
 	tFormExtractDOM *fe = new tFormExtractDOM();
 	fstream patternFile,inputFile,outputFile;
 
-	while ((opt = getopt(argc, argv, "i:o:t:s:p:f:xx:dd:mhvc")) != -1) {
+	while ((opt = getopt(argc, argv, "i:o:t:s:p:f:x:d:mhvcga")) != -1) {
 		switch (opt) {
 		case 'c':
 			d->recCountDisplay = 1;
@@ -296,13 +296,19 @@ int main(int argc, char *argv[])
 		case 'f':
 			filterStr = optarg;
 			break;
+		case 'a':
+			tp = 1;
+			break;
 		case 'x':
-			if (!optarg) tp = 1;
-			else if (string(optarg) == "ml") d->xml=1;
+			if (optarg && string(optarg) == "ml") d->xml=1;
+			else printUsage(argv[0]);
+			break;
+		case 'g':
+			mineForms = 1;
 			break;
 		case 'd':
-			if (!optarg) mineForms = 1;
-			else if (string(optarg) == "ebug") dbg=1;
+			if (optarg && string(optarg) == "ebug") dbg=1;
+			else  printUsage(argv[0]);
 			break;
 		case 'h':
 		default:
