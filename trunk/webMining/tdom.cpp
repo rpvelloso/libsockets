@@ -739,10 +739,10 @@ void tDOM::onDataRegionFound(tDataRegion region, int K, float st) {
 		}
 	} else {
 		for (i=region.s;i!=region.e;i++) {
-			list<tNode *>::iterator l;
+			list<tNode *>::iterator l=i;
 
 			records = MDR((*i),K,st,0);
-			if (records.size()==1 && records.front().DRLength == (*i)->nodes.size()) {
+			if (records.size()==1 && records.front().DRLength == n->nodes.size()) {
 				n->clear();
 				for (i=region.s;i!=region.e;i++) {
 					for (l=(*i)->nodes.begin();l!=(*i)->nodes.end();l++) {
@@ -791,14 +791,12 @@ int tDOM::treeDepth(tNode* n) {
 void tDOM::printTagPath(string s, tNode *n) {
 	list<tNode *>::iterator i = n->nodes.begin();
 
-	s = s + "/" + n->getTagName();
-	if (!(n->nodes.size())) {
-		cout << s << endl;
-		return;
-	}
+	if (s == "") lineNo = 0;
 
-	for (;i!=n->nodes.end();i++) {
-		cout << s << endl;
+	s = s + "/" + n->getTagName();
+	cout << ++lineNo << ": " << s << endl;
+	if (!(n->nodes.size())) return;
+
+	for (;i!=n->nodes.end();i++)
 		printTagPath(s,*i);
-	}
 }

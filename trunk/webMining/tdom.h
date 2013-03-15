@@ -70,6 +70,7 @@ protected:
 	int verbose;
 	string ignoring;
 	int formOpen;
+	int lineNo;
 };
 
 #endif /* TDOM_H_ */
