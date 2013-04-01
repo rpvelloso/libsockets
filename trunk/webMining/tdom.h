@@ -21,6 +21,7 @@
 #define TDOM_H_
 
 #include <string>
+#include <sstream>
 #include <iostream>
 #include <set>
 #include <map>
@@ -59,6 +60,8 @@ protected:
 	int treeSize(tNode *);
 	int treeDepth(tNode *);
 
+	void page_segment(wstring);
+
 	virtual void onTagFound(tNode *) = 0;
 	virtual void onPatternFound(tNode *, tNode *, float) = 0;
 	virtual void onDataRecordFound(tDataRegion) = 0;
@@ -70,7 +73,10 @@ protected:
 	int verbose;
 	string ignoring;
 	int formOpen;
-	int lineNo;
+	int pathCount;
+	map<string, int> tagPathMap;
+	wstring tagPathSequence;
+	vector<tNode *> nodeSequence;
 };
 
 #endif /* TDOM_H_ */

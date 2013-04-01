@@ -21,6 +21,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <set>
 #include "tdom.h"
 #include "misc.h"
 
@@ -82,6 +83,7 @@ tDOM::tDOM() {
 	verbose = 0;
 	ignoring = "";
 	formOpen = 0;
+	nodeSequence.clear();
 };
 
 tDOM::~tDOM() {
@@ -788,15 +790,166 @@ int tDOM::treeDepth(tNode* n) {
 	return n->depth;
 }
 
+// naive lz decomposition
+template<class T>
+void lz_decomp(T &inp) {
+	size_t len = inp.size(),blk=0;
+
+	cout << endl << "LZ decomposition: " << endl;
+	for (size_t i=0;i<len;i++) {
+		T p,s;
+		size_t k,l;
+
+		s=inp.substr(i,len);
+		p=inp.substr(0,i);
+
+		k=l=0;
+		for (size_t j=0;j<=s.size();j++) {
+			size_t pos;
+
+			pos=p.find(s.substr(0,j));
+			if (pos != T::npos) {
+				k=pos;
+				l=j;
+			}
+		}
+
+		++blk;
+		if (l>=0) {
+			cout << blk << "\t";
+			if (k) {
+				cout << k << "\t" << l << "\t";
+				for (size_t m=0;m<l;m++) cout << s[m] << ((m!=l-1)?",":"");
+				i+=l-1;
+			} else cout << i << "\t" << 1 << "\t" << inp[i];
+			cout << endl;
+		}
+	}
+
+	/* TODO:
+	 * 1. armazenar blocos da decomposicao;
+	 * 2. para cada bloco,
+	 * 3.	se houver repeticao; e
+	 * 4.	esta tiver tamanho razoavel; e
+	 * 5.	ela nao ocorrer em nenhum outro bloco seguinte da decomposicao;
+	 * 6.	entao esta eh uma repeticao primitiva
+	 *
+	 * investigar - deteccao de diferentes regioes da pagina, atraves da mudanca do alfabeto,
+	 * quando a intersecacao dos alfabetos for vazia. clusterings?
+	 * 1. iniciar com um conjunto contendo todo o alfabeto;
+	 * 2. decrementar numero de ocorrencias a cada uma encontrada;
+	 * 3. remover do conjunto inicial e inserir no proximo conjunto quando numero de ocorrencias zerar;
+	 * 4. quando a interseccao for vazia, uma nova regiao inicia;
+	 * 5. excluir do conjunto incial, simbolos do alfabeto com poucas repeticoes (ruido)
+	 */
+}
+
+void tDOM::page_segment(wstring s) {
+	set<int> alphabet,filteredAlphabet,subAlphabet,intersect;
+	map<int,int> symCount,initialSymCount;
+	int regionCount=0,threshold=5,div;
+
+	for (size_t i=0;i<s.size();i++) {
+		if (alphabet.find(s[i]) == alphabet.end()) {
+			initialSymCount[s[i]]=0;
+			alphabet.insert(s[i]);
+		}
+		initialSymCount[s[i]]++;
+	}
+	filteredAlphabet = alphabet;
+
+	while (regionCount != 2) {
+		filteredAlphabet.clear();
+		for (map<int,int>::iterator j=initialSymCount.begin();j!=initialSymCount.end();j++) {
+			if ((*j).second > threshold) filteredAlphabet.insert((*j).first);
+		}
+		if (filteredAlphabet.size() == 0) break;
+		threshold++;
+
+		for (set<int>::iterator j=filteredAlphabet.begin();j!=filteredAlphabet.end();j++) {
+			cout << *j << "\t" << initialSymCount[*j] << endl;
+		}
+
+		subAlphabet.clear();
+		symCount = initialSymCount;
+		regionCount = 0;
+		for (size_t i=0;i<s.size();i++) {
+			subAlphabet.insert(s[i]);
+			if (filteredAlphabet.find(s[i]) != filteredAlphabet.end()) {
+				symCount[s[i]]--;
+				if (symCount[s[i]]==0) {
+					filteredAlphabet.erase(s[i]);
+					set_intersection(filteredAlphabet.begin(),filteredAlphabet.end(),subAlphabet.begin(),subAlphabet.end(),inserter(intersect,intersect.begin()));
+
+					cout << "s[i]=" << s[i] << endl;
+					for (set<int>::iterator j=filteredAlphabet.begin();j!=filteredAlphabet.end();j++) cout << *j << " ";
+					cout << endl;
+					for (set<int>::iterator j=subAlphabet.begin();j!=subAlphabet.end();j++) cout << *j << " ";
+					cout << endl;
+					for (set<int>::iterator j=intersect.begin();j!=intersect.end();j++) cout << *j << " ";
+					cout << endl << endl;
+
+					if (intersect.empty()) {
+						cout << "region detected (" << subAlphabet.size() << "): ";
+						for (set<int>::iterator j=subAlphabet.begin();j!=subAlphabet.end();j++) cout << (*j) << " ";
+						cout << endl;
+						subAlphabet.clear();
+						regionCount++;
+						if (regionCount == 2) {
+							tNode *n = nodeSequence[div+1];
+							int d = n->depth;
+							while (++div < nodeSequence.size()) {
+								if (nodeSequence[div]->depth <= d) {
+									printNode(nodeSequence[div],0);
+									//nodeSequence[div]->parent->nodes.remove(nodeSequence[div]);
+								}
+							}
+							//printNode(nodeSequence[0],0);
+							break;
+						} else div=i;
+					}
+					intersect.clear();
+				}
+			}
+		}
+	}
+	cout << "Threshold: " << threshold << endl;
+}
+
 void tDOM::printTagPath(string s, tNode *n) {
 	list<tNode *>::iterator i = n->nodes.begin();
+	int p;
 
-	if (s == "") lineNo = 0;
+	if (s == "") {
+		pathCount = 0;
+		tagPathMap.clear();
+		tagPathSequence.clear();
+		nodeSequence.clear();
+	}
+
+	p = pathCount;
 
 	s = s + "/" + n->getTagName();
-	cout << ++lineNo << ": " << s << endl;
+
+	if (tagPathMap.find(s) == tagPathMap.end()) {
+		pathCount++;
+		tagPathMap[s] = pathCount;
+	}
+	tagPathSequence = tagPathSequence + wchar_t(tagPathMap[s]);
+	nodeSequence.push_back(n);
+
+	cout << tagPathSequence.size()-1 << ":" << tagPathMap[s] << ":\t" << s << endl;
+
 	if (!(n->nodes.size())) return;
 
 	for (;i!=n->nodes.end();i++)
 		printTagPath(s,*i);
+
+	if (!p) {
+		/*for (size_t k=0;k<tagPathSequence.size();k++)
+			cout << tagPathSequence[k];
+		cout << endl;*/
+		//lz_decomp(tagPathSequence);
+		page_segment(tagPathSequence);
+	}
 }
