@@ -861,11 +861,33 @@ int tDOM::nodeSequenceSize(vector<tNode *> &ns, size_t b, size_t e) {
 	return e-b;//size;
 }
 
+bool tDOM::prune(tNode *n) {
+	list<tNode *> remove;
+
+	if (n == NULL) return false;
+
+	for (list<tNode *>::iterator i=n->nodes.begin();i!=n->nodes.end();i++) {
+		if (prune(*i)) remove.push_back(*i);
+	}
+
+	for (list<tNode *>::iterator i=remove.begin();i!=remove.end();i++)
+		n->nodes.remove(*i);
+
+	cout << n->tagName << endl;
+	if (find(nodeSequence.begin(),nodeSequence.end(),n) == nodeSequence.end() &&
+		n->nodes.empty()) {
+		return true;
+	}
+	return false;
+}
+
 void tDOM::noiseFilter(wstring s) {
 	set<int> alphabet,filteredAlphabet,subAlphabet,intersect;
 	map<int,int> symCount,initialSymCount;
 	int regionCount=0,threshold=3;
 	size_t div;
+
+	cout << "NS: " <<  nodeSequence.size() << "/" << s.size() << endl;
 
 	for (size_t i=0;i<s.size();i++) {
 		if (alphabet.find(s[i]) == alphabet.end()) {
@@ -922,32 +944,20 @@ void tDOM::noiseFilter(wstring s) {
 	}
 
 	if (regionCount == 2) {
-		if ((nodeSequence.size() - div) < nodeSequence.size()/2) {
-			tNode *n = nodeSequence[div+1];
-			int d = n->depth;
+		vector<tNode *>::const_iterator b,m,e;
 
+		b = nodeSequence.begin();
+		m = nodeSequence.begin() + div + 1;
+		e = nodeSequence.end();
+
+		if (div < nodeSequence.size()/2) {
 			s = s.substr(div+1,s.size());
-			body->nodes.clear();
-			while (++div < nodeSequence.size()) {
-				if (nodeSequence[div]->depth <= d) {
-					nodeSequence[div]->parent->nodes.remove(nodeSequence[div]);
-					nodeSequence[div]->parent = NULL;
-					body->addNode(nodeSequence[div]);
-					//d = nodeSequence[div]->depth;
-				}
-			}
+			nodeSequence.assign(m,e);
 		} else {
-			tNode *n = nodeSequence[div+1];
-			int d = n->depth;
-
 			s = s.substr(0,div);
-			while (++div < nodeSequence.size()) {
-				if (nodeSequence[div]->depth <= d) {
-					nodeSequence[div]->parent->nodes.remove(nodeSequence[div]);
-					//d = nodeSequence[div]->depth;
-				}
-			}
+			nodeSequence.assign(b,m);
 		}
+		prune(body);
 		noiseFilter(s);
 	}
 	cout << "Threshold: " << threshold << endl;
