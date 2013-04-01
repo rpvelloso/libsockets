@@ -62,6 +62,7 @@ protected:
 
 	void noiseFilter(wstring);
 	int nodeSequenceSize(vector<tNode *> &, size_t, size_t);
+	bool prune(tNode *);
 
 	virtual void onTagFound(tNode *) = 0;
 	virtual void onPatternFound(tNode *, tNode *, float) = 0;
