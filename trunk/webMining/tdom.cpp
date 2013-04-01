@@ -78,7 +78,7 @@ static pair<string,string> limap[] = {
 multimap<string,string> listItemMap(limap,limap+21);
 
 tDOM::tDOM() {
-	root = current = new tNode(-1,"");
+	root = current = body = new tNode(-1,"");
 	count = 0;
 	verbose = 0;
 	ignoring = "";
@@ -117,6 +117,8 @@ void tDOM::addNode(int tp, string tx) {
 					if (formOpen) break;
 					else formOpen=1;
 				}
+
+				if (n->tagName == "body") body = n;
 
 				/* auto close tags when nesting occurs */
 				if (itemTags.find(n->tagName) != itemTags.end()) {
@@ -835,7 +837,7 @@ void lz_decomp(T &inp) {
 	 * 6.	entao esta eh uma repeticao primitiva
 	 *
 	 * investigar - deteccao de diferentes regioes da pagina, atraves da mudanca do alfabeto,
-	 * quando a intersecacao dos alfabetos for vazia. clusterings?
+	 * quando a intersecacao dos alfabetos for vazia. clustering?
 	 * 1. iniciar com um conjunto contendo todo o alfabeto;
 	 * 2. decrementar numero de ocorrencias a cada uma encontrada;
 	 * 3. remover do conjunto inicial e inserir no proximo conjunto quando numero de ocorrencias zerar;
@@ -844,10 +846,26 @@ void lz_decomp(T &inp) {
 	 */
 }
 
-void tDOM::page_segment(wstring s) {
+int tDOM::nodeSequenceSize(vector<tNode *> &ns, size_t b, size_t e) {
+	int depth = ns[0]->depth;
+	int size = 0;
+
+	for (size_t i=b;i<=e && i < ns.size();i++) {
+		if (ns[i]->depth <= depth) {
+			size += ns[i]->size;
+			depth = ns[i]->depth;
+		}
+	}
+
+	cout << "[" << b << "," << e << "] = " << size << endl;
+	return e-b;//size;
+}
+
+void tDOM::noiseFilter(wstring s) {
 	set<int> alphabet,filteredAlphabet,subAlphabet,intersect;
 	map<int,int> symCount,initialSymCount;
-	int regionCount=0,threshold=5,div;
+	int regionCount=0,threshold=3;
+	size_t div;
 
 	for (size_t i=0;i<s.size();i++) {
 		if (alphabet.find(s[i]) == alphabet.end()) {
@@ -863,7 +881,7 @@ void tDOM::page_segment(wstring s) {
 		for (map<int,int>::iterator j=initialSymCount.begin();j!=initialSymCount.end();j++) {
 			if ((*j).second > threshold) filteredAlphabet.insert((*j).first);
 		}
-		if (filteredAlphabet.size() == 0) break;
+		if (filteredAlphabet.size() < 2) break;
 		threshold++;
 
 		for (set<int>::iterator j=filteredAlphabet.begin();j!=filteredAlphabet.end();j++) {
@@ -895,23 +913,42 @@ void tDOM::page_segment(wstring s) {
 						cout << endl;
 						subAlphabet.clear();
 						regionCount++;
-						if (regionCount == 2) {
-							tNode *n = nodeSequence[div+1];
-							int d = n->depth;
-							while (++div < nodeSequence.size()) {
-								if (nodeSequence[div]->depth <= d) {
-									printNode(nodeSequence[div],0);
-									//nodeSequence[div]->parent->nodes.remove(nodeSequence[div]);
-								}
-							}
-							//printNode(nodeSequence[0],0);
-							break;
-						} else div=i;
+						if (regionCount == 1) div=i;
 					}
 					intersect.clear();
 				}
 			}
 		}
+	}
+
+	if (regionCount == 2) {
+		if (nodeSequenceSize(nodeSequence,0,div) < nodeSequenceSize(nodeSequence,div+1,nodeSequence.size())) {
+			tNode *n = nodeSequence[div+1];
+			int d = n->depth;
+
+			s = s.substr(div+1,s.size());
+			body->nodes.clear();
+			while (++div < nodeSequence.size()) {
+				if (nodeSequence[div]->depth <= d) {
+					nodeSequence[div]->parent->nodes.remove(nodeSequence[div]);
+					nodeSequence[div]->parent = NULL;
+					body->addNode(nodeSequence[div]);
+					//d = nodeSequence[div]->depth;
+				}
+			}
+		} else {
+			tNode *n = nodeSequence[div+1];
+			int d = n->depth;
+
+			s = s.substr(0,div);
+			while (++div < nodeSequence.size()) {
+				if (nodeSequence[div]->depth <= d) {
+					nodeSequence[div]->parent->nodes.remove(nodeSequence[div]);
+					//d = nodeSequence[div]->depth;
+				}
+			}
+		}
+		noiseFilter(s);
 	}
 	cout << "Threshold: " << threshold << endl;
 }
@@ -950,6 +987,7 @@ void tDOM::printTagPath(string s, tNode *n) {
 			cout << tagPathSequence[k];
 		cout << endl;*/
 		//lz_decomp(tagPathSequence);
-		page_segment(tagPathSequence);
+		noiseFilter(tagPathSequence);
+		printNode(body,0);
 	}
 }

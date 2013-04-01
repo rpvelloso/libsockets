@@ -60,14 +60,15 @@ protected:
 	int treeSize(tNode *);
 	int treeDepth(tNode *);
 
-	void page_segment(wstring);
+	void noiseFilter(wstring);
+	int nodeSequenceSize(vector<tNode *> &, size_t, size_t);
 
 	virtual void onTagFound(tNode *) = 0;
 	virtual void onPatternFound(tNode *, tNode *, float) = 0;
 	virtual void onDataRecordFound(tDataRegion) = 0;
 	virtual void onDataRegionFound(tDataRegion, int, float);
 
-	tNode *root;
+	tNode *root,*body;
 	tNode *current;
 	size_t count;
 	int verbose;
