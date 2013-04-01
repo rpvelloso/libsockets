@@ -922,7 +922,7 @@ void tDOM::noiseFilter(wstring s) {
 	}
 
 	if (regionCount == 2) {
-		if (nodeSequenceSize(nodeSequence,0,div) < nodeSequenceSize(nodeSequence,div+1,nodeSequence.size())) {
+		if ((nodeSequence.size() - div) < nodeSequence.size()/2) {
 			tNode *n = nodeSequence[div+1];
 			int d = n->depth;
 
