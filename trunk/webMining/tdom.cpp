@@ -954,7 +954,6 @@ void tDOM::noiseFilter(wstring s) {
 
 						div=i;
 						region = div < s.size() / 2;
-						regionAlphabet.clear();
 						if (!filteredAlphabet.empty()) regionFound = true;
 						break;
 					}
@@ -1028,7 +1027,6 @@ removeNoise(tagPathSequence[1..n])
         if currentSymbolCount[tagPathSequence[i]] = 0 then
           currentAlphabet := currentAlphabet - {tagPathSequence[i]}
           if intersection(currentAlphabet,regionAlphabet) = empty then
-            regionAlphabet := empty
             div := i
             if currentAlphabet not empty then
               regionFound := true
