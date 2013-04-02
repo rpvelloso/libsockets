@@ -1,0 +1,91 @@
+*** Algorithm for TAG PATH SEQUENCE FILTER
+
+- alphabet: set of all symbols from tagPathSequence
+- symbolCount: array of integers with symbol frequency, indexed by symbol
+- thresholds: array of integers with symbol frequency, indexed by frequency
+- t: index of thresholds[]
+
+tagPathSequenceFilter()
+	DOMTree := parseHTML(inputFile)
+	tagPathSequence := convertTreeToSequence(DOMTree)
+	searchBorder(tagPathSequence)
+	pruneDOMTree(DOMTree.body,tagPathSequence)
+	return DOMTree
+end
+
+searchBorder(tagPathSequence[1..n])
+  alphabet := empty
+  t := 0
+
+  // compute symbol frequency, sequence alphabet and thresholds
+  for i := 1..n do
+    symbol := tagPathSequence[i]
+    if symbol not in alphabet then
+      alphabet := alphabet U {symbol}
+      symbolCount[symbol] := 0
+    end
+    increment(symbolCount[symbol])
+  end
+  thresholds := sort(symbolCount)
+
+  // search for two regions with no common alphabet symbols
+  regionFound := false
+  while not regionFound do
+    t := t + 1
+    currentAlphabet := filterAlphabet(alphabet,symbolCount,thresholds[t])
+    if currentAlphabet.size < 2 then
+      break
+    currentSymbolCount := symbolCount
+    regionAlphabet := empty
+    for i := 1..n do
+      symbol := tagPathSequence[i]
+      regionAlphabet := regionAlphabet U {symbol}
+      if symbol in currentAlphabet then
+        decrement(currentSymbolCount[symbol])
+        if currentSymbolCount[symbol] = 0 then
+          currentAlphabet := currentAlphabet - {symbol}
+          if intersection(currentAlphabet,regionAlphabet) = empty then
+            border := i
+            if currentAlphabet not empty then
+              regionFound := true
+            break
+          end
+        end
+      end
+    end
+  end
+
+  if regionFound then
+    // keep the larger region and discard the rest
+    if border < n/2 then
+      tagPathSequence := tagPathSequence[border+1..n]
+    else
+      tagPathSequence := tagPathSequence[1..border]
+    end
+    searchBorder(tagPathSequence) // recursive call
+  end
+end
+
+// return an alphabet containing only symbols with frequency greater than or equal to threshold
+filterAlphabet(alphabet, symbolCount, threshold)
+  filteredAlphabet := empty
+  for i = 1..n do
+    if symbolCount[alphabet[i]] >= threshold then
+      filteredAlphabet := filteredAlphabet U {alphabet[i]}
+    end
+  end
+  return filteredAlphabet
+end
+
+// depth first traversal to remove from DOMTree nodes that are not in sequence and have no children
+pruneDOMTree(node, sequence)
+  for each child of node do
+    if pruneDOMTree(child,sequence) == true then
+      remove child from node
+  end
+
+  if (node not in sequence) and (node.childCount = 0) then
+    return true
+  return false
+end
+ 
