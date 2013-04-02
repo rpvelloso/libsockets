@@ -478,6 +478,10 @@ tNode *tDOM::getRoot() {
 	return root;
 }
 
+tNode *tDOM::getBody() {
+	return body;
+}
+
 void tDOM::printNode(tNode *n, int lvl) {
 	list<tNode *>::iterator i;
 
@@ -835,30 +839,7 @@ void lz_decomp(T &inp) {
 	 * 4.	esta tiver tamanho razoavel; e
 	 * 5.	ela nao ocorrer em nenhum outro bloco seguinte da decomposicao;
 	 * 6.	entao esta eh uma repeticao primitiva
-	 *
-	 * investigar - deteccao de diferentes regioes da pagina, atraves da mudanca do alfabeto,
-	 * quando a intersecacao dos alfabetos for vazia. clustering?
-	 * 1. iniciar com um conjunto contendo todo o alfabeto;
-	 * 2. decrementar numero de ocorrencias a cada uma encontrada;
-	 * 3. remover do conjunto inicial e inserir no proximo conjunto quando numero de ocorrencias zerar;
-	 * 4. quando a interseccao for vazia, uma nova regiao inicia;
-	 * 5. excluir do conjunto incial, simbolos do alfabeto com poucas repeticoes (ruido)
 	 */
-}
-
-int tDOM::nodeSequenceSize(vector<tNode *> &ns, size_t b, size_t e) {
-	int depth = ns[0]->depth;
-	int size = 0;
-
-	for (size_t i=b;i<=e && i < ns.size();i++) {
-		if (ns[i]->depth <= depth) {
-			size += ns[i]->size;
-			depth = ns[i]->depth;
-		}
-	}
-
-	cout << "[" << b << "," << e << "] = " << size << endl;
-	return e-b;//size;
 }
 
 bool tDOM::prune(tNode *n) {
@@ -873,7 +854,6 @@ bool tDOM::prune(tNode *n) {
 	for (list<tNode *>::iterator i=remove.begin();i!=remove.end();i++)
 		n->nodes.remove(*i);
 
-	cout << n->tagName << endl;
 	if (find(nodeSequence.begin(),nodeSequence.end(),n) == nodeSequence.end() &&
 		n->nodes.empty()) {
 		return true;
@@ -882,60 +862,70 @@ bool tDOM::prune(tNode *n) {
 }
 
 void tDOM::noiseFilter(wstring s) {
-	set<int> alphabet,filteredAlphabet,subAlphabet,intersect;
-	map<int,int> symCount,initialSymCount;
-	int regionCount=0,threshold=3;
+	set<int> alphabet,filteredAlphabet,regionAlphabet,intersect;
+	map<int,int> currentSymbolCount,symbolCount,thresholds;
+	map<int,int>::iterator threshold;
+	int regionCount=0;
 	size_t div;
-
-	cout << "NS: " <<  nodeSequence.size() << "/" << s.size() << endl;
+	int scoreA=0,scoreB=0;
 
 	for (size_t i=0;i<s.size();i++) {
 		if (alphabet.find(s[i]) == alphabet.end()) {
-			initialSymCount[s[i]]=0;
+			symbolCount[s[i]]=0;
 			alphabet.insert(s[i]);
 		}
-		initialSymCount[s[i]]++;
+		symbolCount[s[i]]++;
 	}
-	filteredAlphabet = alphabet;
+
+	for (map<int,int>::iterator i=symbolCount.begin();i!=symbolCount.end();i++)
+		thresholds[(*i).second] = (*i).first;
+	threshold = thresholds.begin();
 
 	while (regionCount != 2) {
+		cerr << "Threshold: " << (*threshold).first << endl;
+
 		filteredAlphabet.clear();
-		for (map<int,int>::iterator j=initialSymCount.begin();j!=initialSymCount.end();j++) {
-			if ((*j).second > threshold) filteredAlphabet.insert((*j).first);
+		for (map<int,int>::iterator j=symbolCount.begin();j!=symbolCount.end();j++) {
+			if ((*j).second > (*threshold).first) filteredAlphabet.insert((*j).first);
 		}
 		if (filteredAlphabet.size() < 2) break;
 		threshold++;
 
 		for (set<int>::iterator j=filteredAlphabet.begin();j!=filteredAlphabet.end();j++) {
-			cout << *j << "\t" << initialSymCount[*j] << endl;
+			cerr << *j << "\t" << symbolCount[*j] << endl;
 		}
 
-		subAlphabet.clear();
-		symCount = initialSymCount;
+		regionAlphabet.clear();
+		currentSymbolCount = symbolCount;
 		regionCount = 0;
 		for (size_t i=0;i<s.size();i++) {
-			subAlphabet.insert(s[i]);
+			regionAlphabet.insert(s[i]);
 			if (filteredAlphabet.find(s[i]) != filteredAlphabet.end()) {
-				symCount[s[i]]--;
-				if (symCount[s[i]]==0) {
+				currentSymbolCount[s[i]]--;
+				if (currentSymbolCount[s[i]]==0) {
 					filteredAlphabet.erase(s[i]);
-					set_intersection(filteredAlphabet.begin(),filteredAlphabet.end(),subAlphabet.begin(),subAlphabet.end(),inserter(intersect,intersect.begin()));
+					set_intersection(filteredAlphabet.begin(),filteredAlphabet.end(),regionAlphabet.begin(),regionAlphabet.end(),inserter(intersect,intersect.begin()));
 
-					cout << "s[i]=" << s[i] << endl;
-					for (set<int>::iterator j=filteredAlphabet.begin();j!=filteredAlphabet.end();j++) cout << *j << " ";
-					cout << endl;
-					for (set<int>::iterator j=subAlphabet.begin();j!=subAlphabet.end();j++) cout << *j << " ";
-					cout << endl;
-					for (set<int>::iterator j=intersect.begin();j!=intersect.end();j++) cout << *j << " ";
-					cout << endl << endl;
+					cerr << "s[i]=" << s[i] << endl;
+					for (set<int>::iterator j=filteredAlphabet.begin();j!=filteredAlphabet.end();j++) cerr << *j << " ";
+					cerr << endl;
+					for (set<int>::iterator j=regionAlphabet.begin();j!=regionAlphabet.end();j++) cerr << *j << " ";
+					cerr << endl;
+					for (set<int>::iterator j=intersect.begin();j!=intersect.end();j++) cerr << *j << " ";
+					cerr << endl << endl;
 
 					if (intersect.empty()) {
-						cout << "region detected (" << subAlphabet.size() << "): ";
-						for (set<int>::iterator j=subAlphabet.begin();j!=subAlphabet.end();j++) cout << (*j) << " ";
-						cout << endl;
-						subAlphabet.clear();
+						cerr << "region detected (" << regionAlphabet.size() << "): ";
+						for (set<int>::iterator j=regionAlphabet.begin();j!=regionAlphabet.end();j++) cerr << (*j) << " ";
+						cerr << endl;
 						regionCount++;
-						if (regionCount == 1) div=i;
+						if (regionCount == 1) {
+							div=i;
+							scoreA = div+1; //*subAlphabet.size();
+						} else if (regionCount == 2) {
+							scoreB = (s.size()-div-1); //*subAlphabet.size();
+						}
+						regionAlphabet.clear();
 					}
 					intersect.clear();
 				}
@@ -946,24 +936,113 @@ void tDOM::noiseFilter(wstring s) {
 	if (regionCount == 2) {
 		vector<tNode *>::const_iterator b,m,e;
 
+		cerr << "Region score: " << scoreA << "/" << scoreB << endl;
+
 		b = nodeSequence.begin();
 		m = nodeSequence.begin() + div + 1;
 		e = nodeSequence.end();
 
-		if (div < nodeSequence.size()/2) {
-			s = s.substr(div+1,s.size());
+		if (scoreB > scoreA) {
+			s = s.substr(div+1);
 			nodeSequence.assign(m,e);
 		} else {
 			s = s.substr(0,div);
 			nodeSequence.assign(b,m);
 		}
-		prune(body);
 		noiseFilter(s);
 	}
-	cout << "Threshold: " << threshold << endl;
 }
 
-void tDOM::printTagPath(string s, tNode *n) {
+/*
+- alphabet: set of all symbols from tagPathSequence
+- symbolCount: array of integers with symbol frequency, indexed by symbol
+- thresholds: array of integers with symbol frequency, indexed by frequency
+- t: index of thresholds[]
+
+tagPathSequenceFilter()
+	DOMTree := parseHTML(inputFile)
+	tagPathSequence := convertTreeToSequence(DOMTree)
+	removeNoise(tagPathSequence)
+	pruneDOMTree(DOMTree.body,tagPathSequence)
+	return DOMTree
+end
+
+removeNoise(tagPathSequence[1..n])
+  alphabet := empty
+  t := 0
+
+  // compute frequencies, alphabet and thresholds
+  for i := 1..n do
+    if tagPathSequence[i] not in alphabet then
+      alphabet := alphabet U {tagPathSequence[i]}
+      symbolCount[tagPathSequence[i]] := 0
+    end
+    increment(symbolCount[tagPathSequence[i]])
+  end
+  thresholds := sort(symbolCount)
+
+  // search for two regions with no common alphabet symbols
+  while regionCount not = 2 do
+    t := t + 1
+    currentAlphabet := filterAlphabet(alphabet,symbolCount,thresholds[t])
+    if currentAlphabet.size < 2 then
+      break
+    currentSymbolCount := symbolCount
+    regionAlphabet := empty
+    regionCount := 0
+    for i := 1..n do
+      regionAlphabet := regionAlphabet U {tagPathSequence[i]}
+      if tagPathSequence[i] in currentAlphabet then
+        decrement(currentSymbolCount[tagPathSequence[i]])
+        if currentSymbolCount[tagPathSequence[i]] = 0 then
+          currentAlphabet := currentAlphabet - {tagPathSequence[i]}
+          if intersection(currentAlphabet,regionAlphabet) = empty then
+            regionAlphabet := empty
+            increment(regionCount)
+            if regionCount = 1 then
+              div := i
+          end
+        end
+      end
+    end
+  end
+
+  if regionCount = 2 then
+    // keep the greatest region and discard the rest
+    if div < n/2 then
+      tagPathSequence := tagPathSequence[div+1..n]
+    else
+      tagPathSequence := tagPathSequence[1..div]
+    end
+    removeNoise(tagPathSequence) // recursive call
+  end
+end
+
+// return an alphabet containing only symbols with frequency greater or equal to threshold
+filterAlphabet(alphabet[1..n], symbolCount, threshold)
+  filteredAlphabet := empty
+  for i = 1..n do
+    if symbolCount[alphabet[i]] >= threshold then
+      filteredAlphabet := filteredAlphabet U {alphabet[i]}
+    end
+  end
+  return filteredAlphabet
+end
+
+// depth first traversal to remove from DOMTree nodes that are not in sequence and have no children
+pruneDOMTree(node, sequence)
+  for each child of node do
+    if pruneDOMTree(child,sequence) == true then
+      remove child from node
+  end
+
+  if (node not in sequence) and (node.childCount = 0) then
+    return true
+  return false
+end
+ */
+
+void tDOM::buildTagPath(string s, tNode *n, bool print) {
 	list<tNode *>::iterator i = n->nodes.begin();
 	int p;
 
@@ -985,19 +1064,24 @@ void tDOM::printTagPath(string s, tNode *n) {
 	tagPathSequence = tagPathSequence + wchar_t(tagPathMap[s]);
 	nodeSequence.push_back(n);
 
-	cout << tagPathSequence.size()-1 << ":" << tagPathMap[s] << ":\t" << s << endl;
+	if (print)
+		cout << tagPathSequence.size()-1 << ":" << tagPathMap[s] << ":\t" << s << endl;
 
 	if (!(n->nodes.size())) return;
 
 	for (;i!=n->nodes.end();i++)
-		printTagPath(s,*i);
+		buildTagPath(s,*i,print);
 
 	if (!p) {
 		/*for (size_t k=0;k<tagPathSequence.size();k++)
 			cout << tagPathSequence[k];
 		cout << endl;*/
 		//lz_decomp(tagPathSequence);
-		noiseFilter(tagPathSequence);
-		printNode(body,0);
 	}
+}
+
+void tDOM::tagPathSequenceFilter() {
+	buildTagPath("",body,false);
+	noiseFilter(tagPathSequence);
+	prune(body);
 }
