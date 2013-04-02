@@ -239,7 +239,7 @@ public:
 
 void printUsage(char *p)
 {
-	cout << "usage: "<<p<<" [-i input_file] [-o output_file] [-p pattern file] [-s search_string] [-v] [-t ###.##] [-m] [-xml] [-f str] [-a] [-g] [-c]"<<endl;
+	cout << "usage: "<<p<<" [-i input_file] [-o output_file] [-p pattern file] [-s search_string] [-v] [-t ###.##] [-m] [-xml] [-f str] [-a] [-g] [-c] [-r]"<<endl;
 	cout << "-i   input file (default stdin)"<<endl;
 	cout << "-o   output file (default stdout)"<<endl;
 	cout << "-p   pattern file to search for"<<endl;
@@ -252,6 +252,7 @@ void printUsage(char *p)
 	cout << "-a   display tag path of input" << endl;
 	cout << "-g   mine forms and fields" << endl;
 	cout << "-c   displays only record count of main region." << endl;
+	cout << "-r   apply tag path sequence filter." << endl;
 	exit(-1);
 }
 
@@ -259,7 +260,7 @@ void printUsage(char *p)
 
 int main(int argc, char *argv[])
 {
-	int opt,mdr=0,tp=0,mineForms=0,dbg=0;
+	int opt,mdr=0,tp=0,mineForms=0,dbg=0,tspFilter=0;
 	float st=1.0; // similarity threshold
 	string inp="",outp="",search="",pattern="",filterStr="";
 	tCustomDOM *d = new tCustomDOM();
@@ -267,7 +268,7 @@ int main(int argc, char *argv[])
 	tFormExtractDOM *fe = new tFormExtractDOM();
 	fstream patternFile,inputFile,outputFile;
 
-	while ((opt = getopt(argc, argv, "i:o:t:s:p:f:x:d:mhvcga")) != -1) {
+	while ((opt = getopt(argc, argv, "i:o:t:s:p:f:x:d:mhvcgar")) != -1) {
 		switch (opt) {
 		case 'c':
 			d->recCountDisplay = 1;
@@ -292,6 +293,9 @@ int main(int argc, char *argv[])
 			break;
 		case 'm':
 			mdr = 1;
+			break;
+		case 'r':
+			tspFilter = 1;
 			break;
 		case 'f':
 			filterStr = optarg;
@@ -352,6 +356,10 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	if (tspFilter) {
+		d->tagPathSequenceFilter();
+	}
+
 	if (mineForms) {
 		fe->setRoot(d->getRoot());
 		fe->searchTag("form","");
@@ -359,7 +367,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (tp) {
-		d->printTagPath("",d->findNext(NULL,"body"));
+		d->buildTagPath("",d->getBody(),true);
 	}
 
 	if (!tp && !mdr && search != "") {

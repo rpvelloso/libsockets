@@ -41,15 +41,17 @@ public:
 	void printDOM();
 	int scan(istream &);
 	tNode *getRoot();
+	tNode *getBody();
 	void setRoot(tNode *);
 	tNode *findNext(tNode *, string);
     void setVerbose(int);
     list<tDataRegion> MDR(tNode *, int, float, int);
-    void printTagPath(string, tNode *);
+    void buildTagPath(string, tNode *, bool);
 	void printNode(tNode *, int);
 	list <tNode *> getRecord(tNode *, tNode *);
 	vector<tNode *> partialTreeAlignment(tDataRegion);
 	string getRegEx(tNode *, int, int = 0);
+	void tagPathSequenceFilter();
 protected:
     void treeAlign(tNode *, tNode *, int **, tNode *);
 	size_t STM(tNode *, tNode *, tNode *);
@@ -61,7 +63,6 @@ protected:
 	int treeDepth(tNode *);
 
 	void noiseFilter(wstring);
-	int nodeSequenceSize(vector<tNode *> &, size_t, size_t);
 	bool prune(tNode *);
 
 	virtual void onTagFound(tNode *) = 0;
