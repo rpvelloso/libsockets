@@ -1038,7 +1038,7 @@ removeNoise(tagPathSequence[1..n])
   end
 
   if regionFound then
-    // keep the greatest region and discard the rest
+    // keep the larger region and discard the rest
     if div < n/2 then
       tagPathSequence := tagPathSequence[div+1..n]
     else
@@ -1048,7 +1048,7 @@ removeNoise(tagPathSequence[1..n])
   end
 end
 
-// return an alphabet containing only symbols with frequency greater or equal to threshold
+// return an alphabet containing only symbols with frequency greater than or equal to threshold
 filterAlphabet(alphabet, symbolCount, threshold)
   filteredAlphabet := empty
   for i = 1..n do
