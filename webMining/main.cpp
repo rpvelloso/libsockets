@@ -85,7 +85,7 @@ protected:
 class tCustomDOM : public tDOM {
 public:
 	tCustomDOM() : tDOM() {
-		g = r = xml = maxScore = maxCount = recCountDisplay = 0;
+		g = r = xml = maxScore = maxCount = maxCount2 = recCountDisplay = 0;
 		filterStr = "";
 		filterTag = "";
 	};
@@ -109,7 +109,11 @@ public:
 			}
 			if (xml) cout << "<region-count>" << g << "</region-count>" << endl << "<record-count>" << r << "</record-count>" << endl << "</extraction>" << endl;
 			else cout << "<h3>Found " << r << " result(s) in " << g << " region(s).</h3></html>" << endl;
-		} else cout << maxCount << endl;
+		} else {
+			cout << maxCount;
+			if (maxCount2) cout << " " << maxCount2;
+			cout << endl;
+		}
 		exit(0);
 	};
 	virtual void onTagFound(tNode *n) {
@@ -162,7 +166,10 @@ public:
 			int gr=0,score=reccount*recsize;
 
 			maxScore = max(maxScore,score);
-			if (maxScore == score) maxCount = reccount;
+			if (maxScore == score) {
+				maxCount2 = maxCount;
+				maxCount = reccount;
+			}
 			scores.push_back(score);
 
 			if (!recCountDisplay) {
@@ -232,7 +239,7 @@ public:
 		return ret && n->depth>2;
 	};
 
-	int g,r,xml,maxScore,maxCount,recCountDisplay;
+	int g,r,xml,maxScore,maxCount,maxCount2,recCountDisplay;
 	string filterStr,filterTag;
 	list<int> scores;
 };
@@ -260,7 +267,7 @@ void printUsage(char *p)
 
 int main(int argc, char *argv[])
 {
-	int opt,mdr=0,tp=0,mineForms=0,dbg=0,tspFilter=0;
+	int opt,mdr=0,tp=0,mineForms=0,dbg=0,tpsFilter=0;
 	float st=1.0; // similarity threshold
 	string inp="",outp="",search="",pattern="",filterStr="";
 	tCustomDOM *d = new tCustomDOM();
@@ -295,7 +302,7 @@ int main(int argc, char *argv[])
 			mdr = 1;
 			break;
 		case 'r':
-			tspFilter = 1;
+			tpsFilter = 1;
 			break;
 		case 'f':
 			filterStr = optarg;
@@ -356,7 +363,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	if (tspFilter) {
+	if (tpsFilter) {
 		d->tagPathSequenceFilter();
 	}
 
