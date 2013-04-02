@@ -1001,13 +1001,14 @@ removeNoise(tagPathSequence[1..n])
   alphabet := empty
   t := 0
 
-  // compute frequencies, alphabet and thresholds
+  // compute symbol frequency, sequence alphabet and thresholds
   for i := 1..n do
-    if tagPathSequence[i] not in alphabet then
-      alphabet := alphabet U {tagPathSequence[i]}
-      symbolCount[tagPathSequence[i]] := 0
+    symbol := tagPathSequence[i]
+    if symbol not in alphabet then
+      alphabet := alphabet U {symbol}
+      symbolCount[symbol] := 0
     end
-    increment(symbolCount[tagPathSequence[i]])
+    increment(symbolCount[symbol])
   end
   thresholds := sort(symbolCount)
 
@@ -1021,13 +1022,14 @@ removeNoise(tagPathSequence[1..n])
     currentSymbolCount := symbolCount
     regionAlphabet := empty
     for i := 1..n do
-      regionAlphabet := regionAlphabet U {tagPathSequence[i]}
-      if tagPathSequence[i] in currentAlphabet then
-        decrement(currentSymbolCount[tagPathSequence[i]])
-        if currentSymbolCount[tagPathSequence[i]] = 0 then
-          currentAlphabet := currentAlphabet - {tagPathSequence[i]}
+      symbol := tagPathSequence[i]
+      regionAlphabet := regionAlphabet U {symbol}
+      if symbol in currentAlphabet then
+        decrement(currentSymbolCount[symbol])
+        if currentSymbolCount[symbol] = 0 then
+          currentAlphabet := currentAlphabet - {symbol}
           if intersection(currentAlphabet,regionAlphabet) = empty then
-            div := i
+            border := i
             if currentAlphabet not empty then
               regionFound := true
             break
@@ -1039,10 +1041,10 @@ removeNoise(tagPathSequence[1..n])
 
   if regionFound then
     // keep the larger region and discard the rest
-    if div < n/2 then
-      tagPathSequence := tagPathSequence[div+1..n]
+    if border < n/2 then
+      tagPathSequence := tagPathSequence[border+1..n]
     else
-      tagPathSequence := tagPathSequence[1..div]
+      tagPathSequence := tagPathSequence[1..border]
     end
     removeNoise(tagPathSequence) // recursive call
   end
