@@ -217,14 +217,15 @@ int tDOM::scan(istream &htmlInput) {
 	while (!htmlInput.eof()) {
 		tagName = tagName + c;
 		if (hasEnding(tagName,"<!--")) {
-			filteredHtmlInput << tagName.substr(0,tagName.size()-5);
+			filteredHtmlInput.write(tagName.c_str(),tagName.size()-4);
 			tagName = "";
 		} else if (hasEnding(tagName,"<script")) {
-			filteredHtmlInput << tagName.substr(0,tagName.size()-8);
+			filteredHtmlInput.write(tagName.c_str(),tagName.size()-7);
 			tagName = "";
-		} else if (hasEnding(tagName,"</script>")) {
-			tagName = "";
-		} else if (hasEnding(tagName,"-->")) {
+		} else if (
+			hasEnding(tagName,"</script>") ||
+			hasEnding(tagName,"-->")) {
+
 			tagName = "";
 		}
 		c=htmlInput.get();
@@ -1116,7 +1117,7 @@ void tDOM::tagPathSequenceFilter() {
 	buildTagPath("",body,false);
 	nodeSeqBkp = nodeSequence;
 	noiseFilter(tagPathSequence);
-	cout << nodeSeqBkp.size() << " " << nodeSequence.size() << " " << tagPathSequence.size() << endl;
+	cerr << nodeSeqBkp.size() << " " << nodeSequence.size() << " " << tagPathSequence.size() << endl;
 	if (nodeSeqBkp.size() - nodeSequence.size() > nodeSequence.size()) {
 		sort(nodeSequence.begin(),nodeSequence.end());
 		sort(nodeSeqBkp.begin(),nodeSeqBkp.end());
