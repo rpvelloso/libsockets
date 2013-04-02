@@ -182,11 +182,20 @@ void tDOM::printDOM() {
 	cout << "Node count: " << count << endl;
 }
 
+bool hasEnding (std::string const &fullString, std::string const &ending)
+{
+    if (fullString.length() >= ending.length()) {
+        return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+    } else {
+        return false;
+    }
+}
 int tDOM::scan(istream &htmlInput) {
 	char c;
 	int oldsta = 0, state = 0, line = 0, col = 0, close = 0, oc = 0; // oc = open comment
 	string tagName = "", text = "", comment = "";
 	int ct; // char type
+	stringstream filteredHtmlInput("");
 
 	int transitionTable[TTL_SYM][TTL_STA] = {
 		{ 0,10, 2, 2, 0, 2, 9, 9, 2, 9, 2},
@@ -203,8 +212,28 @@ int tDOM::scan(istream &htmlInput) {
 		count = 0;
 	}
 
+	// filter out script and comments
 	c = htmlInput.get();
-	while ((!htmlInput.eof()) && (state != -1)) {
+	while (!htmlInput.eof()) {
+		tagName = tagName + c;
+		if (hasEnding(tagName,"<!--")) {
+			filteredHtmlInput << tagName.substr(0,tagName.size()-5);
+			tagName = "";
+		} else if (hasEnding(tagName,"<script")) {
+			filteredHtmlInput << tagName.substr(0,tagName.size()-8);
+			tagName = "";
+		} else if (hasEnding(tagName,"</script>")) {
+			tagName = "";
+		} else if (hasEnding(tagName,"-->")) {
+			tagName = "";
+		}
+		c=htmlInput.get();
+	}
+	filteredHtmlInput << tagName;
+	tagName = "";
+
+	c = filteredHtmlInput.get();
+	while (filteredHtmlInput.rdbuf()->in_avail() && (state != -1)) {
 
 		if (c == '\n') {
 			line++;
@@ -271,7 +300,7 @@ int tDOM::scan(istream &htmlInput) {
 			tagName = "";
 			text = "";
 			comment = "";
-		} else c = htmlInput.get();
+		} else c = filteredHtmlInput.get();
 	}
 
 	trim(tagName);
@@ -851,8 +880,11 @@ bool tDOM::prune(tNode *n) {
 		if (prune(*i)) remove.push_back(*i);
 	}
 
-	for (list<tNode *>::iterator i=remove.begin();i!=remove.end();i++)
+	for (list<tNode *>::iterator i=remove.begin();i!=remove.end();i++) {
+		n->size -= (*i)->size;
 		n->nodes.remove(*i);
+		count--;
+	}
 
 	if (find(nodeSequence.begin(),nodeSequence.end(),n) == nodeSequence.end() &&
 		n->nodes.empty()) {
@@ -865,9 +897,9 @@ void tDOM::noiseFilter(wstring s) {
 	set<int> alphabet,filteredAlphabet,regionAlphabet,intersect;
 	map<int,int> currentSymbolCount,symbolCount,thresholds;
 	map<int,int>::iterator threshold;
-	int regionCount=0;
+	bool regionFound=0;
 	size_t div;
-	int scoreA=0,scoreB=0;
+	int region=0;
 
 	for (size_t i=0;i<s.size();i++) {
 		if (alphabet.find(s[i]) == alphabet.end()) {
@@ -881,7 +913,7 @@ void tDOM::noiseFilter(wstring s) {
 		thresholds[(*i).second] = (*i).first;
 	threshold = thresholds.begin();
 
-	while (regionCount != 2) {
+	while (!regionFound) {
 		cerr << "Threshold: " << (*threshold).first << endl;
 
 		filteredAlphabet.clear();
@@ -897,7 +929,7 @@ void tDOM::noiseFilter(wstring s) {
 
 		regionAlphabet.clear();
 		currentSymbolCount = symbolCount;
-		regionCount = 0;
+		regionFound = false;
 		for (size_t i=0;i<s.size();i++) {
 			regionAlphabet.insert(s[i]);
 			if (filteredAlphabet.find(s[i]) != filteredAlphabet.end()) {
@@ -918,14 +950,12 @@ void tDOM::noiseFilter(wstring s) {
 						cerr << "region detected (" << regionAlphabet.size() << "): ";
 						for (set<int>::iterator j=regionAlphabet.begin();j!=regionAlphabet.end();j++) cerr << (*j) << " ";
 						cerr << endl;
-						regionCount++;
-						if (regionCount == 1) {
-							div=i;
-							scoreA = div+1; //*subAlphabet.size();
-						} else if (regionCount == 2) {
-							scoreB = (s.size()-div-1); //*subAlphabet.size();
-						}
+
+						div=i;
+						region = div < s.size() / 2;
 						regionAlphabet.clear();
+						if (!filteredAlphabet.empty()) regionFound = true;
+						break;
 					}
 					intersect.clear();
 				}
@@ -933,17 +963,17 @@ void tDOM::noiseFilter(wstring s) {
 		}
 	}
 
-	if (regionCount == 2) {
+	if (regionFound) {
 		vector<tNode *>::const_iterator b,m,e;
 
-		cerr << "Region score: " << scoreA << "/" << scoreB << endl;
+		cerr << "Region selected: " << region << endl;
 
 		b = nodeSequence.begin();
 		m = nodeSequence.begin() + div + 1;
 		e = nodeSequence.end();
 
-		if (scoreB > scoreA) {
-			s = s.substr(div+1);
+		if (region) {
+			s = s.substr(div+1,s.size());
 			nodeSequence.assign(m,e);
 		} else {
 			s = s.substr(0,div);
@@ -1019,7 +1049,7 @@ removeNoise(tagPathSequence[1..n])
 end
 
 // return an alphabet containing only symbols with frequency greater or equal to threshold
-filterAlphabet(alphabet[1..n], symbolCount, threshold)
+filterAlphabet(alphabet, symbolCount, threshold)
   filteredAlphabet := empty
   for i = 1..n do
     if symbolCount[alphabet[i]] >= threshold then
@@ -1081,7 +1111,18 @@ void tDOM::buildTagPath(string s, tNode *n, bool print) {
 }
 
 void tDOM::tagPathSequenceFilter() {
+	vector<tNode *> nodeSeqBkp,setDiff;
+
 	buildTagPath("",body,false);
+	nodeSeqBkp = nodeSequence;
 	noiseFilter(tagPathSequence);
+	cout << nodeSeqBkp.size() << " " << nodeSequence.size() << " " << tagPathSequence.size() << endl;
+	if (nodeSeqBkp.size() - nodeSequence.size() > nodeSequence.size()) {
+		sort(nodeSequence.begin(),nodeSequence.end());
+		sort(nodeSeqBkp.begin(),nodeSeqBkp.end());
+		set_difference(nodeSeqBkp.begin(),nodeSeqBkp.end(),nodeSequence.begin(),nodeSequence.end(),inserter(setDiff,setDiff.begin()));
+		for (vector<tNode *>::iterator i=nodeSequence.begin();i!=nodeSequence.end();i++);
+		nodeSequence = setDiff;
+	}
 	prune(body);
 }
