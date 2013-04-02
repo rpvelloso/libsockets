@@ -894,7 +894,7 @@ bool tDOM::prune(tNode *n) {
 	return false;
 }
 
-void tDOM::noiseFilter(wstring s) {
+void tDOM::searchBorder(wstring s) {
 	set<int> alphabet,filteredAlphabet,regionAlphabet,intersect;
 	map<int,int> currentSymbolCount,symbolCount,thresholds;
 	map<int,int>::iterator threshold;
@@ -979,100 +979,9 @@ void tDOM::noiseFilter(wstring s) {
 			s = s.substr(0,div);
 			nodeSequence.assign(b,m);
 		}
-		noiseFilter(s);
+		searchBorder(s);
 	}
 }
-
-/*
-- alphabet: set of all symbols from tagPathSequence
-- symbolCount: array of integers with symbol frequency, indexed by symbol
-- thresholds: array of integers with symbol frequency, indexed by frequency
-- t: index of thresholds[]
-
-tagPathSequenceFilter()
-	DOMTree := parseHTML(inputFile)
-	tagPathSequence := convertTreeToSequence(DOMTree)
-	removeNoise(tagPathSequence)
-	pruneDOMTree(DOMTree.body,tagPathSequence)
-	return DOMTree
-end
-
-removeNoise(tagPathSequence[1..n])
-  alphabet := empty
-  t := 0
-
-  // compute symbol frequency, sequence alphabet and thresholds
-  for i := 1..n do
-    symbol := tagPathSequence[i]
-    if symbol not in alphabet then
-      alphabet := alphabet U {symbol}
-      symbolCount[symbol] := 0
-    end
-    increment(symbolCount[symbol])
-  end
-  thresholds := sort(symbolCount)
-
-  // search for two regions with no common alphabet symbols
-  regionFound := false
-  while not regionFound do
-    t := t + 1
-    currentAlphabet := filterAlphabet(alphabet,symbolCount,thresholds[t])
-    if currentAlphabet.size < 2 then
-      break
-    currentSymbolCount := symbolCount
-    regionAlphabet := empty
-    for i := 1..n do
-      symbol := tagPathSequence[i]
-      regionAlphabet := regionAlphabet U {symbol}
-      if symbol in currentAlphabet then
-        decrement(currentSymbolCount[symbol])
-        if currentSymbolCount[symbol] = 0 then
-          currentAlphabet := currentAlphabet - {symbol}
-          if intersection(currentAlphabet,regionAlphabet) = empty then
-            border := i
-            if currentAlphabet not empty then
-              regionFound := true
-            break
-          end
-        end
-      end
-    end
-  end
-
-  if regionFound then
-    // keep the larger region and discard the rest
-    if border < n/2 then
-      tagPathSequence := tagPathSequence[border+1..n]
-    else
-      tagPathSequence := tagPathSequence[1..border]
-    end
-    removeNoise(tagPathSequence) // recursive call
-  end
-end
-
-// return an alphabet containing only symbols with frequency greater than or equal to threshold
-filterAlphabet(alphabet, symbolCount, threshold)
-  filteredAlphabet := empty
-  for i = 1..n do
-    if symbolCount[alphabet[i]] >= threshold then
-      filteredAlphabet := filteredAlphabet U {alphabet[i]}
-    end
-  end
-  return filteredAlphabet
-end
-
-// depth first traversal to remove from DOMTree nodes that are not in sequence and have no children
-pruneDOMTree(node, sequence)
-  for each child of node do
-    if pruneDOMTree(child,sequence) == true then
-      remove child from node
-  end
-
-  if (node not in sequence) and (node.childCount = 0) then
-    return true
-  return false
-end
- */
 
 void tDOM::buildTagPath(string s, tNode *n, bool print) {
 	list<tNode *>::iterator i = n->nodes.begin();
@@ -1113,18 +1022,18 @@ void tDOM::buildTagPath(string s, tNode *n, bool print) {
 }
 
 void tDOM::tagPathSequenceFilter() {
-	vector<tNode *> nodeSeqBkp,setDiff;
+	//vector<tNode *> nodeSeqBkp,setDiff;
 
 	buildTagPath("",body,false);
-	nodeSeqBkp = nodeSequence;
-	noiseFilter(tagPathSequence);
-	cerr << nodeSeqBkp.size() << " " << nodeSequence.size() << " " << tagPathSequence.size() << endl;
+	//nodeSeqBkp = nodeSequence;
+	searchBorder(tagPathSequence);
+	/*cerr << nodeSeqBkp.size() << " " << nodeSequence.size() << " " << tagPathSequence.size() << endl;
 	if (nodeSeqBkp.size() - nodeSequence.size() > nodeSequence.size()) {
 		sort(nodeSequence.begin(),nodeSequence.end());
 		sort(nodeSeqBkp.begin(),nodeSeqBkp.end());
 		set_difference(nodeSeqBkp.begin(),nodeSeqBkp.end(),nodeSequence.begin(),nodeSequence.end(),inserter(setDiff,setDiff.begin()));
 		for (vector<tNode *>::iterator i=nodeSequence.begin();i!=nodeSequence.end();i++);
 		nodeSequence = setDiff;
-	}
+	}*/
 	prune(body);
 }

@@ -62,7 +62,7 @@ protected:
 	int treeSize(tNode *);
 	int treeDepth(tNode *);
 
-	void noiseFilter(wstring);
+	void searchBorder(wstring);
 	bool prune(tNode *);
 
 	virtual void onTagFound(tNode *) = 0;
