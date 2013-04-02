@@ -212,7 +212,7 @@ int tDOM::scan(istream &htmlInput) {
 		count = 0;
 	}
 
-	// filter out script and comments
+	// filter out scripts and comments
 	c = htmlInput.get();
 	while (!htmlInput.eof()) {
 		tagName = tagName + c;
