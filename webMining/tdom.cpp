@@ -899,8 +899,7 @@ void tDOM::searchBorder(wstring s) {
 	map<int,int> currentSymbolCount,symbolCount,thresholds;
 	map<int,int>::iterator threshold;
 	bool regionFound=0;
-	size_t div;
-	int region=0;
+	size_t border;
 
 	for (size_t i=0;i<s.size();i++) {
 		if (alphabet.find(s[i]) == alphabet.end()) {
@@ -952,8 +951,7 @@ void tDOM::searchBorder(wstring s) {
 						for (set<int>::iterator j=regionAlphabet.begin();j!=regionAlphabet.end();j++) cerr << (*j) << " ";
 						cerr << endl;
 
-						div=i;
-						region = div < s.size() / 2;
+						border=i;
 						if (!filteredAlphabet.empty()) regionFound = true;
 						break;
 					}
@@ -966,17 +964,15 @@ void tDOM::searchBorder(wstring s) {
 	if (regionFound) {
 		vector<tNode *>::const_iterator b,m,e;
 
-		cerr << "Region selected: " << region << endl;
-
 		b = nodeSequence.begin();
-		m = nodeSequence.begin() + div + 1;
+		m = nodeSequence.begin() + border + 1;
 		e = nodeSequence.end();
 
-		if (region) {
-			s = s.substr(div+1,s.size());
+		if ( border < s.size() / 2 ) {
+			s = s.substr(border+1,s.size());
 			nodeSequence.assign(m,e);
 		} else {
-			s = s.substr(0,div);
+			s = s.substr(0,border);
 			nodeSequence.assign(b,m);
 		}
 		searchBorder(s);
