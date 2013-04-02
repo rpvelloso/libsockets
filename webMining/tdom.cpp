@@ -1023,13 +1023,15 @@ void tDOM::tagPathSequenceFilter() {
 	buildTagPath("",body,false);
 	//nodeSeqBkp = nodeSequence;
 	searchBorder(tagPathSequence);
-	/*cerr << nodeSeqBkp.size() << " " << nodeSequence.size() << " " << tagPathSequence.size() << endl;
-	if (nodeSeqBkp.size() - nodeSequence.size() > nodeSequence.size()) {
+	//cerr << nodeSeqBkp.size() << " " << nodeSequence.size() << " " << tagPathSequence.size() << endl;
+	/*if (nodeSeqBkp.size() - nodeSequence.size() > nodeSequence.size()) {
 		sort(nodeSequence.begin(),nodeSequence.end());
 		sort(nodeSeqBkp.begin(),nodeSeqBkp.end());
 		set_difference(nodeSeqBkp.begin(),nodeSeqBkp.end(),nodeSequence.begin(),nodeSequence.end(),inserter(setDiff,setDiff.begin()));
-		for (vector<tNode *>::iterator i=nodeSequence.begin();i!=nodeSequence.end();i++);
 		nodeSequence = setDiff;
+		prune(body);
+		buildTagPath("",body,false);
+		searchBorder(tagPathSequence);
 	}*/
 	prune(body);
 }
