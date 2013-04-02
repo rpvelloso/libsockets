@@ -1013,14 +1013,14 @@ removeNoise(tagPathSequence[1..n])
   thresholds := sort(symbolCount)
 
   // search for two regions with no common alphabet symbols
-  while regionCount not = 2 do
+  regionFound := false
+  while not regionFound do
     t := t + 1
     currentAlphabet := filterAlphabet(alphabet,symbolCount,thresholds[t])
     if currentAlphabet.size < 2 then
       break
     currentSymbolCount := symbolCount
     regionAlphabet := empty
-    regionCount := 0
     for i := 1..n do
       regionAlphabet := regionAlphabet U {tagPathSequence[i]}
       if tagPathSequence[i] in currentAlphabet then
@@ -1029,16 +1029,17 @@ removeNoise(tagPathSequence[1..n])
           currentAlphabet := currentAlphabet - {tagPathSequence[i]}
           if intersection(currentAlphabet,regionAlphabet) = empty then
             regionAlphabet := empty
-            increment(regionCount)
-            if regionCount = 1 then
-              div := i
+            div := i
+            if currentAlphabet not empty then
+              regionFound := true
+            break
           end
         end
       end
     end
   end
 
-  if regionCount = 2 then
+  if regionFound then
     // keep the greatest region and discard the rest
     if div < n/2 then
       tagPathSequence := tagPathSequence[div+1..n]
