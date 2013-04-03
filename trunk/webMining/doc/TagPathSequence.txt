@@ -40,8 +40,8 @@ searchBorder(tagPathSequence[1..n])
     regionAlphabet := empty
     for i := 1..n do
       symbol := tagPathSequence[i]
-      regionAlphabet := regionAlphabet U {symbol}
       if symbol in currentAlphabet then
+        regionAlphabet := regionAlphabet U {symbol}
         decrement(currentSymbolCount[symbol])
         if currentSymbolCount[symbol] = 0 then
           currentAlphabet := currentAlphabet - {symbol}
