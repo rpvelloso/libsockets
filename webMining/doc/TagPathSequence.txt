@@ -16,6 +16,7 @@ end
 searchBorder(tagPathSequence[1..n])
   alphabet := empty
   t := 0
+  score = { 0 , 0 }
 
   // compute symbol frequency, sequence alphabet and thresholds
   for i := 1..n do
@@ -46,7 +47,10 @@ searchBorder(tagPathSequence[1..n])
           currentAlphabet := currentAlphabet - {symbol}
           if intersection(currentAlphabet,regionAlphabet) = empty then
             border := i
-            if currentAlphabet not empty then
+            score[1] := border^2 / regionAlphabet.size
+            score[2] := (n - border)^2 / currentAlphabet.size
+            scoreThreshold := abs(score[1] - score[2]) / (score[1] + score[2])
+            if currentAlphabet not empty and scoreThreshold > 20% then
               regionFound := true
             break
           end
@@ -57,7 +61,7 @@ searchBorder(tagPathSequence[1..n])
 
   if regionFound then
     // keep the larger region and discard the rest
-    if border < n/2 then
+    if score[2] > score[1]
       tagPathSequence := tagPathSequence[border+1..n]
     else
       tagPathSequence := tagPathSequence[1..border]
