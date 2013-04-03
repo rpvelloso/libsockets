@@ -22,6 +22,7 @@
 #include <iostream>
 #include <vector>
 #include <set>
+#include <cmath>
 #include "tdom.h"
 #include "misc.h"
 
@@ -900,6 +901,7 @@ void tDOM::searchBorder(wstring s) {
 	map<int,int>::iterator threshold;
 	bool regionFound=0;
 	size_t border;
+	float score[2];
 
 	for (size_t i=0;i<s.size();i++) {
 		if (alphabet.find(s[i]) == alphabet.end()) {
@@ -913,7 +915,7 @@ void tDOM::searchBorder(wstring s) {
 		thresholds[(*i).second] = (*i).first;
 	threshold = thresholds.begin();
 
-	while (!regionFound) {
+	while (!regionFound && (threshold != thresholds.end())) {
 		cerr << "Threshold: " << (*threshold).first << endl;
 
 		filteredAlphabet.clear();
@@ -931,8 +933,8 @@ void tDOM::searchBorder(wstring s) {
 		currentSymbolCount = symbolCount;
 		regionFound = false;
 		for (size_t i=0;i<s.size();i++) {
-			regionAlphabet.insert(s[i]);
 			if (filteredAlphabet.find(s[i]) != filteredAlphabet.end()) {
+				regionAlphabet.insert(s[i]);
 				currentSymbolCount[s[i]]--;
 				if (currentSymbolCount[s[i]]==0) {
 					filteredAlphabet.erase(s[i]);
@@ -947,12 +949,20 @@ void tDOM::searchBorder(wstring s) {
 					cerr << endl << endl;
 
 					if (intersect.empty()) {
+						float scoreThreshold;
+
 						cerr << "region detected (" << regionAlphabet.size() << "): ";
 						for (set<int>::iterator j=regionAlphabet.begin();j!=regionAlphabet.end();j++) cerr << (*j) << " ";
 						cerr << endl;
 
 						border=i;
-						if (!filteredAlphabet.empty()) regionFound = true;
+						score[0] = border + 1;
+						score[1] = s.size() - border - 1;
+						score[0] = float(score[0])*float(score[0])/float(regionAlphabet.size());
+						score[1] = float(score[1])*float(score[1])/float(filteredAlphabet.size());
+						scoreThreshold = float(abs(score[0]-score[1]))/float(score[0]+score[1]);
+
+						if (!filteredAlphabet.empty() && (scoreThreshold > 0.20)) regionFound = true;
 						break;
 					}
 					intersect.clear();
@@ -964,16 +974,20 @@ void tDOM::searchBorder(wstring s) {
 	if (regionFound) {
 		vector<tNode *>::const_iterator b,m,e;
 
+		cerr << "scores:" << endl;
+		cerr << border + 1 << "\t" << regionAlphabet.size() << "\t" << score[0] << endl;
+		cerr << s.size() - border - 1 << "\t" << filteredAlphabet.size() << "\t" << score[1] << endl;
+
 		b = nodeSequence.begin();
 		m = nodeSequence.begin() + border + 1;
 		e = nodeSequence.end();
 
-		if ( border < s.size() / 2 ) {
+		if (score[1] > score[0]) {
 			s = s.substr(border+1,s.size());
 			nodeSequence.assign(m,e);
 		} else {
 			s = s.substr(0,border);
-			nodeSequence.assign(b,m);
+			nodeSequence.assign(b,--m);
 		}
 		searchBorder(s);
 	}
