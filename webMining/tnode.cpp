@@ -148,3 +148,21 @@ void tNode::align(tNode* n, tNode* r) {
 		matches++;
 	}
 }
+
+string tNode::getAttribute(string attr) {
+	string t = this->text;
+	size_t pos;
+
+	lowerCase(attr);
+	pos = t.find(attr+"=");
+	if (pos != string::npos) {
+		string d;
+
+		pos += attr.size()+1;
+		t = t.substr(pos);
+		d = t[0];
+		if ((d=="\"" || d=="\'") && (t[0]!=t[1])) return stringTok(t,d);
+		else return stringTok(t," ");
+	}
+	return "";
+}
