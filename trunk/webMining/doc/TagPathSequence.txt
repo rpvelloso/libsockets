@@ -27,7 +27,7 @@ searchBorder(tagPathSequence[1..n])
     end
     increment(symbolCount[symbol])
   end
-  thresholds := sort(symbolCount)
+  thresholds := sortByFrquency(symbolCount)
 
   // search for two regions with no common alphabet symbols
   regionFound := false
@@ -74,7 +74,7 @@ end
 filterAlphabet(alphabet, symbolCount, threshold)
   filteredAlphabet := empty
   for i = 1..n do
-    if symbolCount[alphabet[i]] >= threshold then
+    if symbolCount[alphabet[i]] > threshold then
       filteredAlphabet := filteredAlphabet U {alphabet[i]}
     end
   end
