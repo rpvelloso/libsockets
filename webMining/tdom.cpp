@@ -1048,9 +1048,6 @@ void tDOM::tagPathSequenceFilter() {
 		sort(nodeSeqBkp.begin(),nodeSeqBkp.end());
 		set_difference(nodeSeqBkp.begin(),nodeSeqBkp.end(),nodeSequence.begin(),nodeSequence.end(),inserter(setDiff,setDiff.begin()));
 		nodeSequence = setDiff;
-		prune(body);
-		buildTagPath("",body,false);
-		searchBorder(tagPathSequence);
 	}*/
 	prune(body);
 }
