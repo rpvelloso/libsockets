@@ -84,6 +84,7 @@ tDOM::tDOM() {
 	verbose = 0;
 	ignoring = "";
 	formOpen = 0;
+	pathCount = 0;
 	nodeSequence.clear();
 };
 
