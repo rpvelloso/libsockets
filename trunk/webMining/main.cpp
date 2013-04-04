@@ -38,9 +38,9 @@ public:
 	virtual void onTagFound(tNode *n) {
 		if (n->getTagName() == "form") {
 			cout << n->getTagName()
-			<< ";" << getAttribute("action",n->getText())
-			<< ";" << getAttribute("method",n->getText())
-			<< ";" << getAttribute("name",n->getText())
+			<< ";" << n->getAttribute("action")
+			<< ";" << n->getAttribute("method")
+			<< ";" << n->getAttribute("name")
 			<< endl;
 			cout << "tag;type;value;name;size" << endl;
 			searchForm(n);
@@ -59,26 +59,13 @@ protected:
 				((*i)->getTagName() == "option") ||
 				((*i)->getTagName() == "textarea"))
 				cout << (*i)->getTagName()
-				<< ";" << getAttribute("type",(*i)->getText())
-				<< ";" << getAttribute("value",(*i)->getText())
-				<< ";" << getAttribute("name",(*i)->getText())
-				<< ";" << getAttribute("size",(*i)->getText())
+				<< ";" << (*i)->getAttribute("type")
+				<< ";" << (*i)->getAttribute("value")
+				<< ";" << (*i)->getAttribute("name")
+				<< ";" << (*i)->getAttribute("size")
 				<< endl;
 			searchForm(*i);
 		}
-	}
-
-	string getAttribute(string attr, string s) {
-		lowerCase(attr);
-		while (s.size() > 1) {
-			string a = stringTok(s," ");
-			string b = stringTok(a,"=");
-			lowerCase(b);
-			if (b == attr) {
-				return a;
-			}
-		}
-		return "";
 	}
 };
 

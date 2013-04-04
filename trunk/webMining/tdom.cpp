@@ -955,18 +955,11 @@ void tDOM::searchBorder(wstring s) {
 						border=i;
 						score[0] = border + 1;
 						score[1] = s.size() - border - 1;
-						score[0] = float(score[0])*float(score[0])/float(regionAlphabet.size());
-						score[1] = float(score[1])*float(score[1])/float(filteredAlphabet.size());
+						score[0] = float(score[0])*float(score[0])/float(regionAlphabet.size()+1);
+						score[1] = float(score[1])*float(score[1])/float(filteredAlphabet.size()+1);
 						scoreThreshold = float(abs(score[0]-score[1]))/float(score[0]+score[1]);
+
 						if (!filteredAlphabet.empty() && (scoreThreshold > 0.20)) regionFound = true;
-
-						cerr << "region detected (" << regionAlphabet.size() << "): ";
-						for (set<int>::iterator j=regionAlphabet.begin();j!=regionAlphabet.end();j++) cerr << (*j) << " ";
-						cerr << "scores:" << endl;
-						cerr << border + 1 << "\t" << regionAlphabet.size() << "\t" << score[0] << endl;
-						cerr << s.size() - border - 1 << "\t" << filteredAlphabet.size() << "\t" << score[1] << endl;
-						cerr << endl;
-
 						break;
 					}
 					intersect.clear();
@@ -977,6 +970,13 @@ void tDOM::searchBorder(wstring s) {
 
 	if (regionFound) {
 		vector<tNode *>::const_iterator b,m,e;
+
+		cerr << "region detected (" << regionAlphabet.size() << "): ";
+		for (set<int>::iterator j=regionAlphabet.begin();j!=regionAlphabet.end();j++) cerr << (*j) << " ";
+		cerr << endl << "scores:" << endl;
+		cerr << border + 1 << "\t" << regionAlphabet.size() << "\t" << score[0] << endl;
+		cerr << s.size() - border - 1 << "\t" << filteredAlphabet.size() << "\t" << score[1] << endl;
+		cerr << endl;
 
 		b = nodeSequence.begin();
 		m = nodeSequence.begin() + border + 1;
@@ -995,6 +995,7 @@ void tDOM::searchBorder(wstring s) {
 
 void tDOM::buildTagPath(string s, tNode *n, bool print) {
 	list<tNode *>::iterator i = n->nodes.begin();
+	string tagStyle,tagClass;
 	int p;
 
 	if (s == "") {
@@ -1006,7 +1007,11 @@ void tDOM::buildTagPath(string s, tNode *n, bool print) {
 
 	p = pathCount;
 
-	s = s + "/" + n->getTagName();
+	tagStyle = n->getAttribute("style");
+	tagClass = n->getAttribute("class");
+	if (tagStyle != "") tagStyle = " " + tagStyle;
+	if (tagClass != "") tagClass = " " + tagClass;
+	s = s + "/" + n->getTagName() + tagClass + tagStyle;
 
 	if (tagPathMap.find(s) == tagPathMap.end()) {
 		pathCount++;
