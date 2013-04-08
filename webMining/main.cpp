@@ -351,7 +351,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (tpsFilter) {
-		d->tagPathSequenceFilter();
+		d->tagPathSequenceFilter(1.0-st);
 	}
 
 	if (mineForms) {

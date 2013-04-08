@@ -896,13 +896,15 @@ bool tDOM::prune(tNode *n) {
 	return false;
 }
 
-void tDOM::searchBorder(wstring s) {
+void tDOM::searchBorder(wstring s, float st) {
 	set<int> alphabet,filteredAlphabet,regionAlphabet,intersect;
 	map<int,int> currentSymbolCount,symbolCount,thresholds;
 	map<int,int>::iterator threshold;
 	bool regionFound=0;
 	size_t border;
 	float score[2];
+	float scoreThreshold;
+
 
 	for (size_t i=0;i<s.size();i++) {
 		if (alphabet.find(s[i]) == alphabet.end()) {
@@ -926,9 +928,13 @@ void tDOM::searchBorder(wstring s) {
 		if (filteredAlphabet.size() < 2) break;
 		threshold++;
 
-		for (set<int>::iterator j=filteredAlphabet.begin();j!=filteredAlphabet.end();j++) {
+		/*for (set<int>::iterator j=filteredAlphabet.begin();j!=filteredAlphabet.end();j++) {
 			cerr << *j << "\t" << symbolCount[*j] << endl;
-		}
+		}*/
+		cerr.precision(4);
+		cerr << "alphabet size = " << filteredAlphabet.size() << endl;
+		cerr << "TPS size = " << s.size() << endl;
+		cerr << "ratios tps/alpha = " << float(s.size())/float(filteredAlphabet.size()) << " alpha/tps = " << float(filteredAlphabet.size())/float(s.size()) << endl;
 
 		regionAlphabet.clear();
 		currentSymbolCount = symbolCount;
@@ -941,25 +947,25 @@ void tDOM::searchBorder(wstring s) {
 					filteredAlphabet.erase(s[i]);
 					set_intersection(filteredAlphabet.begin(),filteredAlphabet.end(),regionAlphabet.begin(),regionAlphabet.end(),inserter(intersect,intersect.begin()));
 
-					cerr << "s[i]=" << s[i] << endl;
+					/*cerr << "s[i]=" << s[i] << endl;
 					for (set<int>::iterator j=filteredAlphabet.begin();j!=filteredAlphabet.end();j++) cerr << *j << " ";
 					cerr << endl;
 					for (set<int>::iterator j=regionAlphabet.begin();j!=regionAlphabet.end();j++) cerr << *j << " ";
 					cerr << endl;
 					for (set<int>::iterator j=intersect.begin();j!=intersect.end();j++) cerr << *j << " ";
-					cerr << endl << endl;
+					cerr << endl << endl;*/
 
 					if (intersect.empty()) {
-						float scoreThreshold;
-
 						border=i;
 						score[0] = border + 1;
 						score[1] = s.size() - border - 1;
-						score[0] = float(score[0])*float(score[0])/float(regionAlphabet.size()+1);
-						score[1] = float(score[1])*float(score[1])/float(filteredAlphabet.size()+1);
+						//score[0] = float(score[0])*float(score[0])/float(regionAlphabet.size()+1);
+						//score[1] = float(score[1])*float(score[1])/float(filteredAlphabet.size()+1);
+						//score[0] = float(score[0])/float(regionAlphabet.size()+1);
+						//score[1] = float(score[1])/float(filteredAlphabet.size()+1);
 						scoreThreshold = float(abs(score[0]-score[1]))/float(score[0]+score[1]);
 
-						if (!filteredAlphabet.empty() && (scoreThreshold > 0.20)) regionFound = true;
+						if (!filteredAlphabet.empty() && (scoreThreshold > st)) regionFound = true;
 						break;
 					}
 					intersect.clear();
@@ -971,11 +977,13 @@ void tDOM::searchBorder(wstring s) {
 	if (regionFound) {
 		vector<tNode *>::const_iterator b,m,e;
 
+		cerr.precision(4);
 		cerr << "region detected (" << regionAlphabet.size() << "): ";
 		for (set<int>::iterator j=regionAlphabet.begin();j!=regionAlphabet.end();j++) cerr << (*j) << " ";
 		cerr << endl << "scores:" << endl;
 		cerr << border + 1 << "\t" << regionAlphabet.size() << "\t" << score[0] << endl;
 		cerr << s.size() - border - 1 << "\t" << filteredAlphabet.size() << "\t" << score[1] << endl;
+		cerr << "% = " << scoreThreshold << endl;
 		cerr << endl;
 
 		b = nodeSequence.begin();
@@ -989,7 +997,7 @@ void tDOM::searchBorder(wstring s) {
 			s = s.substr(0,border);
 			nodeSequence.assign(b,--m);
 		}
-		searchBorder(s);
+		searchBorder(s,st);
 	}
 }
 
@@ -1036,14 +1044,14 @@ void tDOM::buildTagPath(string s, tNode *n, bool print) {
 	}
 }
 
-void tDOM::tagPathSequenceFilter() {
+void tDOM::tagPathSequenceFilter(float st) {
 	//vector<tNode *> nodeSeqBkp,setDiff;
 
 	buildTagPath("",body,false);
 	//nodeSeqBkp = nodeSequence;
-	searchBorder(tagPathSequence);
-	//cerr << nodeSeqBkp.size() << " " << nodeSequence.size() << " " << tagPathSequence.size() << endl;
-	/*if (nodeSeqBkp.size() - nodeSequence.size() > nodeSequence.size()) {
+	searchBorder(tagPathSequence,st);
+	/*cerr << nodeSeqBkp.size() << " " << nodeSequence.size() << " " << tagPathSequence.size() << endl;
+	if ((nodeSeqBkp.size() - nodeSequence.size() > nodeSequence.size())) {
 		sort(nodeSequence.begin(),nodeSequence.end());
 		sort(nodeSeqBkp.begin(),nodeSeqBkp.end());
 		set_difference(nodeSeqBkp.begin(),nodeSeqBkp.end(),nodeSequence.begin(),nodeSequence.end(),inserter(setDiff,setDiff.begin()));

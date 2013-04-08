@@ -51,7 +51,7 @@ public:
 	list <tNode *> getRecord(tNode *, tNode *);
 	vector<tNode *> partialTreeAlignment(tDataRegion);
 	string getRegEx(tNode *, int, int = 0);
-	void tagPathSequenceFilter();
+	void tagPathSequenceFilter(float);
 protected:
     void treeAlign(tNode *, tNode *, int **, tNode *);
 	size_t STM(tNode *, tNode *, tNode *);
@@ -62,7 +62,7 @@ protected:
 	int treeSize(tNode *);
 	int treeDepth(tNode *);
 
-	void searchBorder(wstring);
+	void searchBorder(wstring, float);
 	bool prune(tNode *);
 
 	virtual void onTagFound(tNode *) = 0;
