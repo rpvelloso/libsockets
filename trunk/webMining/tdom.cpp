@@ -466,10 +466,14 @@ void tDOM::getAlignment(tNode *seed, tNode *rec, list<tNode *> &attrs) {
 	for (i=seed->nodes.begin();i!=seed->nodes.end();i++) {
 		if ((*i)->nodes.size() == 0) {
 			if ((*i)->alignments.find(rec) != (*i)->alignments.end()) {
+				tNode *n;
+
 				if ((*i)->alignments[rec]->parent->tagName == "a")
-					attrs.push_back((*i)->alignments[rec]->parent);
+					n = (*i)->alignments[rec]->parent;
 				else
-					attrs.push_back((*i)->alignments[rec]);
+					n = (*i)->alignments[rec];
+				if (find(attrs.begin(),attrs.end(),n) != attrs.end());
+					attrs.push_back(n);
 			} else attrs.push_back(NULL);
 		} else getAlignment(*i,rec,attrs);
 	}
@@ -965,7 +969,7 @@ void tDOM::searchBorder(wstring s, float st) {
 						//score[1] = float(score[1])/float(filteredAlphabet.size()+1);
 						scoreThreshold = float(abs(score[0]-score[1]))/float(score[0]+score[1]);
 
-						if (!filteredAlphabet.empty() && (scoreThreshold > st)) regionFound = true;
+						if (!filteredAlphabet.empty() && (scoreThreshold > 0.20)) regionFound = true;
 						break;
 					}
 					intersect.clear();
