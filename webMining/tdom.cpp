@@ -472,7 +472,7 @@ void tDOM::getAlignment(tNode *seed, tNode *rec, list<tNode *> &attrs) {
 					n = (*i)->alignments[rec]->parent;
 				else
 					n = (*i)->alignments[rec];
-				if (find(attrs.begin(),attrs.end(),n) != attrs.end());
+				if (find(attrs.begin(),attrs.end(),n) == attrs.end());
 					attrs.push_back(n);
 			} else attrs.push_back(NULL);
 		} else getAlignment(*i,rec,attrs);
