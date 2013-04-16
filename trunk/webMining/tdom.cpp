@@ -888,7 +888,7 @@ void tDOM::LZExtraction() {
 	int start=0,end=0;
 
 	for (list<LZBlock *>::iterator i=blks.begin();i!=blks.end();i++) {
-		if ((*i)->length > 4) {
+		if ((*i)->length > 1) {
 			start = min(start,(*i)->reference);
 			end = (*i)->position + (*i)->length - 1;
 		} else {
