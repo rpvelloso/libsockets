@@ -836,22 +836,15 @@ int tDOM::treeDepth(tNode* n) {
 
 class LZBlock {
 public:
-	LZBlock(int p, int l) {
-		this->p = p;
-		this->l = l;
+	LZBlock(int p, int l, int r) {
+		position = p;
+		length = l;
+		reference = r;
 	};
 
-	bool intersect(LZBlock *b) {
-		int len;
-//cout << b->p <<":"<<b->l<<endl;
-		if (b->p < this->p) len=b->l;
-		else len=this->l;
-		return len>abs(b->p - this->p);
-	};
-
-	int p;
-	int l;
-
+	int position;
+	int length;
+	int reference;
 };
 
 void tDOM::LZExtraction() {
@@ -882,10 +875,8 @@ void tDOM::LZExtraction() {
 		if (l>=0) {
 			cout << blk << "\t";
 			if (k) {
-				if (l>4) {
-					blks.push_back(new LZBlock(k,l));
-					blks.push_back(new LZBlock(i,l));
-				}
+				//if (l>1)
+					blks.push_back(new LZBlock(i,l,k));
 				cout << i << ":" << k << "\t" << l << "\t";
 				for (size_t m=0;m<l;m++) cout << s[m] << ((m!=l-1)?",":"");
 				i+=l-1;
@@ -894,8 +885,22 @@ void tDOM::LZExtraction() {
 		}
 	}
 
+	int start=0,end=0;
+
 	for (list<LZBlock *>::iterator i=blks.begin();i!=blks.end();i++) {
-		if (blks.front()->intersect(*i)) cout << (*i)->p << ":" << (*i)->l << endl;
+		if ((*i)->length > 4) {
+			start = min(start,(*i)->reference);
+			end = (*i)->position + (*i)->length - 1;
+		} else {
+			if (end != 0) {
+				cout << start << ":" << end  << ":" << (end-start) << endl;
+			}
+			end = 0;
+			start = (*i)->position + (*i)->length;
+		}
+	}
+	if (end != 0) {
+		cout << start << ":" << end  << ":" << (end-start) << endl;
 	}
 	/* TODO:
 	 * primeira ideia:
