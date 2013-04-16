@@ -468,12 +468,14 @@ void tDOM::getAlignment(tNode *seed, tNode *rec, list<tNode *> &attrs) {
 			if ((*i)->alignments.find(rec) != (*i)->alignments.end()) {
 				tNode *n;
 
-				if ((*i)->alignments[rec]->parent->tagName == "a")
-					n = (*i)->alignments[rec]->parent;
-				else
-					n = (*i)->alignments[rec];
-				if (find(attrs.begin(),attrs.end(),n) == attrs.end())
-					attrs.push_back(n);
+				if ((*i)->nodes.size() == 0) {
+					if ((*i)->alignments[rec]->parent->tagName == "a")
+						n = (*i)->alignments[rec]->parent;
+					else
+						n = (*i)->alignments[rec];
+					if (find(attrs.begin(),attrs.end(),n) == attrs.end())
+						attrs.push_back(n);
+				}
 			} else attrs.push_back(NULL);
 		} else getAlignment(*i,rec,attrs);
 	}
@@ -832,10 +834,31 @@ int tDOM::treeDepth(tNode* n) {
 	return n->depth;
 }
 
+class LZBlock {
+public:
+	LZBlock(int p, int l) {
+		this->p = p;
+		this->l = l;
+	};
+
+	bool intersect(LZBlock *b) {
+		int len;
+//cout << b->p <<":"<<b->l<<endl;
+		if (b->p < this->p) len=b->l;
+		else len=this->l;
+		return len>abs(b->p - this->p);
+	};
+
+	int p;
+	int l;
+
+};
+
 // naive lz decomposition
 template<class T>
 void lz_decomp(T &inp) {
 	size_t len = inp.size(),blk=0;
+	list<LZBlock *> blks;
 
 	cout << endl << "LZ decomposition: " << endl;
 	for (size_t i=0;i<len;i++) {
@@ -860,7 +883,11 @@ void lz_decomp(T &inp) {
 		if (l>=0) {
 			cout << blk << "\t";
 			if (k) {
-				cout << k << "\t" << l << "\t";
+				if (l>4) {
+					blks.push_back(new LZBlock(k,l));
+					blks.push_back(new LZBlock(i,l));
+				}
+				cout << i << ":" << k << "\t" << l << "\t";
 				for (size_t m=0;m<l;m++) cout << s[m] << ((m!=l-1)?",":"");
 				i+=l-1;
 			} else cout << i << "\t" << 1 << "\t" << inp[i];
@@ -868,13 +895,28 @@ void lz_decomp(T &inp) {
 		}
 	}
 
+	for (list<LZBlock *>::iterator i=blks.begin();i!=blks.end();i++) {
+		if (blks.front()->intersect(*i)) cout << (*i)->p << ":" << (*i)->l << endl;
+	}
 	/* TODO:
+	 * primeira ideia:
 	 * 1. armazenar blocos da decomposicao;
 	 * 2. para cada bloco,
 	 * 3.	se houver repeticao; e
 	 * 4.	esta tiver tamanho razoavel; e
 	 * 5.	ela nao ocorrer em nenhum outro bloco seguinte da decomposicao;
 	 * 6.	entao esta eh uma repeticao primitiva
+	 *
+	 * segunda ideia (melhor):
+	 * - agrupar blocos enquanto tiverem tamanho maior que 'S', incuindo desde a menor referencia;
+	 * - não considerar blocos pequenos na sequencia de blocos (mas concatenar eles): filtro;
+	 * - interromper agrupamento quando aparecer bloco de tamanho inferior a 'S';
+	 * - concatenar todos esses blocos;
+	 * - localizar tandem repeat primitivo aproximado da sequencia resultante; ???
+	 * - reinicia agrupamento de blocos quando aparecer novamente um bloco de tamanho superior a 'S';
+	 *
+	 * - extrair os registros iniciando a partir do menor símbolo que ocorre ao menos 2x na sequencia;
+	 * - agrupar num mesmo parent os nós do registro com depth <= ao primeiro nó do registro, caso tenho + d 1;
 	 */
 }
 
@@ -1044,7 +1086,7 @@ void tDOM::buildTagPath(string s, tNode *n, bool print) {
 		/*for (size_t k=0;k<tagPathSequence.size();k++)
 			cout << tagPathSequence[k];
 		cout << endl;*/
-		//lz_decomp(tagPathSequence);
+		lz_decomp(tagPathSequence);
 	}
 }
 
