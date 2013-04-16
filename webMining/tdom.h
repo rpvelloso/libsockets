@@ -52,6 +52,8 @@ public:
 	vector<tNode *> partialTreeAlignment(tDataRegion);
 	string getRegEx(tNode *, int, int = 0);
 	void tagPathSequenceFilter(float);
+	void LZExtraction();
+
 protected:
     void treeAlign(tNode *, tNode *, int **, tNode *);
 	size_t STM(tNode *, tNode *, tNode *);
