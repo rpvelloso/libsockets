@@ -247,6 +247,7 @@ void printUsage(char *p)
 	cout << "-g   mine forms and fields" << endl;
 	cout << "-c   displays only record count of main region." << endl;
 	cout << "-r   apply tag path sequence filter." << endl;
+	cout << "-z   LZ extraction." << endl;
 	exit(-1);
 }
 
@@ -254,7 +255,7 @@ void printUsage(char *p)
 
 int main(int argc, char *argv[])
 {
-	int opt,mdr=0,tp=0,mineForms=0,dbg=0,tpsFilter=0;
+	int opt,mdr=0,tp=0,mineForms=0,dbg=0,tpsFilter=0,lz=0;
 	float st=1.0; // similarity threshold
 	string inp="",outp="",search="",pattern="",filterStr="";
 	tCustomDOM *d = new tCustomDOM();
@@ -262,7 +263,7 @@ int main(int argc, char *argv[])
 	tFormExtractDOM *fe = new tFormExtractDOM();
 	fstream patternFile,inputFile,outputFile;
 
-	while ((opt = getopt(argc, argv, "i:o:t:s:p:f:x:d:mhvcgar")) != -1) {
+	while ((opt = getopt(argc, argv, "i:o:t:s:p:f:x:d:mhvcgarz")) != -1) {
 		switch (opt) {
 		case 'c':
 			d->recCountDisplay = 1;
@@ -303,6 +304,9 @@ int main(int argc, char *argv[])
 			break;
 		case 'g':
 			mineForms = 1;
+			break;
+		case 'z':
+			lz = 1;
 			break;
 		case 'd':
 			if (optarg && string(optarg) == "ebug") dbg=1;
@@ -364,6 +368,11 @@ int main(int argc, char *argv[])
 		d->buildTagPath("",d->getBody(),true);
 	}
 
+	if (lz) {
+		d->buildTagPath("",d->getBody(),false);
+		d->LZExtraction();
+	}
+
 	if (!tp && !mdr && search != "") {
 		string t,s=search;
 
@@ -377,7 +386,7 @@ int main(int argc, char *argv[])
 		d->searchPattern(p,st);
 	}
 
-	if (search == "" && pattern == "" && !mdr && !tp) {
+	if (search == "" && pattern == "" && !mdr && !tp && !lz) {
 		d->printDOM();
 	}
 

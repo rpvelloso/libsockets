@@ -854,15 +854,14 @@ public:
 
 };
 
-// naive lz decomposition
-template<class T>
-void lz_decomp(T &inp) {
+void tDOM::LZExtraction() {
+	wstring inp = tagPathSequence;
 	size_t len = inp.size(),blk=0;
 	list<LZBlock *> blks;
 
 	cout << endl << "LZ decomposition: " << endl;
 	for (size_t i=0;i<len;i++) {
-		T p,s;
+		wstring p,s;
 		size_t k,l;
 
 		s=inp.substr(i,len);
@@ -873,7 +872,7 @@ void lz_decomp(T &inp) {
 			size_t pos;
 
 			pos=p.find(s.substr(0,j));
-			if (pos != T::npos) {
+			if (pos != wstring::npos) {
 				k=pos;
 				l=j;
 			}
@@ -1050,7 +1049,6 @@ void tDOM::searchBorder(wstring s, float st) {
 void tDOM::buildTagPath(string s, tNode *n, bool print) {
 	list<tNode *>::iterator i = n->nodes.begin();
 	string tagStyle,tagClass;
-	int p;
 
 	if (s == "") {
 		pathCount = 0;
@@ -1058,8 +1056,6 @@ void tDOM::buildTagPath(string s, tNode *n, bool print) {
 		tagPathSequence.clear();
 		nodeSequence.clear();
 	}
-
-	p = pathCount;
 
 	tagStyle = n->getAttribute("style");
 	tagClass = n->getAttribute("class");
@@ -1081,13 +1077,6 @@ void tDOM::buildTagPath(string s, tNode *n, bool print) {
 
 	for (;i!=n->nodes.end();i++)
 		buildTagPath(s,*i,print);
-
-	if (!p) {
-		/*for (size_t k=0;k<tagPathSequence.size();k++)
-			cout << tagPathSequence[k];
-		cout << endl;*/
-		lz_decomp(tagPathSequence);
-	}
 }
 
 void tDOM::tagPathSequenceFilter(float st) {
