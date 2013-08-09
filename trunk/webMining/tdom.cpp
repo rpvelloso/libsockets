@@ -894,6 +894,7 @@ void tDOM::LZExtraction() {
 		} else {
 			if (end != 0) {
 				cout << start << ":" << end  << ":" << (end-start) << endl;
+				for (size_t m=start;m<=end;m++) cout << tagPathSequence[m] << ","; cout << endl;
 			}
 			end = 0;
 			start = (*i)->position + (*i)->length;
@@ -901,6 +902,7 @@ void tDOM::LZExtraction() {
 	}
 	if (end != 0) {
 		cout << start << ":" << end  << ":" << (end-start) << endl;
+		for (size_t m=start;m<=end;m++) cout << tagPathSequence[m] << ","; cout << endl;
 	}
 	/* TODO:
 	 * primeira ideia:
@@ -969,6 +971,8 @@ void tDOM::searchBorder(wstring s, float st) {
 	threshold = thresholds.begin();
 
 	while (!regionFound && (threshold != thresholds.end())) {
+		int gapsize=0;
+
 		cerr << "Threshold: " << (*threshold).first << endl;
 
 		filteredAlphabet.clear();
@@ -1007,7 +1011,7 @@ void tDOM::searchBorder(wstring s, float st) {
 
 					if (intersect.empty()) {
 						border=i;
-						score[0] = border + 1;
+						score[0] = border + 1 - gapsize;
 						score[1] = s.size() - border - 1;
 						//score[0] = float(score[0])*float(score[0])/float(regionAlphabet.size()+1);
 						//score[1] = float(score[1])*float(score[1])/float(filteredAlphabet.size()+1);
@@ -1015,10 +1019,17 @@ void tDOM::searchBorder(wstring s, float st) {
 						//score[1] = float(score[1])/float(filteredAlphabet.size()+1);
 						scoreThreshold = float(abs(score[0]-score[1]))/float(score[0]+score[1]);
 
-						if (!filteredAlphabet.empty() && (scoreThreshold > 0.20)) regionFound = true;
-						break;
+						if (!filteredAlphabet.empty() && (scoreThreshold > 0.20)) {
+							regionFound = true;
+							break;
+						} else {
+							gapsize=1;
+						}
 					}
 					intersect.clear();
+				} else {
+					// keep track of gap size between regions in order not to influence score
+					if (gapsize) gapsize++;
 				}
 			}
 		}
