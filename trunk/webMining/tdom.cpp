@@ -894,7 +894,7 @@ void tDOM::LZExtraction() {
 		} else {
 			if (end != 0) {
 				cout << start << ":" << end  << ":" << (end-start) << endl;
-				for (size_t m=start;m<=end;m++) cout << tagPathSequence[m] << ","; cout << endl;
+				for (int m=start;m<=end;m++) cout << tagPathSequence[m] << ","; cout << endl;
 			}
 			end = 0;
 			start = (*i)->position + (*i)->length;
@@ -902,7 +902,7 @@ void tDOM::LZExtraction() {
 	}
 	if (end != 0) {
 		cout << start << ":" << end  << ":" << (end-start) << endl;
-		for (size_t m=start;m<=end;m++) cout << tagPathSequence[m] << ","; cout << endl;
+		for (int m=start;m<=end;m++) cout << tagPathSequence[m] << ","; cout << endl;
 	}
 	/* TODO:
 	 * primeira ideia:
