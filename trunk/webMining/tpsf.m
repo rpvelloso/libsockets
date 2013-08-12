@@ -12,9 +12,9 @@ function filteredAlphabet = filterAlphabet(alphabet, symbolCount, threshold)
   filteredAlphabet = setdiff(filteredAlphabet,[0]);
 end
 
-function r = searchRegion(tagPathSequence)
+function [pos, mainregion] = searchRegion(tagPathSequence)
   alphabet = [];
-  t = 0;
+  t = 1;
   n = length(tagPathSequence);
   
   for i=1:length(tagPathSequence)
@@ -65,30 +65,40 @@ function r = searchRegion(tagPathSequence)
   if regionFound
     if i < floor(n/2)
       tagPathSequence = tagPathSequence(i+1:n);
+      pos = i;
     else
       tagPathSequence = tagPathSequence(1:i);
+      pos = 0;
     end
-    %r = searchRegion(tagPathSequence);
-    r = tagPathSequence;
   else
-    %r = tagPathSequence;
-    r = [];
+     pos = -1;
+  end
+  mainregion = tagPathSequence;
+end
+
+load '/home/roberto/workspace/webMining/Debug/output.txt';
+%output=[1 2 3 4 5 6 4 5 6 7 8 9 10 7 8 9 10 10 10 10 10 10]';
+
+tps=output';
+
+
+i = 0;
+pos = 1;
+
+while i >= 0
+  [i, datareg] = searchRegion(tps);
+  if i>=0
+     pos = pos + i;
+     tps = datareg;
   end
 end
 
-load 'x';
-tps=x';
+dd=diff(diff(tps))+mean(tps);
 
-while 1
-  datareg = searchRegion(tps);
-  if length(datareg)==0
-    break;
-  else
-    tps = datareg;
-  end
-end
+figure;
+hold;
+plot(output','b');
+plot([pos:pos+length(tps)-1],tps,'r');
+plot([pos+2:pos+length(tps)-1],dd,'g');
 
-%x=[1 2 3 4 5 6 4 5 6 7 8 9 10 7 8 9 10 10 10 10 10 10];
-
-%datareg = searchRegion(x);
 
