@@ -674,7 +674,7 @@ split if a region was found, calling $searchRegion()$ recursively in line
 \State $filtered\Sigma \leftarrow \emptyset$
 \For {$i \leftarrow 1..n$}
 \If {$symCount[\Sigma[i]] \geq threshold$}
-\State $filtered\Sigma \leftarrow filtered \cup \{\Sigma[i]\}$
+\State $filtered\Sigma \leftarrow filtered\Sigma \cup \{\Sigma[i]\}$
 \EndIf
 \EndFor
 \State return $filtered\Sigma$
@@ -794,13 +794,21 @@ In this result, we can see an improvement in the extraction of
 records as well as a considerable reduction in the size of the DOM tree to be processed. 
 A percentage of $52.67\%$ of the DOM tree was pruned without losing the
 target records in the process. Everything pruned out of the DOM tree was noise. 
-Figure \ref{fig:ex2} illustrates the web page and the main content region.
+Figure \ref{fig:ex2} illustrates the web page and the main content region and in 
+Figure \ref{fig:tps} we show the respective TPS and main content detected by our algorithm.
 
 \begin{figure}[H]
   \centering
     \includegraphics[scale=0.26]{example2-gs.jpg}
   \caption{A page from the YouTube web site and the main content region delimited.}
   \label{fig:ex2}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[scale=0.22]{tps.jpg}
+  \caption{The TPS from a YouTube web page and the detected main content region.}
+  \label{fig:tps}
 \end{figure}
 
 
