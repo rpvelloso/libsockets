@@ -610,7 +610,8 @@ to keep it simple and easy to understand the main idea behind $searchRegion()$ a
 \If {$curSymCount[sym] = 0$} \label{line:reg}
 \State $cur\Sigma \leftarrow cur\Sigma - \{sym\}$
 \If {$cur\Sigma \cap region\Sigma = \emptyset$}
-\If {$cur\Sigma \neq \emptyset$ and $(n-2*i)/n > 0.20$}
+\State $sizeRatio \leftarrow (n-2*i+gapSize)/n-gapSize$
+\If {$cur\Sigma \neq \emptyset$ and $sizeRatio > 0.20$}
 \State $regionFound \leftarrow true$
 \State $break$
 \Else
@@ -946,24 +947,22 @@ Section \ref{sec:relatedwork}.
 % ACM needs 'a single self-contained file'!
 %
 %APPENDICES are optional
-%\balancecolumns
-%\appendix
-%Appendix A
+\balancecolumns
+
 \appendix
 \section{Compiled results}
 
-\begin{table}[h]
+\begin{table*}[h]
 \centering
 \caption{Compiled results}
 \label{table:results}
 \begin{tabular}{l r r r c r r r r r}
 
 \hline\hline
-\multicolumn{5}{c}{} & \multicolumn{4}{c}{MDR (\# records)} &\\
+\multicolumn{5}{c}{} & \multicolumn{4}{c}{MDR (\# records)} & (eq. \ref {eq:noise})\\
 & \multicolumn{3}{c}{DOM size (\# nodes)} & Content & \multicolumn{2}{c}{Raw} &
-\multicolumn{2}{c}{Pruned} & (eq. \ref {eq:noise})\\
-Site & Raw & Pruned & Reduction & present & Tot & Tgt & Tot & Tgt & Noise
-rem.
+\multicolumn{2}{c}{Pruned} & Noise\\
+Site & Raw & Pruned & Reduction & present & Tot & Tgt & Tot & Tgt & rem.
 \\
 \hline
 acm.org & 601 & 340 & -43.43\% & Yes & 61 & 10 & 16 & 10 & 88.24\% \\
@@ -991,10 +990,11 @@ webmotors.com.br & 2119 & 1361 & -35.77\% & Yes & 113 & 14 & 19 & 14 & 94.95\% \
 yahoo.com & 760 & 290 & -61.84\% & Yes & 67 & 10 & 10 & 10 & 100.00\% \\
 youtube.com & 1424 & 674 & -52.67\% & Yes & 82 & 20 & 20 & 20 & 100.00\% \\
 \hline
-Average/Total &  &  & -46.22\% & 86.96\%/13.04\% &  &  &  &  & 77.03\% \\
+Average/Total &  &  & -46.22\% & 86.96\%&  &  &  &  & 77.03\% \\
+  &  &  &  & 13.04\%&  &  &  &  &  \\
 \hline
 
 \end{tabular}
-\end{table}
+\end{table*}
 
 \end{document}
