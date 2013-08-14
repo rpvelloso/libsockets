@@ -94,17 +94,38 @@ while i >= 0
 end
 
 d_order=2;
-dd=abs(diff(tps-mean(tps),d_order))+mean(tps);
+dd=diff(tps-mean(tps),d_order);
+
+f=real(fft(tps-mean(tps))).^2;
+%f=f(1:length(f)/2);
+period=find(f(10:length(f))==max(f));
+period=period(1);
+
+dd(find(dd>0))=0;
+dd=(dd.^2)+mean(tps);
+
+md=mean(dd)*1.5;
+
+for i=1:length(dd)
+  if dd(i)>md
+    i=i+period;
+    r(i)=1;
+  end
+end
 
 figure;
 hold;
 plot([1:length(x)],x','k.');
 plot([pos:pos+length(tps)-1],tps,'k*');
-title('Youtube TPS');
+%title('Youtube TPS');
 xlabel('sequence position');
 ylabel('tag path value');
 legend('TPS','Main content','location','northwest');
 legend('boxon');
-%plot([pos+d_order:pos+length(tps)-1],dd,'g');
+plot([pos+d_order:pos+length(tps)-1],dd,'g');
 
+figure;
+plot(f);
+figure;
+plot(r);
 
