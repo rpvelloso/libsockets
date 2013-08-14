@@ -1,30 +1,21 @@
-% THIS IS SIGPROC-SP.TEX - VERSION 3.1
-% WORKS WITH V3.2SP OF ACM_PROC_ARTICLE-SP.CLS
-% APRIL 2009
-%
-% It is an example file showing how to use the 'acm_proc_article-sp.cls' V3.2SP
-% LaTeX2e document class file for Conference Proceedings submissions.
+% THIS IS SIGPROC-SP.TEX - VERSION 3.1 WORKS WITH V3.2SP OF
+% ACM_PROC_ARTICLE-SP.CLS APRIL 2009  It is an example file showing how to use
+% the 'acm_proc_article-sp.cls' V3.2SP LaTeX2e document class file for
+% Conference Proceedings submissions.
 % ----------------------------------------------------------------------------------------------------------------
 % This .tex file (and associated .cls V3.2SP) *DOES NOT* produce:
-%       1) The Permission Statement
-%       2) The Conference (location) Info information
-%       3) The Copyright Line with ACM data
-%       4) Page numbering
+% 1) The Permission Statement 2) The Conference (location) Info information 3)
+% The Copyright Line with ACM data 4) Page numbering
 % ---------------------------------------------------------------------------------------------------------------
-% It is an example which *does* use the .bib file (from which the .bbl file
-% is produced).
-% REMEMBER HOWEVER: After having produced the .bbl file,
-% and prior to final submission,
-% you need to 'insert'  your .bbl file into your source .tex file so as to provide
-% ONE 'self-contained' source file.
-%
-% Questions regarding SIGS should be sent to
-% Adrienne Griscti ---> griscti@acm.org
-%
-% Questions/suggestions regarding the guidelines, .tex and .cls files, etc. to
-% Gerald Murray ---> murray@hq.acm.org
-%
-% For tracking purposes - this is V3.1SP - APRIL 2009
+% It is an example which *does* use the .bib file (from which the .bbl file is
+% produced).
+% REMEMBER HOWEVER: After having produced the .bbl file, and prior to final
+% submission, you need to 'insert'  your .bbl file into your source .tex file so
+% as to provide ONE 'self-contained' source file.
+%  Questions regarding SIGS should be sent to Adrienne Griscti --->
+% griscti@acm.org  Questions/suggestions regarding the guidelines, .tex and .cls
+% files, etc. to Gerald Murray ---> murray@hq.acm.org  For tracking purposes -
+% this is V3.1SP - APRIL 2009
 
 \documentclass{acm_proc_article-sp}
 \usepackage{algorithmicx}
@@ -34,75 +25,62 @@
 
 \begin{document}
 
-\title{Automatic Web Page Segmentation and Noise Removal for Structured Extraction using Tag Path Sequences
-%\titlenote{(Does NOT produce the permission block, copyright information nor page numbering). For use with ACM\_PROC\_ARTICLE-SP.CLS. Supported by ACM.}
+\title{Automatic Web Page Segmentation and Noise Removal for Structured
+Extraction using Tag Path Sequences
+% \titlenote{(Does NOT produce the permission block, copyright information nor
+% page numbering). For use with ACM\_PROC\_ARTICLE-SP.CLS. Supported by ACM.}
 }
-%\subtitle{[Extended Abstract]
-%\titlenote{A full version of this paper is available as
-%\textit{Author's Guide to Preparing ACM SIG Proceedings Using
-%\LaTeX$2_\epsilon$\ and BibTeX} at
-%\texttt{www.acm.org/eaddress.htm}}}
-%
-% You need the command \numberofauthors to handle the 'placement
-% and alignment' of the authors beneath the title.
-%
-% For aesthetic reasons, we recommend 'three authors at a time'
-% i.e. three 'name/affiliation blocks' be placed beneath the title.
-%
-% NOTE: You are NOT restricted in how many 'rows' of
-% "name/affiliations" may appear. We just ask that you restrict
-% the number of 'columns' to three.
-%
-% Because of the available 'opening page real-estate'
-% we ask you to refrain from putting more than six authors
-% (two rows with three columns) beneath the article title.
+% \subtitle{[Extended Abstract] \titlenote{A full version of this paper is
+% available as \textit{Author's Guide to Preparing ACM SIG Proceedings Using
+% \LaTeX$2_\epsilon$\ and BibTeX} at \texttt{www.acm.org/eaddress.htm}}}  You
+% need the command \numberofauthors to handle the 'placement and alignment' of
+% the authors beneath the title.
+%  For aesthetic reasons, we recommend 'three authors at a time' i.e. three
+% 'name/affiliation blocks' be placed beneath the title.
+%  NOTE: You are NOT restricted in how many 'rows' of "name/affiliations" may
+% appear. We just ask that you restrict the number of 'columns' to three.
+%  Because of the available 'opening page real-estate' we ask you to refrain
+% from putting more than six authors (two rows with three columns) beneath the
+% article title.
 % More than six makes the first-page appear very cluttered indeed.
-%
-% Use the \alignauthor commands to handle the names
-% and affiliations for an 'aesthetic maximum' of six authors.
-% Add names, affiliations, addresses for
-% the seventh etc. author(s) as the argument for the
-% \additionalauthors command.
-% These 'additional authors' will be output/set for you
-% without further effort on your part as the last section in
-% the body of your article BEFORE References or any Appendices.
+%  Use the \alignauthor commands to handle the names and affiliations for an
+% 'aesthetic maximum' of six authors.
+% Add names, affiliations, addresses for the seventh etc. author(s) as the
+% argument for the \additionalauthors command.
+% These 'additional authors' will be output/set for you without further effort
+% on your part as the last section in the body of your article BEFORE References
+% or any Appendices.
 
 \numberofauthors{2} %  in this sample file, there are a *total*
-% of EIGHT authors. SIX appear on the 'first-page' (for formatting
-% reasons) and the remaining two appear in the \additionalauthors section.
-%
+% of EIGHT authors. SIX appear on the 'first-page' (for formatting reasons) and
+% the remaining two appear in the \additionalauthors section.
 \author{
-% You can go ahead and credit any number of authors here,
-% e.g. one 'row of three' or two rows (consisting of one row of three
-% and a second row of one, two or three).
-%
-% The command \alignauthor (no curly braces needed) should
-% precede each author name, affiliation/snail-mail address and
-% e-mail address. Additionally, tag each line of
-% affiliation/address with \affaddr, and tag the
-% e-mail address with \email.
-%
-% 1st. author
-\alignauthor
-Roberto Panerai Velloso\\
+% You can go ahead and credit any number of authors here, e.g. one 'row of
+% three' or two rows (consisting of one row of three and a second row of one,
+% two or three).
+%  The command \alignauthor (no curly braces needed) should precede each author
+% name, affiliation/snail-mail address and e-mail address. Additionally, tag
+% each line of affiliation/address with \affaddr, and tag the e-mail address
+% with \email.
+%  1st. author
+\alignauthor Roberto Panerai Velloso\\
        \affaddr{Universidade Federal de Santa Catarina}\\
        \affaddr{Brazil}\\
        \email{rvelloso@gmail.com}
 % 2nd. author
-\alignauthor
-Carina F. Dorneles\\
+\alignauthor Carina F. Dorneles\\
        \affaddr{Universidade Federal de Santa Catarina}\\
        \affaddr{Brazil}\\
        \email{dorneles@gmail.com}
-}       
+}
 % There's nothing stopping you putting the seventh, eighth, etc.
-% author on the opening page (as the 'third row') but we ask,
-% for aesthetic reasons that you place these 'additional authors'
-% in the \additional authors block, viz.
+% author on the opening page (as the 'third row') but we ask, for aesthetic
+% reasons that you place these 'additional authors' in the \additional authors
+% block, viz.
 
-% Just remember to make sure that the TOTAL number of authors
-% is the number that will appear on the first page PLUS the
-% number that will appear in the \additionalauthors section.
+% Just remember to make sure that the TOTAL number of authors is the number that
+% will appear on the first page PLUS the number that will appear in the
+% \additionalauthors section.
 
 \maketitle
 \begin{abstract}
@@ -130,54 +108,57 @@ precision of the extraction step by removing irrelevant results.
 
 \newdef{definition}{Definition}
 
-\section{Introduction}
-
-%Extensive research is still undergoing in the field of web mining. Being the
-%WWW as vast as it is, with all kinds of transactions taking place in it and
-%serving as backbone for enterprises and governments, it's easy to see its
-%intrinsic value, proportional to the amount of information it holds, mostly
-%hidden behind corporative web sites. To retrieve this information, web mining
-%techniques are being developed for as long as the WWW and the internet exists.
-
-One crucial step in web data mining, including structured extraction, is the
-cleaning phase that takes place before extracting the information. One can not
-expect to get good results in the extraction phase without cleaning and removing
-the undesired noise first. 
-%In \cite{Editorial04}, it is mentioned that noise can seriously harm web data mining.
-In \cite{Noisy03}, it is mentioned that despite the importance of this task, relatively 
-little work has been done in this area and, while reviewing up to date related work we 
-still have the impression, that this is an underdeveloped field. Moreover, according to 
-\cite{Editorial04}, noise can seriously harm web data mining. 
-
-In structured extraction, most of the existing approaches use some sort of
-pattern recognition to identify the records (as defined in \cite{MDR03}) present
-in the page. The problem is that, usually, we are interested only in the main
-content region, as depicted in Figure \ref{fig:ex2}, but other regions of the page
-(menus, ads, etc.) often contain repeating patterns that are outputted as noise
-results. So, it is useful to cleanup a web page before extracting the records from it.
-
-Currently, some of the works on noise removal and page segmentation are aimed at
-page indexing and clustering (i.e. they assume the main region is textual) such as
+\section{Introduction}  %Extensive research is still undergoing in the field of
+web mining. Being the %WWW as vast as it is, with all kinds of transactions
+taking place in it and %serving as backbone for enterprises and governments,
+it's easy to see its %intrinsic value, proportional to the amount of information
+it holds, mostly %hidden behind corporative web sites. To retrieve this
+information, web mining %techniques are being developed for as long as the WWW
+and the internet exists.  One crucial step in web data mining, including
+structured extraction, is the cleaning phase that takes place before extracting
+the information. One can not expect to get good results in the extraction phase
+without cleaning and removing the undesired noise first.  %In
+\cite{Editorial04}, it is mentioned that noise can seriously harm web data
+mining. In \cite{Noisy03}, it is mentioned that despite the importance of this
+task, relatively  little work has been done in this area and, while reviewing up
+to date related work we  still have the impression, that this is an
+underdeveloped field. Moreover, according to  \cite{Editorial04}, noise can
+seriously harm web data mining.   In structured extraction, most of the existing
+approaches use some sort of pattern recognition to identify the records (as
+defined in \cite{MDR03}) present in the page. The problem is that, usually, we
+are interested only in the main content region, as depicted in Figure
+\ref{fig:ex2}, but other regions of the page (menus, ads, etc.) often contain
+repeating patterns that are outputted as noise results. So, it is useful to
+cleanup a web page before extracting the records from it.  Currently, some of
+the works on noise removal and page segmentation are aimed at page indexing and
+clustering (i.e. they assume the main region is textual) such as
 \cite{SiteOriented11,Noisy03} and, due to intrinsic differences between
 unstructured data and structured data, these can not be used for structured
 extraction. The existing techniques that can be used for structured content
 either require a priori definitions (\cite{vips03}), or prior training
 (\cite{Graph08}) or they rely on specific HTML tags or aspects of the HTML
-language to work, such as \cite{Entropy09}.
-
-In this paper, we propose and lay down a simple, computationally efficient, yet
-very powerful, algorithm aimed at web page segmentation, noise removal and main
-content identification, based on the tag path sequence of the web page. It is a
-general segmentation technique, presented here in the context of structured
-extraction, that takes into account the page's style and structure. Our main
-contributions are:
-\begin{itemize}
-\item{Fully automatic}: no training or human intervention needed;
-\item{Domain independent}: it is only required that a page contains structured content, no matter what domain it is about;
-\item{HTML syntax independent}: there are no rules defined for specific HTML tags; 
-\item{Works on single page}: it is required only one page as input, which is a main advantage as discussed in \cite{Editorial04};
-\item{Can be combined with extraction techniques}: due to the way pruning is carried out (preserving tree structure), this algorithm can be combined with any structured extraction algorithm;
-\item{Extraction optimization}: the proposed algorithm prunes and average of 46.22\% of the DOM tree, in linear time, avoiding the processing of this noise by the subsequent extraction algorithm.  
+language to work, such as \cite{Entropy09}.  In this paper, we propose and lay
+down a simple, computationally efficient, yet very powerful, algorithm aimed at
+web page segmentation, noise removal and main content identification, based on
+the tag path sequence of the web page. It is a general segmentation technique,
+presented here in the context of structured extraction, that takes into account
+the page's style and structure. Our main contributions are:
+\begin{itemize} 
+\item{Fully automatic}: no training or human
+intervention needed; 
+\item{Domain independent}: it is only required that a page
+contains structured content, no matter what domain it is about; 
+\item{HTML
+syntax independent}: there are no rules defined for specific HTML tags; 
+\item{Works on single page}: it is required only one page as input, which is a
+main advantage as discussed in \cite{Editorial04}; 
+\item{Can be combined with
+extraction techniques}: due to the way pruning is carried out (preserving tree
+structure), this algorithm can be combined with any structured extraction
+algorithm; 
+\item{Extraction optimization}: the proposed algorithm prunes and
+average of 46.22\% of the DOM tree, in linear time, avoiding the processing of
+this noise by the subsequent extraction algorithm.   
 \end{itemize}
  
 %To evaluate how effective our approach is, we compared the noise output of
@@ -602,70 +583,81 @@ to keep it simple and easy to understand the main idea behind $searchRegion()$ a
 \Procedure{searchRegion}{$TPS[1..n]$ by reference}
 \State $\Sigma \leftarrow \emptyset$ \Comment alphabet
 \State $t \leftarrow 0$
-\For {$i \leftarrow 1..n$}
+\For {$i \leftarrow 1..n$} \label{line:symfreq}
 \State $sym \leftarrow TPS[i]$
 \If {$sym \ni \Sigma$}
 \State $\Sigma \leftarrow \Sigma \cup \{sym\}$
 \State $symCount[sym] \leftarrow 0$
 \EndIf
 \State $symCount[sym] \leftarrow symCount[sym]+1$
-\EndFor
-\State $thresholds \leftarrow OrderedFrequencySet(symCount)$
+\EndFor \label{line:esymfreq}
+\State $thresholds \leftarrow OrderedFrequencySet(symCount)$ \label{line:freqth}
 \State $regionFound \leftarrow false$
-\While {not $regionFound$}
-\State $t \leftarrow t + 1$
-\State $cur\Sigma \leftarrow filter(\Sigma,symCount,thresholds[t])$
+\While {not $regionFound$}\label{line:while}
+\State $t \leftarrow t + 1$ \label{line:freqit}
+\State $cur\Sigma \leftarrow filter(\Sigma,symCount,thresholds[t])$ \label{line:filter}
 \If {$cur\Sigma.size < 2$}
 \State $break$
 \EndIf
 \State $curSymCount \leftarrow symCount$
 \State $region\Sigma \leftarrow \emptyset$
-\For {$i \leftarrow 1..n$}
+\State $gapSize \leftarrow 0$
+\For {$i \leftarrow 1..n$} \label{line:tpsit}
 \State $sym \leftarrow TPS[i]$
 \If {$sym \in cur\Sigma$}
-\State $region\Sigma \leftarrow region\Sigma \cup \{sym\}$
+\State $region\Sigma \leftarrow region\Sigma \cup \{sym\}$ \label{line:regalpha}
 \State $curSymCount[sym] \leftarrow curSymCount[sym] - 1$
-\If {$curSymCount[sym] = 0$}
+\If {$curSymCount[sym] = 0$} \label{line:reg}
 \State $cur\Sigma \leftarrow cur\Sigma - \{sym\}$
 \If {$cur\Sigma \cap region\Sigma = \emptyset$}
 \If {$cur\Sigma \neq \emptyset$ and $(n-2*i)/n > 0.20$}
 \State $regionFound \leftarrow true$
-\EndIf
 \State $break$
+\Else
+\State $gapSize \leftarrow 1$ 
 \EndIf
 \EndIf
+\EndIf \label{line:ereg}
+\Else
+\If {$gapSize > 0$}
+\State $gapSize \leftarrow gapSize+1$
+\EndIf 
 \EndIf
 \EndFor
-\EndWhile
-\If {$regionFound$}
+\EndWhile \label{line:ewhile}
+\If {$regionFound$} \label{line:split}
 \If {$i < n/2$}
 \State $TPS \leftarrow TPS[i+1..n]$
 \Else
 \State $TPS \leftarrow TPS[1..i]$
 \EndIf
-\State $searchRegion(TPS)$
-\EndIf
+\State $searchRegion(TPS)$ \label{line:recur}
+\EndIf \label{line:esplit}
 \EndProcedure
 \end{algorithmic}
 %\end{algorithm}
 
-The procedure $searchRegion()$ in Algorithm \ref{alg:searchreg} computes
-the TPS alphabet and corresponding symbol frequency from Lines $4$ to $11$; in
-Line $12$, the frequency thresholds, from Definition \ref{def:ft}, are
-computed; from Lines $14$ to $38$ the actual search is performed for a position
-in the TPS where a split is possible (i.e. where a region exists); in Line $15$
-the frequency thresholds are iterated; in Line $16$ the TPS alphabet, from
-Definition \ref{def:alpha}, is filtered, as described in Section \ref{sec:probform}; 
-in Line $22$ the TPS is iterated; in Line $25$ the region alphabet is computed and; 
-from Lines $27$ to $35$ it is checked if there is no intersection between the alphabets 
-of the two portions of the TPS (an empty intersection indicates that a possible 
-region was found, as in Definition \ref{def:region}). The found region is only 
-reported if it is at least $20\%$ larger than the rest of the sequence, otherwise 
-we continue iterating the frequency thresholds. This percentage is actually a 
-parameter and its purpose is to avoid reporting a region under ambiguous conditions 
-(in the experiments we used the value of 20\%); finally from Lines $39$ to $46$ the 
-TPS is split if a region was found, calling $searchRegion()$ recursively in line $45$,
-if so.
+The procedure $searchRegion()$ in Algorithm \ref{alg:searchreg} computes the TPS
+alphabet and corresponding symbol frequency from Lines \ref{line:symfreq} to
+\ref{line:esymfreq}; in Line \ref{line:freqth}, the frequency thresholds, from
+Definition \ref{def:ft}, are computed; from Lines \ref{line:while} to
+\ref{line:ewhile} the actual search is performed for a position in the TPS where
+a split is possible (i.e. where a region exists); in Line \ref{line:freqit} the
+frequency thresholds are iterated; in Line \ref{line:filter} the TPS alphabet,
+from Definition \ref{def:alpha}, is filtered, as described in Section
+\ref{sec:probform};  in Line \ref{line:tpsit} the TPS is iterated; in Line
+\ref{line:regalpha} the region alphabet is computed and;  from Lines
+\ref{line:reg} to \ref{line:ereg} it is checked if there is no intersection
+between the alphabets  of the two portions of the TPS (an empty intersection
+indicates that a possible region was found, as in Definition \ref{def:region}).
+The found region is only reported if it is at least $20\%$ larger than the rest
+of the sequence, otherwise we continue iterating the sequence and the frequency 
+thresholds. This percentage is actually a parameter and its purpose is to avoid reporting a
+region under ambiguous conditions (in the experiments we used the value of
+20\%); the purpose of variable $gapSize$ is to control the gap of low frequency symbols 
+between two regions when they are not large enough to be reported; finally from Lines \ref{line:split} to \ref{line:esplit} the  TPS is
+split if a region was found, calling $searchRegion()$ recursively in line
+\ref{line:recur}, if so.
 
 \subsection{$filter()$ Algorithm}
 
@@ -896,6 +888,8 @@ inverse the pruning) instead. The main algorithm would look like this:
 \begin{algorithm}[H]
 \caption{Filters out noise from a web page}
 \label{alg:tpsfilter2}
+\textbf{Input:} $inputFile$ - an HTML file \\
+\textbf{Output:} pruned $inputFile$'s DOM tree
 \begin{algorithmic}[1]
 \Procedure{tagPathSequenceFilter}{$inputFile$}
 \State $DOMTree \leftarrow parseHTML(inputFile)$
