@@ -157,7 +157,7 @@ contributions are:
 \item{HTML syntax independent}: there are no rules defined for specific HTML tags; 
 \item{Works on single page}: it is required only one page as input, which is a main advantage as discussed in \cite{Editorial04};
 \item{Can be combined with extraction techniques}: due to the way pruning is carried out (preserving tree structure), this algorithm can be combined with any structured extraction algorithm;
-\item{Extraction optimization}: the proposed algorithm prunes and average of 46.22\% of the DOM tree, in linear time, avoiding the processing of this noise by the subsequent extraction algorithm.  
+\item{Extraction optimization}: the proposed algorithm prunes an average of 46.22\% of the DOM tree, in linear time, avoiding the processing of this noise by the subsequent extraction algorithm.  
 \end{itemize}
  
 %To evaluate how effective our approach is, we compared the noise output of
@@ -497,7 +497,7 @@ problem stated in Section \ref{sec:probform}. They are the following:
 The procedure $tagPathSequenceFilter()$ in Algorithm \ref{alg:tpsfilter} returns
 the main content region of $inputFile$. The procedure $parseHTML()$, in
 Line $2$, converts the HTML code into a DOM tree representation;
-$convertTreeToSequence()$, in Line $3$, converts the DOM tree into a TPS; The
+$convertTreeToSequence()$, in Line $3$, converts the DOM tree into a TPS; the
 procedure $searchRegion()$, in Line $4$, recursively searches for the largest part
 of the TPS that has a unique alphabet and, finally; $pruneDOMTree()$, in Line
 $5$, prunes out of the DOM tree every node that is not in the resulting TPS,
