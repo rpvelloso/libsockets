@@ -910,6 +910,8 @@ inverse the pruning) instead. The main algorithm would look like this:
 \begin{algorithm}[H]
 \caption{Filters out noise from a web page}
 \label{alg:tpsfilter2}
+\textbf{Input:} $inputFile$ - an HTML file \\
+\textbf{Output:} pruned $inputFile$'s DOM tree
 \begin{algorithmic}[1]
 \Procedure{tagPathSequenceFilter}{$inputFile$}
 \State $DOMTree \leftarrow parseHTML(inputFile)$
