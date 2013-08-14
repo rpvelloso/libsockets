@@ -156,7 +156,7 @@ main advantage as discussed in \cite{Editorial04};
 extraction techniques}: due to the way pruning is carried out (preserving tree
 structure), this algorithm can be combined with any structured extraction
 algorithm; 
-\item{Extraction optimization}: the proposed algorithm prunes and
+\item{Extraction optimization}: the proposed algorithm\\prunes an
 average of 46.22\% of the DOM tree, in linear time, avoiding the processing of
 this noise by the subsequent extraction algorithm.   
 \end{itemize}
@@ -264,7 +264,7 @@ node $body$ to the table cell node $td_4$ is $TP_4=``body/table/tr/td"$.
 
 \begin{definition}\textbf{(Tag path sequence).}\label{def:tps} We define the tag
 path sequence ($TPS$) of a DOM tree with $n$ nodes to be the ordered sequence
-$TPS[1..n] = (TP_1,TP_2,TP_3, ...,TP_{n-1},TP_n)$ where two tag paths $TP_i$
+$TPS[1..n] =$ ($TP_1$, $TP_2$, $TP_3$, $\ldots$, $TP_{n-1}$,$TP_n$) where two tag paths $TP_i$
 and $TP_j$, with $i\neq{}j$, are considered equal only if their paths and
 style definitions are equal, otherwise they are different.
 \end{definition}
@@ -288,8 +288,8 @@ and ``4'', so its alphabet is $\Sigma=\{1,2,3,4\}$.
 $(s,f)$ be a pair where $s$ is a symbol from an alphabet of
 a given $TPS$ and $f$ is the number of times that $s$ appears in the $TPS$,
 so we define the tag path frequency set as the set containing all possible
-$(s,f)$ pairs of a $TPS$. Let $FS =
-\{(s_1,f_{s1}),(s_2,f_{s2}),(s_3,f_{s3}),\ldots,(s_{n-1},f_{sn-1}),(s_n,f_{sn})\}$,
+$(s,f)$ pairs of a $TPS$. Let 
+$FS =$ $\{$$(s_1,f_{s1})$, $(s_2,f_{s2})$, $(s_3,f_{s3})$, $\ldots$, $(s_{n-1},f_{sn-1})$, $(s_n,f_{sn})$$\}$, 
 where $n$ is the size of the $TPS$.
 \end{definition}
 In Figure \ref{fig:ex1}, symbol ``1'' shows up once in the sequence,
@@ -427,11 +427,11 @@ with lower frequencies. This way we can avoid this problem without harming the
 segmentation process, because the tag paths with higher frequencies are still
 being considered.
 
-For illustration purposes, we give now an example of a web page starting
-and ending with the same tag path (``/body/br'') and with three regions
-delimited by the same tag path (``/body/div''). Assuming that different tag
-paths are used to describe each region, without filtering out low frequency tag
-paths from the $TPS$ it would not be possible to split the sequence into regions.
+For illustration purposes, we give now an example of a web page starting and
+ending with the same tag path\\(``/body/br") and with three regions delimited by
+the same tag path (``/body/div"). Assuming that different tag paths are used to
+describe each region, without filtering out low frequency tag paths from the
+$TPS$ it would not be possible to split the sequence into regions.
 
 \begin{itemize}
 \item{HTML code}
@@ -486,7 +486,7 @@ problem stated in Section \ref{sec:probform}. They are the following:
   \item {}\textit{\textbf{filter()}}. It filters an alphabet, removing lower
   frequency symbols, making the overall algorithm more robust and resistant to noise;
   \item {}\textit{\textbf{pruneDOMTree()}}. It prunes the original DOM tree, leaving only
-  the main content region reported by $searchRegion$, keeping the original structure of the document.
+  the main content region reported by\\$searchRegion$, keeping the original structure of the document.
 \end{itemize}
 
 \subsection{$tagPathSequenceFilter()$ Algorithm}
@@ -510,7 +510,7 @@ problem stated in Section \ref{sec:probform}. They are the following:
 The procedure $tagPathSequenceFilter()$ in Algorithm \ref{alg:tpsfilter} returns
 the main content region of $inputFile$. The procedure $parseHTML()$, in
 Line $2$, converts the HTML code into a DOM tree representation;
-$convertToSeq()$, in Line $3$, converts the DOM tree into a TPS; The
+$convertToSeq()$, in Line $3$, converts the DOM tree into a TPS; the
 procedure $searchRegion()$, in Line $4$, recursively searches for the largest part
 of the TPS that has a unique alphabet and, finally; $pruneDOMTree()$, in Line
 $5$, prunes out of the DOM tree every node that is not in the resulting TPS,
@@ -772,7 +772,7 @@ presented, as an example, to clarify how they are compiled in Table \ref{table:r
 We considered the extraction results of MDR alone as our baseline to be compared with
 the results obtained by the combined use of TPS filtering and MDR, as illustrated in Figure \ref{fig:method}.
 
-When applying both approaches (MDR and TPS filtering+MDR) to a result page of YouTube web site, the following 
+When applying both approaches (MDR and TPS filtering + MDR) to a result page of YouTube web site, the following 
 results are obtained:
 
 \begin{itemize}
@@ -806,7 +806,7 @@ Figure \ref{fig:tps} we show the respective TPS and main content region detected
 
 \begin{figure}[H]
   \centering
-    \includegraphics[scale=0.22]{tps.jpg}
+    \includegraphics[scale=0.40]{tps.jpg}
   \caption{The TPS from a YouTube web page and the detected main content region.}
   \label{fig:tps}
 \end{figure}
