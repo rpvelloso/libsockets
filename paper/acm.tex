@@ -30,6 +30,7 @@
 \usepackage{algorithmicx}
 \usepackage[ruled]{algorithm}
 \usepackage{algpseudocode}
+\algrenewcommand\algorithmicindent{0.8em}%
 
 \begin{document}
 
@@ -609,25 +610,25 @@ to keep it simple and easy to understand the main idea behind $searchRegion()$ a
 \EndIf
 \State $symCount[sym] \leftarrow symCount[sym]+1$
 \EndFor
-\State $thresholds \leftarrow Ordered Set Of Frequencies(symCount)$
+\State $thresholds \leftarrow OrderedFrequencySet(symCount)$
 \State $regionFound \leftarrow false$
 \While {not $regionFound$}
 \State $t \leftarrow t + 1$
-\State $current\Sigma \leftarrow filter(\Sigma,symCount,thresholds[t])$
-\If {$current\Sigma.size < 2$}
+\State $cur\Sigma \leftarrow filter(\Sigma,symCount,thresholds[t])$
+\If {$cur\Sigma.size < 2$}
 \State $break$
 \EndIf
-\State $currentSymCount \leftarrow symCount$
+\State $curSymCount \leftarrow symCount$
 \State $region\Sigma \leftarrow \emptyset$
 \For {$i \leftarrow 1..n$}
 \State $sym \leftarrow TPS[i]$
-\If {$sym \in current\Sigma$}
+\If {$sym \in cur\Sigma$}
 \State $region\Sigma \leftarrow region\Sigma \cup \{sym\}$
-\State $currentSymCount[sym] \leftarrow currentSymCount[sym]-1$
-\If {$currentSymCount[sym] = 0$}
-\State $current\Sigma \leftarrow current\Sigma - \{sym\}$
-\If {$current\Sigma \cap region\Sigma = \emptyset$}
-\If {$current\Sigma \neq \emptyset$ and $(n-2*i)/n > 0.20$}
+\State $curSymCount[sym] \leftarrow curSymCount[sym] - 1$
+\If {$curSymCount[sym] = 0$}
+\State $cur\Sigma \leftarrow cur\Sigma - \{sym\}$
+\If {$cur\Sigma \cap region\Sigma = \emptyset$}
+\If {$cur\Sigma \neq \emptyset$ and $(n-2*i)/n > 0.20$}
 \State $regionFound \leftarrow true$
 \EndIf
 \State $break$
@@ -671,26 +672,25 @@ if so.
 \begin{algorithm}[H]
 \caption{Filters out symbols with lower frequencies from the alphabet}
 \label{alg:filteralpha}
-\textbf{Input:} $alphabet$ - the alphabet ot be filtered \\
-\textbf{Input:} $symCount$ - the tag path frequency set ($FS$) of the
-alphabet \\ 
+\textbf{Input:} $\Sigma$ - the alphabet ot be filtered \\
+\textbf{Input:} $symCount$ - the tag path frequency set ($FS$) of $\Sigma$ \\ 
 \textbf{Input:} $threshold$ - a frequency threshold \\
 \textbf{Output:} a filtered alphabet
 \begin{algorithmic}[1]
-\Procedure{filter}{alphabet, symCount, threshold}
-\State $filtered \leftarrow \emptyset$
+\Procedure{filter}{$\Sigma$, symCount, threshold}
+\State $filtered\Sigma \leftarrow \emptyset$
 \For {$i \leftarrow 1..n$}
-\If {$symCount[alphabet[i]] \geq threshold$}
-\State $filtered \leftarrow filtered \cup \{alphabet[i]\}$
+\If {$symCount[\Sigma[i]] \geq threshold$}
+\State $filtered\Sigma \leftarrow filtered \cup \{\Sigma[i]\}$
 \EndIf
 \EndFor
-\State return $filtered$
+\State return $filtered\Sigma$
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
 
 The procedure $filter()$ in Algorithm \ref{alg:filteralpha} removes from
-$alphabet$, every symbol with frequency lower than $threshold$. in Lines $3$ to
+alphabet $\Sigma$, every symbol with frequency lower than $threshold$. in Lines $3$ to
 $7$ only the symbols with frequency greater or equal to $threshold$ are inserted
 in the resulting set. The result of $filter()$ is used in Algorithm 
 \ref{alg:searchreg}, Line $24$, where only the symbols in $filtered$ are
@@ -818,11 +818,11 @@ time we get only the $20$ target records in the extraction phase, yielding a
 precision of $100\%$, that means all noise was removed in this case. We calculate 
 the percentage of noise removed to be
 \begin{equation}\label{eq:noise}
-NoiseRemoved=1-\frac{NumRec_{totalTPS}-NumRec_{targetTPS}}{NumRec_{total}-NumRec_{target}}
+NoiseRemoved=1-\frac{\#Rec_{totalTPS}-\#Rec_{targetTPS}}{\#Rec_{total}-\#Rec_{target}}
 \end{equation}
-Where $NumRec_{total}$ and $NumRec_{target}$ are the total number of records and the
-number of target records, respectively, from the original web page, and $NumRec_{totalTPS}$ 
-and $NumRec_{targetTPS}$ are the total number of records and the number of target records, 
+Where $\#Rec_{total}$ and $\#Rec_{target}$ are the total number of records and the
+number of target records, respectively, from the original web page, and $\#Rec_{totalTPS}$ 
+and $\#Rec_{targetTPS}$ are the total number of records and the number of target records, 
 respectively, from the filtered web page.
 
 \subsection{Results}\label{sub:res}
@@ -833,50 +833,6 @@ indicates whether or not the filtering process preserved the main content region
 four columns are the results of MDR alone and combined with TPS filtering, showing the total 
 records and target records extracted for both approaches. The last column shows the percentage 
 of noise removed, calculated using Equation \ref{eq:noise}.  
-\begin{table}[h]
-\caption{Compiled results}
-\label{table:results}
-\centering
-\begin{tabular}{l r r r c r r r r r}
-
-\hline\hline
-\multicolumn{5}{c}{} & \multicolumn{4}{c}{MDR (\# records)} &\\
-& \multicolumn{3}{c}{DOM size (\# nodes)} & Content & \multicolumn{2}{c}{Raw} &
-\multicolumn{2}{c}{Pruned} & (eq. \ref {eq:noise})\\
-Site & Raw & Pruned & Reduction & present & Tot & Tgt & Tot & Tgt & Noise
-rem.
-\\
-\hline
-acm.org & 601 & 340 & -43.43\% & Yes & 61 & 10 & 16 & 10 & 88.24\% \\
-amazon.com & 3309 & 1054 & -68.15\% & Yes & 368 & 15 & 27 & 15 & 96.60\% \\
-americanas.com.br & 2660 & 710 & -73.31\% & Yes & 211 & 20 & 20 & 20 & 100.00\% \\
-bestbuy.com & 3632 & 1425 & -60.77\% & Yes & 299 & 15 & 15 & 15 & 100.00\% \\
-bondfaro.com.br & 3897 & 3069 & -21.25\% & Yes & 231 & 28 & 178 & 28 & 26.11\% \\
-bradesco.com.br & 1913 & 1113 & -41.82\% & Yes & 164 & 10 & 93 & 10 & 46.10\% \\
-buscape.com.br & 3608 & 3514 & -2.61\% & Yes & 279 & 24 & 266 & 24 & 5.10\% \\
-ebay.com & 2623 & 1801 & -31.34\% & Yes & 162 & 50 & 50 & 50 & 100.00\% \\
-elsevier.com & 906 & 160 & -82.34\% & Yes & 120 & 10 & 32 & 10 & 80.00\% \\
-g1.com.br & 900 & 619 & -31.22\% & No & 225 & 10 & 202 & 0 & N/A \\
-globo.com & 400 & 193 & -51.75\% & Yes & 80 & 10 & 20 & 10 & 85.71\% \\
-google.com & 1421 & 981 & -30.96\% & Yes & 118 & 11 & 61 & 11 & 53.27\% \\
-itau.com.br & 1111 & 410 & -63.10\% & No & 77 & 10 & 11 & 0 & N/A \\
-magazineluiza.com.br & 3167 & 1115 & -64.79\% & Yes & 314 & 40 & 44 & 40 & 98.54\% \\
-mercadolivre.com.br & 2401 & 1771 & -26.24\% & Yes & 136 & 50 & 52 & 50 & 97.67\% \\
-reuters.com & 1202 & 480 & -60.07\% & Yes & 136 & 10 & 54 & 10 & 65.08\% \\
-scopus.com & 4929 & 4688 & -4.89\% & Yes & 114 & 20 & 75 & 20 & 41.49\% \\
-submarino.com.br & 2389 & 1268 & -46.92\% & Yes & 116 & 20 & 22 & 20 & 97.92\% \\
-terra.com.br & 869 & 588 & -32.34\% & Yes & 122 & 50 & 76 & 50 & 63.89\% \\
-valor.com.br & 514 & 126 & -75.49\% & No & 55 & 10 & 2 & 0 & N/A \\
-webmotors.com.br & 2119 & 1361 & -35.77\% & Yes & 113 & 14 & 19 & 14 & 94.95\% \\
-%wikipedia.com & 3224 & 1949 & -39.55\% & Yes & N/A & N/A & N/A & N/A & N/A \\
-yahoo.com & 760 & 290 & -61.84\% & Yes & 67 & 10 & 10 & 10 & 100.00\% \\
-youtube.com & 1424 & 674 & -52.67\% & Yes & 82 & 20 & 20 & 20 & 100.00\% \\
-\hline
-Average/Total &  &  & -46.22\% & 86.96\%/13.04\% &  &  &  &  & 77.03\% \\
-\hline
-
-\end{tabular}
-\end{table}
 
 As we can see in Table \ref{table:results}, the total of column ``Content
 Present'' indicates that the algorithm has worked in 86.96\% of the sites and it
@@ -999,4 +955,52 @@ Section \ref{sec:relatedwork}.
 %\balancecolumns
 %\appendix
 %Appendix A
+\appendix
+\section{Compiled results}
+
+\begin{table}[h]
+\centering
+\caption{Compiled results}
+\label{table:results}
+\begin{tabular}{l r r r c r r r r r}
+
+\hline\hline
+\multicolumn{5}{c}{} & \multicolumn{4}{c}{MDR (\# records)} &\\
+& \multicolumn{3}{c}{DOM size (\# nodes)} & Content & \multicolumn{2}{c}{Raw} &
+\multicolumn{2}{c}{Pruned} & (eq. \ref {eq:noise})\\
+Site & Raw & Pruned & Reduction & present & Tot & Tgt & Tot & Tgt & Noise
+rem.
+\\
+\hline
+acm.org & 601 & 340 & -43.43\% & Yes & 61 & 10 & 16 & 10 & 88.24\% \\
+amazon.com & 3309 & 1054 & -68.15\% & Yes & 368 & 15 & 27 & 15 & 96.60\% \\
+americanas.com.br & 2660 & 710 & -73.31\% & Yes & 211 & 20 & 20 & 20 & 100.00\% \\
+bestbuy.com & 3632 & 1425 & -60.77\% & Yes & 299 & 15 & 15 & 15 & 100.00\% \\
+bondfaro.com.br & 3897 & 3069 & -21.25\% & Yes & 231 & 28 & 178 & 28 & 26.11\% \\
+bradesco.com.br & 1913 & 1113 & -41.82\% & Yes & 164 & 10 & 93 & 10 & 46.10\% \\
+buscape.com.br & 3608 & 3514 & -2.61\% & Yes & 279 & 24 & 266 & 24 & 5.10\% \\
+ebay.com & 2623 & 1801 & -31.34\% & Yes & 162 & 50 & 50 & 50 & 100.00\% \\
+elsevier.com & 906 & 160 & -82.34\% & Yes & 120 & 10 & 32 & 10 & 80.00\% \\
+g1.com.br & 900 & 619 & -31.22\% & No & 225 & 10 & 202 & 0 & N/A \\
+globo.com & 400 & 193 & -51.75\% & Yes & 80 & 10 & 20 & 10 & 85.71\% \\
+google.com & 1421 & 981 & -30.96\% & Yes & 118 & 11 & 61 & 11 & 53.27\% \\
+itau.com.br & 1111 & 410 & -63.10\% & No & 77 & 10 & 11 & 0 & N/A \\
+magazineluiza.com.br & 3167 & 1115 & -64.79\% & Yes & 314 & 40 & 44 & 40 & 98.54\% \\
+mercadolivre.com.br & 2401 & 1771 & -26.24\% & Yes & 136 & 50 & 52 & 50 & 97.67\% \\
+reuters.com & 1202 & 480 & -60.07\% & Yes & 136 & 10 & 54 & 10 & 65.08\% \\
+scopus.com & 4929 & 4688 & -4.89\% & Yes & 114 & 20 & 75 & 20 & 41.49\% \\
+submarino.com.br & 2389 & 1268 & -46.92\% & Yes & 116 & 20 & 22 & 20 & 97.92\% \\
+terra.com.br & 869 & 588 & -32.34\% & Yes & 122 & 50 & 76 & 50 & 63.89\% \\
+valor.com.br & 514 & 126 & -75.49\% & No & 55 & 10 & 2 & 0 & N/A \\
+webmotors.com.br & 2119 & 1361 & -35.77\% & Yes & 113 & 14 & 19 & 14 & 94.95\% \\
+%wikipedia.com & 3224 & 1949 & -39.55\% & Yes & N/A & N/A & N/A & N/A & N/A \\
+yahoo.com & 760 & 290 & -61.84\% & Yes & 67 & 10 & 10 & 10 & 100.00\% \\
+youtube.com & 1424 & 674 & -52.67\% & Yes & 82 & 20 & 20 & 20 & 100.00\% \\
+\hline
+Average/Total &  &  & -46.22\% & 86.96\%/13.04\% &  &  &  &  & 77.03\% \\
+\hline
+
+\end{tabular}
+\end{table}
+
 \end{document}
