@@ -76,10 +76,10 @@ function [pos, mainregion] = searchRegion(tagPathSequence)
   mainregion = tagPathSequence;
 end
 
-load '/home/roberto/workspace/webMining/Debug/output.txt';
+x = load('Debug\x');
 %output=[1 2 3 4 5 6 4 5 6 7 8 9 10 7 8 9 10 10 10 10 10 10]';
 
-tps=output';
+tps=x';
 
 
 i = 0;
@@ -93,12 +93,18 @@ while i >= 0
   end
 end
 
-dd=diff(diff(tps))+mean(tps);
+d_order=2;
+dd=abs(diff(tps-mean(tps),d_order))+mean(tps);
 
 figure;
 hold;
-plot(output','b');
-plot([pos:pos+length(tps)-1],tps,'r');
-plot([pos+2:pos+length(tps)-1],dd,'g');
+plot([1:length(x)],x','k.');
+plot([pos:pos+length(tps)-1],tps,'k*');
+title('Youtube TPS');
+xlabel('sequence position');
+ylabel('tag path value');
+legend('TPS','Main content','location','northwest');
+legend('boxon');
+%plot([pos+d_order:pos+length(tps)-1],dd,'g');
 
 
