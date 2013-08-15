@@ -157,19 +157,19 @@ extraction techniques}: due to the way pruning is carried out (preserving tree
 structure), this algorithm can be combined with any structured extraction
 algorithm; 
 \item{Extraction optimization}: the proposed algorithm\\prunes an
-average of 46.22\% of the DOM tree, in linear time, avoiding the processing of
+average of 54.41\% of the DOM tree, in linear time, avoiding the processing of
 this noise by the subsequent extraction algorithm.   
 \end{itemize}
  
 %To evaluate how effective our approach is, we compared the noise output of
 %MDR \cite{MDR03}, a well known structured extraction technique, with and without
-%the use of our technique, yielding and average of 77.03\% of noise removed from
+%the use of our technique, yielding and average of 93.20\% of noise removed from
 %the test web pages.
 
 To evaluate how effective our approach is, we have compared the output of
 MDR \cite{MDR03}, a well known structured extraction technique, against the output
 of MDR combined with our technique, as illustrated in Figure \ref{fig:method}, yielding 
-and average of 77.03\% of noise removed from the test web pages.
+and average of 93.20\% of noise removed from the test web pages.
 
 \begin{figure}[H]
   \centering
@@ -836,15 +836,15 @@ records and target records extracted for both approaches. The last column shows 
 of noise removed, calculated using Equation \ref{eq:noise}.  
 
 As we can see in Table \ref{table:results}, the total of column ``Content
-Present'' indicates that the algorithm has worked in 86.96\% of the sites and it
-has removed, for this test set, an average of 77.03\% of all noise present in the
+Present'' indicates that the algorithm has worked in 83.33\% of the sites and it
+has removed, for this test set, an average of 93.20\% of all noise present in the
 data, as shown by the average of column ``Noise rem.". We consider these to be
 good results.
 
-The average DOM tree reduction of 46.22\% is an interesting result. First,
+The average DOM tree reduction of 54.41\% is an interesting result. First,
 because that means almost half the DOM tree is noise in average. Second, because
 this number matches the value reported, independently, by \cite{Volume05} as
-page template size (between $40\%$ and $50\%$), corroborating with literature work.
+page template size (about $50\%$), corroborating with literature work.
 
 An interesting situation we can see in Table \ref{table:results} is the result
 for the site ``g1.com.br''. Without filtering, MDR has reported a total of $225$
@@ -860,7 +860,7 @@ the main content was not correctly identified, since it's relatively small.
 
 There are three main situations where the algorithm needs to be improved but, fortunately, 
 only two of these can lead to loss of main content (content removal). In Table
-\ref{table:results}, column ``Content Present'', these two situations account for 13.04\% 
+\ref{table:results}, column ``Content Present'', these two situations account for 16.67\% 
 of the cases, where the content region was removed in the filtering process.
 
 \begin{enumerate}
@@ -888,7 +888,7 @@ In this specific situation, TPS segmentation could be used to split the page in
 several parts, and a semantic approach used to combine the regions, reporting the
 main content as a set of regions instead of only one.
 
-For situation described for the site ``g1.com.br'' (that happened for two other
+For situation described for the site ``g1.com.br'' (that happened for three other
 sites we tested), when the content region is smaller than the rest, we
 could apply a semantic technique to check whether or not the desired content is
 present in the reported region, if not, report the complementary DOM tree  (i.e.
@@ -973,33 +973,33 @@ Section \ref{sec:relatedwork}.
 Site & Raw & Pruned & Reduction & present & Tot & Tgt & Tot & Tgt & rem.
 \\
 \hline
-acm.org & 601 & 340 & -43.43\% & Yes & 61 & 10 & 16 & 10 & 88.24\% \\
-amazon.com & 3309 & 1054 & -68.15\% & Yes & 368 & 15 & 27 & 15 & 96.60\% \\
-americanas.com.br & 2660 & 710 & -73.31\% & Yes & 211 & 20 & 20 & 20 & 100.00\% \\
-bestbuy.com & 3632 & 1425 & -60.77\% & Yes & 299 & 15 & 15 & 15 & 100.00\% \\
-bondfaro.com.br & 3897 & 3069 & -21.25\% & Yes & 231 & 28 & 178 & 28 & 26.11\% \\
-bradesco.com.br & 1913 & 1113 & -41.82\% & Yes & 164 & 10 & 93 & 10 & 46.10\% \\
-buscape.com.br & 3608 & 3514 & -2.61\% & Yes & 279 & 24 & 266 & 24 & 5.10\% \\
-ebay.com & 2623 & 1801 & -31.34\% & Yes & 162 & 50 & 50 & 50 & 100.00\% \\
-elsevier.com & 906 & 160 & -82.34\% & Yes & 120 & 10 & 32 & 10 & 80.00\% \\
-g1.com.br & 900 & 619 & -31.22\% & No & 225 & 10 & 202 & 0 & N/A \\
-globo.com & 400 & 193 & -51.75\% & Yes & 80 & 10 & 20 & 10 & 85.71\% \\
-google.com & 1421 & 981 & -30.96\% & Yes & 118 & 11 & 61 & 11 & 53.27\% \\
-itau.com.br & 1111 & 410 & -63.10\% & No & 77 & 10 & 11 & 0 & N/A \\
-magazineluiza.com.br & 3167 & 1115 & -64.79\% & Yes & 314 & 40 & 44 & 40 & 98.54\% \\
-mercadolivre.com.br & 2401 & 1771 & -26.24\% & Yes & 136 & 50 & 52 & 50 & 97.67\% \\
-reuters.com & 1202 & 480 & -60.07\% & Yes & 136 & 10 & 54 & 10 & 65.08\% \\
-scopus.com & 4929 & 4688 & -4.89\% & Yes & 114 & 20 & 75 & 20 & 41.49\% \\
-submarino.com.br & 2389 & 1268 & -46.92\% & Yes & 116 & 20 & 22 & 20 & 97.92\% \\
-terra.com.br & 869 & 588 & -32.34\% & Yes & 122 & 50 & 76 & 50 & 63.89\% \\
-valor.com.br & 514 & 126 & -75.49\% & No & 55 & 10 & 2 & 0 & N/A \\
-webmotors.com.br & 2119 & 1361 & -35.77\% & Yes & 113 & 14 & 19 & 14 & 94.95\% \\
-%wikipedia.com & 3224 & 1949 & -39.55\% & Yes & N/A & N/A & N/A & N/A & N/A \\
-yahoo.com & 760 & 290 & -61.84\% & Yes & 67 & 10 & 10 & 10 & 100.00\% \\
-youtube.com & 1424 & 674 & -52.67\% & Yes & 82 & 20 & 20 & 20 & 100.00\% \\
+acm.org & 601 & 340 & -43.43\% & Yes & 61 & 10 & 16 & 10 & 88.24\%\\
+amazon.com & 3309 & 1054 & -68.15\% & Yes & 368 & 15 & 27 & 15 & 96.60\%\\
+americanas.com.br & 2660 & 710 & -73.31\% & Yes & 211 & 20 & 20 & 20 & 100.00\%\\
+bestbuy.com & 3632 & 1425 & -60.77\% & Yes & 299 & 15 & 15 & 15 & 100.00\%\\
+bondfaro.com.br & 3897 & 1820 & -53.30\% & Yes & 231 & 28 & 30 & 28 & 99.01\%\\
+bradesco.com.br & 1913 & 576 & -69.89\% & No & 164 & 10 & 75 & 0 & N/A\\
+buscape.com.br & 3608 & 1607 & -55.46\% & Yes & 279 & 24 & 24 & 24 & 100.00\%\\
+ebay.com & 2623 & 1801 & -31.34\% & Yes & 162 & 50 & 50 & 50 & 100.00\%\\
+elsevier.com & 906 & 160 & -82.34\% & Yes & 120 & 10 & 32 & 10 & 80.00\%\\
+g1.com.br & 900 & 619 & -31.22\% & No & 225 & 10 & 202 & 0 & N/A\\
+globo.com & 400 & 193 & -51.75\% & Yes & 80 & 10 & 20 & 10 & 85.71\%\\
+google.com & 1421 & 474 & -66.64\% & Yes & 118 & 11 & 21 & 11 & 90.65\%\\
+itau.com.br & 1111 & 410 & -63.10\% & No & 77 & 10 & 11 & 0 & N/A\\
+magazineluiza.com.br & 3167 & 1115 & -64.79\% & Yes & 314 & 40 & 44 & 40 & 98.54\%\\
+mercadolivre.com.br & 2401 & 1771 & -26.24\% & Yes & 136 & 50 & 52 & 50 & 97.67\%\\
+reuters.com & 1202 & 198 & -83.53\% & Yes & 136 & 10 & 10 & 10 & 100.00\%\\
+scopus.com & 4929 & 4688 & -4.89\% & Yes & 114 & 20 & 75 & 20 & 41.49\%\\
+submarino.com.br & 2389 & 1268 & -46.92\% & Yes & 116 & 20 & 22 & 20 & 97.92\%\\
+terra.com.br & 869 & 317 & -63.52\% & Yes & 122 & 50 & 50 & 50 & 100.00\%\\
+valor.com.br & 514 & 126 & -75.49\% & No & 55 & 10 & 2 & 0 & N/A\\
+webmotors.com.br & 2119 & 1361 & -35.77\% & Yes & 113 & 14 & 19 & 14 & 94.95\%\\
+%wikipedia.com & 3224 & 1949 & -39.55\% & Yes & N/A & N/A & N/A & N/A & N/A\\
+yahoo.com & 760 & 290 & -61.84\% & Yes & 67 & 10 & 10 & 10 & 100.00\%\\
+youtube.com & 1424 & 674 & -52.67\% & Yes & 82 & 20 & 20 & 20 & 100.00\%\\
 \hline
-Average/Total &  &  & -46.22\% & 86.96\%&  &  &  &  & 77.03\% \\
-  &  &  &  & 13.04\%&  &  &  &  &  \\
+Average/Total &  &  & -54.41\% & 83.33\%&  &  &  &  & 93.20\% \\
+  &  &  &  & 16.67\%&  &  &  &  &  \\
 \hline
 
 \end{tabular}
