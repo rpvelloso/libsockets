@@ -157,19 +157,19 @@ extraction techniques}: due to the way pruning is carried out (preserving tree
 structure), this algorithm can be combined with any structured extraction
 algorithm; 
 \item{Extraction optimization}: the proposed algorithm\\prunes an
-average of 54.41\% of the DOM tree, in linear time, avoiding the processing of
+average of 47.93\% of the DOM tree, in linear time, avoiding the processing of
 this noise by the subsequent extraction algorithm.   
 \end{itemize}
  
 %To evaluate how effective our approach is, we compared the noise output of
 %MDR \cite{MDR03}, a well known structured extraction technique, with and without
-%the use of our technique, yielding and average of 93.20\% of noise removed from
+%the use of our technique, yielding and average of 89.02\% of noise removed from
 %the test web pages.
 
 To evaluate how effective our approach is, we have compared the output of
 MDR \cite{MDR03}, a well known structured extraction technique, against the output
 of MDR combined with our technique, as illustrated in Figure \ref{fig:method}, yielding 
-and average of 93.20\% of noise removed from the test web pages.
+and average of 89.02\% of noise removed from the test web pages.
 
 \begin{figure}[H]
   \centering
@@ -765,14 +765,14 @@ In this section we describe and discuss the results of our experiments and how
 they are presented. To obtain the results presented in Subsection \ref{sub:res}, 
 we have implemented the algorithm and tested it against some commercial and 
 institutional web sites. In Subsection \ref{sub:clar} we detail one of the results 
-presented, as an example, to clarify how they are compiled in Table \ref{table:results}.
+presented, as an example, to clarify how they are compiled in Table \ref{table:results}, appendix \ref{app:a}.
 
 \subsection{Experimental setup}\label{sub:clar}
 
 We considered the extraction results of MDR alone as our baseline to be compared with
 the results obtained by the combined use of TPS filtering and MDR, as illustrated in Figure \ref{fig:method}.
 
-When applying both approaches (MDR and TPS filtering + MDR) to a result page of YouTube web site, the following 
+When applying both approaches (MDR and TPS filtering + MDR) to a result page of ``YouTube'' (\#38) web site, the following 
 results are obtained:
 
 \begin{itemize}
@@ -836,23 +836,23 @@ records and target records extracted for both approaches. The last column shows 
 of noise removed, calculated using Equation \ref{eq:noise}.  
 
 As we can see in Table \ref{table:results}, the total of column ``Content
-Present'' indicates that the algorithm has worked in 83.33\% of the sites and it
-has removed, for this test set, an average of 93.20\% of all noise present in the
+Present'' indicates that the algorithm has worked in 84.21\% of the sites and it
+has removed, for this test set, an average of 89.02\% of all noise present in the
 data, as shown by the average of column ``Noise rem.". We consider these to be
 good results.
 
-The average DOM tree reduction of 54.41\% is an interesting result. First,
+The average DOM tree reduction of 47.93\% is an interesting result. First,
 because that means almost half the DOM tree is noise in average. Second, because
 this number matches the value reported, independently, by \cite{Volume05} as
 page template size (about $50\%$), corroborating with literature work.
 
 An interesting situation we can see in Table \ref{table:results} is the result
-for the site ``g1.com.br''. Without filtering, MDR has reported a total of $225$
-records, included $10$ target records. After filtering is applied, a total of
-$202$ records are reported, none of them targets, all noise. So, after filtering, if
+for the site ``Build'' (\#8). Without filtering, MDR has reported a total of $117$
+records, included $12$ target records. After filtering is applied, a total of
+$69$ records are reported, none of them targets, all noise. So, after filtering, if
 we had reported the complementary DOM tree instead, we would get a result of
-$23$ records in total ($202-225=23$), included here the $10$ target records, which
-is an excellent result since it gives us a $93.99\%$ of noise removal. We can 
+$48$ records in total ($117-69=48$), included here the $12$ target records, which
+is a good result since it gives us a $65.71\%$ of noise removal. We can 
 deduce from this, that the segmentation has worked just fine for this site, only 
 the main content was not correctly identified, since it's relatively small.
 
@@ -860,7 +860,7 @@ the main content was not correctly identified, since it's relatively small.
 
 There are three main situations where the algorithm needs to be improved but, fortunately, 
 only two of these can lead to loss of main content (content removal). In Table
-\ref{table:results}, column ``Content Present'', these two situations account for 16.67\% 
+\ref{table:results}, column ``Content Present'', these two situations account for 15.79\% 
 of the cases, where the content region was removed in the filtering process.
 
 \begin{enumerate}
@@ -888,7 +888,7 @@ In this specific situation, TPS segmentation could be used to split the page in
 several parts, and a semantic approach used to combine the regions, reporting the
 main content as a set of regions instead of only one.
 
-For situation described for the site ``g1.com.br'' (that happened for three other
+For situation described for the site ``Build'' (that happened for five other
 sites we tested), when the content region is smaller than the rest, we
 could apply a semantic technique to check whether or not the desired content is
 present in the reported region, if not, report the complementary DOM tree  (i.e.
@@ -958,48 +958,84 @@ Section \ref{sec:relatedwork}.
 \balancecolumns
 
 \appendix
-\section{Compiled results}
+\section{Compiled results} \label{app:a}
 
 \begin{table*}[h]
 \centering
 \caption{Compiled results}
 \label{table:results}
-\begin{tabular}{l r r r c r r r r r}
+\begin{tabular}{r l r r r c r r r r r}
 
 \hline\hline
-\multicolumn{5}{c}{} & \multicolumn{4}{c}{MDR (\# records)} & (eq. \ref {eq:noise})\\
-& \multicolumn{3}{c}{DOM size (\# nodes)} & Content & \multicolumn{2}{c}{Raw} &
-\multicolumn{2}{c}{Pruned} & Noise\\
-Site & Raw & Pruned & Reduction & present & Tot & Tgt & Tot & Tgt & rem.
-\\
+& \multicolumn{5}{c}{} & \multicolumn{4}{c}{MDR (\# records)} & (eq. \ref {eq:noise})\\
+& & \multicolumn{3}{c}{DOM size (\# nodes)} & Content & \multicolumn{2}{c}{Raw} & \multicolumn{2}{c}{Pruned} & Noise\\
+\# & Site & Raw & Pruned & Reduction & present & Tot & Tgt & Tot & Tgt & rem. \\
 \hline
-acm.org & 601 & 340 & -43.43\% & Yes & 61 & 10 & 16 & 10 & 88.24\%\\
-amazon.com & 3309 & 1054 & -68.15\% & Yes & 368 & 15 & 27 & 15 & 96.60\%\\
-americanas.com.br & 2660 & 710 & -73.31\% & Yes & 211 & 20 & 20 & 20 & 100.00\%\\
-bestbuy.com & 3632 & 1425 & -60.77\% & Yes & 299 & 15 & 15 & 15 & 100.00\%\\
-bondfaro.com.br & 3897 & 1820 & -53.30\% & Yes & 231 & 28 & 30 & 28 & 99.01\%\\
-bradesco.com.br & 1913 & 576 & -69.89\% & No & 164 & 10 & 75 & 0 & N/A\\
-buscape.com.br & 3608 & 1607 & -55.46\% & Yes & 279 & 24 & 24 & 24 & 100.00\%\\
-ebay.com & 2623 & 1801 & -31.34\% & Yes & 162 & 50 & 50 & 50 & 100.00\%\\
-elsevier.com & 906 & 160 & -82.34\% & Yes & 120 & 10 & 32 & 10 & 80.00\%\\
-g1.com.br & 900 & 619 & -31.22\% & No & 225 & 10 & 202 & 0 & N/A\\
-globo.com & 400 & 193 & -51.75\% & Yes & 80 & 10 & 20 & 10 & 85.71\%\\
-google.com & 1421 & 474 & -66.64\% & Yes & 118 & 11 & 21 & 11 & 90.65\%\\
-itau.com.br & 1111 & 410 & -63.10\% & No & 77 & 10 & 11 & 0 & N/A\\
-magazineluiza.com.br & 3167 & 1115 & -64.79\% & Yes & 314 & 40 & 44 & 40 & 98.54\%\\
-mercadolivre.com.br & 2401 & 1771 & -26.24\% & Yes & 136 & 50 & 52 & 50 & 97.67\%\\
-reuters.com & 1202 & 198 & -83.53\% & Yes & 136 & 10 & 10 & 10 & 100.00\%\\
-scopus.com & 4929 & 4688 & -4.89\% & Yes & 114 & 20 & 75 & 20 & 41.49\%\\
-submarino.com.br & 2389 & 1268 & -46.92\% & Yes & 116 & 20 & 22 & 20 & 97.92\%\\
-terra.com.br & 869 & 317 & -63.52\% & Yes & 122 & 50 & 50 & 50 & 100.00\%\\
-valor.com.br & 514 & 126 & -75.49\% & No & 55 & 10 & 2 & 0 & N/A\\
-webmotors.com.br & 2119 & 1361 & -35.77\% & Yes & 113 & 14 & 19 & 14 & 94.95\%\\
+%acm.org & 601 & 340 & -43.43\% & Yes & 61 & 10 & 16 & 10 & 88.24\%\\
+%amazon.com & 3309 & 1054 & -68.15\% & Yes & 368 & 15 & 27 & 15 & 96.60\%\\
+%americanas.com.br & 2660 & 710 & -73.31\% & Yes & 211 & 20 & 20 & 20 & 100.00\%\\
+%bestbuy.com & 3632 & 1425 & -60.77\% & Yes & 299 & 15 & 15 & 15 & 100.00\%\\
+%bondfaro.com.br & 3897 & 1820 & -53.30\% & Yes & 231 & 28 & 30 & 28 & 99.01\%\\
+%bradesco.com.br & 1913 & 576 & -69.89\% & No & 164 & 10 & 75 & 0 & N/A\\
+%buscape.com.br & 3608 & 1607 & -55.46\% & Yes & 279 & 24 & 24 & 24 & 100.00\%\\
+%ebay.com & 2623 & 1801 & -31.34\% & Yes & 162 & 50 & 50 & 50 & 100.00\%\\
+%elsevier.com & 906 & 160 & -82.34\% & Yes & 120 & 10 & 32 & 10 & 80.00\%\\
+%g1.com.br & 900 & 619 & -31.22\% & No & 225 & 10 & 202 & 0 & N/A\\
+%globo.com & 400 & 193 & -51.75\% & Yes & 80 & 10 & 20 & 10 & 85.71\%\\
+%google.com & 1421 & 474 & -66.64\% & Yes & 118 & 11 & 21 & 11 & 90.65\%\\
+%itau.com.br & 1111 & 410 & -63.10\% & No & 77 & 10 & 11 & 0 & N/A\\
+%magazineluiza.com.br & 3167 & 1115 & -64.79\% & Yes & 314 & 40 & 44 & 40 & 98.54\%\\
+%mercadolivre.com.br & 2401 & 1771 & -26.24\% & Yes & 136 & 50 & 52 & 50 & 97.67\%\\
+%reuters.com & 1202 & 198 & -83.53\% & Yes & 136 & 10 & 10 & 10 & 100.00\%\\
+%scopus.com & 4929 & 4688 & -4.89\% & Yes & 114 & 20 & 75 & 20 & 41.49\%\\
+%submarino.com.br & 2389 & 1268 & -46.92\% & Yes & 116 & 20 & 22 & 20 & 97.92\%\\
+%terra.com.br & 869 & 317 & -63.52\% & Yes & 122 & 50 & 50 & 50 & 100.00\%\\
+%valor.com.br & 514 & 126 & -75.49\% & No & 55 & 10 & 2 & 0 & N/A\\
+%webmotors.com.br & 2119 & 1361 & -35.77\% & Yes & 113 & 14 & 19 & 14 & 94.95\%\\
 %wikipedia.com & 3224 & 1949 & -39.55\% & Yes & N/A & N/A & N/A & N/A & N/A\\
-yahoo.com & 760 & 290 & -61.84\% & Yes & 67 & 10 & 10 & 10 & 100.00\%\\
-youtube.com & 1424 & 674 & -52.67\% & Yes & 82 & 20 & 20 & 20 & 100.00\%\\
+%yahoo.com & 760 & 290 & -61.84\% & Yes & 67 & 10 & 10 & 10 & 100.00\%\\
+%youtube.com & 1424 & 674 & -52.67\% & Yes & 82 & 20 & 20 & 20 & 100.00\%\\
+ 1 & ACM & 601 & 340 & -43,43\% & Yes & 61 & 10 & 16 & 10 & 88,24\% \\
+ 2 & Amazon & 3499 & 1069 & -69,45\% & Yes & 344 & 16 & 41 & 16 & 92,38\% \\
+ 3 & Apple & 1422 & 962 & -32,35\% & Yes & 63 & 15 & 23 & 15 & 83,33\% \\
+ 4 & Avon & 911 & 575 & -36,88\% & Yes & 69 & 20 & 29 & 20 & 81,63\% \\
+ 5 & Barnes \& Noble & 1242 & 778 & -37,36\% & Yes & 147 & 30 & 54 & 30 & 79,49\% \\
+ 6 & Best Buy & 2939 & 1316 & -55,22\% & Yes & 155 & 15 & 15 & 15 & 100,00\% \\
+ 7 & Blockbuster & 2176 & 1381 & -36,53\% & Yes & 84 & 25 & 32 & 25 & 88,14\% \\
+ 8 & Build & 2712 & 746 & -72,49\% & No & 117 & 12 & 69 & 0 & N/A \\
+ 9 & Costco & 4504 & 326 & -92,76\% & No & 246 & 96 & 8 & 8 & N/A \\
+ 10 & Dell & 1737 & 881 & -49,28\% & Yes & 177 & 12 & 64 & 12 & 68,48\% \\
+ 11 & Disney & 2778 & 2006 & -27,79\% & Yes & 193 & 96 & 116 & 96 & 79,38\% \\
+ 12 & Drugstore & 1774 & 850 & -52,09\% & Yes & 156 & 18 & 52 & 18 & 75,36\% \\
+ 13 & eBay & 2623 & 1801 & -31,34\% & Yes & 162 & 50 & 50 & 50 & 100,00\% \\
+ 14 & Elsevier & 906 & 160 & -82,34\% & Yes & 120 & 10 & 32 & 10 & 80,00\% \\
+ 15 & Footlocker & 2440 & 1106 & -54,67\% & Yes & 238 & 60 & 60 & 60 & 100,00\% \\
+ 16 & Gamestop & 1947 & 935 & -51,98\% & No & 86 & 12 & 6 & 0 & N/A \\
+ 17 & Gap & 2249 & 1365 & -39,31\% & Yes & 235 & 124 & 126 & 124 & 98,20\% \\
+ 18 & Google & 1421 & 474 & -66,64\% & Yes & 118 & 11 & 21 & 11 & 90,65\% \\
+ 19 & Home Depot & 5199 & 1304 & -74,92\% & Yes & 325 & 24 & 24 & 24 & 100,00\% \\
+ 20 & HP & 1783 & 1258 & -29,44\% & Yes & 71 & 15 & 15 & 15 & 100,00\% \\
+ 21 & Macy's & 5676 & 2158 & -61,98\% & No & 164 & 40 & 43 & 0 & N/A \\
+ 22 & Microsoft & 871 & 272 & -68,77\% & Yes & 57 & 16 & 16 & 16 & 100,00\% \\
+ 23 & Newegg & 8481 & 3419 & -59,69\% & No & 965 & 20 & 307 & 0 & N/A \\
+ 24 & Nike & 4082 & 1829 & -55,19\% & Yes & 329 & 23 & 23 & 23 & 100,00\% \\
+ 25 & Office Depot & 3363 & 1111 & -66,96\% & Yes & 108 & 24 & 38 & 24 & 83,33\% \\
+ 26 & PC Mall & 4285 & 2548 & -40,54\% & Yes & 216 & 25 & 53 & 25 & 85,34\% \\
+ 27 & Rakuten & 3386 & 2768 & -18,25\% & Yes & 112 & 35 & 61 & 35 & 66,23\% \\
+ 28 & Ralph Lauren & 995 & 564 & -43,32\% & Yes & 46 & 12 & 12 & 12 & 100,00\% \\
+ 29 & Reuters & 1202 & 198 & -83,53\% & Yes & 136 & 10 & 10 & 10 & 100,00\% \\
+ 30 & Scopus & 4929 & 4688 & -4,89\% & Yes & 114 & 20 & 75 & 20 & 41,49\% \\
+ 31 & Sears & 5726 & 3890 & -32,06\% & Yes & 397 & 50 & 75 & 50 & 92,80\% \\
+ 32 & Sephora & 3022 & 1440 & -52,35\% & Yes & 365 & 60 & 60 & 60 & 100,00\% \\
+ 33 & Sony & 2200 & 1316 & -40,18\% & Yes & 98 & 15 & 18 & 15 & 96,39\% \\
+ 34 & Staples & 2959 & 1611 & -45,56\% & Yes & 178 & 24 & 24 & 24 & 100,00\% \\
+ 35 & Tiffany & 3899 & 2753 & -29,39\% & No & 183 & 12 & 67 & 0 & N/A \\
+ 36 & Wal-Mart & 1576 & 808 & -48,73\% & Yes & 110 & 20 & 40 & 20 & 77,78\% \\
+ 37 & Yahoo! & 760 & 290 & -61,84\% & Yes & 67 & 10 & 10 & 10 & 100,00\% \\
+ 38 & YouTube & 1424 & 674 & -52,67\% & Yes & 82 & 20 & 20 & 20 & 100,00\% \\
 \hline
-Average/Total &  &  & -54.41\% & 83.33\%&  &  &  &  & 93.20\% \\
-  &  &  &  & 16.67\%&  &  &  &  &  \\
+& Average/Total &  &  & -47.93\% & 84.21\%&  &  &  &  & 89.02\% \\
+&               &  &  &          & 15.79\%&  &  &  &  &  \\
 \hline
 
 \end{tabular}
