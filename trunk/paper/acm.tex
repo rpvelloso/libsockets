@@ -108,41 +108,47 @@ precision of the extraction step by removing irrelevant results.
 
 \newdef{definition}{Definition}
 
-\section{Introduction}  %Extensive research is still undergoing in the field of
-web mining. Being the %WWW as vast as it is, with all kinds of transactions
-taking place in it and %serving as backbone for enterprises and governments,
-it's easy to see its %intrinsic value, proportional to the amount of information
-it holds, mostly %hidden behind corporative web sites. To retrieve this
-information, web mining %techniques are being developed for as long as the WWW
-and the internet exists.  One crucial step in web data mining, including
-structured extraction, is the cleaning phase that takes place before extracting
-the information. One can not expect to get good results in the extraction phase
-without cleaning and removing the undesired noise first.  %In
-\cite{Editorial04}, it is mentioned that noise can seriously harm web data
-mining. In \cite{Noisy03}, it is mentioned that despite the importance of this
+\section{Introduction}  
+%Extensive research is still undergoing in the field of web mining. Being the 
+%WWW as vast as it is, with all kinds of transactions taking place in it and
+%serving as backbone for enterprises and governments, it's easy to see its
+%intrinsic value, proportional to the amount of information it holds, mostly
+%hidden behind corporative web sites. To retrieve this information, web mining
+%techniques are being developed for as long as the WWW and the internet exists.
+One crucial step in web data mining, including structured extraction, is the
+cleaning phase that takes place before extracting the information. One can not expect to get good results in the extraction phase
+without cleaning and removing the undesired noise first.  
+
+%In \cite{Editorial04}, it is mentioned that noise can seriously harm web datamining. 
+
+In \cite{Noisy03}, it is mentioned that despite the importance of this
 task, relatively  little work has been done in this area and, while reviewing up
 to date related work we  still have the impression, that this is an
 underdeveloped field. Moreover, according to  \cite{Editorial04}, noise can
-seriously harm web data mining.   In structured extraction, most of the existing
-approaches use some sort of pattern recognition to identify the records (as
-defined in \cite{MDR03}) present in the page. The problem is that, usually, we
-are interested only in the main content region, as depicted in Figure
-\ref{fig:ex2}, but other regions of the page (menus, ads, etc.) often contain
-repeating patterns that are outputted as noise results. So, it is useful to
-cleanup a web page before extracting the records from it.  Currently, some of
-the works on noise removal and page segmentation are aimed at page indexing and
-clustering (i.e. they assume the main region is textual) such as
+seriously harm web data mining.   
+
+In structured extraction, most of the existing approaches use some sort of
+pattern recognition to identify the records (as defined in \cite{MDR03}) present
+in the page. The problem is that, usually, we are interested only in the main
+content region, as depicted in Figure \ref{fig:ex2}, but other regions of the
+page (menus, ads, etc.) often contain repeating patterns that are outputted as
+noise results. So, it is useful to cleanup a web page before extracting the records from it.  
+
+Currently, some of the works on noise removal and page segmentation are aimed at
+page indexing and clustering (i.e. they assume the main region is textual) such as
 \cite{SiteOriented11,Noisy03} and, due to intrinsic differences between
 unstructured data and structured data, these can not be used for structured
 extraction. The existing techniques that can be used for structured content
 either require a priori definitions (\cite{vips03}), or prior training
 (\cite{Graph08}) or they rely on specific HTML tags or aspects of the HTML
-language to work, such as \cite{Entropy09}.  In this paper, we propose and lay
-down a simple, computationally efficient, yet very powerful, algorithm aimed at
-web page segmentation, noise removal and main content identification, based on
-the tag path sequence of the web page. It is a general segmentation technique,
-presented here in the context of structured extraction, that takes into account
-the page's style and structure. Our main contributions are:
+language to work, such as \cite{Entropy09}.  
+
+In this paper, we propose and lay down a simple, computationally efficient, yet
+very powerful, algorithm aimed at web page segmentation, noise removal and main
+content identification, based on the tag path sequence of the web page. It is a
+general segmentation technique, presented here in the context of structured
+extraction, that takes into account the page's style and structure. Our main
+contributions are:
 \begin{itemize} 
 \item{Fully automatic}: no training or human
 intervention needed; 
@@ -944,6 +950,7 @@ of large commercial web sites we have tested. It also outcomes the limitations
 works in the area of data cleaning, page segmentation and noise removal as mentioned in 
 Section \ref{sec:relatedwork}.
 
+
 % INCLUDE BIBLIOGRAPHY WHICH MUST FOLLOW jidm.bst TEMPLATE
 \bibliographystyle{abbrv}
 \bibliography{refs}  % sigproc.bib is the name of the Bibliography in this case
@@ -955,7 +962,7 @@ Section \ref{sec:relatedwork}.
 % ACM needs 'a single self-contained file'!
 %
 %APPENDICES are optional
-\balancecolumns
+%\balancecolumns
 
 \appendix
 \section{Compiled results} \label{app:a}
@@ -1042,3 +1049,4 @@ Section \ref{sec:relatedwork}.
 \end{table*}
 
 \end{document}
+
