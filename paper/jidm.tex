@@ -125,8 +125,8 @@ expect to get good results in the extraction phase without cleaning and removing
 the undesired noise first. 
 %In \cite{Editorial04}, it is mentioned that noise can seriously harm web data mining.
 In \cite{Noisy03}, it is mentioned that despite the importance of this task, relatively 
-little work has been done in this area and, while reviewing up to date related work we 
-still have the impression, that this is an underdeveloped field. Moreover, according to 
+little work has been done in this area and, while reviewing up to date related work, we 
+still have the impression that this is an underdeveloped field. Moreover, according to 
 \cite{Editorial04}, noise can seriously harm web data mining. 
 
 In structured extraction, most of the existing approaches use some sort of
@@ -168,7 +168,7 @@ contributions are:
 To evaluate how effective our approach is, we have compared the output of
 MDR \cite{MDR03}, a well known structured extraction technique, against the output
 of MDR combined with our technique, as illustrated in Figure \ref{fig:method}, yielding 
-and average of 77.03\% of noise removed from the test web pages.
+an average of 77.03\% of noise removed from the test web pages.
 
 \begin{figure}[H]
   \centering
@@ -178,7 +178,7 @@ and average of 77.03\% of noise removed from the test web pages.
 \end{figure}
  
 This article is organized as follows. In Section \ref{sec:relatedwork}, we give a
-brief survey of related works in segmentation, pointing out the differences
+brief survey of related work in segmentation, pointing out the differences
 between each one and our proposal. In Section \ref{sec:basicdefs}, some basic
 definitions are given, which are needed for the problem definition and the
 understanding of the algorithm. In Section \ref{sec:probform}, we state the
@@ -295,7 +295,7 @@ In Figure \ref{fig:ex1}, symbol ``1'' shows up once in the sequence,
 symbol ``2'' once too, symbol ``3'' twice and symbol ``4'' four times, so
 for this sequence the tag path frequency set is equal to $FS = \{(1,1), (2,1), \\
 (3,2), (4,4)\}$. The set $FS$ is a mapping between every symbol of an alphabet
-an its corresponding frequency.
+and its corresponding frequency.
 
 \begin{definition}[\textbf{Frequency thresholds}]\label{def:ft} Given a $TPS_a$
 with alphabet $\Sigma_a$, tag path frequency set $FS_a$, we define the frequency
@@ -307,8 +307,8 @@ is a frequency, $s$ is the corresponding symbol of the alphabet $\Sigma_a$.
 In the TPS from Figure \ref{fig:ex1}, the tag path frequency set is 
 $FS=\{(1,1), (2,1), (3,2), (4,4)\}$, in this case the frequency thresholds is
 equal to $FT=\{1,2,4\}$ because symbols ``1'' and ``2'' both have frequency
-equal \textbf{1}, symbol ``3'' has frequency equal \textbf{2} and symbol ``4''
-has frequency equal \textbf{4}. The $FT$ set is need to filter out
+equal to \textbf{1}, symbol ``3'' has frequency equal to \textbf{2} and symbol ``4''
+has frequency equal to \textbf{4}. The $FT$ set is need to filter out
 symbols from the $TPS$. If we have a set $FT=\{1,2,4\}$, there is no point in
 filtering symbols with $f=3$, because there is none in the sequence.
 
@@ -378,7 +378,7 @@ distinct regions of $TPS$, because $\Sigma_a \cap \Sigma_b=\emptyset$.
 %\end{itemize}
 
 \section{Problem formulation}\label{sec:probform}
-Given the definitions presented in the previous section, we formulated the
+Given the definitions presented in the previous section, we formulate next the
 problem of page segmentation and noise removal, based on the following
 assumptions:
 
@@ -413,7 +413,7 @@ one with more nodes).
 Now, using the definitions in Section \ref{sec:basicdefs} and the above
 assumptions, we can state the problem of web page segmentation and
 main content identification to be the following: \textbf{``find the largest
-$region$ in the $TPS$ of a web page that has an $alphabet$ that do not intersect
+$region$ in the $TPS$ of a web page that has an $alphabet$ that does not intersect
 with the $alphabet$ of other smaller regions''}.
 
 One \textbf{crucial} detail that has to be taken into account, is that there may
@@ -455,12 +455,13 @@ The symbols $2$ and $3$ appear along the entire $TPS$.
 TPS = ( , , ,4,...,4, ,5,...,5, ,6,...,6, )
 \end{verbatim}
 
+\end{itemize}
+
 Only symbols with frequency higher than $3$ are considered in the segmentation
 process. Now it is possible to split the $TPS$ into regions.
 
-\end{itemize}
  
-\section{Algorithm's description}\label{sec:algorithm}
+\section{Algorithms' description}\label{sec:algorithm}
 
 In this section we present the algorithms we have developed to address the
 problem stated in Section \ref{sec:probform}. They are the following:
@@ -552,7 +553,7 @@ Line $9$ for each child of $node$.
 This is the core algorithm, since it is responsible for finding the main content region, 
 so we have provided na illustration, in Figure \ref{fig:alg}, to help understand its workings. 
 In Figure \ref{fig:alg}, for clarity purposes, we have omitted alphabet filtering in order 
-to keep it simple and easy to understand the main idea behind $searchRegion()$ algorithm.
+to keep it simple and easy to understand the main idea behind the $searchRegion()$ algorithm.
 
 \begin{figure}[H]
   \centering
