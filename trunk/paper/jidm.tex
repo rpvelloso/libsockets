@@ -9,7 +9,8 @@
 \usepackage{algpseudocode}
 \usepackage{graphicx,url}  % for using figures and url format
 \usepackage[T1]{fontenc}   % avoids warnings such as "LaTeX Font Warning: Font shape 'OMS/cmtt/m/n' undefined"
-\usepackage{amsmath,amsthm}
+\usepackage{amsmath}
+%\usepackage{amsthm}
 %\usepackage{cite} % NOTE: do **not** include this package because it conflicts with jidm.bst
 
 % Standard definitions
@@ -29,23 +30,23 @@
 % ALL FIELDS UNTIL BEGIN{document} ARE MANDATORY
 
 % The following data (volume, number and page) are given by the editors prior to publishing your article
-\jidmVolume{4}
-\jidmNumber{1}
+\jidmVolume{3}
+\jidmNumber{3}
 \jidmYear{13}
 \jidmMonth{October}
-\setcounter{page}{1}
+\setcounter{page}{173}
 
 
 % Includes headers with simplified name of the authors and article title
 \markboth{R. P. Velloso and C. F. Dorneles}
-{Automatic Web Page Segmentation and Noise Removal for Structured Extraction using Tag Path Sequences}
+{Automatic Web Page Segmentation and Noise Removal for Structured Extraction Using Tag Path Sequences}
 %  -> \markboth{}{}
 %         takes 2 arguments
 %         ex: \markboth{M. M. Moro}{Any article title}
 
 
 % Title of the article
-\title{Automatic Web Page Segmentation and Noise Removal for Structured Extraction using Tag Path Sequences}
+\title{Automatic Web Page Segmentation and Noise Removal for Structured Extraction Using Tag Path Sequences}
 
 
 % List of authors
@@ -123,14 +124,14 @@ One crucial step in web data mining, including structured extraction, is the
 cleaning phase that takes place before extracting the information. One can not
 expect to get good results in the extraction phase without cleaning and removing
 the undesired noise first. 
-%In \cite{Editorial04}, it is mentioned that noise can seriously harm web data mining.
-In \cite{Noisy03}, it is mentioned that despite the importance of this task, relatively 
+%In \citeN{Editorial04}, it is mentioned that noise can seriously harm web data mining.
+In \citeN{Noisy03}, it is mentioned that despite the importance of this task, relatively 
 little work has been done in this area and, while reviewing up to date related work, we 
 still have the impression that this is an underdeveloped field. Moreover, according to 
-\cite{Editorial04}, noise can seriously harm web data mining. 
+\citeN{Editorial04}, noise can seriously harm web data mining. 
 
 In structured extraction, most of the existing approaches use some sort of
-pattern recognition to identify the records (as defined in \cite{MDR03}) present
+pattern recognition to identify the records (as defined in \citeN{MDR03}) present
 in the page. The problem is that, usually, we are interested only in the main
 content region, as depicted in Figure \ref{fig:ex2}, but other regions of the page
 (menus, ads, etc.) often contain repeating patterns that are outputted as noise
@@ -138,12 +139,12 @@ results. So, it is useful to cleanup a web page before extracting the records fr
 
 Currently, some of the works on noise removal and page segmentation are aimed at
 page indexing and clustering (i.e. they assume the main region is textual) such as
-\cite{SiteOriented11,Noisy03} and, due to intrinsic differences between
+\citeN{SiteOriented11,Noisy03} and, due to intrinsic differences between
 unstructured data and structured data, these can not be used for structured
 extraction. The existing techniques that can be used for structured content
-either require a priori definitions (\cite{vips03}), or prior training
-(\cite{Graph08}) or they rely on specific HTML tags or aspects of the HTML
-language to work, such as \cite{Entropy09}.
+either require a priori definitions \cite{vips03}, or prior training
+\cite{Graph08} or they rely on specific HTML tags or aspects of the HTML
+language to work, such as \citeN{Entropy09}.
 
 In this article, we propose and lay down a simple, computationally efficient, yet
 very powerful, algorithm aimed at web page segmentation, noise removal and main
@@ -155,22 +156,22 @@ contributions are:
 \item{Fully automatic}: no training or human intervention needed;
 \item{Domain independent}: it is only required that a page contains structured content, no matter what domain it is about;
 \item{HTML syntax independent}: there are no rules defined for specific HTML tags; 
-\item{Works on single page}: it is required only one page as input, which is a main advantage as discussed in \cite{Editorial04};
+\item{Works on single page}: it is required only one page as input, which is a main advantage as discussed in \citeN{Editorial04};
 \item{Can be combined with extraction techniques}: due to the way pruning is carried out (preserving tree structure), this algorithm can be combined with any structured extraction algorithm;
 \item{Extraction optimization}: the proposed algorithm prunes an average of 46.22\% of the DOM tree, in linear time, avoiding the processing of this noise by the subsequent extraction algorithm.  
 \end{itemize}
  
 %To evaluate how effective our approach is, we compared the noise output of
-%MDR \cite{MDR03}, a well known structured extraction technique, with and without
+%MDR \citeN{MDR03}, a well known structured extraction technique, with and without
 %the use of our technique, yielding and average of 77.03\% of noise removed from
 %the test web pages.
 
 To evaluate how effective our approach is, we have compared the output of
-MDR \cite{MDR03}, a well known structured extraction technique, against the output
+MDR \citeN{MDR03}, a well known structured extraction technique, against the output
 of MDR combined with our technique, as illustrated in Figure \ref{fig:method}, yielding 
 an average of 77.03\% of noise removed from the test web pages.
 
-\begin{figure}[H]
+\begin{figure}[b]
   \centering
     \includegraphics[scale=0.60]{method.jpg}
   \caption{Evaluation method adopted.}
@@ -198,34 +199,34 @@ different categories: those based on text content, those based on the DOM tree
 and those that make use of visual information.
 
 \textbf{Text content based approaches}. In
-\cite{BlockImp07,Densiometric08,Boilerplate10,CETR10,NonTemplate13} the segmentation is done
+\citeN{BlockImp07,Densiometric08,Boilerplate10,CETR10,NonTemplate13} the segmentation is done
 using the text content of the web page. The focus of these works, however, is
 not on structured extraction, but instead, on indexing and clustering of web
 sites. The majority of the works about page cleaning and noise removal are aimed
 at this kind of applications.
 
 \textbf{DOM tree based approaches}. In
-\cite{Noisy03,Graph08,Entropy09,SiteOriented11,Entropy12,Jointop07} the segmentation is done using
+\citeN{Noisy03,Graph08,Entropy09,SiteOriented11,Entropy12,Jointop07} the segmentation is done using
 the DOM tree and, thus, they do take into account the web page's structure.
-However \cite{SiteOriented11} and \cite{Noisy03} require several pages from the
-same web site, they are site-driven techniques, \cite{Graph08} and \cite{Jointop07} proposes a
-training framework that requires a manually labeled data set to work, \cite{Entropy09}
+However \citeN{SiteOriented11} and \citeN{Noisy03} require several pages from the
+same web site, they are site-driven techniques, \citeN{Graph08} and \citeN{Jointop07} proposes a
+training framework that requires a manually labeled data set to work, \citeN{Entropy09}
 is dependent of a tag dictionary, defined a priori, to build a
-visual representation of the page and \cite{Entropy12} requires a database of terms associated
+visual representation of the page and \citeN{Entropy12} requires a database of terms associated
 to ``semantic roles'' in order to detect data-rich regions.
 
 \textbf{Visual information based approaches}. Besides text and DOM tree
 based techniques, there are the ones based on visual information such as
-\cite{vips03,viper05,vide09}. They all rely on a web browser's renderer to
+\citeN{vips03,viper05,vide10}. They all rely on a web browser's renderer to
 obtain the visual information used for segmentation, what can be
-computationally expensive, and beyond that, \cite{vips03} is based on quite
+computationally expensive, and beyond that, \citeN{vips03} is based on quite
 a large set of strong heuristic rules, each one applied to specific HTML tags.
 Approaches based on specific HTML tags have a serious disadvantage of being
 affected by changes in web page design practices and HTML syntax changes.
 
 \textbf{Structured extraction techniques}. There are a number of techniques 
 proposed to address the problem of structured extraction, like 
-\cite{NET05,RRunner01,MDR03,TPC09,SuffixTree12}, just to name a few. The reason we 
+\citeN{NET05,RRunner01,MDR03,TPC09,SuffixTree12}, just to name a few. The reason we 
 chose MDR for the evaluation of our proposal is due to the level of detail provided by the 
 publications (which allows for implementation) and availability of independent implementations. 
 Since we are measuring only the noise suppressed in the output, and not the quality of the extraction itself, 
@@ -233,7 +234,7 @@ any pattern detection algorithm, that complies with our constraints (fully autom
 works on single page, no training, no labeling, etc.), would suffice.   
 
 The representation of the web page used in our work (tag path sequence) was
-also employed in \cite{TPC09} and \cite{SuffixTree12}, although in both cases
+also employed in \citeN{TPC09} and \citeN{SuffixTree12}, although in both cases
 for structured extraction, not for segmentation. We cite them here to show
 that, according to their results, this representation, just like the DOM tree,
 is also able to expose the web page's structure and, thus, is suitable for the
@@ -267,7 +268,7 @@ $TPS[1..n] = (TP_1,TP_2,TP_3, ...,TP_{n-1},TP_n)$ where two tag paths $TP_i$
 and $TP_j$, with $i\neq{}j$, are considered equal only if their paths and
 style definitions are equal, otherwise they are different.
 \end{definition}
-This is the same definition as in \cite{SuffixTree12}, where each different tag
+This is the same definition as in \citeN{SuffixTree12}, where each different tag
 path is represented in the sequence by a symbol, except that here we incorporate
 style definitions when comparing tag paths. In Figure \ref{fig:ex1} we show the
 $TPS$ for the given HTML code, where each $TP$ is assigned a code,
@@ -388,7 +389,7 @@ different regions of a web page are described using different tag paths, so
 these regions will have different alphabets; and
 \item\label{ass:2}
 in web sites with semi-structured content (i.e. records, as defined in
-\cite{MDR03}), the main region is structurally denser than the others (menus, ads,
+\citeN{MDR03}), the main region is structurally denser than the others (menus, ads,
 text, etc.).
 \end{enumerate}
 
@@ -555,7 +556,7 @@ so we have provided na illustration, in Figure \ref{fig:alg}, to help understand
 In Figure \ref{fig:alg}, for clarity purposes, we have omitted alphabet filtering in order 
 to keep it simple and easy to understand the main idea behind the $searchRegion()$ algorithm.
 
-\begin{figure}[H]
+\begin{figure}[t]
   \centering
     \includegraphics[scale=0.56]{alg-pb.jpg}
   \caption{Illustration of procedure $searchRegion()$.}
@@ -699,7 +700,7 @@ A node is removed from the tree, only if it is not in $sequence$ \textbf{and} ha
 This way we keep the structure of the remaining tree intact, in order not to affect the subsequent 
 structured extraction phase.
 
-\subsection{Algorithm's complexity}
+\subsection{Algorithm's Complexity}
 
 As for the algorithm's complexity, if we observe Lines $14$ and $22$ of the
 procedure $searchRegion()$, we can see that the loop in Line $14$ iterates the
@@ -745,7 +746,7 @@ we have implemented the algorithm and tested it against some commercial and
 institutional web sites. In Subsection \ref{sub:clar} we detail one of the results 
 presented, as an example, to clarify how they are compiled in Table \ref{table:results}.
 
-\subsection{Experimental setup}\label{sub:clar}
+\subsection{Experimental Setup}\label{sub:clar}
 
 We considered the extraction results of MDR alone as our baseline to be compared with
 the results obtained by the combined use of TPS filtering and MDR, as illustrated in Figure \ref{fig:method}.
@@ -774,7 +775,7 @@ A percentage of $52.67\%$ of the DOM tree was pruned without losing the
 target records in the process. Everything pruned out of the DOM tree was noise. 
 Figure \ref{fig:ex2} illustrates the web page and the main content region.
 
-\begin{figure}[H]
+\begin{figure}[t]
   \centering
     \includegraphics[scale=0.45]{example2-gs.jpg}
   \caption{A page from the YouTube web site and the main content region delimited.}
@@ -857,7 +858,7 @@ good results.
 
 The average DOM tree reduction of 46.22\% is an interesting result. First,
 because that means almost half the DOM tree is noise in average. Second, because
-this number matches the value reported, independently, by \cite{Volume05} as
+this number matches the value reported, independently, by \citeN{Volume05} as
 page template size (between $40\%$ and $50\%$), corroborating with literature work.
 
 An interesting situation we can see in Table \ref{table:results} is the result
@@ -948,7 +949,7 @@ split in several parts), the main content block could be detected using,
 perhaps, semantic approaches.
 
 
-%techniques, like the one presented in \cite{Adaptive07}, that labels a sequence 
+%techniques, like the one presented in \citeN{Adaptive07}, that labels a sequence 
 %of blocks as $content$ or $notContent$ could be used to implement 
 %line $6$ of algorithm \ref{alg:tpsfilter2}.
 
