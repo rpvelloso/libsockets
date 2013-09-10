@@ -52,10 +52,10 @@ Automatic Web Page Segmentation and Noise Removal for Structured Extraction Usin
 %\frame{\tableofcontents[currentsection]}
 \frame{\frametitle{Related work} 
 \begin{itemize}
-	\item Text content based approaches (does not take page structure into consideration);
-	\item DOM tree based approaches (classical representation of a web page);
-	\item Visual information based approaches (huge overhead due to web page renderer dependency);
-	\item Tag paths (string representation that retains structural information).
+	\item \underline{Text content based approaches} (does not take page structure into consideration);
+	\item \underline{DOM tree based approaches} (classical representation of a web page);
+	\item \underline{Visual information based approaches} (huge overhead due to web page renderer dependency);
+	\item \underline{Tag paths} (string representation that retains structural information).
 \end{itemize}
 }
 
@@ -108,12 +108,12 @@ Our proposal & TPS & Yes & No & No & No \\
 \frame{\frametitle{Contributions}
 \begin{small} 
 \begin{itemize}
-\item{Fully automatic}: no training or human intervention involved;
-\item{Domain independent}: it is only required that a page contains structured content, no matter what domain it is about;
-\item{HTML syntax independent}: there are no rules defined for specific HTML tags; 
-\item{Works on single page}: it is required only one page as input;
-\item{Can be combined with extraction techniques}: due to the way pruning is carried out (preserving tree structure), this algorithm can be combined with any structured extraction algorithm;
-\item{Extraction optimization}: the proposed algorithm prunes an average of 46.22\% of the DOM tree, avoiding the processing of this noise by the subsequent extraction algorithm.  
+\item{\underline{Fully automatic}}: no training or human intervention involved;
+\item{\underline{Domain independent}}: it is only required that a page contains structured content, no matter what domain it is about;
+\item{\underline{HTML syntax independent}}: there are no rules defined for specific HTML tags; 
+\item{\underline{Works on single page}}: it is required only one page as input;
+\item{\underline{Can be combined with extraction techniques}}: due to the way pruning is carried out (preserving tree structure), this algorithm can be combined with any structured extraction algorithm;
+\item{\underline{Extraction optimization}}: the proposed algorithm prunes an average of 46.22\% of the DOM tree, avoiding the processing of this noise by the subsequent extraction algorithm.  
 \end{itemize}
 \end{small}
 }
