@@ -1,12 +1,12 @@
 \documentclass{beamer}
-\usepackage[brazilian]{babel}
+%\usepackage[brazilian]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usetheme{Laughlin}
 \begin{document}
 \title{
 \fontsize{8}{7.2}\selectfont
-Automatic Web Page Segmentation and Noise Removal for Structured Extraction using Tag Path Sequences
+Automatic Web Page Segmentation and Noise Removal for Structured Extraction Using Tag Path Sequences
 }
 %\author[Roberto Panerai Velloso]{Orientando: Roberto Panerai Velloso \\
 %Orientadora: Carina F. Dorneles \\ \{rvelloso, dorneles\}@gmail.com }
@@ -52,12 +52,47 @@ Automatic Web Page Segmentation and Noise Removal for Structured Extraction usin
 %\frame{\tableofcontents[currentsection]}
 \frame{\frametitle{Related work} 
 \begin{itemize}
-	\item Text content based approaches
-	\item DOM tree based approaches
-	\item Visual information based approaches
-	\item Tag paths
+	\item Text content based approaches (does not take page structure into consideration);
+	\item DOM tree based approaches (classical representation of a web page);
+	\item Visual information based approaches (huge overhead due to web page renderer dependency);
+	\item Tag paths (string representation that retains structural information).
 \end{itemize}
 }
+
+\frame{\frametitle{Related work}
+\begin{tiny}
+\begin{table}[h]
+\centering
+\caption{Comparative table of segmentation techniques}
+\label{table:comp}
+\begin{tabular}{l c c c c c}
+\hline\hline
+          &          &        &          & Needs       & HTML \\
+          & Operates & Single & Training & a priori    & syntax \\ 
+Technique & over     & page   &          & information & dependent \\
+\hline
+Fernandes et al. [2007] & Text & - & - & - & - \\
+Kohlschütter and Nejdl [2008] & Text & - & - & - & - \\
+Kohlschütter et al. [2010] & Text & - & - & - & - \\
+Weninger et al. [2010] & Text & - & - & - & - \\
+Hu et al. [2013] & Text & - & - & - & - \\
+Yi et al. [2003] & DOM Tree & No & Yes & No & No \\
+Chakrabarti et al. [2008] & DOM Tree & No & Yes & No & No \\
+Cho et al. [2009] & DOM Tree & Yes & No & Yes & Yes \\
+Fernandes et al. [2011] & DOM Tree & No & Yes & No & No \\
+Zheng et al. [2012] & DOM Tree & Yes & No & Yes & Yes \\
+Zheng et al. [2007] & DOM Tree & No & Yes & No & No \\
+Cai et al. [2003] & Visual rep. & Yes & No & Yes & Yes \\
+Simon and Lausen [2005] & Visual rep. & Yes & No & No & Yes \\
+Liu et al. [2010] & Visual rep. & Yes & No & Yes & Yes \\
+\hline
+Our proposal & TPS & Yes & No & No & No \\
+\end{tabular}
+\end{table}
+\end{tiny}
+}
+
+
 \subsection{Tag paths}
 
 \frame{\frametitle{Tag paths}
