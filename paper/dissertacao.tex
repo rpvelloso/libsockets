@@ -103,10 +103,19 @@ HTML específicas;
 que constitui uma grande vantagem desta proposta, como discutido em \cite{Editorial04}.
 \end{itemize}
 
-Para avaliar o quão efetiva é a abordagem proposta neste trabalho, comparamos o
+Para avaliar o quão efetiva é a abordagem proposta neste trabalho, foi comparado o
 ruído de saída do MDR \cite{MDR03}, uma conhecida técnica de extração
-estruturada, com e sem o uso da técnica proposta neste trabalho, obtendo-se uma
-média de 77,03\% de ruído removido das páginas do conjunto de teste.
+estruturada, contra o ruído de saída do MDR combinado com a técnica proposta, como 
+ilustrado na Figura \ref{fig:method}, obtendo-se uma média de 77,03\% de ruído removido 
+das páginas do conjunto de teste.
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[scale=0.34]{method.jpg}
+  \caption{Evaluation method adopted.}
+  \label{fig:method}
+\end{figure}
+
 
 Este documento está organizado da seguinte maneira: no Capítulo \ref{ch:obj} são
 apresentados os objetivos da pesquisa; no Capítulo \ref{ch:contr}
@@ -623,41 +632,40 @@ extração estruturada.
 
 \section{Complexidade do Algoritmo}
 
-As for the algorithm's complexity, if we observe Lines $14$ and $22$ of the
-procedure $searchRegion()$, we can see that the loop in Line $14$ iterates the
-frequency thresholds until a region is found and Line $22$ iterates the TPS
-(filtered at given frequency threshold) also until a region is found and, if
-so, the reported region is recursively processed.
+Com relação à complexidade do algoritmo, observando as Linhas $14$ e $22$ do
+procedimento $searchRegion()$, pode-se ver que o laço de repetição da Linha $14$
+itera os limiares de frequencia até encontrar uma região e na Linha $22$ a TPS, 
+filtrada em uma determina frequencia, é iterada, também, até encontrar uma região e,
+se encontrada, a região é processada recursivamente.
 
-In the worst case, when the alphabet intersection is empty only in the last
-index of the TPS, the complexity would be at most $O(n^2 f)$, where $n$ is the
-length of the TPS and $f$ is the size of the set $thresholds$. In practice, the
-size of the set $thresholds$ is much smaller than the length of the TPS, so we
-can say the complexity approximates $O(n^2)$ as shown in Equation \ref{eq:w}.
+No pior caso, quando a intersecção dos alfabetos só é vazia na última posição da TPS, 
+a complexidade é, no máximo, $O(n^2 f)$, onde $n$ é o tamanho da TPS e $f$ é o tamanho 
+do conjunto $thresholds$. Na prática, o tamanho do conjunto $thresholds$ e bem menor 
+do que o tamanho da TPS, então é possível afirmar que a complexidade de tempo se aproxima
+de $O(n^2)$ como mostrado na Equação \ref{eq:w}.
   \begin{equation}\label{eq:w}
   T(n) = T(n - 1) + \Theta(n) \Longrightarrow \sum_{i=1}^{n}
   i = \frac{n(n+1)}{2} = O(n^2)
   \end{equation} 
 
-In average, if the TPS gets split in half, the complexity would be $O(n)$ as in
-Equation \ref{eq:a}.
+Na média, se a TPS é dividida na metade, a complexidade é $O(n)$, como mostrado na Equação \ref{eq:a}. 
   \begin{equation}\label{eq:a}
   T(n) = T(n/2) + \Theta(n) \Longrightarrow \sum_{i=1}^{log_{2}^{n}}
   \frac{n}{2^i} = n - 1 = O(n)
   \end{equation} 
 
-In the best case, TPS is split in the first index, yielding $O(n)$ as in
-Equation \ref{eq:b}.
+No melhor caso, a TPS é dividida na primeira posição, resultando em uma complexidade de $O(n)$ como
+mostrado na Equação \ref{eq:b}.
   \begin{equation}\label{eq:b}
   T(n) = T(n - 1) + \Theta(1) \Longrightarrow \sum_{i=1}^{n} 1 = n = O(n)
   \end{equation} 
 
-In real world scenarios, as we have seen while doing the evaluation of the
-algorithm, the sequences get split approximately four of five times until they
-can not be split no more. So we can say that in real cases, the algorithm executes in
-$O(in)$ time, where $n$ is the size of the $TPS$ and $i$ is the number of times the 
-sequence gets split, which we can consider as a small constant, in this case, and 
-say that it runs in $O(n)$.
+
+Em situações reais, como as que ocorreram na avaliação empírica dos resultados, as sequencias são divididas 
+aproximadamente quatro ou cinco vezes até que não seja mais possível dividí-las. Portanto, para situações reais, 
+é possível afirmar que o algoritmo possui complexidade de tempo $O(in)$, onde $n$ é o tamanho da TPS e $i$ é 
+o número de vezes que a sequencia é divdida, o qual podemos considerar como sendo uma constante de valor irrisório 
+e, sendo assim, afirmar que a complexidade de tempo é $O(n)$.
 
 \chapter{Método}\label{ch:met}
 
@@ -689,43 +697,39 @@ poderiam ser utilizadas, se estivessem disponíveis, desde que não necessitassem
 de várias páginas HTML como entrada (e.g. $RoadRunner$ \cite{RRunner01}).
 
 
-\chapter{Resultados Experimentais}\label{sec:results}
+\chapter{Resultados Experimentais}\label{ch:results}
 
-In this section we describe and discuss the results of our experiments and how
-they are presented. To obtain the results presented in Section \ref{sec:res}, 
-we have implemented the algorithm and tested it against some commercial and 
-institutional web sites. In Section \ref{sec:clar} we detail one of the results 
-presented, as an example, to clarify how they are compiled in Table \ref{table:results}, appendix \ref{app:a}.
+Neste capítulo são descritos e discutidos os resultados dos experimentos e sua realização.
+Para obter os resultados apresentados na Seção \ref{sec:res}, o algoritmo proposto foi implementado
+e testado em vários $web$ $sites$ comerciais e institucionais. Na Seção \ref{sec:clar} um destes resultados 
+é detalhado, para servir de exemplo, para esclarecer como eles foram compilados na Tabela \ref{table:results}.
 
-\section{Experimental setup}\label{sec:clar}
+\section{Detalhamento dos Experimentos}\label{sec:clar}
 
-We considered the extraction results of MDR alone as our baseline to be compared with
-the results obtained by the combined use of TPS filtering and MDR, as illustrated in Figure \ref{fig:method}.
-
-When applying both approaches (MDR and TPS filtering + MDR) to a result page of ``YouTube'' (\#38) web site, the following 
-results are obtained:
+Os resultados da extração obtidos utilizando apenas o MDR, foram considerados como $baseline$ a ser comparado com os resultados
+obtidos através do uso combinado da técnica proposta com o MDR, como ilustrado na Figura \ref{fig:method}.
+   
+Quando ambas abordagens (MDR e filtragem TPS + MDR) são aplicadas a uma página de resultados do $web$ $site$ ``YouTube'' (\#38), os seguintes resultados são obtidos:
 
 \begin{itemize}
-\item{}raw web page (i.e. the original page, without TPS filtering)
+\item{}página $web$ 'crua' (i.e. página original, sem filtragem da TPS)
 \begin{itemize}
-\item{}DOM tree processed: $1424$ nodes;
-\item{}MDR results: $82$ records total ( $62$ noise / $20$ targets );
+\item{}árvore DOM processada: $1424$ nós;
+\item{}resultados do MDR: $82$ registros no total ( $62$ ruído / $20$ alvo );
 \end{itemize}
 
-\item{}pruned web page (i.e. the web page after TPS filtering)
+\item{}página $web$ filtrada (i.e. página $web$ após aplicação do filtro da TPS)
 \begin{itemize}
-\item{}DOM tree processed: $674$ nodes, size $47,33\%$ of the original page, reduction of $(-52,67\%)$
-\item{}MDR results: $20$ records total ( $0$ noise / $20$ targets ), noise
-removed $100\%$
+\item{}árvore DOM processada: $674$ nós, tamanho $47,33\%$ da página original, redução de $(-52,67\%)$
+\item{}resultados do MDR: $20$ registros no total ( $0$ ruído / $20$ alvo ), ruído removido $100\%$
 \end{itemize}
 \end{itemize}
 
-In this result, we can see an improvement in the extraction of
-records as well as a considerable reduction in the size of the DOM tree to be processed. 
-A percentage of $52.67\%$ of the DOM tree was pruned without losing the
-target records in the process. Everything pruned out of the DOM tree was noise. 
-Figure \ref{fig:ex2} illustrates the web page and the main content region and in 
-Figure \ref{fig:tps} we show the respective TPS and main content region detected by our algorithm.
+Neste resultado observa-se uma melhora na extração dos registros, assim como uma redução considerável 
+do tamanho da árvore DOM que precisou ser processada. Um percentual de $52.67\%$ da árvore DOM foi podado 
+sem que ocorresse a perda dos registros de interesse (alvo) durante o processo. Tudo o que foi podado da 
+árvore, neste caso, era ruído. A Figura \ref{fig:ex2} ilustra a região principal da página e a 
+Figura \ref{fig:tps} mostra a respectiva TPS e a regição principal detectada pelo algoritmo proposto.
 
 \begin{figure}[H]
   \centering
@@ -742,21 +746,20 @@ Figure \ref{fig:tps} we show the respective TPS and main content region detected
 \end{figure}
 
 
-Without applying TPS filtering, we get $82$ records in total and, since we know
-there are $20$ target records in this page, we can consider the value of $62$ 
-records to be $100\%$ of noise to be removed. When we use TPS filtering, this 
-time we get only the $20$ target records in the extraction phase, yielding a 
-precision of $100\%$, that means all noise was removed in this case. We calculate 
-the percentage of noise removed to be
+Sem aplicar o filtro na TPS, são obtidos $82$ registros no total e, como sabe-se de antemão que 
+existem $20$ registros de interesse nesta página, considera-se que a quantidade de $62$ registros 
+representam $100\%$ do ruído presente nesta página e que deve ser removido. Quando o filtro é utilizado, 
+desta vez são obtidos apenas os $20$ registros de interesse na fase de extração, resultando em uma
+precisão de $100\%$, o que significa que todo o ruído da página foi removido, neste caso. O percentual de 
+ruído removido é calculado como
 \begin{equation}\label{eq:noise}
 NoiseRemoved=1-\frac{\#Rec_{totalTPS}-\#Rec_{targetTPS}}{\#Rec_{total}-\#Rec_{target}}
 \end{equation}
-Where $\#Rec_{total}$ and $\#Rec_{target}$ are the total number of records and the
-number of target records, respectively, from the original web page, and $\#Rec_{totalTPS}$ 
-and $\#Rec_{targetTPS}$ are the total number of records and the number of target records, 
-respectively, from the filtered web page.
+Onde $\#Rec_{total}$ e $\#Rec_{target}$ são o total de registros e o total de registros de interesse, 
+respectivamente, da página original, e $\#Rec_{totalTPS}$ e $\#Rec_{targetTPS}$ são o total de 
+registros e o total de registro de interesse, respectivamente, da página $web$ filtrada. 
 
-\section{Results}\label{sec:res}
+\section{Resultados}\label{sec:res}
 
 In Table \ref{table:results} we present, in the first three columns, the size of the DOM tree
 processed by MDR and the reduction obtained after filtering. The column ``Content Present''
@@ -802,9 +805,9 @@ of the cases, where the content region was removed in the filtering process.
   \item{\textbf{templates too heterogeneous}}. These are pages where the main content is 
   subdivided in more than one region. In this case, the main region gets split
   over and over, and only the largest part passes through the filter (and it
-  might be noise). We propose a way to work around this problem later in this Section;
+  might be noise). We propose a way to work around this problem later in this Chapter;
   \item{\textbf{pages where the main content is smaller than the rest}}. That is a
-  consequence of the second assumption we made in Section \ref{sec:probform}:
+  consequence of the second assumption we made in Chapter \ref{ch:probform}:
   ``the main region is denser/bigger than the rest''. In this case, noise will
   always be reported as content. The same proposal made for the former situation 
   can be used to deal with this one as well.
@@ -934,7 +937,7 @@ The algorithm shows outstanding performance, as it works very well for the major
 of large commercial web sites we have tested. It also outcomes the limitations 
 (training requirements, HTML tag dependency, manual labeling, among others) of previous 
 works in the area of data cleaning, page segmentation and noise removal as mentioned in 
-Section \ref{sec:relatedwork}.
+Chapter \ref{sec:relatedwork}.
 
 \bibliographystyle{ufscThesis/ufsc-alf}
 \bibliography{refs}
