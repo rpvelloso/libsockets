@@ -415,16 +415,16 @@ a região principal de $inputFile$. O procedimento $parseHTML()$, na
 Linha $2$, converte o código HTML em uma árvore DOM;
 $convertToSeq()$, na Linha $3$, converte a árvore DOM em uma TPS; o
 procedimento $searchRegion()$, na Linha $4$, procura recursivamente pela maior 
-região da TPS que possui um alfabeto único a, finalmente; $pruneDOMTree()$, na Linha
-$5$, poda na árvore DOM todos os nós que não estão na TPS resultante,
-preservando a estrutura do documento retornado na Linha $6$.
+região da TPS que possui um alfabeto único e, finalmente; $pruneDOMTree()$, na
+Linha $5$, retira da árvore DOM (poda) todos os nós que não estão na TPS
+resultante, preservando a estrutura do documento retornado na Linha $6$.
 
 Aabixo são detalhados os algoritmos $convertToSeq()$, $searchRegion()$,
 $filter()$ e $pruneDOMTree()$. O algoritmo $parseHTML()$ não faz parte do escopo 
 deste trabalho, portanto não será discutido aqui.
 
 
-\section{$convertToSeq()$ Algorithm}
+\section{Algoritmo convertToSeq()}
 
 \begin{algorithm}[H]
 \caption{Converts a DOM tree to a tag path sequence representation}
@@ -453,27 +453,25 @@ O procedimento $convertToSeq()$ no Algoritmo \ref{alg:tree2seq}
 converte uma página web de sua representação em árvore DOM para uma representação em formato TPS,
 percorrendo a árvore DOM em profundidade. Inicialmente é chamado no
 Algoritmo \ref{alg:tpsfilter} com um $tagPath$ vazio como parametro, que 
-representa a $string$ do tag path anterior (da chamada recursiva anterior).
-Na Linha $2$, o tag path anterior é concatenado com a $tag$ atual, assim como com suas
-definições de estilo, com objetivo de distinguir caminhos repetidos com estilos diferentes; 
-na Linha $3$, é verificado se o $tag$ $path$ atual já foi visto antes pelo algoritmo ou não 
-($tagPathMap$ is used for this purpose) e, se não, na Linha $4$, ele é inserido no 
-conjunto $tagPathMap$ e um novo código é atribuído à ele na Linha $5$,
-como definido na Definição \ref{def:tps}; na Linha $7$, o código do tag path é concatenado ao final da sequencia e,
-finalmente, o procedimento e invocadorecursivamente na Linha $9$ para cara filho de $node$.
+representa a $string$ do tag path anterior (i.e. da chamada recursiva anterior).
+Na Linha $2$, o $tag$ $path$ anterior é concatenado com a $tag$ atual e com
+suas definições de estilo, com objetivo de distinguir caminhos repetidos com
+estilos diferentes; na Linha $3$, é verificado se o $tag$ $path$ atual já foi
+visto antes pelo algoritmo ou não ($tagPathMap$ is used for this purpose) e, se
+não, na Linha $4$, ele é inserido no conjunto $tagPathMap$ e um novo código é
+atribuído à ele na Linha $5$, como definido na Definição \ref{def:tps}; na Linha
+$7$, o código do tag path é concatenado ao final da sequencia e, finalmente, o
+procedimento e invocado recursivamente na Linha $9$ para cara filho de $node$.
 
-\section{$searchRegion()$ Algorithm}
+\section{Algoritmo searchRegion()}
 
-This is the core algorithm, since it is responsible for finding the main content region, 
-so we have provided na illustration, in Figure \ref{fig:alg}, to help understand its workings. 
-In Figure \ref{fig:alg}, for clarity purposes, we have omitted alphabet filtering in order 
-to keep it simple and easy to understand the main idea behind $searchRegion()$ algorithm.
-
-A Figura \ref{fig:alg} apresenta uma ilustração da execução do algoritmo com
-objetivo de facilitar o entendimento. Na ilustração foi omitido o procedimento
-de filtragem dos símbolos com baixas freqüências para maior clareza, pois a
-intenção é passar a idéia principal. Os detalhes e minúcias podem ser
-verificados na listagem do algoritmo e na sua descrição.
+Este é o algoritmo central, já que é responsável por encontrar a região
+principal, portanto incluímos uma ilustração, na Figura \ref{fig:alg}, para
+facilitar seu entendimento. A Figura \ref{fig:alg} apresenta uma ilustração da
+execução do algoritmo na qual foi omitido o procedimento de filtragem dos
+símbolos com baixas freqüências para maior clareza, pois a intenção é passar a
+idéia principal. Os detalhes e minúcias podem ser verificados na listagem do
+algoritmo e na sua descrição.
 
 \begin{figure}[h]
   \caption{Ilustração da execução do algoritmo.}
@@ -561,29 +559,7 @@ uma região sob condições ambíguas (nos experimentos foi utilizado o valor de
 encontrada, chamando o procedimento $searchRegion()$ recursivamente na Linha
 $45$.
 
-The procedure $searchRegion()$ in Algorithm \ref{alg:searchreg} computes the TPS
-alphabet and corresponding symbol frequency from Lines \ref{line:symfreq} to
-\ref{line:esymfreq}; in Line \ref{line:freqth}, the frequency thresholds, from
-Definition \ref{def:ft}, are computed; from Lines \ref{line:while} to
-\ref{line:ewhile} the actual search is performed for a position in the TPS where
-a split is possible (i.e. where a region exists); in Line \ref{line:freqit} the
-frequency thresholds are iterated; in Line \ref{line:filter} the TPS alphabet,
-from Definition \ref{def:alpha}, is filtered, as described in Section
-\ref{ch:probform};  in Line \ref{line:tpsit} the TPS is iterated; in Line
-\ref{line:regalpha} the region alphabet is computed and;  from Lines
-\ref{line:reg} to \ref{line:ereg} it is checked if there is no intersection
-between the alphabets  of the two portions of the TPS (an empty intersection
-indicates that a possible region was found, as in Definition \ref{def:region}).
-The found region is only reported if it is at least $20\%$ larger than the rest
-of the sequence, otherwise we continue iterating the sequence and the frequency 
-thresholds. This percentage is actually a parameter and its purpose is to avoid reporting a
-region under ambiguous conditions (in the experiments we used the value of
-20\%); the purpose of variable $gapSize$ is to control the gap of low frequency symbols 
-between two regions when they are not large enough to be reported; finally from Lines \ref{line:split} to \ref{line:esplit} the  TPS is
-split if a region was found, calling $searchRegion()$ recursively in line
-\ref{line:recur}, if so.
-
-\section{$filter()$ Algorithm}
+\section{Algoritmo filter()}
 
 \begin{algorithm}[H]
 \caption{Filters out symbols with lower frequencies from the alphabet}
@@ -605,14 +581,14 @@ split if a region was found, calling $searchRegion()$ recursively in line
 \end{algorithmic}
 \end{algorithm}
 
-The procedure $filter()$ in Algorithm \ref{alg:filteralpha} removes from
-alphabet $\Sigma$, every symbol with frequency lower than $threshold$. in Lines $3$ to
-$7$ only the symbols with frequency greater or equal to $threshold$ are inserted
-in the resulting set. The result of $filter()$ is used in Algorithm 
-\ref{alg:searchreg}, Line $24$, where only the symbols in $filtered$ are
-considered while searching for a region.
+O procedimento $filter()$ no Algoritmo \ref{alg:filteralpha}
+remove do alfabeto $\Sigma$, todo símbolo com frequencia inferior a $threshold$.
+Nas Linhas $3$ to $7$ apenas os símbolos com frequencia maior ou igual a
+$threshold$ são inseridos no conjunto resultante. O resultado de $filter()$ é 
+utilizado no Algoritmo \ref{alg:searchreg}, Linha $24$, onde apenas os
+símbolos em $filtered$ são considerados durante a busca pela região principal.
 
-\section{$pruneDOMTree()$ Algorithm}
+\section{Algoritmo pruneDOMTree()}
 
 \begin{algorithm}[H]
 \caption{Prune from the DOM tree the nodes that are not in sequence}
@@ -635,16 +611,17 @@ considered while searching for a region.
 \end{algorithmic}
 \end{algorithm}
 
-The procedure $pruneDOMTree()$ in Algorithm \ref{alg:prune}, traverses the DOM
-tree, depth first, removing the nodes that do not belong to $sequence$. In Line
-$3$ the DOM is traversed; in Lines $7$ to $9$ it is decided whether or not
-$node$ should be removed.
+O procedimento $pruneDOMTree()$ no Algoritmo \ref{alg:prune}, percorre a árvore
+DOM, em produndidade, removendo os nós que não pertencem a $sequence$. Na
+Linha $3$ a árvore DOM é percorrida; nas Linhas $7$ a $9$ é decidido se o nó
+$node$ deve ser removido ou não.
 
-A node is removed from the tree, only if it is not in $sequence$ \textbf{and} has no children. 
-This way we keep the structure of the remaining tree intact, in order not to affect the subsequent 
-structured extraction phase.
+Um nó é removido da árvore, apenas se ele não está em $sequence$ \textbf{e} não
+tem nenhum filho. Desta forma é possível manter a estrutura da árvore
+remanescente intacta, evitando afetar, negativamente, a etapa subsequente de
+extração estruturada.
 
-\section{Algorithm's complexity}
+\section{Complexidade do Algoritmo}
 
 As for the algorithm's complexity, if we observe Lines $14$ and $22$ of the
 procedure $searchRegion()$, we can see that the loop in Line $14$ iterates the
@@ -712,7 +689,7 @@ poderiam ser utilizadas, se estivessem disponíveis, desde que não necessitassem
 de várias páginas HTML como entrada (e.g. $RoadRunner$ \cite{RRunner01}).
 
 
-\chapter{Experimental Results}\label{sec:results}
+\chapter{Resultados Experimentais}\label{sec:results}
 
 In this section we describe and discuss the results of our experiments and how
 they are presented. To obtain the results presented in Section \ref{sec:res}, 
