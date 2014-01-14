@@ -761,12 +761,61 @@ registros e o total de registro de interesse, respectivamente, da página $web$ f
 
 \section{Resultados}\label{sec:res}
 
-In Table \ref{table:results} we present, in the first three columns, the size of the DOM tree
-processed by MDR and the reduction obtained after filtering. The column ``Content Present''
-indicates whether or not the filtering process preserved the main content region. The next 
-four columns are the results of MDR alone and combined with TPS filtering, showing the total 
-records and target records extracted for both approaches. The last column shows the percentage 
-of noise removed, calculated using Equation \ref{eq:noise}.  
+Na Tabela \ref{table:results} são apresentados, nas primeiras três colunas, o
+tamanho da árvore DOM processada pelo MDR (i.e. original) e a redução obtida
+após remoção do ruído (i.e. podado). A coluna ``Conteúdo principal'' indica se o
+processo de remoção de ruído preservou a região principal ou não. As próximas
+quatro colunas são os resultados obtidos com o MDR sem e com remoção de ruído
+respectivamente, exibindo o total geral de registros extraídos e o total de
+registros de interesse ($target$) extraídos para ambas abordagens. A última
+coluna mostra o percentual de ruído removido, calculado conforme a Equação
+\ref{eq:noise}.
+
+\begin{table}[h]
+\caption{Resultados}
+\label{table:results}
+\centering
+\begin{tiny}
+\begin{tabular}{l r r r c r r r r r}
+
+\hline\hline
+\multicolumn{5}{c}{} & \multicolumn{4}{c}{MDR (\# registros)} &  (eq. \ref
+{eq:noise})\\
+& \multicolumn{3}{c}{Tam. DOM (\# nós)} & Cont. & \multicolumn{2}{c}{Orig.} &
+\multicolumn{2}{c}{Podado} & Ruído\\
+Site & Orig. & Podado & Red. & princ. & Tot & Tgt & Tot & Tgt & rem. \\
+\hline
+acm.org & 601 & 340 & -43.43\% & Yes & 61 & 10 & 16 & 10 & 88.24\% \\
+amazon.com & 3309 & 1054 & -68.15\% & Yes & 368 & 15 & 27 & 15 & 96.60\% \\
+americanas.com.br & 2660 & 710 & -73.31\% & Yes & 211 & 20 & 20 & 20 & 100.00\% \\
+bestbuy.com & 3632 & 1425 & -60.77\% & Yes & 299 & 15 & 15 & 15 & 100.00\% \\
+bondfaro.com.br & 3897 & 3069 & -21.25\% & Yes & 231 & 28 & 178 & 28 & 26.11\% \\
+bradesco.com.br & 1913 & 1113 & -41.82\% & Yes & 164 & 10 & 93 & 10 & 46.10\% \\
+buscape.com.br & 3608 & 3514 & -2.61\% & Yes & 279 & 24 & 266 & 24 & 5.10\% \\
+ebay.com & 2623 & 1801 & -31.34\% & Yes & 162 & 50 & 50 & 50 & 100.00\% \\
+elsevier.com & 906 & 160 & -82.34\% & Yes & 120 & 10 & 32 & 10 & 80.00\% \\
+g1.com.br & 900 & 619 & -31.22\% & No & 225 & 10 & 202 & 0 & N/A \\
+globo.com & 400 & 193 & -51.75\% & Yes & 80 & 10 & 20 & 10 & 85.71\% \\
+google.com & 1421 & 981 & -30.96\% & Yes & 118 & 11 & 61 & 11 & 53.27\% \\
+itau.com.br & 1111 & 410 & -63.10\% & No & 77 & 10 & 11 & 0 & N/A \\
+magazineluiza.com.br & 3167 & 1115 & -64.79\% & Yes & 314 & 40 & 44 & 40 & 98.54\% \\
+mercadolivre.com.br & 2401 & 1771 & -26.24\% & Yes & 136 & 50 & 52 & 50 & 97.67\% \\
+reuters.com & 1202 & 480 & -60.07\% & Yes & 136 & 10 & 54 & 10 & 65.08\% \\
+scopus.com & 4929 & 4688 & -4.89\% & Yes & 114 & 20 & 75 & 20 & 41.49\% \\
+submarino.com.br & 2389 & 1268 & -46.92\% & Yes & 116 & 20 & 22 & 20 & 97.92\% \\
+terra.com.br & 869 & 588 & -32.34\% & Yes & 122 & 50 & 76 & 50 & 63.89\% \\
+valor.com.br & 514 & 126 & -75.49\% & No & 55 & 10 & 2 & 0 & N/A \\
+webmotors.com.br & 2119 & 1361 & -35.77\% & Yes & 113 & 14 & 19 & 14 & 94.95\% \\
+%wikipedia.com & 3224 & 1949 & -39.55\% & Yes & N/A & N/A & N/A & N/A & N/A \\
+yahoo.com & 760 & 290 & -61.84\% & Yes & 67 & 10 & 10 & 10 & 100.00\% \\
+youtube.com & 1424 & 674 & -52.67\% & Yes & 82 & 20 & 20 & 20 & 100.00\% \\
+\hline
+Média/Total &  &  & -46.22\% & 86.96\% &  &  &  &  & 77.03\% \\
+\hline
+
+\end{tabular}
+\end{tiny}
+\end{table}
 
 As we can see in Table \ref{table:results}, the total of column ``Content
 Present'' indicates that the algorithm has worked in 84.21\% of the sites and it
@@ -789,7 +838,7 @@ is a good result since it gives us a $65.71\%$ of noise removal. We can
 deduce from this, that the segmentation has worked just fine for this site, only 
 the main content was not correctly identified, since it's relatively small.
 
-\section{Results Discussion}
+\section{Discussão dos Resultados}
 
 There are three main situations where the algorithm needs to be improved but, fortunately, 
 only two of these can lead to loss of main content (content removal). In Table
@@ -851,69 +900,7 @@ Algorithm \ref{alg:tpsfilter2} is the same as Algorithm \ref{alg:tpsfilter}, exc
 where it checks if the main content is present in the reported region and, if not, we report
 the complementary sequence instead (Line $7$), ensuring the presence of the main content. 
 
-\chapter{Resultados}\label{ch:res}
-
-Na Tabela \ref{table:results} são apresentados, nas primeiras três colunas, o
-tamanho da árvore DOM processada pelo MDR (i.e. original) e a redução obtida
-após remoção do ruído (i.e. podado). A coluna ``Conteúdo principal'' indica se o
-processo de remoção de ruído preservou a região principal ou não. As próximas
-quatro colunas são os resultados obtidos com o MDR sem e com remoção de ruído
-respectivamente, exibindo o total geral de registros extraídos e o total de
-registros de interesse ($target$) extraídos para ambas abordagens. A última
-coluna mostra o percentual de ruído removido, calculado conforme a Equação
-\ref{eq:noise}.
-
-\begin{equation}\label{eq:noise}
-NoiseRemoved=1-\frac{NumRec_{totalTPS}-NumRec_{targetTPS}}{NumRec_{total}-NumRec_{target}}
-\end{equation}
-
-\begin{table}[h]
-\caption{Resultados}
-\label{table:results}
-\centering
-\begin{tiny}
-\begin{tabular}{l r r r c r r r r r}
-
-\hline\hline
-\multicolumn{5}{c}{} & \multicolumn{4}{c}{MDR (\# registros)} &  (eq. \ref
-{eq:noise})\\
-& \multicolumn{3}{c}{Tam. DOM (\# nós)} & Cont. & \multicolumn{2}{c}{Orig.} &
-\multicolumn{2}{c}{Podado} & Ruído\\
-Site & Orig. & Podado & Red. & princ. & Tot & Tgt & Tot & Tgt & rem. \\
-\hline
-acm.org & 601 & 340 & -43.43\% & Yes & 61 & 10 & 16 & 10 & 88.24\% \\
-amazon.com & 3309 & 1054 & -68.15\% & Yes & 368 & 15 & 27 & 15 & 96.60\% \\
-americanas.com.br & 2660 & 710 & -73.31\% & Yes & 211 & 20 & 20 & 20 & 100.00\% \\
-bestbuy.com & 3632 & 1425 & -60.77\% & Yes & 299 & 15 & 15 & 15 & 100.00\% \\
-bondfaro.com.br & 3897 & 3069 & -21.25\% & Yes & 231 & 28 & 178 & 28 & 26.11\% \\
-bradesco.com.br & 1913 & 1113 & -41.82\% & Yes & 164 & 10 & 93 & 10 & 46.10\% \\
-buscape.com.br & 3608 & 3514 & -2.61\% & Yes & 279 & 24 & 266 & 24 & 5.10\% \\
-ebay.com & 2623 & 1801 & -31.34\% & Yes & 162 & 50 & 50 & 50 & 100.00\% \\
-elsevier.com & 906 & 160 & -82.34\% & Yes & 120 & 10 & 32 & 10 & 80.00\% \\
-g1.com.br & 900 & 619 & -31.22\% & No & 225 & 10 & 202 & 0 & N/A \\
-globo.com & 400 & 193 & -51.75\% & Yes & 80 & 10 & 20 & 10 & 85.71\% \\
-google.com & 1421 & 981 & -30.96\% & Yes & 118 & 11 & 61 & 11 & 53.27\% \\
-itau.com.br & 1111 & 410 & -63.10\% & No & 77 & 10 & 11 & 0 & N/A \\
-magazineluiza.com.br & 3167 & 1115 & -64.79\% & Yes & 314 & 40 & 44 & 40 & 98.54\% \\
-mercadolivre.com.br & 2401 & 1771 & -26.24\% & Yes & 136 & 50 & 52 & 50 & 97.67\% \\
-reuters.com & 1202 & 480 & -60.07\% & Yes & 136 & 10 & 54 & 10 & 65.08\% \\
-scopus.com & 4929 & 4688 & -4.89\% & Yes & 114 & 20 & 75 & 20 & 41.49\% \\
-submarino.com.br & 2389 & 1268 & -46.92\% & Yes & 116 & 20 & 22 & 20 & 97.92\% \\
-terra.com.br & 869 & 588 & -32.34\% & Yes & 122 & 50 & 76 & 50 & 63.89\% \\
-valor.com.br & 514 & 126 & -75.49\% & No & 55 & 10 & 2 & 0 & N/A \\
-webmotors.com.br & 2119 & 1361 & -35.77\% & Yes & 113 & 14 & 19 & 14 & 94.95\% \\
-%wikipedia.com & 3224 & 1949 & -39.55\% & Yes & N/A & N/A & N/A & N/A & N/A \\
-yahoo.com & 760 & 290 & -61.84\% & Yes & 67 & 10 & 10 & 10 & 100.00\% \\
-youtube.com & 1424 & 674 & -52.67\% & Yes & 82 & 20 & 20 & 20 & 100.00\% \\
-\hline
-Média/Total &  &  & -46.22\% & 86.96\% &  &  &  &  & 77.03\% \\
-\hline
-
-\end{tabular}
-\end{tiny}
-\end{table}
-
-\chapter{Conclusion}\label{ch:conclusion}
+\chapter{Conclusão}\label{ch:conclusion}
 
 As shown in the results, the method we have proposed for page segmentation and noise
 removal is very effective for some commercial/institutional web sites.
