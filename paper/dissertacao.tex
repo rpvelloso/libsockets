@@ -817,26 +817,25 @@ Média/Total &  &  & -46.22\% & 86.96\% &  &  &  &  & 77.03\% \\
 \end{tiny}
 \end{table}
 
-As we can see in Table \ref{table:results}, the total of column ``Content
-Present'' indicates that the algorithm has worked in 84.21\% of the sites and it
-has removed, for this test set, an average of 89.02\% of all noise present in the
-data, as shown by the average of column ``Noise rem.". We consider these to be
-good results.
+Como se pode observar na Tabela \ref{table:results}, o total da coluna ``Conteúdo 
+principal'' indica que o algoritmo funcionou em 84.21\% dos casos e removeu, com este
+conjunto de teste, uma média de 89.02\% de todo o ruído presente nos dados,
+como mostra a média da coluna ``Ruído rem.''. 
 
-The average DOM tree reduction of 47.93\% is an interesting result. First,
-because that means almost half the DOM tree is noise in average. Second, because
-this number matches the value reported, independently, by \cite{Volume05} as
-page template size (about $50\%$), corroborating with literature work.
+A média de 47.93\% de redução no tamanho da árvore DOM é um resultado interessante. Primeiro,
+por que significa que quase metade da árvore DOM é ruído, na média. Segundo, por que
+este valor ficou bem próximo do valor relatado, de forma independente, em \cite{Volume05} como
+sendo o tamanho do ``template'' das páginas (em torno de 50\%).
 
-An interesting situation we can see in Table \ref{table:results} is the result
-for the site ``Build'' (\#8). Without filtering, MDR has reported a total of $117$
-records, included $12$ target records. After filtering is applied, a total of
-$69$ records are reported, none of them targets, all noise. So, after filtering, if
-we had reported the complementary DOM tree instead, we would get a result of
-$48$ records in total ($117-69=48$), included here the $12$ target records, which
-is a good result since it gives us a $65.71\%$ of noise removal. We can 
-deduce from this, that the segmentation has worked just fine for this site, only 
-the main content was not correctly identified, since it's relatively small.
+Uma situação que chama a atenção na Tabela \ref{table:results} é o resultado obtido
+para a página do site ``Build'' (\#8). Sem filtrar o ruído, o MDR retornou um total de $117$
+registros, incluíndo os $12$ registros de interesse. Após aplicar o filtro de ruído, um total 
+de $69$ registros são retornados, nenhum deles de interesse, todos ruído. Então, após a filtragem,
+se a árvore retornada fosse, na realidade, o seu complemento, o resultado seria de $48$ registros
+no total ($117-69=48$), incluindo os $12$ registros de interesse, o que seria um bom resultado
+já que significa uma remoção de 65.71\% do ruído. O que se pode deduzir disto é que, a segmentação
+da página ocorreu corretamente, apenas a identificação da região principal falhou, já que esta é 
+relativamente pequena. 
 
 \section{Discussão dos Resultados}
 
