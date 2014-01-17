@@ -7,8 +7,8 @@
 
 \newtheorem{definition}{Definição}
 
-\titulo{Segmentação e Remoção Automática de Ruído de Páginas Web Utilizando
-$Tag$ $Paths$}
+\titulo{Segmentação e Remoção Automática de Ruído de Páginas $web$ Utilizando
+$tag$ $paths$}
 % Titulo do trabalho \subtitulo{Estilo \LaTeX~ padrão}                % Subtitulo do trabalho (opcional)
 \autor{Roberto Panerai Velloso}
 \data{22}{maio}{2013}                           % Data da publicação do
@@ -27,30 +27,30 @@ $Tag$ $Paths$}
 %\listadesimbolos
 %\sumario
 
-\textoResumo{Segmentação e remoção de ruído de páginas web são etapas essenciais 
+\textoResumo{Segmentação e remoção de ruído de páginas $web$ são etapas essenciais 
 no processo de extração de dados estruturados. Identificar a região principal da 
 página, eliminando o que não é importante (menus, anúncios, etc.), pode melhorar 
 significativamente o desempenho do processo de extração. Para essa tarefa é proposto 
-um novo algoritmo, totalmente automático, que utiliza uma sequência tag paths (TPS) 
-como representação da página web. A TPS é composta por uma sequência de símbolos 
-(string), cada um representando um tag path diferente. A técnica proposta procura 
+um novo algoritmo, totalmente automático, que utiliza uma sequência $tag$ $paths$ (TPS) 
+como representação da página $web$. A TPS é composta por uma sequência de símbolos 
+(string), cada um representando um $tag$ $path$ diferente. A técnica proposta procura 
 por posições na TPS onde é possível dividi-la em duas regiões de tal forma que seus 
-alfabetos não se intersectem, o que significa que as regiões têm conjuntos de tag 
-paths completamente distintos e, portanto, são regiões diferentes da página. Os 
+alfabetos não se intersectem, o que significa que as regiões têm conjuntos de $tag$ 
+$paths$ completamente distintos e, portanto, são regiões diferentes da página. Os 
 resultados mostram que o algoritmo é muito efetivo em identificar o conteúdo principal 
-de vários sites, e melhora a precisão da extração, removendo resultados irrelevantes.}
+de vários $sites$, e melhora a precisão da extração, removendo resultados irrelevantes.}
 
-\textAbstract{Web page segmentation and data cleaning are essential steps in structured web
-data extraction. Identifying a web page main content region, removing what is
+\textAbstract{$web$ page segmentation and data cleaning are essential steps in structured $web$
+data extraction. Identifying a $web$ page main content region, removing what is
 not important (menus, ads, etc.), can greatly improve the performance of the extraction
 process. We propose, for this task, a novel and fully automatic algorithm that
-uses a tag path sequence (TPS) representation of the web page. The TPS consists
-of a sequence of symbols (string), each one representing a different tag path.
+uses a $tag$ $path$ sequence (TPS) representation of the $web$ page. The TPS consists
+of a sequence of symbols (string), each one representing a different $tag$ $path$.
 The proposed technique searches for positions in the TPS where it is possible to
 split it in two regions where each region's alphabet do not intersect,
-which means that they have completely different sets of tag paths and, thus, are
+which means that they have completely different sets of $tag$ $paths$ and, thus, are
 different regions. The results show that the algorithm is very effective in
-identifying the main content block of several major websites, and improves the
+identifying the main content block of several major $web$ $sites$, and improves the
 precision of the extraction step by removing irrelevant results.
 }
 
@@ -59,34 +59,34 @@ precision of the extraction step by removing irrelevant results.
 
 \chapter{Contextualização do problema}
 
-Um passo fundamental da mineração de dados na web, inclusive em extração
+Um passo fundamental da mineração de dados na $web$, inclusive em extração
 estruturada, é a fase de limpeza que deve ocorrer antes da extração da
 informação. Não se pode esperar bons resultados na fase de extração sem efetuar
-a limpeza da página, removendo o ruído indesejado. Em \cite{Noisy03}, é
+a limpeza da página, removendo o ruído indesejado. Em \citeonline{Noisy03}, é
 mencionado que apesar da importância desta tarefa, existem relativamente poucos
-trabalhos nesta área e, de acordo com \cite{Editorial04}, o ruído existe nas
-páginas pode prejudicar consideravelmente a mineração de dados na web.
+trabalhos nesta área e, de acordo com \citeonline{Editorial04}, o ruído existe nas
+páginas pode prejudicar consideravelmente a mineração de dados na $web$.
 
 Na extração estruturada, a maioria das técnicas existentes utilizam algum tipo
 de reconhecimento de padrão para identificar os registros (como definido em
-\cite{MDR03}) presentes nas páginas. O problema é que, em geral, apenas os
+\citeonline{MDR03}) presentes nas páginas. O problema é que, em geral, apenas os
 registros da região principal da página interessam, porém outras regiões da
 página (menus, anúncios, etc.) freqüentemente contém padrões que também são
-extraídos. Portanto, é importante efetuar a limpeza das páginas web antes de
+extraídos. Portanto, é importante efetuar a limpeza das páginas $web$ antes de
 extrair seu conteúdo estruturado.
 
 Atualmente, alguns trabalhos na área de remoção de ruído e segmentação são
 direcionados para indexação e $clustering$ de páginas ($i.e.$ é assumido que a
 região principal é textual/não estruturada) como em
-\cite{SiteOriented11,Noisy03} e, devido às diferenças intrínsecas entre
+\citeonline{SiteOriented11,Noisy03} e, devido às diferenças intrínsecas entre
 conteúdo estruturado e não estruturado, estas técnicas não podem ser
-utilizadas para extração estruturada. As técnicas existem que podem ser
-utilizadas para este fim requerem definições \textit{a priori} (\cite{vips03}),
-ou treinamento prévio (\cite{Graph08}), ou então dependem de aspectos
-específicos da linguagem HTML para funcionar, como em \cite{Entropy09}.
+utilizadas para extração estruturada. As técnicas existentes que podem ser
+utilizadas para este fim requerem definições \textit{a priori} \cite{vips03},
+ou treinamento prévio \cite{Graph08}, ou então dependem de aspectos
+específicos da linguagem HTML para funcionar, como em \citeonline{Entropy09}.
 
 Este trabalho propõe e descreve um algoritmo para segmentação
-e remoção de ruído de páginas web que utiliza a representação de seqüência de  
+e remoção de ruído de páginas $web$ que utiliza a representação de seqüência de  
 $tag$ $paths$ de uma página e que é simples e computacionalmente eficiente.
 Trata-se de uma técnica geral de segmentação de páginas, utilizada aqui no
 contexto de extração estruturada, levando em consideração o estilo e a estrutura
@@ -100,7 +100,7 @@ conteúdo estruturado, não importando a que domínio pertença;
 \item{Independente da sintaxe HTML}: não existem regras associadas a $tags$
 HTML específicas;
 \item{Funciona em uma página}: é necessária apenas uma página como entrada, o
-que constitui uma grande vantagem desta proposta, como discutido em \cite{Editorial04}.
+que constitui uma grande van$tag$em desta proposta, como discutido em \citeonline{Editorial04}.
 \end{itemize}
 
 Para avaliar o quão efetiva é a abordagem proposta neste trabalho, foi comparado o
@@ -112,7 +112,7 @@ das páginas do conjunto de teste.
 \begin{figure}[H]
   \centering
     \includegraphics[scale=0.34]{method.jpg}
-  \caption{Evaluation method adopted.}
+  \caption{Método de avaliação adotado.}
   \label{fig:method}
 \end{figure}
 
@@ -132,7 +132,7 @@ são apresentados os resultados obtidos e; no Capítulo \ref{ch:conclusion} uma co
 \chapter{Objetivos}\label{ch:obj}
 
 O objetivo desta pesquisa é contribuir para área de extração estruturada de
-dados da web, propondo uma nova técnica para segmentação e remoção de ruído de
+dados da $web$, propondo uma nova técnica para segmentação e remoção de ruído de
 páginas que possibilite incrementar a precisão dos métodos atuais, com o
 mínimo de intervenção manual e o máximo de independência com relação a aspectos
 da linguagem HTML e ao domínio da informação.
@@ -140,7 +140,7 @@ da linguagem HTML e ao domínio da informação.
 \chapter{Contribuições}\label{ch:contr}
 
 A contribuição desta pesquisa é uma nova técnica de segmentação e remoção de
-ruído de páginas web com as seguintes características:
+ruído de páginas $web$ com as seguintes características:
 \begin{itemize}
 \item{Técnica completamente automática}: não é necessário treinamento nem
 intervenção humana;
@@ -149,54 +149,54 @@ conteúdo estruturado, não importando a que domínio a informação pertence;
 \item{Independente da sintaxe HTML}: não são utilizadas regras associadas a
 $tags$ HTML;
 \item{Necessita de apenas uma página}: não requer várias páginas do mesmo $site$
-para funcionar, o que é um grande vantagem, como discutido em \cite{Editorial04}.
+para funcionar, o que é um grande van$tag$em, como discutido em \citeonline{Editorial04}.
 \end{itemize}
 
 \chapter{Revisão bibliográfica}\label{ch:rev}
 
-Existem muitos trabalhos propondo formas de segmentar páginas web e identificar
+Existem muitos trabalhos propondo formas de segmentar páginas $web$ e identificar
 o que é conteúdo e o que é ruído nelas. Elas podem ser agrupadas em três
 categorias: as que se baseiam no texto da página, as que se baseiam na árvore
 DOM e as que utilizam informação visual.
 
 \textbf{Técnicas baseadas no texto}. Em
-\cite{Densiometric08,Boilerplate10,CETR10,BlockImp07,NonTemplate13} a
-segmentação é realizada utilizando o conteúdo textual da página web. O foco
+\citeonline{Densiometric08,Boilerplate10,CETR10,BlockImp07,NonTemplate13} a
+segmentação é realizada utilizando o conteúdo textual da página $web$. O foco
 destes trabalhos, entretanto, não é em extração estruturada, mas em indexação e
 $clustering$ de páginas. A maioria dos trabalhos existentes sobre segmentação e
 remoção de ruído são direcionados para este tipo de aplicação. 
 
 \textbf{Técnicas baseadas na árvore DOM}. Em
-\cite{Entropy09,SiteOriented11,Graph08,Noisy03,Entropy12} a segmentação é
+\citeonline{Entropy09,SiteOriented11,Graph08,Noisy03,Entropy12} a segmentação é
 realizada utilizando a árvore DOM da página, portanto, estas técnicas levam em
-consideração a estrutura da página web. Entretanto, \cite{SiteOriented11} e
-\cite{Noisy03} necessitam de várias páginas de um mesmo $site$, \cite{Graph08}
+consideração a estrutura da página $web$. Entretanto, \citeonline{SiteOriented11} e
+\citeonline{Noisy03} necessitam de várias páginas de um mesmo $site$, \citeonline{Graph08}
 propõe um $framework$ de treinamento que necessita de dados catalogados
-manualmente para funcionar e \cite{Entropy12} necessita de uma base de dados de
+manualmente para funcionar e \citeonline{Entropy12} necessita de uma base de dados de
 termos associados a ``papéis semânticos'' para poder detectar regiões de dados.
 
 \textbf{Técnicas baseadas em informação visual}.
 Além das técnicas baseadas no texto e na árvore DOM da página, existem também
-aquelas que utilizam informação visual, como \cite{vips03,vide09,viper05}. Todas
-dependem de um renderizador de um navegador web para obter as informações
+aquelas que utilizam informação visual, como \citeonline{vips03,vide09,viper05}. Todas
+dependem de um renderizador de um navegador $web$ para obter as informações
 visuais das páginas, o que pode ser computacionalmente dispendioso, e, além
-disso, \cite{vips03} é baseado em um conjunto de regras heurísticas, cada uma
+disso, \citeonline{vips03} é baseado em um conjunto de regras heurísticas, cada uma
 aplicada a $tags$ HTML específicas. Técnicas que dependem fortemente de aspectos
-específicos da linguagem HTML tem a séria desvantagem de serem afetadas por
+específicos da linguagem HTML tem a séria desvan$tag$em de serem afetadas por
 mudanças nas práticas de desenvolvimento assim como mudanças na sintaxe da
 linguagem.
 
-A representação da página web utilizada nesta pesquisa (seqüência de
-$tag$ $paths$) foi anteriormente empregada em \cite{TPC09} e
-\cite{SuffixTree12}, embora em ambos os casos para a extração e não para segmentação e remoção de
+A representação da página $web$ utilizada nesta pesquisa (seqüência de
+$tag$ $paths$) foi anteriormente empregada em \citeonline{TPC09} e
+\citeonline{SuffixTree12}, embora em ambos os casos para a extração e não para segmentação e remoção de
 ruído. Estes dois trabalhos são citados aqui apenas para ilustrar que, de acordo
 com seus resultados, esta representação, assim como a árvore DOM, também é capaz
-de expor a estrutura da página web e, portanto, serve para os propósitos desta pesquisa.
-A Figura \ref{fig:ex1} ilustra como o código HTML de uma página web é convertido para
+de expor a estrutura da página $web$ e, portanto, serve para os propósitos desta pesquisa.
+A Figura \ref{fig:ex1} ilustra como o código HTML de uma página $web$ é convertido para
 representação de $tag$ $paths$.
 
 \begin{figure}[h]
-  \caption{Exemplo de uma seqüência de \textit{tag paths} contruída a
+  \caption{Exemplo de uma seqüência de $tag$ $paths$ contruída a
   partir do código HTML.}
   \label{fig:ex1}
   \centering
@@ -210,12 +210,12 @@ entendimento do problema e do algoritmo proposto. As definições são
 exemplificadas com o auxílio da Figura \ref{fig:ex1}.
 \begin{definition}[\textbf{Árvore DOM}]\label{def:domtree}
 A árvore DOM é uma estrutura hierárquica, derivada do código HTML, que
-representa a página web.
+representa a página $web$.
 \end{definition}
 Na Figura \ref{fig:ex1} um pequeno trecho de código é utilizado para ilustrar a
 árvore DOM e as próximas definições.
 
-\begin{definition}[\textbf{$Tag$ $paths$}]\label{def:tp} Um tag path (TP) é uma
+\begin{definition}[\textbf{$tag$ $paths$}]\label{def:tp} Um $tag$ $path$ (TP) é uma
 string descrevendo o caminho absoluto, a partir da raiz da árvore DOM, até um
 dado nó da árvore. Seja ``i'' a posição em profundidade do nó $``n_i"$ na
 árvore, então é dito que $TP_i$ é a string descrevendo o caminho, a partir da
@@ -224,14 +224,14 @@ raiz da árvore DOM, até o nó $``n_i"$.
 Na Figura \ref{fig:ex1}, o caminho absoluto $TP_4$ do nó $body$ até a
 célula da tabela $td_4$ é $TP_4=``body/table/tr/td"$. 
 
-\begin{definition}[\textbf{Seqüência de \textit{tag paths}}]\label{def:tps}
-Uma seqüência de tag paths (TPS) de uma árvore DOM com ``n'' nós é definida como
+\begin{definition}[\textbf{Seqüência de \textit{$tag$ $paths$}}]\label{def:tps}
+Uma seqüência de $tag$ $paths$ (TPS) de uma árvore DOM com ``n'' nós é definida como
 sendo a seqüência ordenada $TPS[1..n] = (TP_1,TP_2,TP_3, ...,TP_{n-1},TP_n)$
-onde dois tag paths $TP_i$ e $TP_j$, com $i\neq{}j$, são considerados iguais
+onde dois $tag$ $paths$ $TP_i$ e $TP_j$, com $i\neq{}j$, são considerados iguais
 apenas se seus caminhos e suas definições de estilo são iguais, caso
 contrário eles são considerados diferentes.
 \end{definition}
-Esta é a mesma definição utilizada em \cite{SuffixTree12}, onde cada $tag$
+Esta é a mesma definição utilizada em \citeonline{SuffixTree12}, onde cada $tag$
 $path$ é representado na seqüência por um símbolo, exceto que neste trabalho
 foram incorporadas as definições de estilo das $tags$. Na Figura \ref{fig:ex1}
 é mostrada a $TPS$ de um dado trecho de código HTML, onde cada $TP$ recebe um
@@ -247,10 +247,10 @@ Informalmente, o alfabeto contém todos os símbolos distintos de uma determinada
 seqüência. Na Figura \ref{fig:ex1}, a $TPS$ é formada apenas pelos símbolos
 ``1'',``2'', ``3'' e ``4'', então seu alfabeto é $\Sigma=\{1,2,3,4\}$.
 
-\begin{definition}[\textbf{Conjunto de freqüências de tag paths}]\label{def:tpfs}
+\begin{definition}[\textbf{Conjunto de freqüências de $tag$ $paths$}]\label{def:tpfs}
 Seja $(s,f)$ um par ordenado onde ``s'' é um símbolo de um alfabeto de uma
 determinada TPS e ``f'' é o número de vezes que ``s'' ocorre na TPS, então o conjunto de
-freqüências de tag paths é definido como sendo o conjunto de todos os pares 
+freqüências de $tag$ $paths$ é definido como sendo o conjunto de todos os pares 
 $(s,f)$ possíveis de uma TPS. Seja $FS =
 \{(s_1,f_{s1}),(s_2,f_{s2}),(s_3,f_{s3})$
 \\ $,\ldots,(s_{n-1},f_{sn-1}),(s_n,f_{sn})\}$, onde ``n" é o tamanho da TPS.
@@ -290,16 +290,16 @@ são regiões disintitas de $TPS$, pois $\Sigma_a \cap \Sigma_b=\emptyset$.
 \chapter{Proposta}\label{ch:probform}
 
 Nesta pesquisa é proposta uma nova técnica para segmentação das regiões de uma
-página web e identificação da região principal. A técnica proposta é simples,
+página $web$ e identificação da região principal. A técnica proposta é simples,
 computacionalmente eficiente e leva em consideração a estrutura e os estilos de
-formatação das páginas. A página web é representada na forma de $tag$ $paths$. É
+formatação das páginas. A página $web$ é representada na forma de $tag$ $paths$. É
 um método de segmentação genérico, utilizado aqui no contexto da extração estruturada.
 
 O algoritmo proposto é formulado a partir de duas hipóteses:
 \begin{enumerate}
-  \item\label{ass:1} diferentes regiões de uma página web são descritas por
+  \item\label{ass:1} diferentes regiões de uma página $web$ são descritas por
   diferentes $tag$ $paths$;
-  \item\label{ass:2} em \textit{sites} com conteúdo estruturado, a região
+  \item\label{ass:2} em $sites$ com conteúdo estruturado, a região
   principal é mais densa/maior que as demais regiões (menus, anúncios, text, etc.). 
 \end{enumerate}
 
@@ -310,7 +310,7 @@ forem semelhantes, com diferentes estilos, para que cada região possa ser
 facilmente distingüida pelo usuário/leitor da página. Se todas as regiões de uma
 página fossem parecidas, seria mais difícil, para o usuário, distingüi-las.
 Então, pela Definição \ref{def:tps}, pode-se notar que os símbolos utilizadas
-em cada região de uma página web deveriam ser diferentes, e então deve ser possível
+em cada região de uma página $web$ deveriam ser diferentes, e então deve ser possível
 segmentar a página como na Definição \ref{def:region}.
 
 A Hipótese \ref{ass:2} vem do contexto no qual a segmentação proposta neste
@@ -393,7 +393,7 @@ definido no Capítulo \ref{ch:probform}. Quais sejam:
 \begin{itemize}
   \item {}\textit{\textbf{tagPathSequenceFilter()}}. É o algoritmo principal, que
    recebe um arquivo HTML como entrada e retorna uma árvore DOM, após a poda, com o conteúdo da região principal;
-  \item {}\textit{\textbf{convertToSeq()}}. Converte a árvore DOM da página web em uma $TPS$;
+  \item {}\textit{\textbf{convertToSeq()}}. Converte a árvore DOM da página $web$ em uma $TPS$;
   \item {}\textit{\textbf{searchRegion()}}. A busca, propriamente dita, pela região principal da $TPS$;
   \item {}\textit{\textbf{filter()}}. Filtra um alfabeto, removendo 
    símbolos de menor freqüência, tornando o algoritmo de busca mais robusto e resistente ao ruído;
@@ -401,13 +401,13 @@ definido no Capítulo \ref{ch:probform}. Quais sejam:
    da região principal encontrado com $searchRegion$, mantendo a estrutura original do documento.
 \end{itemize}
 
-\section{$tagPathSequenceFilter()$ Algorithm}
+\section{$tagPathSequenceFilter()$ Algoritmo}
 
 \begin{algorithm}[H]
-\caption{Filters out noise from a web page}
+\caption{Filtra o ruído de uma página $web$}
 \label{alg:tpsfilter}
-\textbf{Input:} $inputFile$ - an HTML file \\
-\textbf{Output:} pruned $inputFile$'s DOM tree
+\textbf{Input:} $inputFile$ - um arquivo HTML \\
+\textbf{Output:} árvore DOM de $inputFile$ podada
 \begin{algorithmic}[1]
 \Procedure{tagPathSequenceFilter}{$inputFile$}
 \State $DOMTree \leftarrow parseHTML(inputFile)$
@@ -436,16 +436,15 @@ deste trabalho, portanto não será discutido aqui.
 \section{Algoritmo convertToSeq()}
 
 \begin{algorithm}[H]
-\caption{Converts a DOM tree to a tag path sequence representation}
+\caption{Converte uma árvore DOM para a representação de sequência de $tag$ $path$}
 \label{alg:tree2seq}
-\textbf{Input:} $node$ - a DOM tree node, initially the root \\
-\textbf{Input:} $tp$ - the previous tag path, initially empty \\
-\textbf{Input:} $TPS$ - the $TPS$ built from the DOM tree,
-initially empty \\
-\textbf{Output:} the $TPS$ for the given DOM tree stored in $TPS$
+\textbf{Input:} $node$ - um nó da árvore DOM, inicialmente a raiz da árvore \\
+\textbf{Input:} $tp$ - o $tag$ $path$ anterior, inicialmente vazio \\
+\textbf{Input:} $TPS$ - a $TPS$ construída a partir da árvore DOM, inicialmente vazio \\
+\textbf{Output:} a $TPS$ de uma árvore DOM armazenada em $TPS$
 \begin{algorithmic}[1]
 \Procedure{convertToSeq}{node,tp,TPS by ref.}
-\State $tp \leftarrow concat(tp,$``/''$,node.tag,node.style)$
+\State $tp \leftarrow concat(tp,$``/''$,node.$tag$,node.style)$
 \If {$tp \ni tagPathMap$}
 \State $tagPathMap \leftarrow tagPathMap + \{tp\}$
 \State $tagPathMap[tp].code \leftarrow tagPathMap.size$
@@ -459,17 +458,17 @@ initially empty \\
 \end{algorithm}
 
 O procedimento $convertToSeq()$ no Algoritmo \ref{alg:tree2seq}
-converte uma página web de sua representação em árvore DOM para uma representação em formato TPS,
+converte uma página $web$ de sua representação em árvore DOM para uma representação em formato TPS,
 percorrendo a árvore DOM em profundidade. Inicialmente é chamado no
-Algoritmo \ref{alg:tpsfilter} com um $tagPath$ vazio como parametro, que 
-representa a $string$ do tag path anterior (i.e. da chamada recursiva anterior).
+Algoritmo \ref{alg:tpsfilter} com um $tag$ $path$ vazio como parametro, que 
+representa a $string$ do $tag$ $path$ anterior (i.e. da chamada recursiva anterior).
 Na Linha $2$, o $tag$ $path$ anterior é concatenado com a $tag$ atual e com
 suas definições de estilo, com objetivo de distinguir caminhos repetidos com
 estilos diferentes; na Linha $3$, é verificado se o $tag$ $path$ atual já foi
 visto antes pelo algoritmo ou não ($tagPathMap$ is used for this purpose) e, se
 não, na Linha $4$, ele é inserido no conjunto $tagPathMap$ e um novo código é
 atribuído à ele na Linha $5$, como definido na Definição \ref{def:tps}; na Linha
-$7$, o código do tag path é concatenado ao final da sequencia e, finalmente, o
+$7$, o código do $tag$ $path$ é concatenado ao final da sequencia e, finalmente, o
 procedimento e invocado recursivamente na Linha $9$ para cara filho de $node$.
 
 \section{Algoritmo searchRegion()}
@@ -479,7 +478,7 @@ principal, portanto incluímos uma ilustração, na Figura \ref{fig:alg}, para
 facilitar seu entendimento. A Figura \ref{fig:alg} apresenta uma ilustração da
 execução do algoritmo na qual foi omitido o procedimento de filtragem dos
 símbolos com baixas freqüências para maior clareza, pois a intenção é passar a
-idéia principal. Os detalhes e minúcias podem ser verificados na listagem do
+idéia principal. Os detalhes e minúcias podem ser verificados na lis$tag$em do
 algoritmo e na sua descrição.
 
 \begin{figure}[h]
@@ -494,7 +493,7 @@ algoritmo e na sua descrição.
 \begin{algorithm}[H]
 \caption{Busca regiões da TPS com alfabetos diferentes}
 \label{alg:searchreg}
-\textbf{Entrada:} $tagPathSequence$ - a $TPS$ de uma determinada página web \\
+\textbf{Entrada:} $tagPathSequence$ - a $TPS$ de uma determinada página $web$ \\
 \textbf{Saída:} a região principal da $TPS$, armazenada em $tagPathSequence$
 \end{algorithm}
 \begin{algorithmic}[1]
@@ -571,12 +570,12 @@ $45$.
 \section{Algoritmo filter()}
 
 \begin{algorithm}[H]
-\caption{Filters out symbols with lower frequencies from the alphabet}
+\caption{Filtra símbolos de baixa frequência no alfabeto}
 \label{alg:filteralpha}
-\textbf{Input:} $\Sigma$ - the alphabet ot be filtered \\
-\textbf{Input:} $symCount$ - the tag path frequency set ($FS$) of $\Sigma$ \\ 
-\textbf{Input:} $threshold$ - a frequency threshold \\
-\textbf{Output:} a filtered alphabet
+\textbf{Input:} $\Sigma$ - alfabeto a ser filtrado \\
+\textbf{Input:} $symCount$ - o conjunto das frequências ($FS$) dos $tag$ $path$ em $\Sigma$ \\ 
+\textbf{Input:} $threshold$ - limiar de frequência \\
+\textbf{Output:} alfabeto filtrado
 \begin{algorithmic}[1]
 \Procedure{filter}{$\Sigma$, symCount, threshold}
 \State $filtered\Sigma \leftarrow \emptyset$
@@ -600,11 +599,11 @@ símbolos em $filtered$ são considerados durante a busca pela região principal.
 \section{Algoritmo pruneDOMTree()}
 
 \begin{algorithm}[H]
-\caption{Prune from the DOM tree the nodes that are not in sequence}
+\caption{Poda da árvore DOM todos os nós que não pertencem à sequência}
 \label{alg:prune}
-\textbf{Input:} $node$ - a DOM tree node, initially the root \\
-\textbf{Input:} $seq$ - the TPS that has to remain in the DOM tree \\
-\textbf{Output:} the DOM tree pointed by $node$ pruned
+\textbf{Input:} $node$ - um nó da árvore DOM, inicialmente a raiz \\
+\textbf{Input:} $seq$ - a TPS que deve permanecer na árvore DOM \\
+\textbf{Output:} árvore DOM podada, referenciada em $node$
 \begin{algorithmic}[1]
 \Procedure{pruneDOMTree}{$node$ by ref.,$seq$}
 \For {each child of node}
@@ -670,7 +669,7 @@ e, sendo assim, afirmar que a complexidade de tempo é $O(n)$.
 \chapter{Método}\label{ch:met}
 
 Para avaliar os resultados da técnica proposta, será utilizado o algoritmo MDR
-(\cite{MDR03}), uma conhecida técnica de extração estruturada. O resultado da
+\cite{MDR03}, uma conhecida técnica de extração estruturada. O resultado da
 extração pura (apenas MDR) será considerado como $baseline$ para comparação
 com o resultado da extração combinada com a técnica proposta de remoção
 de ruído.
@@ -694,7 +693,7 @@ técnica possui diversas implementações disponíveis, vários trabalhos publicados
 a respeito, funciona em uma única página e os resultados da extração são
 razoáveis para avaliar a técnica proposta neste trabalho. Outras técnicas
 poderiam ser utilizadas, se estivessem disponíveis, desde que não necessitassem
-de várias páginas HTML como entrada (e.g. $RoadRunner$ \cite{RRunner01}).
+de várias páginas HTML como entrada (e.g. $RoadRunner$ \citeonline{RRunner01}).
 
 
 \chapter{Resultados Experimentais}\label{ch:results}
@@ -734,14 +733,14 @@ Figura \ref{fig:tps} mostra a respectiva TPS e a regição principal detectada pel
 \begin{figure}[H]
   \centering
     \includegraphics[scale=0.26]{example2-gs.jpg}
-  \caption{A page from the YouTube web site and the main content region delimited.}
+  \caption{Um página do $site$ YouTube com sua região principal delimitada.}
   \label{fig:ex2}
 \end{figure}
 
 \begin{figure}[H]
   \centering
     \includegraphics[scale=0.40]{tps.jpg}
-  \caption{The TPS from a YouTube web page and the detected main content region.}
+  \caption{A TPS da página do $site$ YouTube com a região principal que foi detectada.}
   \label{fig:tps}
 \end{figure}
 
@@ -783,7 +782,7 @@ coluna mostra o percentual de ruído removido, calculado conforme a Equação
 {eq:noise})\\
 & \multicolumn{3}{c}{Tam. DOM (\# nós)} & Cont. & \multicolumn{2}{c}{Orig.} &
 \multicolumn{2}{c}{Podado} & Ruído\\
-Site & Orig. & Podado & Red. & princ. & Tot & Tgt & Tot & Tgt & rem. \\
+$Site$ & Orig. & Podado & Red. & princ. & Tot & Tgt & Tot & Tgt & rem. \\
 \hline
 acm.org & 601 & 340 & -43.43\% & Yes & 61 & 10 & 16 & 10 & 88.24\% \\
 amazon.com & 3309 & 1054 & -68.15\% & Yes & 368 & 15 & 27 & 15 & 96.60\% \\
@@ -805,7 +804,7 @@ scopus.com & 4929 & 4688 & -4.89\% & Yes & 114 & 20 & 75 & 20 & 41.49\% \\
 submarino.com.br & 2389 & 1268 & -46.92\% & Yes & 116 & 20 & 22 & 20 & 97.92\% \\
 terra.com.br & 869 & 588 & -32.34\% & Yes & 122 & 50 & 76 & 50 & 63.89\% \\
 valor.com.br & 514 & 126 & -75.49\% & No & 55 & 10 & 2 & 0 & N/A \\
-webmotors.com.br & 2119 & 1361 & -35.77\% & Yes & 113 & 14 & 19 & 14 & 94.95\% \\
+$web$motors.com.br & 2119 & 1361 & -35.77\% & Yes & 113 & 14 & 19 & 14 & 94.95\% \\
 %wikipedia.com & 3224 & 1949 & -39.55\% & Yes & N/A & N/A & N/A & N/A & N/A \\
 yahoo.com & 760 & 290 & -61.84\% & Yes & 67 & 10 & 10 & 10 & 100.00\% \\
 youtube.com & 1424 & 674 & -52.67\% & Yes & 82 & 20 & 20 & 20 & 100.00\% \\
@@ -824,11 +823,11 @@ como mostra a média da coluna ``Ruído rem.''.
 
 A média de 47.93\% de redução no tamanho da árvore DOM é um resultado interessante. Primeiro,
 por que significa que quase metade da árvore DOM é ruído, na média. Segundo, por que
-este valor ficou bem próximo do valor relatado, de forma independente, em \cite{Volume05} como
+este valor ficou bem próximo do valor relatado, de forma independente, em \citeonline{Volume05} como
 sendo o tamanho do ``template'' das páginas (em torno de 50\%).
 
 Uma situação que chama a atenção na Tabela \ref{table:results} é o resultado obtido
-para a página do site ``Build'' (\#8). Sem filtrar o ruído, o MDR retornou um total de $117$
+para a página do $site$ ``Build'' (\#8). Sem filtrar o ruído, o MDR retornou um total de $117$
 registros, incluíndo os $12$ registros de interesse. Após aplicar o filtro de ruído, um total 
 de $69$ registros são retornados, nenhum deles de interesse, todos ruído. Então, após a filtragem,
 se a árvore retornada fosse, na realidade, o seu complemento, o resultado seria de $48$ registros
@@ -839,47 +838,46 @@ relativamente pequena.
 
 \section{Discussão dos Resultados}
 
-There are three main situations where the algorithm needs to be improved but, fortunately, 
-only two of these can lead to loss of main content (content removal). In Table
-\ref{table:results}, column ``Content Present'', these two situations account for 15.79\% 
-of the cases, where the content region was removed in the filtering process.
+Existem três situações principais onde o algoritmo poderia ser melhorado e, felizmente,
+apenas duas dessas situações podem levar a perda de conteúdo de interesse. Na Tabela 
+\ref{table:results}, coluna ``Conteúdo principal'', estas duas situações são responsáveis
+por 15.79\% dos casos, onde o conteúdo principal foi removido durante o processo de filtragem.
 
 \begin{enumerate}
-  \item{\textbf{templates too homogeneous}}. These are pages with little difference between
-  the regions. In this case, using this technique, there is
-  not much to do. We simply do not have enough information to work with,
-  since the entire page looks alike. We do not lose the target records, but the
-  amount of noise removed is very low;
-  \item{\textbf{templates too heterogeneous}}. These are pages where the main content is 
-  subdivided in more than one region. In this case, the main region gets split
-  over and over, and only the largest part passes through the filter (and it
-  might be noise). We propose a way to work around this problem later in this Chapter;
-  \item{\textbf{pages where the main content is smaller than the rest}}. That is a
-  consequence of the second assumption we made in Chapter \ref{ch:probform}:
-  ``the main region is denser/bigger than the rest''. In this case, noise will
-  always be reported as content. The same proposal made for the former situation 
-  can be used to deal with this one as well.
+  \item{\textbf{páginas com \textit{templates} muito homogêneos}}. São páginas com pouca diferença entre 
+  as regiões. Neste caso, utilizando a técnica proposta, não resta muito a fazer, pois simplesmente não
+  há informação suficiente para uma diferenciação entre as regiões da página, já que todas se parecem.
+  Não são perdidos registros de interesse, mas a quantidade total de ruído removido é baixa;
+  \item{\textbf{páginas com \textit{templates} muito heterogêneos}}. São paginas onde o conteúdo principal é
+  subdividido em mais de uma região. Neste caso, a região principal acaba por ser dividida várias vezes durante
+  o processo de filtragem e apenas a parte maior acaba passando pelo filtro (e ainda assim, pode ser que 
+  seja ruído). Mais a frente, neste capítulo, é proposta uma forma de contornar este problema;  
+  \item{\textbf{páginas com região principal menor que o restante}}. Este problema é uma conseqüência da
+  segunda hipótese levantada no Capítulo  \ref{ch:probform}: ``a região principal é mais densa, ou maior, que 
+  as demais regiões''. Neste caso, ruído sempre será retornado no lugar do conteúdo principal. A mesma proposta
+  apresentada para situação anterior também pode ser utilizada neste caso.  
 \end{enumerate}
 
-In the case of heterogeneous templates, TPS filtering can still be used if we
-make some slight modifications in the algorithm. One such case of heterogeneous
-template are ``news sites'', where every record has a different structure, but
-they are all records from the same domain (i.e. they belong to the same entity). 
-In this specific situation, TPS segmentation could be used to split the page in 
-several parts, and a semantic approach used to combine the regions, reporting the
-main content as a set of regions instead of only one.
 
-For situation described for the site ``Build'' (that happened for five other
-sites we tested), when the content region is smaller than the rest, we
-could apply a semantic technique to check whether or not the desired content is
-present in the reported region, if not, report the complementary DOM tree  (i.e.
-inverse the pruning) instead. The main algorithm would look like this:
+No caso de \textit{templates} heterogêneos, a filtragem da TPS ainda pode ser utilizada realizando 
+algumas modificações no algoritmo. Um exemplo de \textit{template} heterogêneo são os $sites$
+de notícias, onde cada registro de interesse tem uma estrutura diferente, mas todos pertencem ao
+mesmo domínio (i.e. pertencem à mesma entidade). Nesta situação específica, a segmentação da TPS ainda
+pode ser utilizada para segmentar a página em diferentes regiões, e uma abordagem semântica pode ser
+usada para combinar as várias regiões de interesse, retornando um conjunto de regiões como resultado e
+não apenas uma única região. 
+ 
+Para a situação descrita para o $site$ ``Build'' (que ocorreu, também, em outros cinco casos),
+quando a região principal é menor que as demais, uma abordagem semântica também pode ser utilizada
+para validar se a região encontrada, de fato, possui conteúdo de interesse e, se não possuir deve ser
+descartada e a árvore complementar (i.e. inverter a poda) deve ser retornada em seu lugar. O algoritmo 
+principal ficaria assim: 
 
 \begin{algorithm}[H]
-\caption{Filters out noise from a web page}
+\caption{Filtra o ruído de uma página $web$}
 \label{alg:tpsfilter2}
-\textbf{Input:} $inputFile$ - an HTML file \\
-\textbf{Output:} pruned $inputFile$'s DOM tree
+\textbf{Input:} $inputFile$ - um arquivo HTML \\
+\textbf{Output:} árvore DOM de $inputFile$ podada
 \begin{algorithmic}[1]
 \Procedure{tagPathSequenceFilter}{$inputFile$}
 \State $DOMTree \leftarrow parseHTML(inputFile)$
@@ -895,35 +893,33 @@ inverse the pruning) instead. The main algorithm would look like this:
 \end{algorithmic}
 \end{algorithm}
 
-Algorithm \ref{alg:tpsfilter2} is the same as Algorithm \ref{alg:tpsfilter}, except for Line $6$
-where it checks if the main content is present in the reported region and, if not, we report
-the complementary sequence instead (Line $7$), ensuring the presence of the main content. 
+Algoritmo \ref{alg:tpsfilter2} é igual ao Algoritmo \ref{alg:tpsfilter}, exceto pela Linha $6$
+onde é verificado se o conteúdo principal está presente na região e, caso não esteja, a sequência 
+complementar é utilizada (Linha $7$), garantido a presença do conteúdo principal. 
 
 \chapter{Conclusão}\label{ch:conclusion}
 
-As shown in the results, the method we have proposed for page segmentation and noise
-removal is very effective for some commercial/institutional web sites.
-In most cases, a very large amount of noise is removed without compromising the
-main content region. Also, when applied in conjunction with MDR, we can see that
-the extraction precision is greatly improved.
+Como mostrado nos resultados, o método proposto para segmentação da página e remoção
+do ruído foi bastante efetivo em várias páginas comerciais/institucionais.
+Na maioria dos casos uma grande quantidade de ruído foi removido sem comprometer os
+registros de interesse. Também, quando aplicada em conjunto com o MDR, foi observado 
+um incremento considerável na precisão da extração. 
 
-In the situations where our algorithm fails, other techniques have to/should/could
-be combined depending on the targeted application. In extreme cases, where a
-page has either too homogeneous structure (so we can not find a split anywhere
-along the TPS) or too heterogeneous structure (then the main content itself gets
-split in several parts), the main content block could be detected using,
-perhaps, semantic approaches.
+Nas situações em que nosso algoritmo atua aquém das expectativas, outras técnicas
+podem ser combinadas dependendo da aplicação. Em casos extremos, onde a página possuir
+estrutura muito homogênea (de forma que não seja possível encontrar as diferentes regiões)
+ou muito heterogênea (onde o conteúdo principal está espalhado em diversas regiões diferentes),
+o conteúdo principal poderia, talvez, ser detectado através do uso de uma técnica semântica.
 
-
-%techniques, like the one presented in \cite{Adaptive07}, that labels a sequence 
+%techniques, like the one presented in \citeonline{Adaptive07}, that labels a sequence 
 %of blocks as $content$ or $notContent$ could be used to implement 
 %line $6$ of algorithm \ref{alg:tpsfilter2}.
 
-The algorithm shows outstanding performance, as it works very well for the majority 
-of large commercial web sites we have tested. It also outcomes the limitations 
-(training requirements, HTML tag dependency, manual labeling, among others) of previous 
-works in the area of data cleaning, page segmentation and noise removal as mentioned in 
-Chapter \ref{sec:relatedwork}.
+O algoritmo mostrou execelente performance, pois apresentou resultados satisfatórios para
+a maioria dos $sites$ comerciais nos quais foi testado. Ele também supera as limitações
+(necessidade de treinamento, dependência de $tags$ HTML, anotações manuais, entre outras) de 
+trabalhos anteriores na área de limpeza, remoção de ruído e segmentação de página, como mencionado
+no Capítulo \ref{sec:relatedwork}.
 
 \bibliographystyle{ufscThesis/ufsc-alf}
 \bibliography{refs}
