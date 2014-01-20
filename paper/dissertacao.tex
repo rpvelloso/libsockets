@@ -158,38 +158,6 @@ para funcionar, o que é um grande vantagem, como discutido em
 \citeonline{Editorial04}.
 \end{itemize}
 
-\begin{table}[h]
-\centering
-\begin{tiny}
-\caption{Comparativo entre técnicas de segmentação de página}
-\label{table:comp}
-\begin{tabular}{l c c c c c}
-\hline\hline
-          &          &        &          & Necessita   & Independe \\
-          & Opera    & Única  & Treina-  & informação  & sintaxe \\ 
-Técnica   & Sobre    & página & mento    & a priori    & HTML \\
-\hline
-Fernandes et al. [2007] & Texto & - & - & - & - \\
-Kohlschütter and Nejdl [2008] & Texto & - & - & - & - \\
-Kohlschütter et al. [2010] & Texto & - & - & - & - \\
-Weninger et al. [2010] & Texto & - & - & - & - \\
-Hu et al. [2013] & Texto & - & - & - & - \\
-Yi et al. [2003] & Árvore DOM & Não & Sim & Não & Não \\
-Chakrabarti et al. [2008] & Árvore DOM & Não & Sim & Não & Não \\
-Cho et al. [2009] & Árvore DOM & Sim & Não & Sim & Sim \\
-Fernandes et al. [2011] & Árvore DOM & Não & Sim & Não & Não \\
-Zheng et al. [2012] & Árvore DOM & Sim & Não & Sim & Sim \\
-Zheng et al. [2007] & Árvore DOM & Não & Sim & Não & Não \\
-Cai et al. [2003] & Rep. visual & Sim & Não & Sim & Sim \\
-Simon and Lausen [2005] & Rep. visual & Sim & Não & Não & Sim \\
-Liu et al. [2010] & Rep. visual & Sim & Não & Sim & Sim \\
-\hline
-Proposta & TPS & Sim & Não & Não & Não \\
-\end{tabular}
-\end{tiny}
-\end{table}
-
-
 \chapter{Revisão bibliográfica}\label{ch:rev}
 
 Existem muitos trabalhos propondo formas de segmentar páginas $web$ e
@@ -243,6 +211,41 @@ convertido para representação de $tag$ $paths$.
   \centering
     \includegraphics[scale=0.39]{example1.jpg}
 \end{figure}
+
+Na Tabela \ref{table:comp} é feito um comparativo entre as diversas técnicas
+revistas e a proposta apresentada, com objetivo de explicitar as diferenças
+entre estes trabalhos.
+
+\begin{table}[h]
+\centering
+\begin{tiny}
+\caption{Comparativo entre técnicas de segmentação de página}
+\label{table:comp}
+\begin{tabular}{l c c c c c}
+\hline\hline
+          &          &        &          & Necessita   & Independe \\
+          & Opera    & Única  & Treina-  & informação  & sintaxe \\ 
+Técnica   & Sobre    & página & mento    & a priori    & HTML \\
+\hline
+Fernandes et al. [2007] & Texto & - & - & - & - \\
+Kohlschütter and Nejdl [2008] & Texto & - & - & - & - \\
+Kohlschütter et al. [2010] & Texto & - & - & - & - \\
+Weninger et al. [2010] & Texto & - & - & - & - \\
+Hu et al. [2013] & Texto & - & - & - & - \\
+Yi et al. [2003] & Árvore DOM & Não & Sim & Não & Não \\
+Chakrabarti et al. [2008] & Árvore DOM & Não & Sim & Não & Não \\
+Cho et al. [2009] & Árvore DOM & Sim & Não & Sim & Sim \\
+Fernandes et al. [2011] & Árvore DOM & Não & Sim & Não & Não \\
+Zheng et al. [2012] & Árvore DOM & Sim & Não & Sim & Sim \\
+Zheng et al. [2007] & Árvore DOM & Não & Sim & Não & Não \\
+Cai et al. [2003] & Rep. visual & Sim & Não & Sim & Sim \\
+Simon and Lausen [2005] & Rep. visual & Sim & Não & Não & Sim \\
+Liu et al. [2010] & Rep. visual & Sim & Não & Sim & Sim \\
+\hline
+Proposta & TPS & Sim & Não & Não & Não \\
+\end{tabular}
+\end{tiny}
+\end{table}
 
 \chapter{Definições}\label{ch:def}
 
