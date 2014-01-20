@@ -16,9 +16,16 @@ $tag$ $paths$}
 \orientador{Profa. Dra. Carina F. Dorneles}                    % Nome do
 \begin{document}
 \capa \folhaderosto[comficha] % Se nao quiser imprimir a ficha, é só não usar o
-% parâmetro \folhaaprovacao \paginadedicatoria \paginaagradecimento
-% \paginaepigrafe \listadefiguras \listadetabelas \listadeabreviaturas
-% \listadesimbolos \sumario
+% parâmetro 
+%\folhaaprovacao 
+%\paginadedicatoria{Dedicado à Xuxa} 
+%\paginaagradecimento{Muito obrigado.}
+%\paginaepigrafe 
+\listadefiguras 
+\listadetabelas 
+%\listadeabreviaturas
+%\listadesimbolos 
+\sumario
 
 \textoResumo{Segmentação e remoção de ruído de páginas $web$ são etapas
 essenciais no processo de extração de dados estruturados. Identificar a região
@@ -52,7 +59,8 @@ the precision of the extraction step by removing irrelevant results.
 
 \paginaresumo \paginaabstract
 
-\chapter{Contextualização do problema}
+\chapter{Introdução}
+\section{Contextualização do problema}
 
 Um passo fundamental da mineração de dados na $web$, inclusive em extração
 estruturada, é a fase de limpeza que deve ocorrer antes da extração da
@@ -126,7 +134,7 @@ problema e das hipóteses; no Capítulo \ref{ch:met} o método de avaliação dos
 resultados é detalhado; no Capítulo \ref{ch:results} são apresentados os
 resultados obtidos e; no Capítulo \ref{ch:conclusion} uma conclusão.
 
-\chapter{Objetivos}\label{ch:obj}
+\section{Objetivos}\label{ch:obj}
 
 O objetivo desta pesquisa é contribuir para área de extração estruturada de
 dados da $web$, propondo uma nova técnica para segmentação e remoção de ruído de
@@ -134,7 +142,7 @@ páginas que possibilite incrementar a precisão dos métodos atuais, com o mínimo
 de intervenção manual e o máximo de independência com relação a aspectos da
 linguagem HTML e ao domínio da informação.
 
-\chapter{Contribuições}\label{ch:contr}
+\section{Contribuições}\label{ch:contr}
 
 A contribuição desta pesquisa é uma nova técnica de segmentação e remoção de
 ruído de páginas $web$ com as seguintes características:
@@ -149,6 +157,38 @@ $tags$ HTML;
 para funcionar, o que é um grande vantagem, como discutido em
 \citeonline{Editorial04}.
 \end{itemize}
+
+\begin{table}[h]
+\centering
+\begin{tiny}
+\caption{Comparativo entre técnicas de segmentação de página}
+\label{table:comp}
+\begin{tabular}{l c c c c c}
+\hline\hline
+          &          &        &          & Necessita   & Independe \\
+          & Opera    & Única  & Treina-  & informação  & sintaxe \\ 
+Técnica   & Sobre    & página & mento    & a priori    & HTML \\
+\hline
+Fernandes et al. [2007] & Texto & - & - & - & - \\
+Kohlschütter and Nejdl [2008] & Texto & - & - & - & - \\
+Kohlschütter et al. [2010] & Texto & - & - & - & - \\
+Weninger et al. [2010] & Texto & - & - & - & - \\
+Hu et al. [2013] & Texto & - & - & - & - \\
+Yi et al. [2003] & Árvore DOM & Não & Sim & Não & Não \\
+Chakrabarti et al. [2008] & Árvore DOM & Não & Sim & Não & Não \\
+Cho et al. [2009] & Árvore DOM & Sim & Não & Sim & Sim \\
+Fernandes et al. [2011] & Árvore DOM & Não & Sim & Não & Não \\
+Zheng et al. [2012] & Árvore DOM & Sim & Não & Sim & Sim \\
+Zheng et al. [2007] & Árvore DOM & Não & Sim & Não & Não \\
+Cai et al. [2003] & Rep. visual & Sim & Não & Sim & Sim \\
+Simon and Lausen [2005] & Rep. visual & Sim & Não & Não & Sim \\
+Liu et al. [2010] & Rep. visual & Sim & Não & Sim & Sim \\
+\hline
+Proposta & TPS & Sim & Não & Não & Não \\
+\end{tabular}
+\end{tiny}
+\end{table}
+
 
 \chapter{Revisão bibliográfica}\label{ch:rev}
 
@@ -386,7 +426,7 @@ segmentação, possibilita dividir a $TPS$ em várias regiões.
 
 \end{itemize}
 
-\chapter{Algoritmos}\label{ch:alg}
+\section{Algoritmos}\label{ch:alg}
 
 Neste capítulo são apresentados os algoritmos desenvolvidos para tratar o
 problema definido no Capítulo \ref{ch:probform}. Quais sejam:
@@ -407,7 +447,7 @@ resistente ao ruído;
   mantendo a estrutura do documento original.
 \end{itemize}
 
-\section{Algoritmo tagPathSequenceFilter()}
+\subsection{Algoritmo $tagPathSequenceFilter()$}
 
 \begin{algorithm}[H]
 \caption{Filtra o ruído de uma página $web$}
@@ -439,7 +479,7 @@ $filterAlphabet()$ e $pruneDOMTree()$. O algoritmo $parseHTML()$ não faz parte
 do escopo deste trabalho, portanto não será discutido aqui.
 
 
-\section{Algoritmo convertToSeq()}
+\subsection{Algoritmo $convertToSeq()$}
 
 \begin{algorithm}[H]
 \caption{Converte uma árvore DOM para a representação de seqüência de $tag$ $path$}
@@ -478,7 +518,7 @@ atribuído à ele na Linha $5$, como mostrado na Definição \ref{def:tps}; na Linha
 $7$, o código do $tag$ $path$ é concatenado ao final da seqüência e, finalmente,
 o procedimento é invocado recursivamente na Linha $9$ para cara filho de $node$.
 
-\section{Algoritmo searchRegion()}
+\subsection{Algoritmo $searchRegion()$}
 
 Este é o algoritmo central, já que é responsável por encontrar a região
 principal, portanto incluímos uma ilustração, na Figura \ref{fig:alg}, para
@@ -488,11 +528,11 @@ símbolos com baixas freqüências para maior clareza, pois a intenção é passar a
 idéia principal. Os detalhes e minúcias podem ser verificados na listagem do
 algoritmo e na sua descrição.
 
-\begin{figure}[h]
+\begin{figure}[H]
   \caption{Ilustração da execução do algoritmo.}
   \label{fig:alg}
   \centering
-    \includegraphics[scale=0.48]{alg-pb.jpg}
+    \includegraphics[scale=0.40]{alg-pb.jpg}
 \end{figure}
 
 
@@ -575,7 +615,7 @@ uma região sob condições ambíguas (nos experimentos foi utilizado o valor de
 encontrada, chamando o procedimento $searchRegion()$ recursivamente na Linha
 $45$.
 
-\section{Algoritmo filterAlphabet()}
+\subsection{Algoritmo $filterAlphabet()$}
 
 \begin{algorithm}[H]
 \caption{Filtra símbolos de baixa freqüência no alfabeto}
@@ -604,7 +644,7 @@ $threshold$ são inseridos no conjunto resultante. O resultado de $filterAlphabet
 utilizado no Algoritmo \ref{alg:searchreg}, Linha $24$, onde apenas os símbolos
 em $currentAlphabet$ são considerados durante a busca pela região principal.
 
-\section{Algoritmo pruneDOMTree()}
+\subsection{Algoritmo $pruneDOMTree()$}
 
 \begin{algorithm}[H]
 \caption{Poda da árvore DOM todos os nós que não pertencem à seqüência}
