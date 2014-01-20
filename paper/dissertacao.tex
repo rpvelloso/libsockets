@@ -102,7 +102,7 @@ que constitui uma grande vantagem desta proposta, como discutido em
 Para avaliar o quão efetiva é a abordagem proposta neste trabalho, foi comparado
 o ruído de saída do MDR \cite{MDR03}, uma conhecida técnica de extração
 estruturada, contra o ruído de saída do MDR combinado com a técnica proposta,
-como ilustrado na Figura \ref{fig:method}, obtendo-se uma média de 77,03\% de
+como ilustrado na Figura \ref{fig:method}, obtendo-se uma média de 84,87\% de
 ruído removido das páginas do conjunto de teste.
 
 \begin{figure}[H]
@@ -801,41 +801,68 @@ coluna mostra o percentual de ruído removido, calculado conforme a Equação
 \label{table:results}
 \centering
 \begin{tiny}
-\begin{tabular}{l r r r c r r r r r}
-
+\begin{tabular}{r l r r r c r r r r r}
 \hline\hline
-\multicolumn{5}{c}{} & \multicolumn{4}{c}{MDR (\# registros)} &  (eq. \ref
+& \multicolumn{5}{c}{} & \multicolumn{4}{c}{MDR (\# registros)} & (eq. \ref
 {eq:noise})\\
-& \multicolumn{3}{c}{Tam. DOM (\# nós)} & Cont. & \multicolumn{2}{c}{Orig.} &
-\multicolumn{2}{c}{Podado} & Ruído\\
-$Site$ & Orig. & Podado & Red. & princ. & Tot & Tgt & Tot & Tgt & rem. \\
+& & \multicolumn{3}{c}{Tam. DOM (\# nós)} & Cont. & \multicolumn{2}{c}{Orig.}
+& \multicolumn{2}{c}{Pruned} & Ruído\\
+\# & $Site$ & Orig. & Podado & Red. & princ. & Tot & Tgt & Tot & Tgt & rem. \\
 \hline
-acm.org & 601 & 340 & -43.43\% & Yes & 61 & 10 & 16 & 10 & 88.24\% \\
-amazon.com & 3309 & 1054 & -68.15\% & Yes & 368 & 15 & 27 & 15 & 96.60\% \\
-americanas.com.br & 2660 & 710 & -73.31\% & Yes & 211 & 20 & 20 & 20 & 100.00\% \\
-bestbuy.com & 3632 & 1425 & -60.77\% & Yes & 299 & 15 & 15 & 15 & 100.00\% \\
-bondfaro.com.br & 3897 & 3069 & -21.25\% & Yes & 231 & 28 & 178 & 28 & 26.11\% \\
-bradesco.com.br & 1913 & 1113 & -41.82\% & Yes & 164 & 10 & 93 & 10 & 46.10\% \\
-buscape.com.br & 3608 & 3514 & -2.61\% & Yes & 279 & 24 & 266 & 24 & 5.10\% \\
-ebay.com & 2623 & 1801 & -31.34\% & Yes & 162 & 50 & 50 & 50 & 100.00\% \\
-elsevier.com & 906 & 160 & -82.34\% & Yes & 120 & 10 & 32 & 10 & 80.00\% \\
-g1.com.br & 900 & 619 & -31.22\% & No & 225 & 10 & 202 & 0 & N/A \\
-globo.com & 400 & 193 & -51.75\% & Yes & 80 & 10 & 20 & 10 & 85.71\% \\
-google.com & 1421 & 981 & -30.96\% & Yes & 118 & 11 & 61 & 11 & 53.27\% \\
-itau.com.br & 1111 & 410 & -63.10\% & No & 77 & 10 & 11 & 0 & N/A \\
-magazineluiza.com.br & 3167 & 1115 & -64.79\% & Yes & 314 & 40 & 44 & 40 & 98.54\% \\
-mercadolivre.com.br & 2401 & 1771 & -26.24\% & Yes & 136 & 50 & 52 & 50 & 97.67\% \\
-reuters.com & 1202 & 480 & -60.07\% & Yes & 136 & 10 & 54 & 10 & 65.08\% \\
-scopus.com & 4929 & 4688 & -4.89\% & Yes & 114 & 20 & 75 & 20 & 41.49\% \\
-submarino.com.br & 2389 & 1268 & -46.92\% & Yes & 116 & 20 & 22 & 20 & 97.92\% \\
-terra.com.br & 869 & 588 & -32.34\% & Yes & 122 & 50 & 76 & 50 & 63.89\% \\
-valor.com.br & 514 & 126 & -75.49\% & No & 55 & 10 & 2 & 0 & N/A \\
-$web$motors.com.br & 2119 & 1361 & -35.77\% & Yes & 113 & 14 & 19 & 14 & 94.95\% \\
-%wikipedia.com & 3224 & 1949 & -39.55\% & Yes & N/A & N/A & N/A & N/A & N/A \\
-yahoo.com & 760 & 290 & -61.84\% & Yes & 67 & 10 & 10 & 10 & 100.00\% \\
-youtube.com & 1424 & 674 & -52.67\% & Yes & 82 & 20 & 20 & 20 & 100.00\% \\
+1 & ACM & 601 & 340 & -43,43\% & Sim & 61 & 10 & 16 & 10 & 88,24\% \\
+2 & Amazon & 3499 & 1069 & -69,45\% & Sim & 344 & 16 & 41 & 16 & 92,38\% \\
+3 & Apple & 1422 & 962 & -32,35\% & Sim & 63 & 15 & 23 & 15 & 83,33\% \\
+4 & Avon & 911 & 575 & -36,88\% & Sim & 69 & 20 & 29 & 20 & 81,63\% \\
+5 & Barnes \& Noble & 1242 & 778 & -37,36\% & Sim & 147 & 30 & 54 & 30 & 79,49\% \\
+6 & Bestbuy & 3632 & 1425 & -60,77\% & Sim & 299 & 15 & 15 & 15 & 100,00\% \\
+7 & Blockbuster & 2176 & 1381 & -36,53\% & Sim & 84 & 25 & 32 & 25 & 88,14\% \\
+8 & Bondfaro & 3897 & 3069 & -21,25\% & Sim & 231 & 28 & 178 & 28 & 26,11\% \\
+9 & Bradesco & 1913 & 1113 & -41,82\% & Sim & 164 & 10 & 93 & 10 & 46,10\% \\
+10 & Build & 2712 & 746 & -72,49\% & Não & 117 & 12 & 69 & 0 & N/A \\
+11 & Buscapé & 3608 & 3514 & -2,61\% & Sim & 279 & 24 & 266 & 24 & 5,10\% \\
+12 & Costco & 4504 & 326 & -92,76\% & Não & 246 & 96 & 8 & 8 & N/A \\
+13 & Dell & 1737 & 881 & -49,28\% & Sim & 177 & 12 & 64 & 12 & 68,48\% \\
+14 & Disney & 2778 & 2006 & -27,79\% & Sim & 193 & 96 & 116 & 96 & 79,38\% \\
+15 & Drugstore & 1774 & 850 & -52,09\% & Sim & 156 & 18 & 52 & 18 & 75,36\% \\
+16 & eBay & 2623 & 1801 & -31,34\% & Sim & 162 & 50 & 50 & 50 & 100,00\% \\
+17 & Elsevier & 906 & 160 & -82,34\% & Sim & 120 & 10 & 32 & 10 & 80,00\% \\
+18 & Footlocker & 2440 & 1106 & -54,67\% & Sim & 238 & 60 & 60 & 60 & 100,00\% \\
+19 & Gamestop & 1947 & 935 & -51,98\% & Não & 86 & 12 & 6 & 0 & N/A \\
+20 & Gap & 2249 & 1365 & -39,31\% & Sim & 235 & 124 & 126 & 124 & 98,20\% \\
+21 & Globo & 400 & 193 & -51,75\% & Sim & 80 & 10 & 20 & 10 & 85,71\% \\
+22 & Globo G1 & 900 & 619 & -31,22\% & Não & 225 & 10 & 202 & 0 & N/A \\
+23 & Google & 1421 & 474 & -66,64\% & Sim & 118 & 11 & 21 & 11 & 90,65\% \\
+24 & Home Depot & 5199 & 1304 & -74,92\% & Sim & 325 & 24 & 24 & 24 & 100,00\% \\
+25 & HP & 1783 & 1258 & -29,44\% & Sim & 71 & 15 & 15 & 15 & 100,00\% \\
+26 & Itaú & 1111 & 410 & -63,10\% & Não & 77 & 10 & 11 & 0 & N/A \\
+27 & Lojas Americanas & 2660 & 710 & -73,31\% & Sim & 211 & 20 & 20 & 20 & 100,00\% \\
+28 & Macy's & 5676 & 2158 & -61,98\% & Não & 164 & 40 & 43 & 0 & N/A \\
+29 & Magazine Luiza & 3167 & 1115 & -64,79\% & Sim & 314 & 40 & 44 & 40 & 98,54\% \\
+30 & Mercadolivre & 2401 & 1771 & -26,24\% & Sim & 136 & 50 & 52 & 50 & 97,67\% \\
+31 & Microsoft & 871 & 272 & -68,77\% & Sim & 57 & 16 & 16 & 16 & 100,00\% \\
+32 & Newegg & 8481 & 3419 & -59,69\% & Não & 965 & 20 & 307 & 0 & N/A \\
+33 & Nike & 4082 & 1829 & -55,19\% & Sim & 329 & 23 & 23 & 23 & 100,00\% \\
+34 & Office Depot & 3363 & 1111 & -66,96\% & Sim & 108 & 24 & 38 & 24 & 83,33\% \\
+35 & PC Mall & 4285 & 2548 & -40,54\% & Sim & 216 & 25 & 53 & 25 & 85,34\% \\
+36 & Rakuten & 3386 & 2768 & -18,25\% & Sim & 112 & 35 & 61 & 35 & 66,23\% \\
+37 & Ralph Lauren & 995 & 564 & -43,32\% & Sim & 46 & 12 & 12 & 12 & 100,00\% \\
+38 & Reuters & 1202 & 198 & -83,53\% & Sim & 136 & 10 & 10 & 10 & 100,00\% \\
+39 & Scopus & 4929 & 4688 & -4,89\% & Sim & 114 & 20 & 75 & 20 & 41,49\% \\
+40 & Sears & 5726 & 3890 & -32,06\% & Sim & 397 & 50 & 75 & 50 & 92,80\% \\
+41 & Sephora & 3022 & 1440 & -52,35\% & Sim & 365 & 60 & 60 & 60 & 100,00\% \\
+42 & Sony & 2200 & 1316 & -40,18\% & Sim & 98 & 15 & 18 & 15 & 96,39\% \\
+43 & Staples & 2959 & 1611 & -45,56\% & Sim & 178 & 24 & 24 & 24 & 100,00\% \\
+44 & Submarino & 2389 & 1268 & -46,92\% & Sim & 116 & 20 & 22 & 20 & 97,92\% \\
+45 & Terra & 869 & 588 & -32,34\% & Sim & 122 & 50 & 76 & 50 & 63,89\% \\
+46 & Tiffany & 3899 & 2753 & -29,39\% & Não & 183 & 12 & 67 & 0 & N/A \\
+47 & Valor Econômico & 514 & 126 & -75,49\% & Não & 55 & 10 & 2 & 0 & N/A \\
+48 & Wal-Mart & 1576 & 808 & -48,73\% & Sim & 110 & 20 & 40 & 20 & 77,78\% \\
+49 & Webmotors & 2119 & 1361 & -35,77\% & Sim & 113 & 14 & 19 & 14 & 94,95\% \\
+50 & Yahoo! & 760 & 290 & -61,84\% & Sim & 67 & 10 & 10 & 10 & 100,00\% \\
+51 & YouTube & 1424 & 674 & -52,67\% & Sim & 82 & 20 & 20 & 20 & 100,00\% \\
 \hline
-Média/Total &  &  & -46.22\% & 86.96\% &  &  &  &  & 77.03\% \\
+& Média/Total &  &  & -48,52\% & 82,35\%&  &  &  &  & 84,87\% \\
+&             &  &  &          & 17,65\%&  &  &  &  &  \\
 \hline
 
 \end{tabular}
@@ -843,24 +870,24 @@ Média/Total &  &  & -46.22\% & 86.96\% &  &  &  &  & 77.03\% \\
 \end{table}
 
 Como se pode observar na Tabela \ref{table:results}, o total da coluna
-``Conteúdo principal'' indica que o algoritmo funcionou em 84.21\% dos casos e
-removeu, com este conjunto de teste, uma média de 89.02\% de todo o ruído
+``Conteúdo principal'' indica que o algoritmo funcionou em 82,35\% dos casos e
+removeu, com este conjunto de teste, uma média de 84,87\% de todo o ruído
 presente nos dados, como mostra a média da coluna ``Ruído rem.''.
 
-A média de 47.93\% de redução no tamanho da árvore DOM é um resultado
+A média de 48,52\% de redução no tamanho da árvore DOM é um resultado
 interessante. Primeiro, por que significa que quase metade da árvore DOM é
 ruído, na média. Segundo, por que este valor ficou bem próximo do valor
 relatado, de forma independente, em \citeonline{Volume05} como sendo o tamanho
 do ``template'' das páginas (em torno de 50\%).
 
 Uma situação que chama a atenção na Tabela \ref{table:results} é o resultado
-obtido para a página do $site$ ``Build'' (\#8). Sem filtrar o ruído, o MDR
+obtido para a página do $site$ ``Build'' (\#10). Sem filtrar o ruído, o MDR
 retornou um total de $117$ registros, incluindo os $12$ registros de interesse.
 Após aplicar o filtro de ruído, um total de $69$ registros são retornados,
 nenhum deles de interesse, todos ruído. Então, após a filtragem, se a árvore
 retornada fosse, na realidade, o seu complemento, o resultado seria de $48$
 registros no total ($117-69=48$), incluindo os $12$ registros de interesse, o
-que seria um bom resultado já que significa uma remoção de 65.71\% do ruído. O
+que seria um bom resultado já que significa uma remoção de 65,71\% do ruído. O
 que se pode deduzir disto é que, a segmentação da página ocorreu corretamente,
 apenas a identificação da região principal falhou, já que neste caso, era
 relativamente pequena.
@@ -870,7 +897,7 @@ relativamente pequena.
 Existem três situações principais onde o algoritmo poderia ser melhorado e,
 destas, apenas duas podem levar a perda de conteúdo de interesse. Na Tabela
 \ref{table:results}, coluna ``Conteúdo principal'', estas duas situações são
-responsáveis por 15.79\% dos casos, onde o conteúdo principal foi removido
+responsáveis por 17,65\% dos casos, onde o conteúdo principal foi removido
 durante o processo de filtragem.
 
 \begin{enumerate}
@@ -906,8 +933,8 @@ interesse, retornando um conjunto de regiões como resultado e não apenas uma
 única região.
  
 Para a situação descrita para o $site$ ``Build'' (que ocorreu, também, em outros
-cinco casos), quando a região principal é menor que as demais, uma abordagem
-semântica também pode ser utilizada para validar se a região encontrada, de
+oito casos - 17,65\%), quando a região principal é menor que as demais, uma
+abordagem semântica também pode ser utilizada para validar se a região encontrada, de
 fato, possui conteúdo de interesse e, se não possuir deve ser descartada e a
 árvore complementar ($i.e.$ inverter a poda) deve ser retornada em seu lugar. O
 algoritmo principal ficaria assim:
