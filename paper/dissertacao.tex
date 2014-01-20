@@ -964,6 +964,10 @@ pela Linha $6$ onde é verificado se o conteúdo principal está presente na região
 e, caso não esteja, a seqüência complementar é utilizada (Linha $7$), garantindo
 a presença do conteúdo principal.
 
+Técnicas como a apresentada em \citeonline{Adaptive07}, que classifica uma
+seqüência de blocos como sendo conteúdo ou não, pode ser utilizada para
+implementar a Linha $6$ do algoritmo \ref{alg:tpsfilter2}.
+
 \chapter{Conclusão}\label{ch:conclusion}
 
 Como mostrado nos resultados, o método proposto para segmentação da página e
@@ -979,10 +983,6 @@ página possuir estrutura muito homogênea (de forma que não seja possível
 encontrar as diferentes regiões) ou muito heterogênea (onde o conteúdo principal
 está espalhado em diversas regiões diferentes), o conteúdo principal poderia,
 talvez, ser detectado através do uso de uma técnica semântica.
-
-%techniques, like the one presented in \citeonline{Adaptive07}, that labels a sequence 
-%of blocks as $content$ or $notContent$ could be used to implement 
-%line $6$ of algorithm \ref{alg:tpsfilter2}.
 
 O algoritmo mostrou excelente performance, pois apresentou resultados
 satisfatórios para a maioria dos $sites$ comerciais nos quais foi testado. Ele
