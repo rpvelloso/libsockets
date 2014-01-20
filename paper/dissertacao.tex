@@ -212,9 +212,9 @@ convertido para representação de $tag$ $paths$.
     \includegraphics[scale=0.39]{example1.jpg}
 \end{figure}
 
-Na Tabela \ref{table:comp} é feito um comparativo entre as diversas técnicas
-revistas e a proposta apresentada, com objetivo de explicitar as diferenças
-entre estes trabalhos.
+Na Tabela \ref{table:comp} é feito um comparativo entre as técnicas mais
+significativos (neste contexto) revistas e a proposta apresentada, com objetivo
+de explicitar as diferenças entre estes trabalhos.
 
 \begin{table}[h]
 \centering
@@ -227,22 +227,22 @@ entre estes trabalhos.
           & Opera    & Única  & Treina-  & informação  & sintaxe \\ 
 Técnica   & Sobre    & página & mento    & a priori    & HTML \\
 \hline
-Fernandes et al. [2007] & Texto & - & - & - & - \\
-Kohlschütter and Nejdl [2008] & Texto & - & - & - & - \\
-Kohlschütter et al. [2010] & Texto & - & - & - & - \\
-Weninger et al. [2010] & Texto & - & - & - & - \\
-Hu et al. [2013] & Texto & - & - & - & - \\
-Yi et al. [2003] & Árvore DOM & Não & Sim & Não & Não \\
-Chakrabarti et al. [2008] & Árvore DOM & Não & Sim & Não & Não \\
-Cho et al. [2009] & Árvore DOM & Sim & Não & Sim & Sim \\
-Fernandes et al. [2011] & Árvore DOM & Não & Sim & Não & Não \\
-Zheng et al. [2012] & Árvore DOM & Sim & Não & Sim & Sim \\
-Zheng et al. [2007] & Árvore DOM & Não & Sim & Não & Não \\
-Cai et al. [2003] & Rep. visual & Sim & Não & Sim & Sim \\
-Simon and Lausen [2005] & Rep. visual & Sim & Não & Não & Sim \\
-Liu et al. [2010] & Rep. visual & Sim & Não & Sim & Sim \\
+\citeonline{BlockImp07} & Texto & - & - & - & - \\
+\citeonline{Densiometric08} & Texto & - & - & - & - \\
+\citeonline{Boilerplate10} & Texto & - & - & - & - \\
+\citeonline{CETR10} & Texto & - & - & - & - \\
+\citeonline{NonTemplate13} & Texto & - & - & - & - \\
+\citeonline{Noisy03} & Árvore DOM & Não & Sim & Não & Não \\
+\citeonline{Graph08} & Árvore DOM & Não & Sim & Não & Não \\
+\citeonline{Entropy09} & Árvore DOM & Sim & Não & Sim & Sim \\
+\citeonline{SiteOriented11} & Árvore DOM & Não & Sim & Não & Não \\
+\citeonline{Entropy12} & Árvore DOM & Sim & Não & Sim & Sim \\
+\citeonline{Jointop07} & Árvore DOM & Não & Sim & Não & Não \\
+\citeonline{vips03} & Rep. visual & Sim & Não & Sim & Sim \\
+\citeonline{viper05} & Rep. visual & Sim & Não & Não & Sim \\
+\citeonline{vide10} & Rep. visual & Sim & Não & Sim & Sim \\
 \hline
-Proposta & TPS & Sim & Não & Não & Não \\
+\citeonline{TPS2013} & TPS & Sim & Não & Não & Não \\
 \end{tabular}
 \end{tiny}
 \end{table}
@@ -976,8 +976,8 @@ interesse, retornando um conjunto de regiões como resultado e não apenas uma
 única região.
  
 Para a situação descrita para o $site$ ``Build'' (que ocorreu, também, em outros
-oito casos - 17,65\%), quando a região principal é menor que as demais, uma
-abordagem semântica também pode ser utilizada para validar se a região encontrada, de
+oito casos, $i.e.$ 17,65\%), quando a região principal é menor que as demais,
+uma abordagem semântica também pode ser utilizada para validar se a região encontrada, de
 fato, possui conteúdo de interesse e, se não possuir deve ser descartada e a
 árvore complementar ($i.e.$ inverter a poda) deve ser retornada em seu lugar. O
 algoritmo principal ficaria assim:
