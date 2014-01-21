@@ -110,7 +110,7 @@ que constitui uma grande vantagem desta proposta, como discutido em
 Para avaliar o quão efetiva é a abordagem proposta neste trabalho, foi comparado
 o ruído de saída do MDR \cite{MDR03}, uma conhecida técnica de extração
 estruturada, contra o ruído de saída do MDR combinado com a técnica proposta,
-como ilustrado na Figura \ref{fig:method}, obtendo-se uma média de 84,87\% de
+como ilustrado na Figura \ref{fig:method}, obtendo-se uma média de 88,86\% de
 ruído removido das páginas do conjunto de teste.
 
 \begin{figure}[H]
@@ -859,10 +859,10 @@ coluna mostra o percentual de ruído removido, calculado conforme a Equação
 5 & Barnes \& Noble & 1242 & 778 & -37,36\% & Sim & 147 & 30 & 54 & 30 & 79,49\% \\
 6 & Bestbuy & 3632 & 1425 & -60,77\% & Sim & 299 & 15 & 15 & 15 & 100,00\% \\
 7 & Blockbuster & 2176 & 1381 & -36,53\% & Sim & 84 & 25 & 32 & 25 & 88,14\% \\
-8 & Bondfaro & 3897 & 3069 & -21,25\% & Sim & 231 & 28 & 178 & 28 & 26,11\% \\
+8 & Bondfaro & 3897 & 1820 & -53,30\% & Sim & 160 & 28 & 30 & 28 & 98,48\% \\
 9 & Bradesco & 1913 & 1113 & -41,82\% & Sim & 164 & 10 & 93 & 10 & 46,10\% \\
 10 & Build & 2712 & 746 & -72,49\% & Não & 117 & 12 & 69 & 0 & N/A \\
-11 & Buscapé & 3608 & 3514 & -2,61\% & Sim & 279 & 24 & 266 & 24 & 5,10\% \\
+11 & Buscapé & 3608 & 1607 & -55,46\% & Sim & 223 & 24 & 24 & 24 & 100,00\% \\
 12 & Costco & 4504 & 326 & -92,76\% & Não & 246 & 96 & 8 & 8 & N/A \\
 13 & Dell & 1737 & 881 & -49,28\% & Sim & 177 & 12 & 64 & 12 & 68,48\% \\
 14 & Disney & 2778 & 2006 & -27,79\% & Sim & 193 & 96 & 116 & 96 & 79,38\% \\
@@ -904,7 +904,7 @@ coluna mostra o percentual de ruído removido, calculado conforme a Equação
 50 & Yahoo! & 760 & 290 & -61,84\% & Sim & 67 & 10 & 10 & 10 & 100,00\% \\
 51 & YouTube & 1424 & 674 & -52,67\% & Sim & 82 & 20 & 20 & 20 & 100,00\% \\
 \hline
-& Média/Total &  &  & -48,52\% & 82,35\%&  &  &  &  & 84,87\% \\
+& Média/Total &  &  & -50,18\% & 82,35\%&  &  &  &  & 88,86\% \\
 &             &  &  &          & 17,65\%&  &  &  &  &  \\
 \hline
 
@@ -914,10 +914,10 @@ coluna mostra o percentual de ruído removido, calculado conforme a Equação
 
 Como se pode observar na Tabela \ref{table:results}, o total da coluna
 ``Conteúdo principal'' indica que o algoritmo funcionou em 82,35\% dos casos e
-removeu, com este conjunto de teste, uma média de 84,87\% de todo o ruído
+removeu, com este conjunto de teste, uma média de 88,86\% de todo o ruído
 presente nos dados, como mostra a média da coluna ``Ruído rem.''.
 
-A média de 48,52\% de redução no tamanho da árvore DOM é um resultado
+A média de 50,18\% de redução no tamanho da árvore DOM é um resultado
 interessante. Primeiro, por que significa que quase metade da árvore DOM é
 ruído, na média. Segundo, por que este valor ficou bem próximo do valor
 relatado, de forma independente, em \citeonline{Volume05} como sendo o tamanho
@@ -963,7 +963,6 @@ durante o processo de filtragem.
   principal. A mesma proposta apresentada para situação anterior também pode ser
   utilizada neste caso.
 \end{enumerate}
-
 
 No caso de \textit{templates} heterogêneos, a filtragem da TPS ainda pode ser
 utilizada realizando algumas modificações no algoritmo. Um exemplo de
