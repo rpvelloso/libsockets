@@ -14,16 +14,42 @@ $tag$ $paths$}
 \autor{Roberto Panerai Velloso}
 \data{22}{maio}{2013}                           % Data da publicação do
 \orientador{Profa. Dra. Carina F. Dorneles}                    % Nome do
+
+\numerodemembrosnabanca{3}
+\orientadornabanca{sim}
+\bancaMembroA{Prof. Presidente da banca}
+\bancaMembroB{Prof. segundo membro}
+\bancaMembroC{Prof. terceiro membro}
+
+\agradecimento{agradecimento}
+\dedicatoria{dedicatória}
+\epigrafe{
+Está instaurada a dúvida.\\
+A metódica dúvida epistemológica.\\
+Neste mundo a terra não está no centro\\
+nenhum saber é saber completo.\\
+Seja bem-vinda era da razão.\\
+Não há que se temer a revisão.\\
+Nada que se diga ou que foi dito\\
+merece estatuto de dogma irrestrito.\\
+Cuidado com a verdade\\
+que se pretende\\
+maior que a realidade,\\
+pois, os fatos são os fatos\\
+e fluem diante de nós\\
+que estupefatos\\
+assistimos ao espetáculo}{Galileu Galilei}
+
 \begin{document}
-\capa \folhaderosto[comficha] % Se nao quiser imprimir a ficha, é só não usar o
-% parâmetro 
+\capa 
+\folhaderosto[comficha] % Se nao quiser imprimir a ficha, é só não usar o parâmetro 
 %\folhaaprovacao 
-%\paginadedicatoria{Dedicado à Xuxa} 
-%\paginaagradecimento{Muito obrigado.}
-%\paginaepigrafe 
+\paginadedicatoria 
+\paginaagradecimento
+\paginaepigrafe 
 \listadefiguras 
 \listadetabelas 
-%\listadeabreviaturas
+\listadeabreviaturas
 %\listadesimbolos 
 \sumario
 
@@ -32,9 +58,10 @@ essenciais no processo de extração de dados estruturados. Identificar a região
 principal da página, eliminando o que não é importante (menus, anúncios, etc.),
 pode melhorar significativamente o desempenho do processo de extração. Para essa
 tarefa é proposto um novo algoritmo, totalmente automático, que utiliza uma
-seqüência $tag$ $paths$ (TPS) como representação da página $web$. A TPS é
-composta por uma seqüência de símbolos ($string$), cada um representando um
-$tag$ $path$ diferente. A técnica proposta procura por posições na TPS onde é
+seqüência $tag$ $paths$ (TPS) como
+representação da página $web$.
+A TPS é composta por uma seqüência de símbolos ($string$), cada um representando
+um $tag$ $path$ diferente. A técnica proposta procura por posições na TPS onde é
 possível dividi-la em duas regiões de tal forma que seus alfabetos não se
 intersectem, o que significa que as regiões têm conjuntos de $tag$ $paths$
 completamente distintos e, portanto, são regiões diferentes da página. Os
@@ -86,7 +113,8 @@ conteúdo estruturado e não estruturado, estas técnicas não podem ser utilizadas
 para extração estruturada. As técnicas existentes que podem ser utilizadas para
 este fim requerem definições \textit{a priori} \cite{vips03}, ou treinamento
 prévio \cite{Graph08}, ou então dependem de aspectos específicos da linguagem
-HTML para funcionar, como em \citeonline{Entropy09}.
+\abreviatura{HTML}{hypertext markup language}HTML para funcionar, como em
+\citeonline{Entropy09}.
 
 Este trabalho propõe e descreve um algoritmo para segmentação e remoção de ruído
 de páginas $web$ que utiliza a representação de seqüência de $tag$ $paths$ de
@@ -108,10 +136,11 @@ que constitui uma grande vantagem desta proposta, como discutido em
 \end{itemize}
 
 Para avaliar o quão efetiva é a abordagem proposta neste trabalho, foi comparado
-o ruído de saída do MDR \cite{MDR03}, uma conhecida técnica de extração
-estruturada, contra o ruído de saída do MDR combinado com a técnica proposta,
-como ilustrado na Figura \ref{fig:method}, obtendo-se uma média de 88,86\% de
-ruído removido das páginas do conjunto de teste.
+o ruído de saída do \abreviatura{MDR}{mine data records}MDR \cite{MDR03}, uma
+conhecida técnica de extração estruturada, contra o ruído de saída do MDR
+combinado com a técnica proposta, como ilustrado na Figura \ref{fig:method},
+obtendo-se uma média de 88,86\% de ruído removido das páginas do conjunto de
+teste.
 
 \begin{figure}[H]
   \centering
@@ -163,7 +192,8 @@ para funcionar, o que é um grande vantagem, como discutido em
 Existem muitos trabalhos propondo formas de segmentar páginas $web$ e
 identificar o que é conteúdo e o que é ruído nelas. Elas podem ser agrupadas em
 três categorias: as que se baseiam no texto da página, as que se baseiam na
-árvore DOM e as que utilizam informação visual.
+árvore \abreviatura{DOM}{document object model}DOM e as que utilizam informação
+visual.
 
 \textbf{Técnicas baseadas no texto}. Em
 \citeonline{Densiometric08,Boilerplate10,CETR10,BlockImp07,NonTemplate13} a
@@ -258,18 +288,18 @@ representa a página $web$.
 Na Figura \ref{fig:ex1} um pequeno trecho de código é utilizado para ilustrar a
 árvore DOM e as próximas definições.
 
-\begin{definition}[\textbf{$tag$ $paths$}]\label{def:tp} Um $tag$ $path$ (TP) é
-uma $string$ descrevendo o caminho absoluto, a partir da raiz da árvore DOM, até
-um dado nó da árvore. Seja ``i'' a posição em profundidade do nó $``n_i"$ na
-árvore, então é dito que $TP_i$ é a $string$ descrevendo o caminho, a partir da
-raiz da árvore DOM, até o nó $``n_i"$.
+\begin{definition}[\textbf{$tag$ $paths$}]\label{def:tp} Um $tag$ $path$
+(\abreviatura{TP}{tag path}TP) é uma $string$ descrevendo o caminho absoluto, a
+partir da raiz da árvore DOM, até um dado nó da árvore. Seja ``i'' a posição em
+profundidade do nó $``n_i"$ na árvore, então é dito que $TP_i$ é a $string$
+descrevendo o caminho, a partir da raiz da árvore DOM, até o nó $``n_i"$.
 \end{definition}
 Na Figura \ref{fig:ex1}, o caminho absoluto $TP_4$ do nó $body$ até a célula da
 tabela $td_4$ é $TP_4=``body/table/tr/td"$.
 
 \begin{definition}[\textbf{Seqüência de \textit{$tag$ $paths$}}]\label{def:tps}
-Uma seqüência de $tag$ $paths$ (TPS) de uma árvore DOM com ``n'' nós é definida
-como sendo a seqüência ordenada $TPS[1..n] = (TP_1,TP_2,TP_3, ...,TP_{n-1},TP_n)$
+Uma seqüência de $tag$ $paths$ (\abreviatura{TPS}{tag path sequence}TPS) de uma
+árvore DOM com ``n'' nós é definida como sendo a seqüência ordenada $TPS[1..n] = (TP_1,TP_2,TP_3, ...,TP_{n-1},TP_n)$
 onde dois $tag$ $paths$ $TP_i$ e $TP_j$, com $i\neq{}j$, são considerados iguais
 apenas se seus caminhos e suas definições de estilo são iguais, caso
 contrário eles são considerados diferentes.
