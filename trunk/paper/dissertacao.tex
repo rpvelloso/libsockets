@@ -1,30 +1,40 @@
 \documentclass{ufscThesis}
 \usepackage{graphicx}
-\usepackage[labelsep=endash]{caption} % O separador de legenda é um -
+\usepackage[labelsep=endash]{caption}
 \usepackage{algorithmicx}
 \usepackage[Algoritmo,ruled]{algorithm}
 \usepackage{algpseudocode}
 
 \newtheorem{definition}{Definição}
 
-\titulo{Segmentação e Remoção Automática de Ruído de Páginas $web$ Utilizando
-$tag$ $paths$}
-% Titulo do trabalho \subtitulo{Estilo \LaTeX~ padrão}                %
-% Subtitulo do trabalho (opcional)
+\titulo{Segmentação e Remoção Automática de Ruído de Páginas $web$ Utilizando $tag$ $paths$}
 \autor{Roberto Panerai Velloso}
-\data{22}{maio}{2013}                           % Data da publicação do
-\orientador{Profa. Dra. Carina F. Dorneles}                    % Nome do
+\data{01}{março}{2014}
+\orientador[Orientadora]{Profa. Dra. Carina F. Dorneles}
+\coordenador{Prof. Dr. Ronaldo dos Santos Mello}
 
-\numerodemembrosnabanca{3}
+
+\departamento{Departamento de Informática e Estatística}
+\curso{Programa de Pós-Graduação em Ciência da Computação}
+
+\numerodemembrosnabanca{5}
 \orientadornabanca{sim}
 \bancaMembroA{Prof. Presidente da banca}
 \bancaMembroB{Prof. segundo membro}
 \bancaMembroC{Prof. terceiro membro}
 
-\agradecimento{agradecimento}
-\dedicatoria{dedicatória}
-\epigrafe{
-Está instaurada a dúvida.\\
+%\bancaMembroD{Prof. quarto membro}
+%\bancaMembroE{Prof. quinto membro}
+%\bancaMembroF{Prof. sexto membro}
+%\bancaMembroG{Prof. setimo membro}
+
+\dedicatoria{À minha família.}
+
+\agradecimento{Agradeço o apoio dos familiares e a atenção dispensada pelos
+professores do curso, em especial pela orientação que recebi para realização e
+publicação deste trabalho.}
+
+\epigrafe{ Está instaurada a dúvida.\\
 A metódica dúvida epistemológica.\\
 Neste mundo a terra não está no centro\\
 nenhum saber é saber completo.\\
@@ -38,28 +48,14 @@ maior que a realidade,\\
 pois, os fatos são os fatos\\
 e fluem diante de nós\\
 que estupefatos\\
-assistimos ao espetáculo}{Galileu Galilei}
-
-\begin{document}
-\capa 
-\folhaderosto[comficha] % Se nao quiser imprimir a ficha, é só não usar o parâmetro 
-%\folhaaprovacao 
-\paginadedicatoria 
-\paginaagradecimento
-\paginaepigrafe 
-\listadefiguras 
-\listadetabelas 
-\listadeabreviaturas
-%\listadesimbolos 
-\sumario
+assistimos ao espetáculo.}{Galileu Galilei}
 
 \textoResumo{Segmentação e remoção de ruído de páginas $web$ são etapas
 essenciais no processo de extração de dados estruturados. Identificar a região
 principal da página, eliminando o que não é importante (menus, anúncios, etc.),
 pode melhorar significativamente o desempenho do processo de extração. Para essa
 tarefa é proposto um novo algoritmo, totalmente automático, que utiliza uma
-seqüência $tag$ $paths$ (TPS) como
-representação da página $web$.
+seqüência $tag$ $paths$ (TPS) como representação da página $web$.
 A TPS é composta por uma seqüência de símbolos ($string$), cada um representando
 um $tag$ $path$ diferente. A técnica proposta procura por posições na TPS onde é
 possível dividi-la em duas regiões de tal forma que seus alfabetos não se
@@ -69,22 +65,41 @@ resultados mostram que o algoritmo é muito efetivo em identificar o conteúdo
 principal de vários $sites$, e melhora a precisão da extração, removendo
 resultados irrelevantes.}
 
+\palavrasChave{remoção ruído. segmentação página. extração estruturada. mineração dados $web$.}
+
 \textAbstract{Web page segmentation and data cleaning are essential steps in
 structured web data extraction. Identifying a web page main content region,
 removing what is not important (menus, ads, etc.), can greatly improve the
 performance of the extraction process. We propose, for this task, a novel and
-fully automatic algorithm that uses a tag path sequence (TPS) representation
-of the web page. The TPS consists of a sequence of symbols (string), each one
+fully automatic algorithm that uses a tag path sequence (TPS) representation of
+the web page. The TPS consists of a sequence of symbols (string), each one
 representing a different tag path.
 The proposed technique searches for positions in the TPS where it is possible to
 split it in two regions where each region's alphabet do not intersect, which
 means that they have completely different sets of tag paths and, thus, are
 different regions. The results show that the algorithm is very effective in
-identifying the main content block of several major web sites, and improves
-the precision of the extraction step by removing irrelevant results.
+identifying the main content block of several major web sites, and improves the
+precision of the extraction step by removing irrelevant results.
 }
 
-\paginaresumo \paginaabstract
+\keywords{noise removal. page segmentation. structured extraction. web mining}
+
+\begin{document}
+
+\capa  
+\folhaderosto[comficha]
+\folhaaprovacao
+\paginadedicatoria
+\paginaagradecimento
+\paginaepigrafe
+\paginaresumo
+\paginaabstract
+
+\listadefiguras
+\listadetabelas 
+\listadeabreviaturas
+%\listadesimbolos
+\sumario
 
 \chapter{Introdução}
 \section{Contextualização do problema}
@@ -236,7 +251,7 @@ convertido para representação de $tag$ $paths$.
 
 \begin{figure}[h]
   \centering
-    \includegraphics[scale=0.39]{example1.jpg}
+     \includegraphics[scale=0.51]{example1-pt.jpg}
   \caption{Exemplo de uma seqüência de $tag$ $paths$ construída a partir do código HTML.}
   \label{fig:ex1}
 \end{figure}
@@ -252,9 +267,9 @@ de explicitar as diferenças entre estes trabalhos.
 \label{table:comp}
 \begin{tabular}{l c c c c c}
 \hline\hline
-          &          &        &          & Necessita   & Independe \\
-          & Opera    & Única  & Treina-  & informação  & sintaxe \\ 
-Técnica   & Sobre    & página & mento    & a priori    & HTML \\
+          &          & Opera c/ & Necessita & Necessita   & Independe \\
+          & Opera    & única    & Treina-   & informação  & sintaxe \\ 
+Técnica   & sobre    & página   & mento     & a priori    & HTML \\
 \hline
 \citeonline{BlockImp07} & Texto & - & - & - & - \\
 \citeonline{Densiometric08} & Texto & - & - & - & - \\
@@ -464,17 +479,16 @@ Neste capítulo são apresentados os algoritmos desenvolvidos para tratar o
 problema definido no Capítulo \ref{ch:probform}. Quais sejam:
 
 \begin{itemize}
-  \item {}\textit{\textbf{tagPathSequenceFilter()}}. É o algoritmo
+  \item{\textbf{$tagPathSequenceFilter()$}}. É o algoritmo
   principal, que recebe um arquivo HTML como entrada e retorna uma árvore DOM,
   podada, apenas com o conteúdo da região principal;
-  \item {}\textit{\textbf{convertToSeq()}}. Converte a árvore DOM de uma página
+  \item{\textbf{$convertToSeq()$}}. Converte a árvore DOM de uma página
   $web$ para sua representação $TPS$;
-  \item {}\textit{\textbf{searchRegion()}}. A busca, propriamente dita, pela
+  \item{\textbf{$searchRegion()$}}. A busca, propriamente dita, pela
   região principal da $TPS$;
-  \item {}\textit{\textbf{filterAlphabet()}}. Filtra um alfabeto, removendo 
-   símbolos de menor freqüência, tornando o algoritmo de busca mais robusto e
-resistente ao ruído;
-  \item {}\textit{\textbf{pruneDOMTree()}}. Poda da árvore DOM original,
+  \item{\textbf{$filterAlphabet()$}}. Filtra um alfabeto, removendo os símbolos de
+  menor freqüência, tornando o algoritmo de busca mais robusto e resistente ao ruído;
+  \item{\textbf{$pruneDOMTree()$}}. Poda da árvore DOM original,
   deixando apenas o conteúdo da região principal encontrado com $searchRegion$,
   mantendo a estrutura do documento original.
 \end{itemize}
@@ -518,7 +532,7 @@ do escopo deste trabalho, portanto não será discutido aqui.
 \label{alg:tree2seq}
 \textbf{Input:} $node$ - um nó da árvore DOM, inicialmente a raiz da árvore \\
 \textbf{Input:} $tp$ - o $tag$ $path$ anterior, inicialmente vazio \\
-\textbf{Input:} $TPS$ - a $TPS$ construída a partir da árvore DOM, inicialmente vazio \\
+\textbf{Input:} $TPS$ - a $TPS$ de uma árvore DOM, inicialmente vazia \\
 \textbf{Output:} a $TPS$ de uma árvore DOM armazenada em $TPS$
 \begin{algorithmic}[1]
 \Procedure{convertToSeq}{node,tp,TPS by ref.}
@@ -567,7 +581,7 @@ algoritmo e na sua descrição.
   \label{fig:alg}
 \end{figure}
 
-\begin{tiny}
+%\begin{tiny}
 \begin{algorithm}[H]
 \caption{Busca regiões da TPS com alfabetos diferentes}
 \label{alg:searchreg}
@@ -576,35 +590,35 @@ algoritmo e na sua descrição.
 \end{algorithm}
 \begin{algorithmic}[1]
 \Procedure{searchRegion}{$tagPathSequence[1..n]$ by reference}
-\State $alphabet \leftarrow \emptyset$
-\State $t \leftarrow 0$
+\State $\Sigma \leftarrow \emptyset$ \Comment{alfabeto da seqüência}
+\State $t \leftarrow 0$ \Comment{índice dos limiares de freqüência}
 \For {$i \leftarrow 1..n$}
-\State $symbol \leftarrow tagPathSequence[i]$
-\If {$symbol \ni alphabet$}
-\State $alphabet \leftarrow alphabet \cup \{symbol\}$
-\State $symbolCount[symbol] \leftarrow 0$
+\State $sym \leftarrow tagPathSequence[i]$
+\If {$sym \ni \Sigma$}
+\State $\Sigma \leftarrow \Sigma \cup \{sym\}$
+\State $symCount[sym] \leftarrow 0$
 \EndIf
-\State $symbolCount[symbol] \leftarrow symbolCount[symbol]+1$
+\State $symCount[sym] \leftarrow symCount[sym]+1$
 \EndFor
-\State $thresholds \leftarrow Ordered Set Of Frequencies(symbolCount)$
+\State $thresholds \leftarrow Ordered Set Of Frequencies(symCount)$
 \State $regionFound \leftarrow false$
 \While {not $regionFound$}
 \State $t \leftarrow t + 1$
-\State $currentAlphabet \leftarrow filterAlphabet(alphabet,symbolCount,thresholds[t])$
-\If {$currentAlphabet.size < 2$}
+\State $curr\Sigma \leftarrow filterAlphabet(\Sigma,symCount,thresholds[t])$
+\If {$curr\Sigma.size < 2$}
 \State $break$
 \EndIf
-\State $currentSymbolCount \leftarrow symbolCount$
-\State $regionAlphabet \leftarrow \emptyset$
+\State $currSymCount \leftarrow symCount$
+\State $region\Sigma \leftarrow \emptyset$
 \For {$i \leftarrow 1..n$}
-\State $symbol \leftarrow tagPathSequence[i]$
-\If {$symbol \in currentAlphabet$}
-\State $regionAlphabet \leftarrow regionAlphabet \cup \{symbol\}$
-\State $currentSymbolCount[symbol] \leftarrow currentSymbolCount[symbol]-1$
-\If {$currentSymbolCount[symbol] = 0$}
-\State $currentAlphabet \leftarrow currentAlphabet - \{symbol\}$
-\If {$currentAlphabet \cap regionAlphabet = \emptyset$}
-\If {$currentAlphabet \neq \emptyset$ and $(n-2*i)/n > 0.20$}
+\State $sym \leftarrow tagPathSequence[i]$
+\If {$sym \in curr\Sigma$}
+\State $region\Sigma \leftarrow region\Sigma \cup \{sym\}$
+\State $currSymCount[sym] \leftarrow currSymCount[sym]-1$
+\If {$currSymCount[sym] = 0$}
+\State $curr\Sigma \leftarrow curr\Sigma - \{sym\}$
+\If {$curr\Sigma \cap region\Sigma = \emptyset$}
+\If {$(curr\Sigma \neq \emptyset) \wedge (n-2i)/n > 0.20$}
 \State $regionFound \leftarrow true$
 \EndIf
 \State $break$
@@ -624,7 +638,7 @@ algoritmo e na sua descrição.
 \EndProcedure
 \end{algorithmic}
 %\end{algorithm}
-\end{tiny}
+% \end{tiny}
 
 O procedimento $searchRegion()$ no Algoritmo \ref{alg:searchreg} calcula o
 alfabeto da TPS e as freqüências correspondentes de cada símbolo nas Linhas $4$
@@ -652,11 +666,12 @@ $45$.
 \caption{Filtra símbolos de baixa freqüência no alfabeto}
 \label{alg:filteralpha}
 \textbf{Input:} $\Sigma$ - alfabeto a ser filtrado \\
-\textbf{Input:} $symCount$ - o conjunto das freqüências ($FS$) dos $tag$ $path$ em $\Sigma$ \\ 
+\textbf{Input:} $symCount$ - conjunto das freqüências ($FS$) dos símbolos de
+$\Sigma$ \\
 \textbf{Input:} $threshold$ - limiar de freqüência \\
 \textbf{Output:} alfabeto filtrado
 \begin{algorithmic}[1]
-\Procedure{filter}{$\Sigma$, symCount, threshold}
+\Procedure{filterAlphabet}{$\Sigma$, symCount, threshold}
 \State $filtered\Sigma \leftarrow \emptyset$
 \For {$i \leftarrow 1..n$}
 \If {$symCount[\Sigma[i]] \geq threshold$}
@@ -673,12 +688,12 @@ $\Sigma$, todo símbolo com freqüência inferior a $threshold$.
 Nas Linhas $3$ to $7$ apenas os símbolos com freqüência maior ou igual a
 $threshold$ são inseridos no conjunto resultante. O resultado de $filterAlphabet()$ é
 utilizado no Algoritmo \ref{alg:searchreg}, Linha $24$, onde apenas os símbolos
-em $currentAlphabet$ são considerados durante a busca pela região principal.
+em $curr\Sigma$ são considerados durante a busca pela região principal.
 
 \subsection{Algoritmo $pruneDOMTree()$}
 
 \begin{algorithm}[H]
-\caption{Poda da árvore DOM todos os nós que não pertencem à seqüência}
+\caption{Poda da árvore DOM nós que não pertencem à seqüência}
 \label{alg:prune}
 \textbf{Input:} $node$ - um nó da árvore DOM, inicialmente a raiz \\
 \textbf{Input:} $sequence$ - a TPS que deve permanecer na árvore DOM \\
@@ -827,7 +842,7 @@ detectada pelo algoritmo proposto.
 
 \begin{figure}[H]
   \centering
-    \includegraphics[scale=0.32]{example2-gs.jpg}
+    \includegraphics[scale=0.32]{example2-gs-pt.jpg}
   \caption{Um página de resultados do $site$ YouTube com sua região principal
   delimitada.}
   \label{fig:ex2}
@@ -835,7 +850,7 @@ detectada pelo algoritmo proposto.
 
 \begin{figure}[H]
   \centering
-    \includegraphics[scale=0.28]{tps.jpg}
+    \includegraphics[scale=0.28]{tps-pt.jpg}
   \caption{A TPS de uma página do $site$ YouTube com a região principal que foi
   detectada pelo algoritmo.}
   \label{fig:tps}
@@ -869,79 +884,6 @@ registros de interesse ($target$) extraídos para ambas abordagens. A última
 coluna mostra o percentual de ruído removido, calculado conforme a Equação
 \ref{eq:noise}.
 
-\begin{table}[h]
-\caption{Resultados}
-\label{table:results}
-\centering
-\begin{tiny}
-\begin{tabular}{r l r r r c r r r r r}
-\hline\hline
-& \multicolumn{5}{c}{} & \multicolumn{4}{c}{MDR (\# registros)} & (eq. \ref
-{eq:noise})\\
-& & \multicolumn{3}{c}{Tam. DOM (\# nós)} & Cont. & \multicolumn{2}{c}{Orig.}
-& \multicolumn{2}{c}{Pruned} & Ruído\\
-\# & $Site$ & Orig. & Podado & Red. & princ. & Tot & Tgt & Tot & Tgt & rem. \\
-\hline
-1 & ACM & 601 & 340 & -43,43\% & Sim & 61 & 10 & 16 & 10 & 88,24\% \\
-2 & Amazon & 3499 & 1069 & -69,45\% & Sim & 344 & 16 & 41 & 16 & 92,38\% \\
-3 & Apple & 1422 & 962 & -32,35\% & Sim & 63 & 15 & 23 & 15 & 83,33\% \\
-4 & Avon & 911 & 575 & -36,88\% & Sim & 69 & 20 & 29 & 20 & 81,63\% \\
-5 & Barnes \& Noble & 1242 & 778 & -37,36\% & Sim & 147 & 30 & 54 & 30 & 79,49\% \\
-6 & Bestbuy & 3632 & 1425 & -60,77\% & Sim & 299 & 15 & 15 & 15 & 100,00\% \\
-7 & Blockbuster & 2176 & 1381 & -36,53\% & Sim & 84 & 25 & 32 & 25 & 88,14\% \\
-8 & Bondfaro & 3897 & 1820 & -53,30\% & Sim & 160 & 28 & 30 & 28 & 98,48\% \\
-9 & Bradesco & 1913 & 1113 & -41,82\% & Sim & 164 & 10 & 93 & 10 & 46,10\% \\
-10 & Build & 2712 & 746 & -72,49\% & Não & 117 & 12 & 69 & 0 & N/A \\
-11 & Buscapé & 3608 & 1607 & -55,46\% & Sim & 223 & 24 & 24 & 24 & 100,00\% \\
-12 & Costco & 4504 & 326 & -92,76\% & Não & 246 & 96 & 8 & 8 & N/A \\
-13 & Dell & 1737 & 881 & -49,28\% & Sim & 177 & 12 & 64 & 12 & 68,48\% \\
-14 & Disney & 2778 & 2006 & -27,79\% & Sim & 193 & 96 & 116 & 96 & 79,38\% \\
-15 & Drugstore & 1774 & 850 & -52,09\% & Sim & 156 & 18 & 52 & 18 & 75,36\% \\
-16 & eBay & 2623 & 1801 & -31,34\% & Sim & 162 & 50 & 50 & 50 & 100,00\% \\
-17 & Elsevier & 906 & 160 & -82,34\% & Sim & 120 & 10 & 32 & 10 & 80,00\% \\
-18 & Footlocker & 2440 & 1106 & -54,67\% & Sim & 238 & 60 & 60 & 60 & 100,00\% \\
-19 & Gamestop & 1947 & 935 & -51,98\% & Não & 86 & 12 & 6 & 0 & N/A \\
-20 & Gap & 2249 & 1365 & -39,31\% & Sim & 235 & 124 & 126 & 124 & 98,20\% \\
-21 & Globo & 400 & 193 & -51,75\% & Sim & 80 & 10 & 20 & 10 & 85,71\% \\
-22 & Globo G1 & 900 & 619 & -31,22\% & Não & 225 & 10 & 202 & 0 & N/A \\
-23 & Google & 1421 & 474 & -66,64\% & Sim & 118 & 11 & 21 & 11 & 90,65\% \\
-24 & Home Depot & 5199 & 1304 & -74,92\% & Sim & 325 & 24 & 24 & 24 & 100,00\% \\
-25 & HP & 1783 & 1258 & -29,44\% & Sim & 71 & 15 & 15 & 15 & 100,00\% \\
-26 & Itaú & 1111 & 410 & -63,10\% & Não & 77 & 10 & 11 & 0 & N/A \\
-27 & Lojas Americanas & 2660 & 710 & -73,31\% & Sim & 211 & 20 & 20 & 20 & 100,00\% \\
-28 & Macy's & 5676 & 2158 & -61,98\% & Não & 164 & 40 & 43 & 0 & N/A \\
-29 & Magazine Luiza & 3167 & 1115 & -64,79\% & Sim & 314 & 40 & 44 & 40 & 98,54\% \\
-30 & Mercadolivre & 2401 & 1771 & -26,24\% & Sim & 136 & 50 & 52 & 50 & 97,67\% \\
-31 & Microsoft & 871 & 272 & -68,77\% & Sim & 57 & 16 & 16 & 16 & 100,00\% \\
-32 & Newegg & 8481 & 3419 & -59,69\% & Não & 965 & 20 & 307 & 0 & N/A \\
-33 & Nike & 4082 & 1829 & -55,19\% & Sim & 329 & 23 & 23 & 23 & 100,00\% \\
-34 & Office Depot & 3363 & 1111 & -66,96\% & Sim & 108 & 24 & 38 & 24 & 83,33\% \\
-35 & PC Mall & 4285 & 2548 & -40,54\% & Sim & 216 & 25 & 53 & 25 & 85,34\% \\
-36 & Rakuten & 3386 & 2768 & -18,25\% & Sim & 112 & 35 & 61 & 35 & 66,23\% \\
-37 & Ralph Lauren & 995 & 564 & -43,32\% & Sim & 46 & 12 & 12 & 12 & 100,00\% \\
-38 & Reuters & 1202 & 198 & -83,53\% & Sim & 136 & 10 & 10 & 10 & 100,00\% \\
-39 & Scopus & 4929 & 4688 & -4,89\% & Sim & 114 & 20 & 75 & 20 & 41,49\% \\
-40 & Sears & 5726 & 3890 & -32,06\% & Sim & 397 & 50 & 75 & 50 & 92,80\% \\
-41 & Sephora & 3022 & 1440 & -52,35\% & Sim & 365 & 60 & 60 & 60 & 100,00\% \\
-42 & Sony & 2200 & 1316 & -40,18\% & Sim & 98 & 15 & 18 & 15 & 96,39\% \\
-43 & Staples & 2959 & 1611 & -45,56\% & Sim & 178 & 24 & 24 & 24 & 100,00\% \\
-44 & Submarino & 2389 & 1268 & -46,92\% & Sim & 116 & 20 & 22 & 20 & 97,92\% \\
-45 & Terra & 869 & 588 & -32,34\% & Sim & 122 & 50 & 76 & 50 & 63,89\% \\
-46 & Tiffany & 3899 & 2753 & -29,39\% & Não & 183 & 12 & 67 & 0 & N/A \\
-47 & Valor Econômico & 514 & 126 & -75,49\% & Não & 55 & 10 & 2 & 0 & N/A \\
-48 & Wal-Mart & 1576 & 808 & -48,73\% & Sim & 110 & 20 & 40 & 20 & 77,78\% \\
-49 & Webmotors & 2119 & 1361 & -35,77\% & Sim & 113 & 14 & 19 & 14 & 94,95\% \\
-50 & Yahoo! & 760 & 290 & -61,84\% & Sim & 67 & 10 & 10 & 10 & 100,00\% \\
-51 & YouTube & 1424 & 674 & -52,67\% & Sim & 82 & 20 & 20 & 20 & 100,00\% \\
-\hline
-& Média/Total &  &  & -50,18\% & 82,35\%&  &  &  &  & 88,86\% \\
-&             &  &  &          & 17,65\%&  &  &  &  &  \\
-\hline
-
-\end{tabular}
-\end{tiny}
-\end{table}
-
 Como se pode observar na Tabela \ref{table:results}, o total da coluna
 ``Conteúdo principal'' indica que o algoritmo funcionou em 82,35\% dos casos e
 removeu, com este conjunto de teste, uma média de 88,86\% de todo o ruído
@@ -965,7 +907,29 @@ que se pode deduzir disto é que, a segmentação da página ocorreu corretamente,
 apenas a identificação da região principal falhou, já que neste caso, era
 relativamente pequena.
 
-\section{Discussão dos Resultados}
+Como conseqüência da remoção de ruído, podemos observar um aumento considerável
+na precisão média da extração, como relatado na tabela \ref{table:prec}. A
+redução no $recall$ corresponde às situações onde o filtro falhou, as quais são
+discutidos e tratados na Seção \ref{sec:disc}, e, apesar desta redução, as
+medidas F e G apresentaram melhora significativa.
+
+\begin{table}[H]
+\centering
+\caption{Precisão, $recall$, F-$measure$ e G-$measure$.}
+\label{table:prec}
+\begin{tabular}{l l l l}
+\hline\hline
+& MDR ($a$) & MDR+filtro ($b$) & Variação ($b-a$)\\
+\hline
+Precisão & 18,93\%  & 75,08\% & 56,15\% \\
+$Recall$   & 100,00\% & 82,35\% & -17,65\% \\
+F-$measure$ & 31,83\% & 78,55\% & 46,72\% \\
+G-$measure$ & 43,51\% & 78,63\% & 35,13\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\section{Discussão dos Resultados}\label{sec:disc}
 
 Existem três situações principais onde o algoritmo poderia ser melhorado e,
 destas, apenas duas podem levar a perda de conteúdo de interesse. Na Tabela
@@ -1065,5 +1029,81 @@ limpeza, remoção de ruído e segmentação de página, como mencionado no Capítulo
 
 \bibliographystyle{ufscThesis/ufsc-alf}
 \bibliography{refs}
+
+\apendice
+\chapter{Tabela de resultados}
+
+\begin{table}[H]
+\caption{Resultados}
+\label{table:results}
+\centering
+\begin{tiny}
+\begin{tabular}{r l r r r c r r r r r}
+\hline\hline
+& \multicolumn{5}{c}{} & \multicolumn{4}{c}{MDR (\# registros)} & (eq. \ref
+{eq:noise})\\
+& & \multicolumn{3}{c}{Tam. DOM (\# nós)} & Cont. & \multicolumn{2}{c}{Orig.}
+& \multicolumn{2}{c}{Pruned} & Ruído\\
+\# & $Site$ & Orig. & Podado & Red. & princ. & Tot & Tgt & Tot & Tgt & rem. \\
+\hline
+1 & ACM & 601 & 340 & -43,43\% & Sim & 61 & 10 & 16 & 10 & 88,24\% \\
+2 & Amazon & 3499 & 1069 & -69,45\% & Sim & 344 & 16 & 41 & 16 & 92,38\% \\
+3 & Apple & 1422 & 962 & -32,35\% & Sim & 63 & 15 & 23 & 15 & 83,33\% \\
+4 & Avon & 911 & 575 & -36,88\% & Sim & 69 & 20 & 29 & 20 & 81,63\% \\
+5 & Barnes \& Noble & 1242 & 778 & -37,36\% & Sim & 147 & 30 & 54 & 30 & 79,49\% \\
+6 & Bestbuy & 3632 & 1425 & -60,77\% & Sim & 299 & 15 & 15 & 15 & 100,00\% \\
+7 & Blockbuster & 2176 & 1381 & -36,53\% & Sim & 84 & 25 & 32 & 25 & 88,14\% \\
+8 & Bondfaro & 3897 & 1820 & -53,30\% & Sim & 160 & 28 & 30 & 28 & 98,48\% \\
+9 & Bradesco & 1913 & 1113 & -41,82\% & Sim & 164 & 10 & 93 & 10 & 46,10\% \\
+10 & Build & 2712 & 746 & -72,49\% & Não & 117 & 12 & 69 & 0 & N/A \\
+11 & Buscapé & 3608 & 1607 & -55,46\% & Sim & 223 & 24 & 24 & 24 & 100,00\% \\
+12 & Costco & 4504 & 326 & -92,76\% & Não & 246 & 96 & 8 & 8 & N/A \\
+13 & Dell & 1737 & 881 & -49,28\% & Sim & 177 & 12 & 64 & 12 & 68,48\% \\
+14 & Disney & 2778 & 2006 & -27,79\% & Sim & 193 & 96 & 116 & 96 & 79,38\% \\
+15 & Drugstore & 1774 & 850 & -52,09\% & Sim & 156 & 18 & 52 & 18 & 75,36\% \\
+16 & eBay & 2623 & 1801 & -31,34\% & Sim & 162 & 50 & 50 & 50 & 100,00\% \\
+17 & Elsevier & 906 & 160 & -82,34\% & Sim & 120 & 10 & 32 & 10 & 80,00\% \\
+18 & Footlocker & 2440 & 1106 & -54,67\% & Sim & 238 & 60 & 60 & 60 & 100,00\% \\
+19 & Gamestop & 1947 & 935 & -51,98\% & Não & 86 & 12 & 6 & 0 & N/A \\
+20 & Gap & 2249 & 1365 & -39,31\% & Sim & 235 & 124 & 126 & 124 & 98,20\% \\
+21 & Globo & 400 & 193 & -51,75\% & Sim & 80 & 10 & 20 & 10 & 85,71\% \\
+22 & Globo G1 & 900 & 619 & -31,22\% & Não & 225 & 10 & 202 & 0 & N/A \\
+23 & Google & 1421 & 474 & -66,64\% & Sim & 118 & 11 & 21 & 11 & 90,65\% \\
+24 & Home Depot & 5199 & 1304 & -74,92\% & Sim & 325 & 24 & 24 & 24 & 100,00\% \\
+25 & HP & 1783 & 1258 & -29,44\% & Sim & 71 & 15 & 15 & 15 & 100,00\% \\
+26 & Itaú & 1111 & 410 & -63,10\% & Não & 77 & 10 & 11 & 0 & N/A \\
+27 & Lojas Americanas & 2660 & 710 & -73,31\% & Sim & 211 & 20 & 20 & 20 & 100,00\% \\
+28 & Macy's & 5676 & 2158 & -61,98\% & Não & 164 & 40 & 43 & 0 & N/A \\
+29 & Magazine Luiza & 3167 & 1115 & -64,79\% & Sim & 314 & 40 & 44 & 40 & 98,54\% \\
+30 & Mercadolivre & 2401 & 1771 & -26,24\% & Sim & 136 & 50 & 52 & 50 & 97,67\% \\
+31 & Microsoft & 871 & 272 & -68,77\% & Sim & 57 & 16 & 16 & 16 & 100,00\% \\
+32 & Newegg & 8481 & 3419 & -59,69\% & Não & 965 & 20 & 307 & 0 & N/A \\
+33 & Nike & 4082 & 1829 & -55,19\% & Sim & 329 & 23 & 23 & 23 & 100,00\% \\
+34 & Office Depot & 3363 & 1111 & -66,96\% & Sim & 108 & 24 & 38 & 24 & 83,33\% \\
+35 & PC Mall & 4285 & 2548 & -40,54\% & Sim & 216 & 25 & 53 & 25 & 85,34\% \\
+36 & Rakuten & 3386 & 2768 & -18,25\% & Sim & 112 & 35 & 61 & 35 & 66,23\% \\
+37 & Ralph Lauren & 995 & 564 & -43,32\% & Sim & 46 & 12 & 12 & 12 & 100,00\% \\
+38 & Reuters & 1202 & 198 & -83,53\% & Sim & 136 & 10 & 10 & 10 & 100,00\% \\
+39 & Scopus & 4929 & 4688 & -4,89\% & Sim & 114 & 20 & 75 & 20 & 41,49\% \\
+40 & Sears & 5726 & 3890 & -32,06\% & Sim & 397 & 50 & 75 & 50 & 92,80\% \\
+41 & Sephora & 3022 & 1440 & -52,35\% & Sim & 365 & 60 & 60 & 60 & 100,00\% \\
+42 & Sony & 2200 & 1316 & -40,18\% & Sim & 98 & 15 & 18 & 15 & 96,39\% \\
+43 & Staples & 2959 & 1611 & -45,56\% & Sim & 178 & 24 & 24 & 24 & 100,00\% \\
+44 & Submarino & 2389 & 1268 & -46,92\% & Sim & 116 & 20 & 22 & 20 & 97,92\% \\
+45 & Terra & 869 & 588 & -32,34\% & Sim & 122 & 50 & 76 & 50 & 63,89\% \\
+46 & Tiffany & 3899 & 2753 & -29,39\% & Não & 183 & 12 & 67 & 0 & N/A \\
+47 & Valor Econômico & 514 & 126 & -75,49\% & Não & 55 & 10 & 2 & 0 & N/A \\
+48 & Wal-Mart & 1576 & 808 & -48,73\% & Sim & 110 & 20 & 40 & 20 & 77,78\% \\
+49 & Webmotors & 2119 & 1361 & -35,77\% & Sim & 113 & 14 & 19 & 14 & 94,95\% \\
+50 & Yahoo! & 760 & 290 & -61,84\% & Sim & 67 & 10 & 10 & 10 & 100,00\% \\
+51 & YouTube & 1424 & 674 & -52,67\% & Sim & 82 & 20 & 20 & 20 & 100,00\% \\
+\hline
+& Média/Total &  &  & -50,18\% & 82,35\%&  &  &  &  & 88,86\% \\
+&             &  &  &          & 17,65\%&  &  &  &  &  \\
+\hline
+
+\end{tabular}
+\end{tiny}
+\end{table}
 
 \end{document}
