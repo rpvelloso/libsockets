@@ -29,7 +29,7 @@ function [pos, mainregion] = searchRegion(tagPathSequence)
   
   regionFound = 0;
   
-  %while (thresholds(t) < 5) t = t + 1; end
+  while (thresholds(t) < 10) t = t + 1; end
   
   while ~regionFound
     t = t + 1;
@@ -88,13 +88,28 @@ while i >= 0
   end
 end
 l(j) = length(x);
+x=x';
 
-figure;
+figure(1);
+hold;
+figure(2);
+hold;
+figure(3);
 hold;
 for i = 1:j-1
-  plot([l(i):l(i+1)],x'(l(i):l(i+1)),[int2str(i) '.']);
+  w=x(l(i):l(i+1));
+  z=abs(xcorr(w-mean(w),'unbiased'));
+  f=fft(w).^2;
+  [var(w)/1e+3 max(z) max(z)/var(w)]
+  figure(1);
+  plot([l(i):l(i+1)],w,[int2str(i) '.']);
+  figure(2);
+  plot([1:length(z)],z,[int2str(i) '.']);
+  figure(3);
+  plot([1:length(f)],f,int2str(i));
 end
 
+figure(1);
 title('TPS');
 xlabel('posicao da sequencia');
 ylabel('codigo tag path');
