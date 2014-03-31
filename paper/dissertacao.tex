@@ -309,7 +309,12 @@ Técnica   & sobre    & página   & mento     & a priori    & HTML \\
 
 \chapter{Método para remoção de ruído}\label{ch:met}
 
-
+Neste capítulo são apresentadas, primeiro, as definições necessárias para
+formular o problema na Seção \ref{sec:def}. Na Seção \ref{sec:probform} o
+problema é enunciado a partir das definições e das hipóteses levantadas. Na
+Seção \ref{sec:alg} são apresentados os algoritmos desenvolvidos a partir do
+enunciado do problema e na Seção \ref{sec:compl} é feita a análise da
+complexidade destes algoritmos.
 
 \section{Definições básicas}\label{sec:def}
 
@@ -493,7 +498,7 @@ segmentação, possibilita dividir a $TPS$ em várias regiões.
 
 \end{itemize}
 
-\section{Algoritmos}\label{ch:alg}
+\section{Algoritmos}\label{sec:alg}
 
 Nesta seção são apresentados os algoritmos desenvolvidos para tratar o
 problema definido na Seção \ref{sec:probform}. Quais sejam:
@@ -743,7 +748,7 @@ tem nenhum filho. Desta forma é possível manter a estrutura da árvore
 remanescente intacta, evitando afetar, negativamente, a etapa subseqüente de
 extração estruturada.
 
-\section{Complexidade do Algoritmo}
+\section{Complexidade do Algoritmo}\label{sec:compl}
 
 Com relação à complexidade do algoritmo, observando as Linhas $14$ e $22$ do
 procedimento $searchRegion()$, pode-se ver que o laço de repetição da Linha $14$
@@ -1026,32 +1031,43 @@ implementar a Linha $6$ do algoritmo \ref{alg:tpsfilter2}.
 
 \chapter{Conclusões e Trabalhos Futuros}\label{ch:conclusion}
 
-2. Itemize um conjunto de tarefas que seriam trabalhos futuros
-
-3. Acrescente contribuições importantes do trabalho, como publicações,
-implementação (ou melhoria) de código...  comente sobre cada contribuição
-
-
 Como mostrado nos resultados, o método proposto para segmentação da página e
 remoção do ruído foi bastante efetivo em várias páginas
 comerciais/institucionais.
 Na maioria dos casos uma grande quantidade de ruído foi removido sem comprometer
 os registros de interesse. Também, quando aplicada em conjunto com o MDR, foi
-observado um incremento considerável na precisão da extração.
+observado um incremento considerável na precisão da extração e na qualidade
+geral da extração ($e.g.$ aumento do f-measure de 31,83\% para 78,55\%).
 
-Nas situações em que nosso algoritmo atua aquém das expectativas, outras
+Nas situações em que o método proposto atua aquém das expectativas, outras
 técnicas podem ser combinadas dependendo da aplicação. Em casos extremos, onde a
 página possuir estrutura muito homogênea (de forma que não seja possível
 encontrar as diferentes regiões) ou muito heterogênea (onde o conteúdo principal
 está espalhado em diversas regiões diferentes), o conteúdo principal poderia,
 talvez, ser detectado através do uso de uma técnica semântica.
 
-O algoritmo mostrou excelente performance, pois apresentou resultados
+O método mostrou excelente performance, pois apresentou resultados
 satisfatórios para a maioria dos $sites$ comerciais nos quais foi testado. Ele
 também supera as limitações (necessidade de treinamento, dependência de $tags$
 HTML, anotações manuais, entre outras) de trabalhos anteriores na área de
 limpeza, remoção de ruído e segmentação de página, como mencionado no Capítulo
 \ref{ch:rev}.
+
+Uma sugestão para trabalho futuro seria encontrar maneiras de adaptar/corrigir o
+método para melhorar seus resultados nas seguintes situações:
+\begin{itemize}
+  \item páginas que apresentem estrutura muito heterogênea: encontrar uma forma
+  de agrupar as várias regiões principais em uma só;
+  \item páginas que apresentem estrutura muito homogênea: encontrar uma forma
+  de diferenciar o ruído da região principal;
+  \item páginas onde a região principal tem tamanho inferior ao ruído total:
+  identificar a região principal através de outros atributos que não o tamanho.
+\end{itemize}
+
+Este trabalho também foi publicado no \textit{Journal of Information and Data
+Management} no ano de 2013, como artigo completo \cite{TPS2013}, e os
+algoritmos descritos neste trabalho foram implementados em linguagem $C++$ e $M$
+(MatLab/Octave) e estão disponíveis para acesso.
 
 \bibliographystyle{ufscThesis/ufsc-alf}
 \bibliography{refs}
