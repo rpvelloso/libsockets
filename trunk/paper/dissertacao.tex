@@ -7,7 +7,7 @@
 
 \newtheorem{definition}{Definição}
 
-\titulo{Um Método Automático para Segmentação e Remoção de Ruído de
+\titulo{Método Automático para Segmentação e Remoção de Ruído de
 Páginas $web$ Utilizando $tag$ $paths$}
 \autor{Roberto Panerai Velloso}
 \data{01}{março}{2014}
@@ -280,29 +280,29 @@ de explicitar as diferenças entre estes trabalhos.
 \begin{tiny}
 \caption{Comparativo entre técnicas de segmentação de página}
 \label{table:comp}
-\begin{tabular}{l c c c c c}
+\begin{tabular}{c l c c c c c}
 \hline\hline
-          &          & Opera c/ & Necessita & Necessita   & Independe \\
-          & Opera    & única    & Treina-   & informação  & sintaxe \\ 
-Técnica   & sobre    & página   & mento     & a priori    & HTML \\
+   &          &          & Opera c/ & Necessita & Necessita   & Independe \\
+   &          & Opera    & única    & Treina-   & informação  & sintaxe \\ 
+\# &Técnica   & sobre    & página   & mento     & a priori    & HTML \\
 \hline
-\citeonline{BlockImp07} & Texto & - & - & - & - \\
-\citeonline{Densiometric08} & Texto & - & - & - & - \\
-\citeonline{Boilerplate10} & Texto & - & - & - & - \\
-\citeonline{CETR10} & Texto & - & - & - & - \\
-\citeonline{NonTemplate13} & Texto & - & - & - & - \\
-\citeonline{Noisy03} & Árvore DOM & Não & Sim & Não & Não \\
-\citeonline{Graph08} & Árvore DOM & Não & Sim & Não & Não \\
-\citeonline{Entropy09} & Árvore DOM & Sim & Não & Sim & Sim \\
-\citeonline{SiteOriented11} & Árvore DOM & Não & Sim & Não & Não \\
-\citeonline{Entropy12} & Árvore DOM & Sim & Não & Sim & Sim \\
-\citeonline{Jointop07} & Árvore DOM & Não & Sim & Não & Não \\
-\citeonline{desc2013} & Árvore DOM & Não & Sim & Não & Sim \\
-\citeonline{vips03} & Rep. visual & Sim & Não & Sim & Sim \\
-\citeonline{viper05} & Rep. visual & Sim & Não & Não & Sim \\
-\citeonline{vide10} & Rep. visual & Sim & Não & Sim & Sim \\
+1 & \citeonline{BlockImp07} & Texto & - & - & - & - \\
+2 & \citeonline{Densiometric08} & Texto & - & - & - & - \\
+3 & \citeonline{Boilerplate10} & Texto & - & - & - & - \\
+4 & \citeonline{CETR10} & Texto & - & - & - & - \\
+5 & \citeonline{NonTemplate13} & Texto & - & - & - & - \\
+6 & \citeonline{Noisy03} & DOM & Não & Sim & Não & Não \\
+7 & \citeonline{Graph08} & DOM & Não & Sim & Não & Não \\
+8 & \citeonline{Entropy09} & DOM & Sim & Não & Sim & Sim \\
+9 & \citeonline{SiteOriented11} & DOM & Não & Sim & Não & Não \\
+10 & \citeonline{Entropy12} & DOM & Sim & Não & Sim & Sim \\
+11 & \citeonline{Jointop07} & DOM & Não & Sim & Não & Não \\
+12 & \citeonline{desc2013} & DOM & Não & Sim & Não & Sim \\
+13 & \citeonline{vips03} & Visual & Sim & Não & Sim & Sim \\
+14 & \citeonline{viper05} & Visual & Sim & Não & Não & Sim \\
+15 & \citeonline{vide10} & Visual & Sim & Não & Sim & Sim \\
 \hline
-\citeonline{TPS2013} & TPS & Sim & Não & Não & Sim \\
+16 & \citeonline{TPS2013} & TPS & Sim & Não & Não & Sim \\
 \end{tabular}
 \end{tiny}
 \end{table}
@@ -908,7 +908,80 @@ respectivamente, exibindo o total geral de registros extraídos e o total de
 registros de interesse ($target$) extraídos para ambas abordagens. A última
 coluna mostra o percentual de ruído removido, calculado conforme a Equação
 \ref{eq:noise}.
+ 
+\begin{table}[H]
+\caption{Resultados}
+\label{table:results}
+\centering
+\begin{tiny}
+\begin{tabular}{r l r r r c r r r r r}
+\hline\hline
+& \multicolumn{5}{c}{} & \multicolumn{4}{c}{MDR (\# registros)} & (eq. \ref
+{eq:noise})\\
+& & \multicolumn{3}{c}{Tam. DOM (\# nós)} & Cont. & \multicolumn{2}{c}{Orig.}
+& \multicolumn{2}{c}{Pruned} & Ruído\\
+\# & $Site$ & Orig. & Podado & Red. & princ. & Tot & Tgt & Tot & Tgt & rem. \\
+\hline
+1 & ACM & 601 & 340 & -43,43\% & Sim & 61 & 10 & 16 & 10 & 88,24\% \\
+2 & Amazon & 3499 & 1069 & -69,45\% & Sim & 344 & 16 & 41 & 16 & 92,38\% \\
+3 & Apple & 1422 & 962 & -32,35\% & Sim & 63 & 15 & 23 & 15 & 83,33\% \\
+4 & Avon & 911 & 575 & -36,88\% & Sim & 69 & 20 & 29 & 20 & 81,63\% \\
+5 & Barnes \& Noble & 1242 & 778 & -37,36\% & Sim & 147 & 30 & 54 & 30 & 79,49\% \\
+6 & Bestbuy & 3632 & 1425 & -60,77\% & Sim & 299 & 15 & 15 & 15 & 100,00\% \\
+7 & Blockbuster & 2176 & 1381 & -36,53\% & Sim & 84 & 25 & 32 & 25 & 88,14\% \\
+8 & Bondfaro & 3897 & 1820 & -53,30\% & Sim & 160 & 28 & 30 & 28 & 98,48\% \\
+9 & Bradesco & 1913 & 1113 & -41,82\% & Sim & 164 & 10 & 93 & 10 & 46,10\% \\
+10 & Build & 2712 & 746 & -72,49\% & Não & 117 & 12 & 69 & 0 & N/A \\
+11 & Buscapé & 3608 & 1607 & -55,46\% & Sim & 223 & 24 & 24 & 24 & 100,00\% \\
+12 & Costco & 4504 & 326 & -92,76\% & Não & 246 & 96 & 8 & 8 & N/A \\
+13 & Dell & 1737 & 881 & -49,28\% & Sim & 177 & 12 & 64 & 12 & 68,48\% \\
+14 & Disney & 2778 & 2006 & -27,79\% & Sim & 193 & 96 & 116 & 96 & 79,38\% \\
+15 & Drugstore & 1774 & 850 & -52,09\% & Sim & 156 & 18 & 52 & 18 & 75,36\% \\
+16 & eBay & 2623 & 1801 & -31,34\% & Sim & 162 & 50 & 50 & 50 & 100,00\% \\
+17 & Elsevier & 906 & 160 & -82,34\% & Sim & 120 & 10 & 32 & 10 & 80,00\% \\
+18 & Footlocker & 2440 & 1106 & -54,67\% & Sim & 238 & 60 & 60 & 60 & 100,00\% \\
+19 & Gamestop & 1947 & 935 & -51,98\% & Não & 86 & 12 & 6 & 0 & N/A \\
+20 & Gap & 2249 & 1365 & -39,31\% & Sim & 235 & 124 & 126 & 124 & 98,20\% \\
+21 & Globo & 400 & 193 & -51,75\% & Sim & 80 & 10 & 20 & 10 & 85,71\% \\
+22 & Globo G1 & 900 & 619 & -31,22\% & Não & 225 & 10 & 202 & 0 & N/A \\
+23 & Google & 1421 & 474 & -66,64\% & Sim & 118 & 11 & 21 & 11 & 90,65\% \\
+24 & Home Depot & 5199 & 1304 & -74,92\% & Sim & 325 & 24 & 24 & 24 & 100,00\% \\
+25 & HP & 1783 & 1258 & -29,44\% & Sim & 71 & 15 & 15 & 15 & 100,00\% \\
+26 & Itaú & 1111 & 410 & -63,10\% & Não & 77 & 10 & 11 & 0 & N/A \\
+27 & Lojas Americanas & 2660 & 710 & -73,31\% & Sim & 211 & 20 & 20 & 20 & 100,00\% \\
+28 & Macy's & 5676 & 2158 & -61,98\% & Não & 164 & 40 & 43 & 0 & N/A \\
+29 & Magazine Luiza & 3167 & 1115 & -64,79\% & Sim & 314 & 40 & 44 & 40 & 98,54\% \\
+30 & Mercadolivre & 2401 & 1771 & -26,24\% & Sim & 136 & 50 & 52 & 50 & 97,67\% \\
+31 & Microsoft & 871 & 272 & -68,77\% & Sim & 57 & 16 & 16 & 16 & 100,00\% \\
+32 & Newegg & 8481 & 3419 & -59,69\% & Não & 965 & 20 & 307 & 0 & N/A \\
+33 & Nike & 4082 & 1829 & -55,19\% & Sim & 329 & 23 & 23 & 23 & 100,00\% \\
+34 & Office Depot & 3363 & 1111 & -66,96\% & Sim & 108 & 24 & 38 & 24 & 83,33\% \\
+35 & PC Mall & 4285 & 2548 & -40,54\% & Sim & 216 & 25 & 53 & 25 & 85,34\% \\
+36 & Rakuten & 3386 & 2768 & -18,25\% & Sim & 112 & 35 & 61 & 35 & 66,23\% \\
+37 & Ralph Lauren & 995 & 564 & -43,32\% & Sim & 46 & 12 & 12 & 12 & 100,00\% \\
+38 & Reuters & 1202 & 198 & -83,53\% & Sim & 136 & 10 & 10 & 10 & 100,00\% \\
+39 & Scopus & 4929 & 4688 & -4,89\% & Sim & 114 & 20 & 75 & 20 & 41,49\% \\
+40 & Sears & 5726 & 3890 & -32,06\% & Sim & 397 & 50 & 75 & 50 & 92,80\% \\
+41 & Sephora & 3022 & 1440 & -52,35\% & Sim & 365 & 60 & 60 & 60 & 100,00\% \\
+42 & Sony & 2200 & 1316 & -40,18\% & Sim & 98 & 15 & 18 & 15 & 96,39\% \\
+43 & Staples & 2959 & 1611 & -45,56\% & Sim & 178 & 24 & 24 & 24 & 100,00\% \\
+44 & Submarino & 2389 & 1268 & -46,92\% & Sim & 116 & 20 & 22 & 20 & 97,92\% \\
+45 & Terra & 869 & 588 & -32,34\% & Sim & 122 & 50 & 76 & 50 & 63,89\% \\
+46 & Tiffany & 3899 & 2753 & -29,39\% & Não & 183 & 12 & 67 & 0 & N/A \\
+47 & Valor Econômico & 514 & 126 & -75,49\% & Não & 55 & 10 & 2 & 0 & N/A \\
+48 & Wal-Mart & 1576 & 808 & -48,73\% & Sim & 110 & 20 & 40 & 20 & 77,78\% \\
+49 & Webmotors & 2119 & 1361 & -35,77\% & Sim & 113 & 14 & 19 & 14 & 94,95\% \\
+50 & Yahoo! & 760 & 290 & -61,84\% & Sim & 67 & 10 & 10 & 10 & 100,00\% \\
+51 & YouTube & 1424 & 674 & -52,67\% & Sim & 82 & 20 & 20 & 20 & 100,00\% \\
+\hline
+& Média/Total &  &  & -50,18\% & 82,35\%&  &  &  &  & 88,86\% \\
+&             &  &  &          & 17,65\%&  &  &  &  &  \\
+\hline
 
+\end{tabular}
+\end{tiny}
+\end{table}
+ 
 Como se pode observar na Tabela \ref{table:results}, o total da coluna
 ``Conteúdo principal'' indica que o algoritmo funcionou em 82,35\% dos casos e
 removeu, com este conjunto de teste, uma média de 88,86\% de todo o ruído
@@ -1064,88 +1137,15 @@ método para melhorar seus resultados nas seguintes situações:
   identificar a região principal através de outros atributos que não o tamanho.
 \end{itemize}
 
-Este trabalho também foi publicado no \textit{Journal of Information and Data
-Management} no ano de 2013, como artigo completo \cite{TPS2013}, e os
-algoritmos descritos neste trabalho foram implementados em linguagem $C++$ e $M$
-(MatLab/Octave) e estão disponíveis para acesso.
+Este trabalho também foi publicado no \textit{JIDM - Journal of Information and
+Data Management} no ano de 2013, como artigo completo \cite{TPS2013}, e os
+algoritmos descritos neste trabalho foram implementados em linguagem
+\textit{C++} e $M$ (MatLab/Octave) e estão disponíveis para acesso.
 
 \bibliographystyle{ufscThesis/ufsc-alf}
 \bibliography{refs}
 
-\apendice
-\chapter{Tabela de resultados}
-
-\begin{table}[H]
-\caption{Resultados}
-\label{table:results}
-\centering
-\begin{tiny}
-\begin{tabular}{r l r r r c r r r r r}
-\hline\hline
-& \multicolumn{5}{c}{} & \multicolumn{4}{c}{MDR (\# registros)} & (eq. \ref
-{eq:noise})\\
-& & \multicolumn{3}{c}{Tam. DOM (\# nós)} & Cont. & \multicolumn{2}{c}{Orig.}
-& \multicolumn{2}{c}{Pruned} & Ruído\\
-\# & $Site$ & Orig. & Podado & Red. & princ. & Tot & Tgt & Tot & Tgt & rem. \\
-\hline
-1 & ACM & 601 & 340 & -43,43\% & Sim & 61 & 10 & 16 & 10 & 88,24\% \\
-2 & Amazon & 3499 & 1069 & -69,45\% & Sim & 344 & 16 & 41 & 16 & 92,38\% \\
-3 & Apple & 1422 & 962 & -32,35\% & Sim & 63 & 15 & 23 & 15 & 83,33\% \\
-4 & Avon & 911 & 575 & -36,88\% & Sim & 69 & 20 & 29 & 20 & 81,63\% \\
-5 & Barnes \& Noble & 1242 & 778 & -37,36\% & Sim & 147 & 30 & 54 & 30 & 79,49\% \\
-6 & Bestbuy & 3632 & 1425 & -60,77\% & Sim & 299 & 15 & 15 & 15 & 100,00\% \\
-7 & Blockbuster & 2176 & 1381 & -36,53\% & Sim & 84 & 25 & 32 & 25 & 88,14\% \\
-8 & Bondfaro & 3897 & 1820 & -53,30\% & Sim & 160 & 28 & 30 & 28 & 98,48\% \\
-9 & Bradesco & 1913 & 1113 & -41,82\% & Sim & 164 & 10 & 93 & 10 & 46,10\% \\
-10 & Build & 2712 & 746 & -72,49\% & Não & 117 & 12 & 69 & 0 & N/A \\
-11 & Buscapé & 3608 & 1607 & -55,46\% & Sim & 223 & 24 & 24 & 24 & 100,00\% \\
-12 & Costco & 4504 & 326 & -92,76\% & Não & 246 & 96 & 8 & 8 & N/A \\
-13 & Dell & 1737 & 881 & -49,28\% & Sim & 177 & 12 & 64 & 12 & 68,48\% \\
-14 & Disney & 2778 & 2006 & -27,79\% & Sim & 193 & 96 & 116 & 96 & 79,38\% \\
-15 & Drugstore & 1774 & 850 & -52,09\% & Sim & 156 & 18 & 52 & 18 & 75,36\% \\
-16 & eBay & 2623 & 1801 & -31,34\% & Sim & 162 & 50 & 50 & 50 & 100,00\% \\
-17 & Elsevier & 906 & 160 & -82,34\% & Sim & 120 & 10 & 32 & 10 & 80,00\% \\
-18 & Footlocker & 2440 & 1106 & -54,67\% & Sim & 238 & 60 & 60 & 60 & 100,00\% \\
-19 & Gamestop & 1947 & 935 & -51,98\% & Não & 86 & 12 & 6 & 0 & N/A \\
-20 & Gap & 2249 & 1365 & -39,31\% & Sim & 235 & 124 & 126 & 124 & 98,20\% \\
-21 & Globo & 400 & 193 & -51,75\% & Sim & 80 & 10 & 20 & 10 & 85,71\% \\
-22 & Globo G1 & 900 & 619 & -31,22\% & Não & 225 & 10 & 202 & 0 & N/A \\
-23 & Google & 1421 & 474 & -66,64\% & Sim & 118 & 11 & 21 & 11 & 90,65\% \\
-24 & Home Depot & 5199 & 1304 & -74,92\% & Sim & 325 & 24 & 24 & 24 & 100,00\% \\
-25 & HP & 1783 & 1258 & -29,44\% & Sim & 71 & 15 & 15 & 15 & 100,00\% \\
-26 & Itaú & 1111 & 410 & -63,10\% & Não & 77 & 10 & 11 & 0 & N/A \\
-27 & Lojas Americanas & 2660 & 710 & -73,31\% & Sim & 211 & 20 & 20 & 20 & 100,00\% \\
-28 & Macy's & 5676 & 2158 & -61,98\% & Não & 164 & 40 & 43 & 0 & N/A \\
-29 & Magazine Luiza & 3167 & 1115 & -64,79\% & Sim & 314 & 40 & 44 & 40 & 98,54\% \\
-30 & Mercadolivre & 2401 & 1771 & -26,24\% & Sim & 136 & 50 & 52 & 50 & 97,67\% \\
-31 & Microsoft & 871 & 272 & -68,77\% & Sim & 57 & 16 & 16 & 16 & 100,00\% \\
-32 & Newegg & 8481 & 3419 & -59,69\% & Não & 965 & 20 & 307 & 0 & N/A \\
-33 & Nike & 4082 & 1829 & -55,19\% & Sim & 329 & 23 & 23 & 23 & 100,00\% \\
-34 & Office Depot & 3363 & 1111 & -66,96\% & Sim & 108 & 24 & 38 & 24 & 83,33\% \\
-35 & PC Mall & 4285 & 2548 & -40,54\% & Sim & 216 & 25 & 53 & 25 & 85,34\% \\
-36 & Rakuten & 3386 & 2768 & -18,25\% & Sim & 112 & 35 & 61 & 35 & 66,23\% \\
-37 & Ralph Lauren & 995 & 564 & -43,32\% & Sim & 46 & 12 & 12 & 12 & 100,00\% \\
-38 & Reuters & 1202 & 198 & -83,53\% & Sim & 136 & 10 & 10 & 10 & 100,00\% \\
-39 & Scopus & 4929 & 4688 & -4,89\% & Sim & 114 & 20 & 75 & 20 & 41,49\% \\
-40 & Sears & 5726 & 3890 & -32,06\% & Sim & 397 & 50 & 75 & 50 & 92,80\% \\
-41 & Sephora & 3022 & 1440 & -52,35\% & Sim & 365 & 60 & 60 & 60 & 100,00\% \\
-42 & Sony & 2200 & 1316 & -40,18\% & Sim & 98 & 15 & 18 & 15 & 96,39\% \\
-43 & Staples & 2959 & 1611 & -45,56\% & Sim & 178 & 24 & 24 & 24 & 100,00\% \\
-44 & Submarino & 2389 & 1268 & -46,92\% & Sim & 116 & 20 & 22 & 20 & 97,92\% \\
-45 & Terra & 869 & 588 & -32,34\% & Sim & 122 & 50 & 76 & 50 & 63,89\% \\
-46 & Tiffany & 3899 & 2753 & -29,39\% & Não & 183 & 12 & 67 & 0 & N/A \\
-47 & Valor Econômico & 514 & 126 & -75,49\% & Não & 55 & 10 & 2 & 0 & N/A \\
-48 & Wal-Mart & 1576 & 808 & -48,73\% & Sim & 110 & 20 & 40 & 20 & 77,78\% \\
-49 & Webmotors & 2119 & 1361 & -35,77\% & Sim & 113 & 14 & 19 & 14 & 94,95\% \\
-50 & Yahoo! & 760 & 290 & -61,84\% & Sim & 67 & 10 & 10 & 10 & 100,00\% \\
-51 & YouTube & 1424 & 674 & -52,67\% & Sim & 82 & 20 & 20 & 20 & 100,00\% \\
-\hline
-& Média/Total &  &  & -50,18\% & 82,35\%&  &  &  &  & 88,86\% \\
-&             &  &  &          & 17,65\%&  &  &  &  &  \\
-\hline
-
-\end{tabular}
-\end{tiny}
-\end{table}
+%\apendice
+%\chapter{Tabela de resultados}
 
 \end{document}
