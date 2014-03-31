@@ -309,9 +309,11 @@ Técnica   & sobre    & página   & mento     & a priori    & HTML \\
 
 \chapter{Método para remoção de ruído}\label{ch:met}
 
+
+
 \section{Definições básicas}\label{sec:def}
 
-Neste capítulo são apresentados os conceitos e definições necessários para o
+Nesta seção são apresentados os conceitos e definições necessários para o
 entendimento do problema e do algoritmo proposto. As definições são
 exemplificadas com o auxílio da Figura \ref{fig:ex1}.
 \begin{definition}[\textbf{Árvore DOM}]\label{def:domtree}
@@ -428,8 +430,8 @@ conteúdo estruturado do que é necessário para conteúdo não estruturado ($e.g.$
 texto). Portanto, é razoável assumir que, para páginas que contém registros, a
 região principal da página é a maior de todas ($i.e.$ a que contém mais nós).
 
-Utilizando as definições do Capítulo \ref{sec:def} e as hipóteses acima, podemos
-formular o problema de segmentação de páginas e identificação da região
+Utilizando as definições da Seção \ref{sec:def} e as hipóteses acima,
+podemos formular o problema de segmentação de páginas e identificação da região
 principal como: \textbf{``encontrar a maior \textit{região} da $TPS$ de uma
 página $web$ que possua um $alfabeto$ que não se intersecte com o $alfabeto$ de
 outras \textit{regiões} menores''}.
@@ -493,8 +495,8 @@ segmentação, possibilita dividir a $TPS$ em várias regiões.
 
 \section{Algoritmos}\label{ch:alg}
 
-Neste capítulo são apresentados os algoritmos desenvolvidos para tratar o
-problema definido no Capítulo \ref{sec:probform}. Quais sejam:
+Nesta seção são apresentados os algoritmos desenvolvidos para tratar o
+problema definido na Seção \ref{sec:probform}. Quais sejam:
 
 \begin{itemize}
   \item{\textbf{$tagPathSequenceFilter()$}}. É o algoritmo
@@ -664,7 +666,7 @@ a $11$; na Linha $12$, os limiares de freqüência, da Definição \ref{def:ft}, são
 calculados; nas Linhas $14$ a $38$ é realizada a busca por uma posição na
 seqüência onde é possível dividi-la ($i.e.$ onde existe uma região); na Linha
 $15$ os limiares de freqüência são iterados; na Linha $16$ o alfabeto da TPS, da
-Definição \ref{def:alpha}, é filtrado, como descrito no Capítulo
+Definição \ref{def:alpha}, é filtrado, como descrito na Seção
 \ref{sec:probform}; na Linha $22$ a TPS é iterada; na Linha $25$ o alfabeto da
 região é calculado e; nas Linhas $27$ a $35$ é verificado se existe uma
 intersecção entre os alfabetos das duas partes da TPS (uma intersecção vazia
@@ -786,7 +788,7 @@ assim, afirmar que a complexidade de tempo é $O(n)$.
 
 Neste capítulo são descritos e discutidos os resultados dos experimentos e sua
 realização.
-Para obter os resultados apresentados na Seção \ref{sub:res}, o algoritmo
+Para obter os resultados apresentados na Subseção \ref{sub:res}, o algoritmo
 proposto foi implementado e testado em vários $web$ $sites$ comerciais e
 institucionais. Na Seção \ref{sec:clar} um destes resultados é detalhado, para
 servir de exemplo, para esclarecer como eles foram compilados na Tabela
@@ -928,7 +930,7 @@ relativamente pequena.
 Como conseqüência da remoção de ruído, podemos observar um aumento considerável
 na precisão média da extração, como relatado na tabela \ref{table:prec}. A
 redução no $recall$ corresponde às situações onde o filtro falhou, as quais são
-discutidos e tratados na Seção \ref{sub:disc}, e, apesar desta redução, as
+discutidos e tratados na Subseção \ref{sub:disc}, e, apesar desta redução, as
 medidas F e G apresentaram melhora significativa.
 
 \begin{table}[H]
@@ -966,10 +968,10 @@ durante o processo de filtragem.
   onde o conteúdo principal é subdividido em mais de uma região. Neste caso, a
   região principal acaba por ser dividida várias vezes durante o processo de
   filtragem e apenas a parte maior acaba passando pelo filtro (e ainda assim,
-  pode ser que seja ruído). Mais a frente, neste capítulo, é proposta uma forma
-  de contornar este problema;
+  pode ser que seja ruído). Mais a frente é proposta uma forma de contornar
+  este problema;
   \item{\textbf{páginas com região principal menor que o restante}}. Este
-  problema é uma conseqüência da segunda hipótese levantada no Capítulo 
+  problema é uma conseqüência da segunda hipótese levantada na Seção 
   \ref{sec:probform}: ``a região principal é mais densa, ou maior, que as demais
   regiões''. Neste caso, ruído sempre será retornado no lugar do conteúdo
   principal. A mesma proposta apresentada para situação anterior também pode ser
