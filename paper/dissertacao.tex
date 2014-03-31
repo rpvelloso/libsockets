@@ -7,7 +7,8 @@
 
 \newtheorem{definition}{Definição}
 
-\titulo{Segmentação e Remoção Automática de Ruído de Páginas $web$ Utilizando $tag$ $paths$}
+\titulo{Um Método Automático para Segmentação e Remoção de Ruído de
+Páginas $web$ Utilizando $tag$ $paths$}
 \autor{Roberto Panerai Velloso}
 \data{01}{março}{2014}
 \orientador[Orientadora]{Profa. Dra. Carina F. Dorneles}
@@ -109,16 +110,26 @@ estruturada, é a fase de limpeza que deve ocorrer antes da extração da
 informação. Não se pode esperar bons resultados na fase de extração sem efetuar
 a limpeza da página, removendo o ruído indesejado. Em \citeonline{Noisy03}, é
 mencionado que apesar da importância desta tarefa, existem relativamente poucos
-trabalhos nesta área e, de acordo com \citeonline{Editorial04}, o ruído existe
-nas páginas pode prejudicar consideravelmente a mineração de dados na $web$.
+trabalhos nesta área e, de acordo com \citeonline{Editorial04}, o ruído
+existente nas páginas pode prejudicar consideravelmente a mineração de dados na
+$web$.
 
 Na extração estruturada, a maioria das técnicas existentes utilizam algum tipo
 de reconhecimento de padrão para identificar os registros (como definido em
 \citeonline{MDR03}) presentes nas páginas. O problema é que, em geral, apenas os
 registros da região principal da página interessam, porém outras regiões da
 página (menus, anúncios, etc.) freqüentemente contém padrões que também são
-extraídos. Portanto, é importante efetuar a limpeza das páginas $web$ antes de
-extrair seu conteúdo estruturado.
+extraídos ($e.g.$ Figura \ref{fig:exr}). Portanto, é importante efetuar a
+limpeza das páginas $web$ antes de extrair seu conteúdo estruturado.
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[scale=0.22]{exemploruido.jpg}
+  \caption{Exemplo de uma página de comércio eletrônico com os registros e
+  ruído identificados.}
+  \label{fig:exr}
+\end{figure}
+
 
 Atualmente, alguns trabalhos na área de remoção de ruído e segmentação são
 direcionados para indexação e $clustering$ de páginas ($i.e.$ é assumido que a
@@ -131,9 +142,9 @@ prévio \cite{Graph08}, ou então dependem de aspectos específicos da linguagem
 \abreviatura{HTML}{hypertext markup language}HTML para funcionar, como em
 \citeonline{Entropy09}.
 
-Este trabalho propõe e descreve um algoritmo para segmentação e remoção de ruído
-de páginas $web$ que utiliza a representação de seqüência de $tag$ $paths$ de
-uma página e que é simples e computacionalmente eficiente.
+O presente trabalho descreve um algoritmo para segmentação e remoção de ruído de
+páginas $web$ que utiliza a representação de seqüência de $tag$ $paths$ de uma
+página e que é simples e computacionalmente eficiente.
 Trata-se de uma técnica geral de segmentação de páginas, utilizada aqui no
 contexto de extração estruturada, levando em consideração o estilo e a estrutura
 da página. As principais contribuições são as seguintes:
@@ -150,7 +161,7 @@ que constitui uma grande vantagem desta proposta, como discutido em
 \citeonline{Editorial04}.
 \end{itemize}
 
-Para avaliar o quão efetiva é a abordagem proposta neste trabalho, foi comparado
+Para avaliar o quão efetivo é o método proposto neste trabalho, foi comparado
 o ruído de saída do \abreviatura{MDR}{mine data records}MDR \cite{MDR03}, uma
 conhecida técnica de extração estruturada, contra o ruído de saída do MDR
 combinado com a técnica proposta, como ilustrado na Figura \ref{fig:method},
@@ -164,45 +175,48 @@ teste.
   \label{fig:method}
 \end{figure}
 
+Durante a discussão dos resultados, são apresentadas e discutidas, também, as
+situações em que o método não obteve sucesso (total ou parcial). São apontadas
+as causas e sugeridas maneiras de se atacar as limitações identificadas durante
+a realização dos experimentos.
 
-Esta dissertação está organizada da seguinte maneira: no Capítulo
-\ref{ch:obj} são apresentados os objetivos da pesquisa; no Capítulo
-\ref{ch:contr} são enunciadas as principais contribuições do trabalho; no
-Capítulo \ref{ch:rev} é feita uma revisão dos trabalhos relacionados, observando
-as limitações das propostas existentes para solução do problema; no Capítulo
-\ref{ch:def} são enunciadas as definições necessárias ao entendimento da
-proposta; no Capítulo \ref{ch:probform} é descrita a proposta deste trabalho e
-as hipóteses nas quais a mesma se baseia; no Capítulo \ref{ch:alg} são
-detalhados e ilustrados os algoritmos desenvolvidos a partir da formulação do
-problema e das hipóteses; no Capítulo \ref{ch:met} o método de avaliação dos
-resultados é detalhado; no Capítulo \ref{ch:results} são apresentados os
-resultados obtidos e; no Capítulo \ref{ch:conclusion} uma conclusão.
+Esta dissertação está organizada da seguinte maneira: %no Capítulo
+% \ref{ch:obj} são apresentados os objetivos da pesquisa; no Capítulo
+% \ref{ch:contr} são enunciadas as principais contribuições do trabalho;
+no Capítulo \ref{ch:rev} é feita uma revisão dos trabalhos relacionados,
+observando as limitações das propostas existentes para solução do problema; no
+Capítulo \ref{ch:met} são enunciadas as definições necessárias ao entendimento
+da proposta e são detalhados e ilustrados os algoritmos desenvolvidos a partir
+da formulação do problema e das hipóteses; no Capítulo \ref{ch:results} o método de
+avaliação dos resultados é detalhado e também são apresentados os resultados
+obtidos e as limitações do método proposto e, finalmente; no Capítulo
+\ref{ch:conclusion} uma breve conclusão e sugestões de trabalhos futuros.
 
-\section{Objetivos}\label{ch:obj}
+%\section{Objetivos}\label{ch:obj}
 
-O objetivo desta pesquisa é contribuir para área de extração estruturada de
-dados da $web$, propondo uma nova técnica para segmentação e remoção de ruído de
-páginas que possibilite incrementar a precisão dos métodos atuais, com o mínimo
-de intervenção manual e o máximo de independência com relação a aspectos da
-linguagem HTML e ao domínio da informação.
+%O objetivo desta pesquisa é contribuir para área de extração estruturada de
+%dados da $web$, propondo uma nova técnica para segmentação e remoção de ruído
+% de páginas que possibilite incrementar a precisão dos métodos atuais, com o mínimo
+%de intervenção manual e o máximo de independência com relação a aspectos da
+%linguagem HTML e ao domínio da informação.
 
-\section{Contribuições}\label{ch:contr}
+%\section{Contribuições}\label{ch:contr}
 
-A contribuição desta pesquisa é uma nova técnica de segmentação e remoção de
-ruído de páginas $web$ com as seguintes características:
-\begin{itemize}
-\item{Técnica completamente automática}: não é necessário treinamento nem
-intervenção humana;
-\item{Independente de domínio}: é necessário apenas que a página contenha
-conteúdo estruturado, não importando a que domínio a informação pertence;
-\item{Independente da sintaxe HTML}: não são utilizadas regras associadas a
-$tags$ HTML;
-\item{Necessita de apenas uma página}: não requer várias páginas do mesmo $site$
-para funcionar, o que é um grande vantagem, como discutido em
-\citeonline{Editorial04}.
-\end{itemize}
+%A contribuição desta pesquisa é uma nova técnica de segmentação e remoção de
+%ruído de páginas $web$ com as seguintes características:
+%\begin{itemize}
+%\item{Técnica completamente automática}: não é necessário treinamento nem
+%intervenção humana;
+%\item{Independente de domínio}: é necessário apenas que a página contenha
+%conteúdo estruturado, não importando a que domínio a informação pertence;
+%\item{Independente da sintaxe HTML}: não são utilizadas regras associadas a
+%$tags$ HTML;
+%\item{Necessita de apenas uma página}: não requer várias páginas do mesmo
+% $site$ para funcionar, o que é um grande vantagem, como discutido em
+%\citeonline{Editorial04}.
+%\end{itemize}
 
-\chapter{Revisão bibliográfica}\label{ch:rev}
+\chapter{Trabalhos relacionados}\label{ch:rev}
 
 Existem muitos trabalhos propondo formas de segmentar páginas $web$ e
 identificar o que é conteúdo e o que é ruído nelas. Elas podem ser agrupadas em
@@ -218,15 +232,16 @@ $clustering$ de páginas. A maioria dos trabalhos existentes sobre segmentação e
 remoção de ruído são direcionados para este tipo de aplicação.
 
 \textbf{Técnicas baseadas na árvore DOM}. Em
-\citeonline{Entropy09,SiteOriented11,Graph08,Noisy03,Entropy12} a segmentação é
-realizada utilizando a árvore DOM da página, portanto, estas técnicas levam em
+\citeonline{Entropy09,SiteOriented11,Graph08,Noisy03,Entropy12,desc2013} a
+segmentação é realizada utilizando a árvore DOM da página, portanto, estas técnicas levam em
 consideração a estrutura da página $web$. Entretanto,
-\citeonline{SiteOriented11} e
-\citeonline{Noisy03} necessitam de várias páginas de um mesmo $site$,
-\citeonline{Graph08} propõe um $framework$ de treinamento que necessita de
-dados catalogados manualmente para funcionar e \citeonline{Entropy12} necessita
-de uma base de dados de termos associados a ``papéis semânticos'' para poder
-detectar regiões de dados.
+\citeonline{SiteOriented11} e \citeonline{Noisy03} necessitam de várias páginas
+de um mesmo $site$, \citeonline{Graph08} propõe um $framework$ de treinamento
+que necessita de dados catalogados manualmente para funcionar,
+\citeonline{Entropy12} necessita de uma base de dados de termos associados a
+``papéis semânticos'' para poder detectar regiões de dados e 
+\citeonline{desc2013} utiliza o algoritmo C4.5, que necessita de treinamento
+prévio, para classificar quais nós do DOM são ruídos.
 
 \textbf{Técnicas baseadas em informação visual}.
 Além das técnicas baseadas no texto e na árvore DOM da página, existem também
@@ -282,16 +297,19 @@ Técnica   & sobre    & página   & mento     & a priori    & HTML \\
 \citeonline{SiteOriented11} & Árvore DOM & Não & Sim & Não & Não \\
 \citeonline{Entropy12} & Árvore DOM & Sim & Não & Sim & Sim \\
 \citeonline{Jointop07} & Árvore DOM & Não & Sim & Não & Não \\
+\citeonline{desc2013} & Árvore DOM & Não & Sim & Não & Sim \\
 \citeonline{vips03} & Rep. visual & Sim & Não & Sim & Sim \\
 \citeonline{viper05} & Rep. visual & Sim & Não & Não & Sim \\
 \citeonline{vide10} & Rep. visual & Sim & Não & Sim & Sim \\
 \hline
-\citeonline{TPS2013} & TPS & Sim & Não & Não & Não \\
+\citeonline{TPS2013} & TPS & Sim & Não & Não & Sim \\
 \end{tabular}
 \end{tiny}
 \end{table}
 
-\chapter{Definições}\label{ch:def}
+\chapter{Método para remoção de ruído}\label{ch:met}
+
+\section{Definições básicas}\label{sec:def}
 
 Neste capítulo são apresentados os conceitos e definições necessários para o
 entendimento do problema e do algoritmo proposto. As definições são
@@ -375,7 +393,7 @@ $TPS_a=TPS[1..2]=(1,2)$ e $TPS_b=TPS[3..8]=(3,4,4,3,4,4)$, com alfabetos
 $\Sigma_a=\{1,2\}$ e $\Sigma_b=\{3,4\}$, então $TPS_a$ a $TPS_b$
 são regiões distintas de $TPS$, pois $\Sigma_a \cap \Sigma_b=\emptyset$.
 
-\chapter{Proposta}\label{ch:probform}
+\section{Proposta}\label{sec:probform}
 
 Nesta pesquisa é proposta uma nova técnica para segmentação das regiões de uma
 página $web$ e identificação da região principal. A técnica proposta é simples,
@@ -410,7 +428,7 @@ conteúdo estruturado do que é necessário para conteúdo não estruturado ($e.g.$
 texto). Portanto, é razoável assumir que, para páginas que contém registros, a
 região principal da página é a maior de todas ($i.e.$ a que contém mais nós).
 
-Utilizando as definições do Capítulo \ref{ch:def} e as hipóteses acima, podemos
+Utilizando as definições do Capítulo \ref{sec:def} e as hipóteses acima, podemos
 formular o problema de segmentação de páginas e identificação da região
 principal como: \textbf{``encontrar a maior \textit{região} da $TPS$ de uma
 página $web$ que possua um $alfabeto$ que não se intersecte com o $alfabeto$ de
@@ -476,7 +494,7 @@ segmentação, possibilita dividir a $TPS$ em várias regiões.
 \section{Algoritmos}\label{ch:alg}
 
 Neste capítulo são apresentados os algoritmos desenvolvidos para tratar o
-problema definido no Capítulo \ref{ch:probform}. Quais sejam:
+problema definido no Capítulo \ref{sec:probform}. Quais sejam:
 
 \begin{itemize}
   \item{\textbf{$tagPathSequenceFilter()$}}. É o algoritmo
@@ -647,7 +665,7 @@ calculados; nas Linhas $14$ a $38$ é realizada a busca por uma posição na
 seqüência onde é possível dividi-la ($i.e.$ onde existe uma região); na Linha
 $15$ os limiares de freqüência são iterados; na Linha $16$ o alfabeto da TPS, da
 Definição \ref{def:alpha}, é filtrado, como descrito no Capítulo
-\ref{ch:probform}; na Linha $22$ a TPS é iterada; na Linha $25$ o alfabeto da
+\ref{sec:probform}; na Linha $22$ a TPS é iterada; na Linha $25$ o alfabeto da
 região é calculado e; nas Linhas $27$ a $35$ é verificado se existe uma
 intersecção entre os alfabetos das duas partes da TPS (uma intersecção vazia
 indica que uma possível região foi encontrada, como na Definição
@@ -764,7 +782,17 @@ tamanho da TPS e $i$ é o número de vezes que a seqüência é dividida, o qual
 podemos considerar como sendo uma constante (sem impacto assintótico) e, sendo
 assim, afirmar que a complexidade de tempo é $O(n)$.
 
-\chapter{Método}\label{ch:met}
+\chapter{Resultados Experimentais}\label{ch:results}
+
+Neste capítulo são descritos e discutidos os resultados dos experimentos e sua
+realização.
+Para obter os resultados apresentados na Seção \ref{sub:res}, o algoritmo
+proposto foi implementado e testado em vários $web$ $sites$ comerciais e
+institucionais. Na Seção \ref{sec:clar} um destes resultados é detalhado, para
+servir de exemplo, para esclarecer como eles foram compilados na Tabela
+\ref{table:results}.
+
+\section{Metodologia de avaliação dos resultados}\label{sec:met}
 
 Para avaliar os resultados da técnica proposta, será utilizado o algoritmo MDR
 \cite{MDR03}, uma conhecida técnica de extração estruturada. O resultado da
@@ -793,16 +821,6 @@ poderiam ser utilizadas, se estivessem disponíveis, e desde que não necessitem
 de várias páginas HTML como entrada ($e.g.$ $RoadRunner$
 \cite{RRunner01}).
 
-
-\chapter{Resultados Experimentais}\label{ch:results}
-
-Neste capítulo são descritos e discutidos os resultados dos experimentos e sua
-realização.
-Para obter os resultados apresentados na Seção \ref{sec:res}, o algoritmo
-proposto foi implementado e testado em vários $web$ $sites$ comerciais e
-institucionais. Na Seção \ref{sec:clar} um destes resultados é detalhado, para
-servir de exemplo, para esclarecer como eles foram compilados na Tabela
-\ref{table:results}.
 
 \section{Detalhamento dos Experimentos}\label{sec:clar}
 
@@ -872,7 +890,7 @@ registros de interesse, respectivamente, da página original, e
 $\#Rec_{totalTPS}$ e $\#Rec_{targetTPS}$ são o total de registros e o total de
 registro de interesse, respectivamente, da página $web$ filtrada.
 
-\section{Resultados}\label{sec:res}
+\subsection{Resultados}\label{sub:res}
 
 Na Tabela \ref{table:results} são apresentados, nas três primeiras colunas, o
 tamanho da árvore DOM processada pelo MDR ($i.e.$ original) e a redução obtida
@@ -910,7 +928,7 @@ relativamente pequena.
 Como conseqüência da remoção de ruído, podemos observar um aumento considerável
 na precisão média da extração, como relatado na tabela \ref{table:prec}. A
 redução no $recall$ corresponde às situações onde o filtro falhou, as quais são
-discutidos e tratados na Seção \ref{sec:disc}, e, apesar desta redução, as
+discutidos e tratados na Seção \ref{sub:disc}, e, apesar desta redução, as
 medidas F e G apresentaram melhora significativa.
 
 \begin{table}[H]
@@ -929,7 +947,7 @@ G-$measure$ & 43,51\% & 78,63\% & 35,13\% \\
 \end{tabular}
 \end{table}
 
-\section{Discussão dos Resultados}\label{sec:disc}
+\subsection{Discussão dos Resultados}\label{sub:disc}
 
 Existem três situações principais onde o algoritmo poderia ser melhorado e,
 destas, apenas duas podem levar a perda de conteúdo de interesse. Na Tabela
@@ -952,7 +970,7 @@ durante o processo de filtragem.
   de contornar este problema;
   \item{\textbf{páginas com região principal menor que o restante}}. Este
   problema é uma conseqüência da segunda hipótese levantada no Capítulo 
-  \ref{ch:probform}: ``a região principal é mais densa, ou maior, que as demais
+  \ref{sec:probform}: ``a região principal é mais densa, ou maior, que as demais
   regiões''. Neste caso, ruído sempre será retornado no lugar do conteúdo
   principal. A mesma proposta apresentada para situação anterior também pode ser
   utilizada neste caso.
