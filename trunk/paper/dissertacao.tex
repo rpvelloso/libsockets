@@ -291,21 +291,39 @@ de explicitar as diferenças entre estes trabalhos.
 3 & \citeonline{Boilerplate10} & Texto & - & - & - & - \\
 4 & \citeonline{CETR10} & Texto & - & - & - & - \\
 5 & \citeonline{NonTemplate13} & Texto & - & - & - & - \\
-6 & \citeonline{Noisy03} & DOM & Não & Sim & Não & Não \\
-7 & \citeonline{Graph08} & DOM & Não & Sim & Não & Não \\
-8 & \citeonline{Entropy09} & DOM & Sim & Não & Sim & Sim \\
-9 & \citeonline{SiteOriented11} & DOM & Não & Sim & Não & Não \\
-10 & \citeonline{Entropy12} & DOM & Sim & Não & Sim & Sim \\
-11 & \citeonline{Jointop07} & DOM & Não & Sim & Não & Não \\
+6 & \citeonline{Noisy03} & DOM & Não & Sim & Não & Sim \\
+7 & \citeonline{Graph08} & DOM & Não & Sim & Não & Sim \\
+8 & \citeonline{Entropy09} & DOM & Sim & Não & Sim & Não \\
+9 & \citeonline{SiteOriented11} & DOM & Não & Sim & Não & Sim \\
+10 & \citeonline{Entropy12} & DOM & Sim & Não & Sim & Não \\
+11 & \citeonline{Jointop07} & DOM & Não & Sim & Não & Sim \\
 12 & \citeonline{desc2013} & DOM & Não & Sim & Não & Sim \\
-13 & \citeonline{vips03} & Visual & Sim & Não & Sim & Sim \\
-14 & \citeonline{viper05} & Visual & Sim & Não & Não & Sim \\
-15 & \citeonline{vide10} & Visual & Sim & Não & Sim & Sim \\
+13 & \citeonline{vips03} & Visual & Sim & Não & Sim & Não \\
+14 & \citeonline{viper05} & Visual & Sim & Não & Não & Não \\
+15 & \citeonline{vide10} & Visual & Sim & Não & Sim & Não \\
 \hline
 16 & \citeonline{TPS2013} & TPS & Sim & Não & Não & Sim \\
 \end{tabular}
 \end{tiny}
 \end{table}
+
+Na Tabela \ref{table:comp} são comparadas as diversas técnicas de remoção de
+ruído com relação às seguintes características:
+\begin{itemize}
+  \item Se operam sobre o texto da página, árvore DOM, informações visuais ou
+  TPS;
+  \item Se necessitam de apenas uma página para funcionar ou de um conjunto de
+  páginas;
+  \item Se necessitam de treinamento/supervisão;
+  \item Se necessitam de informações pré-definidas;
+  \item Se dependem, ou não, da sintaxe HTML.
+\end{itemize}
+
+Como é possível observar, na Tabela \ref{table:comp}, as técnicas
+existentes para eliminação de ruído, aplicáveis à extração estruturada
+(Linhas \#6 a \#15) não atendem a todos os requisitos que o método proposto
+atende (Linha \#16). Os métodos que não dependem da sintaxe HTML, por exemplo,
+necessitam de treinamento e/ou definições \textit{a priori}.
 
 \chapter{Método para remoção de ruído}\label{ch:met}
 
