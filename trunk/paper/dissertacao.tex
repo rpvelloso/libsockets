@@ -224,15 +224,15 @@ três categorias: as que se baseiam no texto da página, as que se baseiam na
 árvore \abreviatura{DOM}{document object model}DOM e as que utilizam informação
 visual.
 
-\textbf{Técnicas baseadas no texto}. Em
-\citeonline{Densiometric08,Boilerplate10,CETR10,BlockImp07,NonTemplate13} a
+\section{Técnicas baseadas no texto}\label{sec:txt}
+Em \citeonline{Densiometric08,Boilerplate10,CETR10,BlockImp07,NonTemplate13} a
 segmentação é realizada utilizando o conteúdo textual da página $web$. O foco
 destes trabalhos, entretanto, não é em extração estruturada, mas em indexação e
 $clustering$ de páginas. A maioria dos trabalhos existentes sobre segmentação e
 remoção de ruído são direcionados para este tipo de aplicação.
 
-\textbf{Técnicas baseadas na árvore DOM}. Em
-\citeonline{Entropy09,SiteOriented11,Graph08,Noisy03,Entropy12,desc2013} a
+\section{Técnicas baseadas na árvore DOM}\label{sec:dom} 
+Em \citeonline{Entropy09,SiteOriented11,Graph08,Noisy03,Entropy12,desc2013} a
 segmentação é realizada utilizando a árvore DOM da página, portanto, estas técnicas levam em
 consideração a estrutura da página $web$. Entretanto,
 \citeonline{SiteOriented11} e \citeonline{Noisy03} necessitam de várias páginas
@@ -243,7 +243,7 @@ que necessita de dados catalogados manualmente para funcionar,
 \citeonline{desc2013} utiliza o algoritmo C4.5, que necessita de treinamento
 prévio, para classificar quais nós do DOM são ruídos.
 
-\textbf{Técnicas baseadas em informação visual}.
+\section{Técnicas baseadas em informação visual}\label{sec:vis}
 Além das técnicas baseadas no texto e na árvore DOM da página, existem também
 aquelas que utilizam informação visual, como \citeonline{vips03,vide10,viper05}.
 Todas dependem de um renderizador de um navegador $web$ para obter as
@@ -254,6 +254,7 @@ fortemente de aspectos específicos da linguagem HTML tem a séria desvantagem
 de serem afetadas por mudanças nas práticas de desenvolvimento assim como
 mudanças na sintaxe da linguagem.
 
+\section{Representação TPS}
 A representação da página $web$ utilizada nesta pesquisa (seqüência de $tag$
 $paths$) foi anteriormente empregada em \citeonline{TPC09} e
 \citeonline{SuffixTree12}, embora em ambos os casos para a extração e não para
@@ -271,6 +272,7 @@ convertido para representação de $tag$ $paths$.
   \label{fig:ex1}
 \end{figure}
 
+\section{Análise Comparativa dos Trabalhos}\label{sec:tbcomp}
 Na Tabela \ref{table:comp} é feito um comparativo entre as técnicas mais
 significativos (neste contexto) revistas e a proposta apresentada, com objetivo
 de explicitar as diferenças entre estes trabalhos.
