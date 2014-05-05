@@ -273,9 +273,11 @@ contexto de extração estruturada.
 \item Em \citeonline{desc2013} de forma semelhante à \citeonline{Boilerplate10},
 são utilizadas as densidades de texto e de $links$, porém o documento é tratado como
 uma árvore DOM e não como uma seqüência de blocos. Além destas características,
-são utilizados os campos de formulários da $web$ oculta para treinar uma árvore
-de decisão utilizando algoritmo C4.5 para identificar quais nós da árvore DOM
-são ruído e quais são conteúdo relevante na resposta à submissão do formulário.
+são utilizados os dados dos formulários da $web$ oculta para formar mais
+um parâmetro ($QueryScore$) de treinamento da árvore de decisão com o
+algoritmo C4.5 \cite{quinlan1993c4}. A árvore de decisão gerada é utilizada para
+identificar quais nós da árvore DOM são ruído e quais são conteúdo relevante na
+resposta à submissão do formulário.
 
 \item Em \citeonline{Entropy12} é utilizada uma base de dados de termos
 associados a ``papéis semânticos'' para encontrar, na árvore DOM, os nós folha
