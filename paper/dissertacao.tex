@@ -225,122 +225,128 @@ três categorias: as que se baseiam no texto da página, as que se baseiam na
 visual.
 
 \section{Técnicas baseadas no texto}\label{sec:txt}
-Em \citeonline{Densiometric08,Boilerplate10,CETR10,BlockImp07,NonTemplate13} a
-segmentação é realizada utilizando o conteúdo textual da página $web$. O foco
-destes trabalhos, entretanto, não é em extração estruturada, mas em indexação e
-$clustering$ de páginas. A maioria dos trabalhos existentes sobre segmentação e
-remoção de ruído são direcionados para este tipo de aplicação.
+Nos trabalhos detalhados nesta seção 
+\cite{Densiometric08,Boilerplate10,CETR10,BlockImp07,NonTemplate13} a
+segmentação das partes de uma página é realizada utilizando o conteúdo textual
+do documento. O foco destes trabalhos, entretanto, não é em extração
+estruturada, mas em indexação e $clustering$ de páginas. A maioria dos trabalhos
+existentes sobre segmentação e remoção de ruído, que atuam sobre o texto, são
+direcionados para este tipo de aplicação, cujo objetivo principal é identificar
+o ``assunto'' da página.
 
-Densiometric08: 
-	- cita a desvantagem das abordagens visuais (alto custo computacional/alta
-	complexidade);
-	- a página é modelada como uma seqüência de blocos de texto separados por tags
-	(gaps), os blocos de texto são analisados segundo sua densidade textual,
-	blocos com a mesma densidade são agrupados para formar blocos maiores e a
-	região principal da página seria a de maior densidade textual.
+\begin{itemize}
+\item Em \citeonline{Densiometric08}, é mencionada a desvantagem das abordagens
+visuais, devido à grande complexidade computacional das mesmas, pois precisam
+renderizar a página para obter as informações de $layout$. Neste trabalho
+\cite{Densiometric08} a página é modelada como uma seqüência de blocos de texto
+separados por $tags$ (chamados de $gaps$), os blocos de texto são analisados
+segundo sua densidade textual e os blocos contíguos, com aproximadamente a mesma
+densidade, são agrupados para formar blocos maiores e a região principal da
+página seria a de maior densidade textual.
 
-Boilerplate10:
-	- utiliza a densidade textual proposta em Densiometric08 agregando uma
-	série de outras características ao problema como: o tamanho das
-	palavras, tamanho das sentenças, numero de palavras e a densidade de links, além de 
-	um conjunto de regras bem específicas para tratar texto e tags do documento;
-	Utiliza algoritmos de árvores de decisão para calcular o ganho de informação
-	alcançado com cada uma das características e com suas combinações.
+\item Em \citeonline{Boilerplate10}, a mesma medida de densidade textual
+proposta em \citeonline{Densiometric08} é utilizada, porém uma série de outras
+características são agregadas ao problema como: o tamanho das palavras, tamanho
+das sentenças, numero de palavras e a densidade de $links$, além de um conjunto
+de regras bem específicas para tratar textos e $tags$ do documento. Estas
+outras informações agregadas são utilizadas para gerar uma árvore de decisão
+utilizada para identificar o conteúdo principal do documento.
 	
-CETR10:
-	- fala da desvantagem de utilizar regras vinculadas a tags HTML específicas;
-	- para cada linha do documento, é calculada a taxa de tags que consiste na
-	relação entre o número de caracteres que não são tag e o número de tags
-	existentes em uma determinada linha do documento, essas linhas são, então,
-	agrupadas de acordo com esta informação e classificadas como conteúdo ou não;
+\item Em \citeonline{CETR10} é mencionada a desvantagem de se utilizar regras
+vinculadas a $tags$ HTML específicas, o que pode invalidar uma abordagem no caso
+de uma eventual mudança na sintaxe HTML ou nas práticas de desenvolvimento
+atuais. Neste trabalho, em cada linha do documento, é calculado a taxa de
+$tags$, que consiste na relação entre o número de caracteres que não são $tag$ e
+o número de $tags$ existentes em uma determinada linha do documento, essas
+linhas são, então, agrupadas de acordo com esta informação e classificadas como
+sendo parte do conteúdo principal ou não.
+\end{itemize}
 		
 \section{Técnicas baseadas na árvore DOM}\label{sec:dom} 
-Em \citeonline{Entropy09,SiteOriented11,Graph08,Noisy03,Entropy12,desc2013} a
-segmentação é realizada utilizando a árvore DOM da página, portanto, estas técnicas levam em
-consideração a estrutura da página $web$. Entretanto,
-\citeonline{SiteOriented11} e \citeonline{Noisy03} necessitam de várias páginas
-de um mesmo $site$, \citeonline{Graph08} propõe um $framework$ de treinamento
-que necessita de dados catalogados manualmente para funcionar,
-\citeonline{Entropy12} necessita de uma base de dados de termos associados a
-``papéis semânticos'' para poder detectar regiões de dados e 
-\citeonline{desc2013} utiliza o algoritmo C4.5, que necessita de treinamento
-prévio, para classificar quais nós do DOM são ruídos.
+Nos trabalhos detalhados nesta seção
+\cite{Entropy09,SiteOriented11,Graph08,Noisy03,Entropy12,desc2013} a segmentação
+é realizada utilizando a árvore DOM da página, portanto, estas técnicas levam em
+consideração a estrutura da página $web$ e podem ser, portanto, aplicadas no
+contexto de extração estruturada.
 
-desc2013:
-- utiliza, de forma semelhante à Boilerplate10, a densidade de texto e de links,
-porém o documento é tratado como uma árvore DOM enão como uma sequencia de
-blocos; além destas características, são utilizados os campos de formulários da
-web oculta para treinar uma árvore de decisão utilizando algoritmo C4.5 para
-identificar quais nós são ruído na resposta do formulário.
+\begin{itemize}
+\item Em \citeonline{desc2013} de forma semelhante à \citeonline{Boilerplate10},
+são utilizadas as densidades de texto e de $links$, porém o documento é tratado como
+uma árvore DOM e não como uma seqüência de blocos. Além destas características,
+são utilizados os campos de formulários da $web$ oculta para treinar uma árvore
+de decisão utilizando algoritmo C4.5 para identificar quais nós da árvore DOM
+são ruído e quais são conteúdo relevante na resposta à submissão do formulário.
 
-Entropy12:
-utiliza uma base de dados de termos associados a ``papéis semânticos'' para
-encontrar, árvore DOM, os nós folha que desempenham estes papéis, atribuindo a
-cada um uma medida de ``entropia semântica-estrutural'', de acordo com o papel
-desempenhado pelo nó folha. A entropia dos demais nós é calculada
-recursivamente, a partir da entropia dos nós descendentes. Quanto maior esta
-medida de entropia, maior a probabilidade de se tratar de uma região de
-interesse.
+\item Em \citeonline{Entropy12} é utilizada uma base de dados de termos
+associados a ``papéis semânticos'' para encontrar, na árvore DOM, os nós folha
+que desempenham estes papéis, atribuindo, a cada um, uma medida de ``entropia
+semântica-estrutural'', de acordo com o papel desempenhado pelo nó folha. A
+entropia dos demais nós é calculada recursivamente, a partir da entropia dos nós
+descendentes. Quanto maior for esta medida de entropia, maior a probabilidade de
+se tratar de uma região de interesse.
 
-Noisy03:
-constroi uma arvore de estilos para um determinado site, a partir de várias
-amostras de páginas, para determinar o que é ruído e o que é conteúdo nas
-páginas daquele site determinado. A árvore de estilos do site é construída e o
-ruído é determinado com base na seguinte observação feita pelos autores: os
-blocos de ruído possui formatação e conteúdo semelhantes, enquanto que o
-conteúdo é diverso e possui formatação diversa.
+\item Em \citeonline{Noisy03} é construída uma árvore de estilos (com base
+nas definições \abreviatura{CSS}{cascade style sheet}CSS) para um determinado
+$site$, a partir de várias amostras de suas páginas, para determinar o que seria
+ruído e o que seria conteúdo nas páginas deste $site$, especificamente. Após a
+construção da árvore de estilos do $site$ o ruído é determinado com base na
+seguinte observação feita pelos autores: os blocos de ruído possuem formatação e
+conteúdo semelhantes, enquanto que o conteúdo é diverso e possui formatação diversa.
 
-Graph08:
-o problema de segmentar uma página é modelado como um problema de minimização de
-energia em cima de um grafo ponderado construído a partir de amostras de páginas
-anotadas. Os nós da árvore DOM são os nós do grafo e os pesos das arestas
-representam o custo de se segmentar os dois nós interligados juntos ou
-separados. Apenas a questão da segmentação é abordada, não há preocupação em
-identificar quais partes da página contém conteúdo relevante e quais
-contém ruído.
+\item Em \citeonline{Graph08} o problema de segmentar uma página é modelado como
+um problema de minimização de energia em cima de um grafo ponderado construído a
+partir de amostras de páginas anotadas manualmente. Os nós da árvore DOM são os
+nós do grafo e os pesos das arestas representam o custo de se segmentar os dois
+nós, que estão interligados, juntos ou separados. Apenas a questão da
+segmentação é abordada, sem a preocupação em identificar quais partes da
+página contém conteúdo relevante e quais contém ruído.
+\end{itemize}
 	
 \section{Técnicas baseadas em informação visual}\label{sec:vis}
 Além das técnicas baseadas no texto e na árvore DOM da página, existem também
-aquelas que utilizam informação visual, como \citeonline{vips03,vide10,viper05}.
-Todas dependem de um renderizador de um navegador $web$ para obter as
-informações visuais das páginas, o que pode ser computacionalmente dispendioso,
-e, além disso, \citeonline{vips03} é baseado em um conjunto de regras
-heurísticas, cada uma aplicada a $tags$ HTML específicas. Técnicas que dependem
-fortemente de aspectos específicos da linguagem HTML tem a séria desvantagem
-de serem afetadas por mudanças nas práticas de desenvolvimento assim como
-mudanças na sintaxe da linguagem.
+algumas que utilizam informação visual, como \citeonline{vips03,vide10,viper05}.
+Em geral utilizam a árvore DOM em conjunto com as características visuais do
+documento, as quais são obtidas por intermédio de um navegador $web$, utilizado
+para renderizar a página e fornecer as informações necessárias ($e.g.$
+coordenadas de tela, definições de estilo, etc.). A relação custo-benefício
+(complexidade computacional $versus$ ganho na precisão) de se
+utilizar um renderizador para obtenção destes dados teria que ser melhor
+estudada.
 
-vips03:
-utiliza um renderizador de um navegador web para obter informação visual
-(principalmente coordenadas e formatação) de uma página e, assim, construir uma
-estrutura de árvore que representa a hierarquia dos blocos visuais do documento.
-Além da informação visual também é utilizado um extenso conjunto de regras que
-servem para dar tratamento diferenciado a tags HTML específicas com objetivo
-principal de identificar separadores visuais. Neste trabalho apenas, assim como
-em \citeonline{Graph08}, não há preocupação em identificar quais blocos
-visuais da página contém conteúdo relevante e quais contém ruído.
+\begin{itemize}
+\item Em \citeonline{vips03} é utilizado um renderizador de um navegador $web$
+para obter informação visual (principalmente coordenadas e formatação) de uma
+página e, assim, construir uma estrutura de árvore que representa a hierarquia
+dos blocos visuais do documento. Além da informação visual, também é utilizado
+um extenso conjunto de regras que servem para dar tratamento diferenciado a
+$tags$ HTML específicas com objetivo principal de identificar separadores
+visuais. Neste trabalho, assim como em \citeonline{Graph08}, não há preocupação
+em identificar quais blocos visuais da página contém conteúdo relevante e quais
+contém ruído.
 
-vide10:
-É, na verdade, uma abordagem para extração estruturada que se baseia no trabalho
-\citeonline{vips03} para criar a representação visual do documento e, então,
-utilizar as características visuais das páginas da web oculta para localizar e
-extrair os registros contidos no documento. As características visuais
-utilizadas para identificação do conteúdo principal são: posição (centralização
-horizontal), tamanho (conteúdo é maior que demais blocos), layout (registros
-possuem arranjo semelhante), semelhança visual (registros possuem formatação
-semelhante).
+\item \citeonline{vide10} é, na verdade, uma abordagem para extração
+estruturada que se baseia em \citeonline{vips03} para criar a representação
+visual do documento e, então, utilizar as características visuais das páginas da
+$web$ oculta para localizar e extrair os registros contidos no documento. As
+características visuais utilizadas para identificação do conteúdo principal são:
+posição (centralização horizontal), tamanho (conteúdo relevante é maior que
+demais blocos), $layout$ (registros possuem arranjos semelhantes), semelhança
+visual (registros possuem formatação semelhante).
 
-viper05:
-Trata-se de uma técnica de extração estruturada, com identificação do
-conteúdo/ruído. Utiliza o renderizador de um browser para corrigir (no caso de
-HTML mal formado) e processar o HTML e para obter as informações visuais
-necessárias ao algoritmo.
-A etapa de extração é uma adaptação/melhoramento do algoritmo MDR \cite{MDR03}.
+\item \citeonline{viper05} trata-se de uma técnica de extração estruturada, com
+identificação do conteúdo/ruído. Utiliza o renderizador de um navegador $web$
+para corrigir (no caso de HTML mal formado) e processar o HTML e para obter as
+informações visuais necessárias ao algoritmo.
+A etapa de extração é uma adaptação/melhoramento do algoritmo MDR \cite{MDR03}
+que incorpora o uso das informações visuais.
 A etapa de identificação do conteúdo principal ocorre após a identificação dos
 padrões, onde estes recebem um peso, inversamente proporcional à distância que
 se encontram do centro da página. Outra melhoria proposta, relativa à
 identificação de padrões dos registros, é o tratamento de repetições
-consecutivas (tandem repeats) na comparação da estrutura dos registros.
+consecutivas (\textit{tandem repeats}) na comparação da estrutura dos registros.
+Esta abordagem identificada o ruído apenas após a etapa de extração, sem
+desonerar o custo computacional de procurar por padrões no ruído.
+\end{itemize}
 
 \section{Representação TPS}
 A representação da página $web$ utilizada nesta pesquisa (seqüência de $tag$
