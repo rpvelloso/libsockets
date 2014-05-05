@@ -1,6 +1,7 @@
 clc;
 clear all;
 close all;
+pkg load signal;
 
 function filteredAlphabet = filterAlphabet(alphabet, symbolCount, threshold)
   filteredAlphabet = [];
@@ -29,7 +30,7 @@ function [pos, mainregion] = searchRegion(tagPathSequence)
   
   regionFound = 0;
   
-  while (thresholds(t) < 10) t = t + 1; end
+  while (thresholds(t) < 5) t = t + 1; end
   
   while ~regionFound
     t = t + 1;
@@ -68,7 +69,7 @@ function [pos, mainregion] = searchRegion(tagPathSequence)
   mainregion = tagPathSequence;
 end
 
-x = load('Debug\x');
+x = load('Debug/x');
 %x=[1 4 4 5 5 6 4 5 6 7 8 9 10 7 8 9 10 10 10 10 10 10 3 2 3 2 3 2 3 2 3 2]';
 
 tps=x';
@@ -102,11 +103,11 @@ for i = 1:j-1
   f=fft(w).^2;
   [var(w)/1e+3 max(z) max(z)/var(w)]
   figure(1);
-  plot([l(i):l(i+1)],w,[int2str(i) '.']);
+  plot([l(i):l(i+1)],w,[int2str(1+mod(i,5)) '-']);
   figure(2);
-  plot([1:length(z)],z,[int2str(i) '.']);
+  plot([1:length(z)],z,[int2str(1+mod(i,5)) '.']);
   figure(3);
-  plot([1:length(f)],f,int2str(i));
+  plot([1:length(f)],f,int2str(1+mod(i,5)));
 end
 
 figure(1);

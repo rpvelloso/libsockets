@@ -77,8 +77,38 @@ function [pos, mainregion] = searchRegion(tagPathSequence)
   mainregion = tagPathSequence;
 end
 
-x = load('Debug\x');
-%output=[1 2 3 4 5 6 4 5 6 7 8 9 10 7 8 9 10 10 10 10 10 10]';
+function [blks,blkfreq] = LZDecomp(seq)
+  blkcount=0; i=1;
+  blkfreq=zeros(1,length(seq));
+  while i < length(seq)
+    l=m=0;
+    prefix = seq(1:i-1);
+    suffix = seq(i:length(seq));
+    for j=length(suffix):-1:1
+      prior = suffix(1:j);
+      pos = find(prefix == prior(1));
+      for k=1:length(pos)
+        if ((pos(k)+j) <= length(prefix))
+          if prefix(pos(k):pos(k)+j-1)==prior
+            l=j;
+            m=pos(k);
+            break;
+          end
+        end
+      end
+      if l > 0 break; end
+    end
+    if l > 4 
+      blkcount = blkcount + 1;
+      blks{blkcount}=[i m l m+l];
+      blkfreq=blkfreq + [zeros(1,m-1) ones(1,l) zeros(1,length(seq)-m-l+1)];
+      i = i + l - 1;
+    end
+    i = i + 1;
+  end
+end
+
+x = load('Debug/x');
 
 tps=x';
 
@@ -94,45 +124,15 @@ while i >= 0
   end
 end
 
-d_order=2;
-mtps=mean(tps);
-dd=diff(tps-mtps,d_order);
-dd(find(dd > 0))=0;
+[blks,blkfreq] = LZDecomp(tps');
 
 figure;
 hold;
-%plot([1:length(x)],x','k.');
 plot([1:pos],x'(1:pos),'k.');
 plot([pos+length(tps):length(x)],x'(pos+length(tps):length(x)),'k.');
-plot([pos:pos+length(tps)-1],tps,'kx');
+plot([pos:pos+length(tps)-1],tps,'ko');
 title('TPS de pagina do site Youtube');
 xlabel('posicao da sequencia');
 ylabel('codigo tag path');
 legend('TPS','','Regiao principal','location','northwest');
 legend('boxon');
-%plot([pos+d_order:pos+length(tps)-1],dd+mtps,'g');
-
-v=unique(dd+1);
-%q=[];
-for i=1:length(v)
-  f = find(dd <= v(i));
-  %f = setdiff(f,q);
-  %q = union(q,f);
-  m = mean(diff(f));
-  l = length(f)+1;
-  if (m>=10) && (m<=length(tps)/3)
-    r(i,1) = m;
-    r(i,2) = l;
-    r(i,3) = l*m; %log(l)*log(m);
-  else
-    r(i,1) = l;
-    r(i,2) = m;
-    r(i,3) = 0;
-  end
-end
-m=find(r(:,3)==max(r(:,3)));
-r=[];
-r(1:length(tps))=v(m(1))+mtps;
-
-
-%plot([pos:pos+length(tps)-1],r,'b');
