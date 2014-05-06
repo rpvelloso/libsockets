@@ -1,7 +1,8 @@
 clc;
 clear all;
 close all;
-pkg load signal;
+
+pkg load 'signal';
 
 function filteredAlphabet = filterAlphabet(alphabet, symbolCount, threshold)
   filteredAlphabet = [];
@@ -11,6 +12,15 @@ function filteredAlphabet = filterAlphabet(alphabet, symbolCount, threshold)
     end
   end
   filteredAlphabet = setdiff(filteredAlphabet,[0]);
+end
+
+function fseq = filterSequence(sequence ,symbolCount, threshold)
+  fseq = sequence;
+  for i=1:length(sequence)
+    if symbolCount(sequence(i)) < threshold
+      fseq(i) = 0;
+    end
+  end
 end
 
 function [pos, mainregion] = searchRegion(tagPathSequence)
@@ -30,7 +40,7 @@ function [pos, mainregion] = searchRegion(tagPathSequence)
   
   regionFound = 0;
   
-  while (thresholds(t) < 5) t = t + 1; end
+  while (thresholds(t) < 2) t = t + 1; end
   
   while ~regionFound
     t = t + 1;
@@ -69,7 +79,7 @@ function [pos, mainregion] = searchRegion(tagPathSequence)
   mainregion = tagPathSequence;
 end
 
-x = load('Debug/x');
+x = load('Debug\x');
 %x=[1 4 4 5 5 6 4 5 6 7 8 9 10 7 8 9 10 10 10 10 10 10 3 2 3 2 3 2 3 2 3 2]';
 
 tps=x';
@@ -78,6 +88,7 @@ tps=x';
 i = 0;
 j = 1;
 pos = 1;
+diff_order=1;
 
 while i >= 0
   [i, datareg] = searchRegion(tps);
@@ -99,15 +110,23 @@ figure(3);
 hold;
 for i = 1:j-1
   w=x(l(i):l(i+1));
-  z=abs(xcorr(w-mean(w),'unbiased'));
-  f=fft(w).^2;
-  [var(w)/1e+3 max(z) max(z)/var(w)]
+  w=w-mean(w);
+  %[var(w)/1e+3 max(z) max(z)/var(w)]
   figure(1);
-  plot([l(i):l(i+1)],w,[int2str(1+mod(i,5)) '-']);
+  plot([l(i):l(i+1)],w,[int2str(mod(i,7)) '-']);
+  difference=diff(sign(w),diff_order)!=0;
+  difference=diff(w,diff_order).*difference;
+  while sum(min(difference)==difference)<5
+    difference=(difference!=min(difference)).*difference;
+  end
+  plot([l(i)+diff_order:l(i+1)],difference,'k.');
+  plot([l(i):l(i+1)],repmat(min(difference),1,length([l(i):l(i+1)])),[int2str(mod(i,7)) '-']);
+  z=abs(xcorr(difference,'unbiased'));
+  f=abs(fft(difference)).^2;
   figure(2);
-  plot([1:length(z)],z,[int2str(1+mod(i,5)) '.']);
+  plot([1:length(z)],z,[int2str(mod(i,7)) '-']);
   figure(3);
-  plot([1:length(f)],f,int2str(1+mod(i,5)));
+  plot([1:length(f)],f,int2str(mod(i,7)));
 end
 
 figure(1);
