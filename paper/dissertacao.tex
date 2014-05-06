@@ -220,13 +220,14 @@ obtidos e as limitações do método proposto e, finalmente; no Capítulo
 
 Existem muitos trabalhos propondo formas de segmentar páginas $web$ e
 identificar o que é conteúdo e o que é ruído nelas. Elas podem ser agrupadas em
-três categorias: as que se baseiam no texto da página, as que se baseiam na
+três categorias: as que utilizam o texto da página, as que utilizam a
 árvore \abreviatura{DOM}{document object model}DOM e as que utilizam informação
 visual.
 
 \section{Técnicas baseadas no texto}\label{sec:txt}
 Nos trabalhos detalhados nesta seção 
-\cite{Densiometric08,Boilerplate10,CETR10,BlockImp07,NonTemplate13} a
+\cite{Densiometric08,Boilerplate10,CETR10} a
+%\cite{Densiometric08,Boilerplate10,CETR10,NonTemplate13} a
 segmentação das partes de uma página é realizada utilizando o conteúdo textual
 do documento. O foco destes trabalhos, entretanto, não é em extração
 estruturada, mas em indexação e $clustering$ de páginas. A maioria dos trabalhos
@@ -235,6 +236,7 @@ direcionados para este tipo de aplicação, cujo objetivo principal é identificar
 o ``assunto'' da página.
 
 \begin{itemize}
+
 \item Em \citeonline{Densiometric08}, é mencionada a desvantagem das abordagens
 visuais, devido à grande complexidade computacional das mesmas, pois precisam
 renderizar a página para obter as informações de $layout$. Neste trabalho
@@ -255,37 +257,22 @@ utilizada para identificar o conteúdo principal do documento.
 \item Em \citeonline{CETR10} é mencionada a desvantagem de se utilizar regras
 vinculadas a $tags$ HTML específicas, o que pode invalidar uma abordagem no caso
 de uma eventual mudança na sintaxe HTML ou nas práticas de desenvolvimento
-atuais. Neste trabalho, em cada linha do documento, é calculado a taxa de
+atuais. Neste trabalho, em cada linha do documento, é calculada a taxa de
 $tags$, que consiste na relação entre o número de caracteres que não são $tag$ e
 o número de $tags$ existentes em uma determinada linha do documento, essas
 linhas são, então, agrupadas de acordo com esta informação e classificadas como
 sendo parte do conteúdo principal ou não.
 \end{itemize}
 		
+
 \section{Técnicas baseadas na árvore DOM}\label{sec:dom} 
 Nos trabalhos detalhados nesta seção
-\cite{Entropy09,SiteOriented11,Graph08,Noisy03,Entropy12,desc2013} a segmentação
-é realizada utilizando a árvore DOM da página, portanto, estas técnicas levam em
-consideração a estrutura da página $web$ e podem ser, portanto, aplicadas no
-contexto de extração estruturada.
+\cite{Noisy03,Graph08,Entropy09,SiteOriented11,Entropy12,desc2013} a
+segmentação é realizada utilizando a árvore DOM da página, portanto estas
+técnicas levam em consideração a estrutura da página $web$ e, conseqüentemente,
+podem ser aplicadas no contexto de extração estruturada.
 
 \begin{itemize}
-\item Em \citeonline{desc2013} de forma semelhante à \citeonline{Boilerplate10},
-são utilizadas as densidades de texto e de $links$, porém o documento é tratado como
-uma árvore DOM e não como uma seqüência de blocos. Além destas características,
-são utilizados os dados dos formulários da $web$ oculta para formar mais
-um parâmetro ($QueryScore$) de treinamento da árvore de decisão com o
-algoritmo C4.5 \cite{quinlan1993c4}. A árvore de decisão gerada é utilizada para
-identificar quais nós da árvore DOM são ruído e quais são conteúdo relevante na
-resposta à submissão do formulário.
-
-\item Em \citeonline{Entropy12} é utilizada uma base de dados de termos
-associados a ``papéis semânticos'' para encontrar, na árvore DOM, os nós folha
-que desempenham estes papéis, atribuindo, a cada um, uma medida de ``entropia
-semântica-estrutural'', de acordo com o papel desempenhado pelo nó folha. A
-entropia dos demais nós é calculada recursivamente, a partir da entropia dos nós
-descendentes. Quanto maior for esta medida de entropia, maior a probabilidade de
-se tratar de uma região de interesse.
 
 \item Em \citeonline{Noisy03} é construída uma árvore de estilos (com base
 nas definições \abreviatura{CSS}{cascade style sheet}CSS) para um determinado
@@ -302,11 +289,52 @@ nós do grafo e os pesos das arestas representam o custo de se segmentar os dois
 nós, que estão interligados, juntos ou separados. Apenas a questão da
 segmentação é abordada, sem a preocupação em identificar quais partes da
 página contém conteúdo relevante e quais contém ruído.
+
+\item Em \citeonline{Entropy09}, uma árvore ``visual'' é gerada a partir da
+árvore DOM, dividindo a página em blocos, com o auxílio de um dicionário de
+$tags$ pré-definido. Cada nó da árvore visual tem sua entropia calculada com
+relação ao atributo $CLASS$, utilizando três metodologias distintas: entropia
+dos nós filhos (\textit{child entropy}), entropia do caminho (\textit{path
+entropy}) e entropia do caminho parcial (\textit{partial path entropy}). Após o
+cálculo da entropia, estes valores são analisados, comparados à um limiar
+estipulado e cada bloco da página é, então, classificado como: CB
+(\textit{container block}), PB (\textit{presentation block}), FB
+(\textit{functional block}) ou IB (\textit{informative block}, conteúdo relevante).
+
+\item \citeonline{SiteOriented11} é uma abordagem orientada a $site$, assim como
+\citeonline{Noisy03}, onde um conjunto de árvores DOM de páginas de um mesmo
+$site$ são alinhadas para identificar os segmentos de uma página a partir das
+semelhanças entre elas, o resultado do alinhamento é, então, refinado, de acordo
+com regras heurísticas, e o resultado final representa a
+subdivisão/organização/$template$ do $site$ analisado pelo algoritmo. Este
+trabalho apenas segmenta a página, sem identificar quais blocos/segmentos seriam
+ruído ou conteúdo. Apesar de necessitar de treinamento, este é realizado de
+maneira não supervisionada.
+
+\item Em \citeonline{Entropy12} é utilizada uma base de dados de termos
+associados a ``papéis semânticos'' para encontrar, na árvore DOM, os nós folha
+que desempenham estes papéis, atribuindo, a cada um, uma medida de ``entropia
+semântica-estrutural'', de acordo com o papel desempenhado por aquele nó folha.
+A entropia dos demais nós é calculada recursivamente, a partir da entropia dos nós
+descendentes. Quanto maior for esta medida de entropia, maior a probabilidade de
+se tratar de uma região de interesse.
+
+\item Em \citeonline{desc2013} de forma semelhante à \citeonline{Boilerplate10},
+são utilizadas as densidades de texto e de $links$, porém, neste trabalho, o
+documento é tratado como uma árvore DOM e não como uma seqüência de blocos. Além
+destas informações (densidade e texto e $links$), são utilizados os dados dos
+formulários da $web$ oculta para formar mais um parâmetro ($QueryScore$) de
+treinamento para uma árvore de decisão gerada com o algoritmo C4.5
+\cite{quinlan1993c4}. A árvore de decisão é, então, utilizada para identificar
+quais nós da árvore DOM são ruído e quais são conteúdo relevante na resposta à
+submissão de um formulário.
+
 \end{itemize}
 	
 \section{Técnicas baseadas em informação visual}\label{sec:vis}
 Além das técnicas baseadas no texto e na árvore DOM da página, existem também
-algumas que utilizam informação visual, como \citeonline{vips03,vide10,viper05}.
+algumas que utilizam informação visual, como
+\citeonline{vips03,viper05,BlockImp07,vide10}.
 Em geral utilizam a árvore DOM em conjunto com as características visuais do
 documento, as quais são obtidas por intermédio de um navegador $web$, utilizado
 para renderizar a página e fornecer as informações necessárias ($e.g.$
@@ -316,6 +344,7 @@ utilizar um renderizador para obtenção destes dados teria que ser melhor
 estudada.
 
 \begin{itemize}
+
 \item Em \citeonline{vips03} é utilizado um renderizador de um navegador $web$
 para obter informação visual (principalmente coordenadas e formatação) de uma
 página e, assim, construir uma estrutura de árvore que representa a hierarquia
@@ -325,15 +354,6 @@ $tags$ HTML específicas com objetivo principal de identificar separadores
 visuais. Neste trabalho, assim como em \citeonline{Graph08}, não há preocupação
 em identificar quais blocos visuais da página contém conteúdo relevante e quais
 contém ruído.
-
-\item \citeonline{vide10} é, na verdade, uma abordagem para extração
-estruturada que se baseia em \citeonline{vips03} para criar a representação
-visual do documento e, então, utilizar as características visuais das páginas da
-$web$ oculta para localizar e extrair os registros contidos no documento. As
-características visuais utilizadas para identificação do conteúdo principal são:
-posição (centralização horizontal), tamanho (conteúdo relevante é maior que
-demais blocos), $layout$ (registros possuem arranjos semelhantes), semelhança
-visual (registros possuem formatação semelhante).
 
 \item \citeonline{viper05} trata-se de uma técnica de extração estruturada, com
 identificação do conteúdo/ruído. Utiliza o renderizador de um navegador $web$
@@ -348,7 +368,28 @@ identificação de padrões dos registros, é o tratamento de repetições
 consecutivas (\textit{tandem repeats}) na comparação da estrutura dos registros.
 Esta abordagem identificada o ruído apenas após a etapa de extração, sem
 evitar o custo computacional de procurar por padrões no ruído.
+
+\item Em \citeonline{BlockImp07}, é utilizada a abordagem de \citeonline{vips03}
+para segmentar a página em blocos. Um conjunto de páginas são analisadas e suas
+estruturas são comparadas para verificar se são equivalentes. Páginas com
+estruturas equivalentes são então analisadas com respeito às informações
+estatísticas dos termos contidos em seus blocos (subdivisões) e um $score$ de
+importância é atribuído a cada bloco. Apesar de necessitar de um conjunto de
+páginas para treinamento, toda a análise do conjunto é realizada de forma não
+supervisionada.
+
+\item \citeonline{vide10} é, na verdade, uma abordagem para extração estruturada
+que, assim como \citeonline{BlockImp07}, se baseia em \citeonline{vips03} para
+criar a representação visual do documento e, então, utilizar as características
+visuais das páginas da $web$ oculta para localizar e extrair os registros
+contidos no documento. As características visuais utilizadas para identificação
+do conteúdo principal são:
+posição (centralização horizontal), tamanho (conteúdo relevante é maior que
+demais blocos), $layout$ (registros possuem arranjos semelhantes), semelhança
+visual (registros possuem formatação semelhante).
+
 \end{itemize}
+
 
 \section{Representação TPS}
 A representação da página $web$ utilizada nesta pesquisa (seqüência de $tag$
@@ -384,23 +425,23 @@ de explicitar as diferenças entre estes trabalhos.
    &          & Opera    & única    & Treina-   & informação  & sintaxe \\ 
 \# &Técnica   & sobre    & página   & mento     & a priori    & HTML \\
 \hline
-1 & \citeonline{BlockImp07} & Texto & - & - & - & - \\
-2 & \citeonline{Densiometric08} & Texto & - & - & - & - \\
-3 & \citeonline{Boilerplate10} & Texto & - & - & - & - \\
-4 & \citeonline{CETR10} & Texto & - & - & - & - \\
-5 & \citeonline{NonTemplate13} & Texto & - & - & - & - \\
-6 & \citeonline{Noisy03} & DOM & Não & Sim & Não & Sim \\
-7 & \citeonline{Graph08} & DOM & Não & Sim & Não & Sim \\
-8 & \citeonline{Entropy09} & DOM & Sim & Não & Sim & Não \\
-9 & \citeonline{SiteOriented11} & DOM & Não & Sim & Não & Sim \\
-10 & \citeonline{Entropy12} & DOM & Sim & Não & Sim & Não \\
-11 & \citeonline{Jointop07} & DOM & Não & Sim & Não & Sim \\
-12 & \citeonline{desc2013} & DOM & Não & Sim & Não & Sim \\
-13 & \citeonline{vips03} & Visual & Sim & Não & Sim & Não \\
-14 & \citeonline{viper05} & Visual & Sim & Não & Não & Não \\
-15 & \citeonline{vide10} & Visual & Sim & Não & Sim & Não \\
+1 & \citeonline{Densiometric08} & Texto & - & - & - & - \\
+2 & \citeonline{Boilerplate10} & Texto & - & - & - & - \\
+3 & \citeonline{CETR10} & Texto & - & - & - & - \\
+%- & \citeonline{NonTemplate13} & Texto & - & - & - & - \\
+4 & \citeonline{Noisy03} & DOM & Não & Sim & Não & Sim \\
+%11 & \citeonline{Jointop07} & DOM & Não & Sim & Não & Sim \\
+5 & \citeonline{Graph08} & DOM & Não & Sim & Não & Sim \\
+6 & \citeonline{Entropy09} & DOM & Sim & Não & Sim & Não \\
+7 & \citeonline{SiteOriented11} & DOM & Não & Sim & Não & Sim \\
+8 & \citeonline{Entropy12} & DOM & Sim & Não & Sim & Sim \\
+9 & \citeonline{desc2013} & DOM & Não & Sim & Não & Sim \\
+10 & \citeonline{vips03} & Visual & Sim & Não & Sim & Não \\
+11 & \citeonline{viper05} & Visual & Sim & Não & Não & Sim \\
+12 & \citeonline{BlockImp07} & Visual & Não & Sim & Não & Não \\
+13 & \citeonline{vide10} & Visual & Sim & Não & Sim & Não \\
 \hline
-16 & \citeonline{TPS2013} & TPS & Sim & Não & Não & Sim \\
+14 & \citeonline{TPS2013} & TPS & Sim & Não & Não & Sim \\
 \end{tabular}
 \end{tiny}
 \end{table}
@@ -412,16 +453,22 @@ ruído com relação às seguintes características:
   TPS;
   \item Se necessitam de apenas uma página para funcionar ou de um conjunto de
   páginas;
-  \item Se necessitam de treinamento/supervisão;
+  \item Se necessitam de treinamento e/ou supervisão;
   \item Se necessitam de informações pré-definidas;
   \item Se dependem, ou não, da sintaxe HTML.
 \end{itemize}
 
-Como é possível observar, na Tabela \ref{table:comp}, as técnicas
-existentes para eliminação de ruído, aplicáveis à extração estruturada
-(Linhas \#6 a \#15) não atendem a todos os requisitos que o método proposto
-atende (Linha \#16). Os métodos que não dependem da sintaxe HTML, por exemplo,
-necessitam de treinamento e/ou definições \textit{a priori}.
+Como é possível observar, na Tabela \ref{table:comp}, as técnicas existentes,
+que foram analisadas, para eliminação de ruído, aplicáveis à extração
+estruturada (Linhas \#4 a \#13), com exceção de \citeonline{viper05} (Linha
+\#11), não atendem a todos os requisitos que o método proposto atende (Linha
+\#14). Por exemplo: os métodos que não dependem da sintaxe HTML, necessitam de
+treinamento e/ou definições \textit{a priori}. A abordagem adotada em
+\citeonline{viper05} atende à todos os requisitos, no entanto, utiliza um
+renderizador (que é computacionalmente dispendioso) e só identifica o ruído
+posteriormente à identificação dos registros, desperdiçando uma
+oportunidade de otimizar o processo, identificando e eliminando o ruído antes
+de submeter a página à extração.
 
 \chapter{Método para remoção de ruído}\label{ch:met}
 
