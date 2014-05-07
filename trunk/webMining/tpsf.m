@@ -77,31 +77,37 @@ function [pos, mainregion] = searchRegion(tagPathSequence)
   mainregion = tagPathSequence;
 end
 
+function pos = findsubseq(seq,subseq)
+	pos = 0;
+	for i=1:(length(seq)-length(subseq)+1)
+		if ( seq(i)==subseq(1) )
+			if seq(i:i+length(subseq)-1) == subseq
+				pos = i;
+				break;
+			end
+		end
+	end
+end
+
 function [blks,blkfreq] = LZDecomp(seq)
   blkcount=0; i=1;
   blkfreq=zeros(1,length(seq));
   while i < length(seq)
-    l=m=0;
+    len=pos=0;
     prefix = seq(1:i-1);
     suffix = seq(i:length(seq));
-    for j=length(suffix):-1:1
-      prior = suffix(1:j);
-      pos = find(prefix == prior(1));
-      for k=1:length(pos)
-        if ((pos(k)+j) <= length(prefix))
-          if prefix(pos(k):pos(k)+j-1)==prior
-            l=j;
-            m=pos(k);
-            break;
-          end
-        end
+    for l=min(length(suffix),length(prefix)):-1:1
+      prior = suffix(1:l);
+		pos=findsubseq(prefix,prior);
+		if pos > 0
+			len=l;
+			break;
       end
-      if l > 0 break; end
     end
-    if l > 4 
+    if len > 15
       blkcount = blkcount + 1;
-      blks{blkcount}=[i m l m+l];
-      blkfreq=blkfreq + [zeros(1,m-1) ones(1,l) zeros(1,length(seq)-m-l+1)];
+      blks{blkcount}=[i pos pos+len len];
+      blkfreq=blkfreq + [zeros(1,pos-1) ones(1,len) zeros(1,i-pos-len) ones(1,len) zeros(1,length(seq)-i-len+1)];
       i = i + l - 1;
     end
     i = i + 1;
@@ -125,6 +131,12 @@ while i >= 0
 end
 
 [blks,blkfreq] = LZDecomp(tps');
+figure; hold;
+for i=1:length(blks)	
+	b = blks{i};	
+	plot(i*[zeros(1,b(2)-1) ones(1,b(4)) zeros(1,length(tps)-b(4)-b(2)+1)],'k.');
+end
+figure; plot(tps,'k.');
 
 figure;
 hold;
