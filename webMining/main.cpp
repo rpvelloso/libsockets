@@ -244,6 +244,7 @@ void printUsage(char *p)
 	cout << "-xml outputs MDR results in XML format" << endl;
 	cout << "-f   text filter string" << endl;
 	cout << "-a   display tag path of input" << endl;
+	cout << "-b   display tag path of input without style" << endl;
 	cout << "-g   mine forms and fields" << endl;
 	cout << "-c   displays only record count of main region." << endl;
 	cout << "-r   apply tag path sequence filter." << endl;
@@ -256,6 +257,7 @@ void printUsage(char *p)
 int main(int argc, char *argv[])
 {
 	int opt,mdr=0,tp=0,mineForms=0,dbg=0,tpsFilter=0,lz=0;
+	bool style=true;
 	float st=1.0; // similarity threshold
 	string inp="",outp="",search="",pattern="",filterStr="";
 	tCustomDOM *d = new tCustomDOM();
@@ -263,7 +265,7 @@ int main(int argc, char *argv[])
 	tFormExtractDOM *fe = new tFormExtractDOM();
 	fstream patternFile,inputFile,outputFile;
 
-	while ((opt = getopt(argc, argv, "i:o:t:s:p:f:x:d:mhvcgarz")) != -1) {
+	while ((opt = getopt(argc, argv, "i:o:t:s:p:f:x:d:mhvcgabrz")) != -1) {
 		switch (opt) {
 		case 'c':
 			d->recCountDisplay = 1;
@@ -297,6 +299,10 @@ int main(int argc, char *argv[])
 			break;
 		case 'a':
 			tp = 1;
+			break;
+		case 'b':
+			tp = 1;
+			style = false;
 			break;
 		case 'x':
 			if (optarg && string(optarg) == "ml") d->xml=1;
@@ -365,11 +371,11 @@ int main(int argc, char *argv[])
 	}
 
 	if (tp) {
-		d->buildTagPath("",d->getBody(),true);
+		d->buildTagPath("",d->getBody(),true,style);
 	}
 
 	if (lz) {
-		d->buildTagPath("",d->getBody(),false);
+		d->buildTagPath("",d->getBody(),false,true);
 		d->LZExtraction();
 	}
 

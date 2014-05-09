@@ -1062,7 +1062,7 @@ void tDOM::searchBorder(wstring s, float st) {
 	}
 }
 
-void tDOM::buildTagPath(string s, tNode *n, bool print) {
+void tDOM::buildTagPath(string s, tNode *n, bool print, bool st) {
 	list<tNode *>::iterator i = n->nodes.begin();
 	string tagStyle,tagClass;
 
@@ -1077,7 +1077,8 @@ void tDOM::buildTagPath(string s, tNode *n, bool print) {
 	tagClass = n->getAttribute("class");
 	if (tagStyle != "") tagStyle = " " + tagStyle;
 	if (tagClass != "") tagClass = " " + tagClass;
-	s = s + "/" + n->getTagName() + tagClass + tagStyle;
+	if (st) s = s + "/" + n->getTagName() + tagClass + tagStyle;
+	else s = s + "/" + n->getTagName();
 
 	if (tagPathMap.find(s) == tagPathMap.end()) {
 		pathCount++;
@@ -1092,13 +1093,13 @@ void tDOM::buildTagPath(string s, tNode *n, bool print) {
 	if (!(n->nodes.size())) return;
 
 	for (;i!=n->nodes.end();i++)
-		buildTagPath(s,*i,print);
+		buildTagPath(s,*i,print,st);
 }
 
 void tDOM::tagPathSequenceFilter(float st) {
 	//vector<tNode *> nodeSeqBkp,setDiff;
 
-	buildTagPath("",body,false);
+	buildTagPath("",body,false,true);
 	//nodeSeqBkp = nodeSequence;
 	searchBorder(tagPathSequence,st);
 	/*cerr << nodeSeqBkp.size() << " " << nodeSequence.size() << " " << tagPathSequence.size() << endl;
