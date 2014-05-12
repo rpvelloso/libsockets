@@ -53,6 +53,7 @@ public:
 	string getRegEx(tNode *, int, int = 0);
 	void tagPathSequenceFilter(float);
 	void LZExtraction();
+	void DRE(float);
 
 protected:
     void treeAlign(tNode *, tNode *, int **, tNode *);

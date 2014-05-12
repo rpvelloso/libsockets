@@ -1019,7 +1019,7 @@ void tDOM::searchBorder(wstring s, float st) {
 						//score[1] = float(score[1])/float(filteredAlphabet.size()+1);
 						scoreThreshold = float(abs(score[0]-score[1]))/float(score[0]+score[1]);
 
-						if (!filteredAlphabet.empty() && (scoreThreshold > 0.20)) {
+						if (!filteredAlphabet.empty() && (scoreThreshold > 0.2)) {
 							regionFound = true;
 							break;
 						} else {
@@ -1110,4 +1110,63 @@ void tDOM::tagPathSequenceFilter(float st) {
 		nodeSequence = setDiff;
 	}*/
 	prune(body);
+}
+
+void tDOM::DRE(float st) {
+	tagPathSequenceFilter(st);
+	buildTagPath("",body,false,true);
+
+	int d[tagPathSequence.size()];
+	map<int, vector<int> > diffMap;
+	map<int, int> TPMap;
+	tDataRegion dr;
+	tNode *p = new tNode(0,"");
+	int rootTag;
+	int tagCount=0;
+
+
+	for (size_t i=1;i<tagPathSequence.size();i++) {
+		d[i]=tagPathSequence[i]-tagPathSequence[i-1];
+		if (d[i] < 0) {
+			diffMap[d[i]].push_back(i+1);
+		}
+	}
+
+	int l=(*(diffMap.begin())).second[0];
+	int r=l;
+
+	for (map<int,vector<int> >::iterator i=diffMap.begin();i!=diffMap.end();i++) {
+
+		for (size_t j=0; j<(*i).second.size();j++) {
+			if ((*i).second[j]<l) l = (*i).second[j];
+			if ((*i).second[j]>r) r = (*i).second[j];
+			TPMap[tagPathSequence[(*i).second[j]]]++;
+			cout << "TPS[" << (*i).second[j] << "] = " << tagPathSequence[(*i).second[j]] << endl;
+		}
+		if ((float)((float)(r-l)/(float)tagPathSequence.size()) >= st) break;
+	}
+
+	for (map<int,int>::iterator i=TPMap.begin();i!=TPMap.end();i++) {
+		cout << (*i).first << " " << (*i).second << endl;
+		if ((*i).second > tagCount) {
+			tagCount = (*i).second;
+			rootTag = (*i).first;
+		}
+	}
+
+	for (size_t i=0;i<tagPathSequence.size();i++) {
+		if (tagPathSequence[i] == rootTag) {
+			cout << "root: " << i << endl;
+			p->addNode(nodeSequence[i]);
+		}
+	}
+
+	dr.clear();
+	dr.DRLength = p->nodes.size();
+	dr.groupSize = 1;
+	dr.p = p;
+	dr.s = p->nodes.begin();
+	dr.e = p->nodes.end();
+	onDataRecordFound(dr);
+	delete p;
 }

@@ -233,7 +233,7 @@ public:
 
 void printUsage(char *p)
 {
-	cout << "usage: "<<p<<" [-i input_file] [-o output_file] [-p pattern file] [-s search_string] [-v] [-t ###.##] [-m] [-xml] [-f str] [-a] [-g] [-c] [-r]"<<endl;
+	cout << "usage: "<<p<<" [-i input_file] [-o output_file] [-p pattern file] [-s search_string] [-v] [-t ###.##] [-m] [-xml] [-f str] [-a] [-b] [-g] [-c] [-r] [-q]"<<endl;
 	cout << "-i   input file (default stdin)"<<endl;
 	cout << "-o   output file (default stdout)"<<endl;
 	cout << "-p   pattern file to search for"<<endl;
@@ -248,6 +248,7 @@ void printUsage(char *p)
 	cout << "-g   mine forms and fields" << endl;
 	cout << "-c   displays only record count of main region." << endl;
 	cout << "-r   apply tag path sequence filter." << endl;
+	cout << "-q   DRE." << endl;
 	cout << "-z   LZ extraction." << endl;
 	exit(-1);
 }
@@ -257,7 +258,7 @@ void printUsage(char *p)
 int main(int argc, char *argv[])
 {
 	int opt,mdr=0,tp=0,mineForms=0,dbg=0,tpsFilter=0,lz=0;
-	bool style=true;
+	bool style=true,DRE=false;
 	float st=1.0; // similarity threshold
 	string inp="",outp="",search="",pattern="",filterStr="";
 	tCustomDOM *d = new tCustomDOM();
@@ -265,7 +266,7 @@ int main(int argc, char *argv[])
 	tFormExtractDOM *fe = new tFormExtractDOM();
 	fstream patternFile,inputFile,outputFile;
 
-	while ((opt = getopt(argc, argv, "i:o:t:s:p:f:x:d:mhvcgabrz")) != -1) {
+	while ((opt = getopt(argc, argv, "i:o:t:s:p:f:x:d:mhvcgabrqz")) != -1) {
 		switch (opt) {
 		case 'c':
 			d->recCountDisplay = 1;
@@ -310,6 +311,9 @@ int main(int argc, char *argv[])
 			break;
 		case 'g':
 			mineForms = 1;
+			break;
+		case 'q':
+			DRE = true;
 			break;
 		case 'z':
 			lz = 1;
@@ -392,15 +396,19 @@ int main(int argc, char *argv[])
 		d->searchPattern(p,st);
 	}
 
-	if (search == "" && pattern == "" && !mdr && !tp && !lz) {
-		d->printDOM();
-	}
-
 	if (mdr) {
 		d->filterTag = search;
 		d->filterStr = filterStr;
 		d->MDR(d->getRoot(),K,st,1);
 		cerr << "Similarity threshold used: " << st << endl;
+	}
+
+	if (DRE) {
+		d->DRE(st);
+	}
+
+	if (search == "" && pattern == "" && !mdr && !tp && !lz && !DRE) {
+		d->printDOM();
 	}
 
 	delete d;
