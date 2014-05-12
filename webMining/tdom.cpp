@@ -1116,6 +1116,11 @@ void tDOM::DRE(float st) {
 	tagPathSequenceFilter(st);
 	buildTagPath("",body,false,true);
 
+	if (verbose) {
+		for (size_t i=0;i<tagPathSequence.size();i++)
+			cerr << tagPathSequence[i] << endl;
+	}
+
 	int d[tagPathSequence.size()];
 	map<int, vector<int> > diffMap;
 	map<int, int> TPMap;
