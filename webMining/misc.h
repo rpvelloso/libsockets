@@ -66,13 +66,6 @@ unsigned int edit_distance( T &s1,  T &s2) {
 		}
 	}
 
-	for(unsigned int i = 1; i <= len1; ++i) {
-		for(unsigned int j = 1; j <= len2; ++j) {
-			cout << d[i][j] << "\t";
-		}
-		cout << endl;
-	}
-
 	unsigned int i=len1;
 	unsigned int j=len2;
 	T s11,s22;
