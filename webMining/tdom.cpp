@@ -325,11 +325,10 @@ int tDOM::scan(istream &htmlInput) {
 int tDOM::treeMatch(tNode *t, tNode *p) {
 	if (t->compare(p)) {
 		if (t->nodes.size() >= p->nodes.size()) {
-			list<tNode *>::iterator i,j;
 			size_t m=0;
 
-			i = t->nodes.begin();
-			j = p->nodes.begin();
+			auto i = t->nodes.begin();
+			auto j = p->nodes.begin();
 			for (; j!=p->nodes.end(); i++, j++) {
 				if ((*i)->compare(*j)) m += treeMatch(*i,*j);
 			}
@@ -346,16 +345,15 @@ size_t tDOM::STM(tNode *a, tNode *b, tNode *rec)
 		int k=a->nodes.size();
 		int n=b->nodes.size();
 		int *m[k+1],i,j,r;
-		list<tNode *>::iterator ii,jj;
 
 		for (i=0;i<=k;i++) m[i] = new int[n+1];
 
 		for (i=0;i<=k;i++) m[i][0]=0;
 		for (j=0;j<=n;j++) m[0][j]=0;
 
-		ii = a->nodes.begin();
+		auto ii = a->nodes.begin();
 		for (i=1;i<=k;i++,ii++) {
-			jj = b->nodes.begin();
+			auto jj = b->nodes.begin();
 			for (j=1;j<=n;j++,jj++) {
 				int z = m[i-1][j-1]+STM(*ii,*jj,rec);
 
@@ -376,11 +374,10 @@ size_t tDOM::STM(tNode *a, tNode *b, tNode *rec)
 void tDOM::treeAlign(tNode* a, tNode* b, int **m, tNode *rec) {
 	int pi,i,k=a->nodes.size();
 	int pj,j,n=b->nodes.size();
-	list<tNode *>::iterator ii,jj;
 	int insert=1;
 
-	ii = a->nodes.begin();
-	jj = b->nodes.begin();
+	auto ii = a->nodes.begin();
+	auto jj = b->nodes.begin();
 
 	cerr << k << "x" << n << endl << "\t\t";
 	for (j=1;j<=n;j++,jj++) cerr << (*jj)->tagName << "\t";
@@ -451,19 +448,16 @@ void tDOM::treeAlign(tNode* a, tNode* b, int **m, tNode *rec) {
 
 list <tNode *> tDOM::getRecord(tNode * seed, tNode *rec) {
 	list<tNode *> ret;
-	list<tNode *>::iterator i;
 	size_t recsize=0;
 
 	getAlignment(seed,rec,ret);
-	for (i=ret.begin();i!=ret.end();i++) recsize += ((*i)!=NULL);
+	for (auto i=ret.begin();i!=ret.end();i++) recsize += ((*i)!=NULL);
 	if (!recsize) ret.clear();
 	return ret;
 }
 
 void tDOM::getAlignment(tNode *seed, tNode *rec, list<tNode *> &attrs) {
-	list <tNode *>::iterator i;
-
-	for (i=seed->nodes.begin();i!=seed->nodes.end();i++) {
+	for (auto i=seed->nodes.begin();i!=seed->nodes.end();i++) {
 		if ((*i)->nodes.size() == 0) {
 			if ((*i)->alignments.find(rec) != (*i)->alignments.end()) {
 				tNode *n;
@@ -482,8 +476,6 @@ void tDOM::getAlignment(tNode *seed, tNode *rec, list<tNode *> &attrs) {
 }
 
 void tDOM::searchTree(tNode *n, tNode *t, float st) {
-	list<tNode *>::iterator i;
-
 	if (n) {
 		if (st == 1) { // threshold = 100%, exact match
 			if (treeMatch(n,t)) onPatternFound(n,t,1);
@@ -491,17 +483,16 @@ void tDOM::searchTree(tNode *n, tNode *t, float st) {
 			float sim=(float)STM(n,t,NULL) / (float)t->size;
 			if (sim >= st) onPatternFound(n,t,sim);
 		}
-		for (i = n->nodes.begin();i!=n->nodes.end();i++)
+		for (auto i = n->nodes.begin();i!=n->nodes.end();i++)
 			searchTree(*i,t,st);
 	}
 }
 
 int tDOM::searchString(tNode *n, string t, string tt, int callEvent) {
-	list<tNode *>::iterator i;
 	int r=0;
 
 	if (n) {
-		for (i = n->nodes.begin();i!=n->nodes.end();i++) {
+		for (auto i = n->nodes.begin();i!=n->nodes.end();i++) {
 			if ((*i)->compare(t) && (tt=="" || (*i)->text.find(tt)!=string::npos)) {
 				if (callEvent) onTagFound(*i);
 				r++;
@@ -521,8 +512,6 @@ tNode *tDOM::getBody() {
 }
 
 void tDOM::printNode(tNode *n, int lvl) {
-	list<tNode *>::iterator i;
-
 	if (n) {
 		for (int j=1;j<lvl;j++) cout << " ";
 		switch (n->type) {
@@ -551,8 +540,7 @@ void tDOM::printNode(tNode *n, int lvl) {
 			cout << endl;
 		}
 
-		i = n->nodes.begin();
-		for (;i!=n->nodes.end();i++) printNode(*i,lvl+1);
+		for (auto i = n->nodes.begin();i!=n->nodes.end();i++) printNode(*i,lvl+1);
 
 		// close current tag
 		if ((n->type != -1) && (singleTags.find(n->tagName) == singleTags.end())) {
@@ -577,7 +565,6 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 		tNode *a,*b;
 		int n=0,DRFound;
 		size_t r=0;
-		list<tNode *>::iterator j,f;
 		float simTable[k+1][p->nodes.size()];
 		tDataRegion bestDR, currentDR;
 		vector<tNode *>v(p->nodes.begin(),p->nodes.end()); // Remaining children, not covered by any DR, to call MDR recursively
@@ -591,12 +578,12 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 		b = new tNode(0,"");
 
 		// *** Combine & Compare
-		f = p->nodes.begin();
+		auto f = p->nodes.begin();
 		for (int ff=0;f!=p->nodes.end();f++, ff++) { // iterate the start child of 'p'
 			for (int i=ff+1;i<=k;i++) { // iterate group size
 				a->clear();
 				b->clear();
-				j = f; n = 0;
+				auto j = f; n = 0;
 				for (int jj=0;j!=p->nodes.end();j++,jj++) { // iterate from 'f' child to the end
 
 					if (!(jj%i)) n = !n; // Combine nodes under fake parents (a and b) in groups of size 'i'
@@ -688,12 +675,11 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 };
 
 tNode *tDOM::findNext(tNode *n, string t) {
-	list<tNode *>::iterator i;
-	tNode * r=NULL;
+	tNode *r=NULL;
 
 	if (!n) n = current;
 	if (n) {
-		for (i = n->nodes.begin();i!=n->nodes.end();i++) {
+		for (auto i = n->nodes.begin();i!=n->nodes.end();i++) {
 			if ((*i)->compare(t)) return (*i);
 			if ((r=findNext(*i,t))) return r;
 		}
@@ -712,13 +698,12 @@ bool compareNodesSize(tNode *a, tNode *b) {
 }
 
 vector<tNode *> tDOM::partialTreeAlignment(tDataRegion dr) {
-	list<tNode *>::iterator i;
 	vector<tNode *> trees;
 	tNode *rec = NULL;
 	int seedSize=-1;
 
 	if (dr.groupSize > 1) {
-		for (i=dr.s;i!=dr.e;) {
+		for (auto i=dr.s;i!=dr.e;) {
 			rec = new tNode(0,"");
 			rec->depth = 3;
 			for (size_t j=0;j<dr.groupSize;j++,i++) {
@@ -749,7 +734,7 @@ vector<tNode *> tDOM::partialTreeAlignment(tDataRegion dr) {
 string tDOM::getRegEx(tNode* seed, int reccount, int lvl) {
 	string ret="",s;
 
-	for (list<tNode *>::iterator i=seed->nodes.begin();i!=seed->nodes.end();i++) {
+	for (auto i=seed->nodes.begin();i!=seed->nodes.end();i++) {
 		ret = ret + "\n";
 		for (int j=0;j<lvl;j++) ret = ret + "  ";
 		ret = ret + ((*i)->type==0?"<":"") + (*i)->tagName + ((*i)->type==0?">":"") + (((*i)->matches == reccount)?"":"?");
@@ -763,7 +748,7 @@ string tDOM::getRegEx(tNode* seed, int reccount, int lvl) {
 }
 
 void tDOM::onDataRegionFound(tDataRegion region, int K, float st) {
-	list<tNode *>::iterator i=region.s;
+	auto i=region.s;
 	tNode *n = new tNode(0,"");
 	list<tDataRegion> records;
 
@@ -785,7 +770,7 @@ void tDOM::onDataRegionFound(tDataRegion region, int K, float st) {
 		}
 	} else {
 		for (i=region.s;i!=region.e;i++) {
-			list<tNode *>::iterator l=i;
+			auto l=i;
 
 			records = MDR((*i),K,st,0);
 			if (records.size()==1 && records.front().DRLength == n->nodes.size()) {
@@ -812,10 +797,9 @@ void tDOM::onDataRegionFound(tDataRegion region, int K, float st) {
 }
 
 int tDOM::treeSize(tNode* n) {
-	list<tNode *>::iterator i;
 	int s=0;
 
-	for (i=n->nodes.begin();i!=n->nodes.end();i++) {
+	for (auto i=n->nodes.begin();i!=n->nodes.end();i++) {
 		s += treeSize(*i);
 	}
 	n->size = s + 1;
@@ -823,10 +807,9 @@ int tDOM::treeSize(tNode* n) {
 }
 
 int tDOM::treeDepth(tNode* n) {
-	list<tNode *>::iterator i;
 	int d=0,d1;
 
-	for (i=n->nodes.begin();i!=n->nodes.end();i++) {
+	for (auto i=n->nodes.begin();i!=n->nodes.end();i++) {
 		d1 = treeDepth(*i);
 		if (d1>d) d = d1;
 	}
@@ -887,7 +870,7 @@ void tDOM::LZExtraction() {
 
 	int start=0,end=0;
 
-	for (list<LZBlock *>::iterator i=blks.begin();i!=blks.end();i++) {
+	for (auto i=blks.begin();i!=blks.end();i++) {
 		if ((*i)->length > 1) {
 			start = min(start,(*i)->reference);
 			end = (*i)->position + (*i)->length - 1;
@@ -931,11 +914,11 @@ bool tDOM::prune(tNode *n) {
 
 	if (n == NULL) return false;
 
-	for (list<tNode *>::iterator i=n->nodes.begin();i!=n->nodes.end();i++) {
+	for (auto i=n->nodes.begin();i!=n->nodes.end();i++) {
 		if (prune(*i)) remove.push_back(*i);
 	}
 
-	for (list<tNode *>::iterator i=remove.begin();i!=remove.end();i++) {
+	for (auto i=remove.begin();i!=remove.end();i++) {
 		n->size -= (*i)->size;
 		n->nodes.remove(*i);
 		count--;
@@ -951,7 +934,6 @@ bool tDOM::prune(tNode *n) {
 void tDOM::searchBorder(wstring s, float st) {
 	set<int> alphabet,filteredAlphabet,regionAlphabet,intersect;
 	map<int,int> currentSymbolCount,symbolCount,thresholds;
-	map<int,int>::iterator threshold;
 	bool regionFound=0;
 	size_t border;
 	float score[2];
@@ -966,9 +948,9 @@ void tDOM::searchBorder(wstring s, float st) {
 		symbolCount[s[i]]++;
 	}
 
-	for (map<int,int>::iterator i=symbolCount.begin();i!=symbolCount.end();i++)
+	for (auto i=symbolCount.begin();i!=symbolCount.end();i++)
 		thresholds[(*i).second] = (*i).first;
-	threshold = thresholds.begin();
+	auto threshold = thresholds.begin();
 
 	while (!regionFound && (threshold != thresholds.end())) {
 		int gapsize=0;
@@ -976,13 +958,13 @@ void tDOM::searchBorder(wstring s, float st) {
 		cerr << "Threshold: " << (*threshold).first << endl;
 
 		filteredAlphabet.clear();
-		for (map<int,int>::iterator j=symbolCount.begin();j!=symbolCount.end();j++) {
+		for (auto j=symbolCount.begin();j!=symbolCount.end();j++) {
 			if ((*j).second > (*threshold).first) filteredAlphabet.insert((*j).first);
 		}
 		if (filteredAlphabet.size() < 2) break;
 		threshold++;
 
-		/*for (set<int>::iterator j=filteredAlphabet.begin();j!=filteredAlphabet.end();j++) {
+		/*for (auto j=filteredAlphabet.begin();j!=filteredAlphabet.end();j++) {
 			cerr << *j << "\t" << symbolCount[*j] << endl;
 		}*/
 		cerr.precision(4);
@@ -1002,11 +984,11 @@ void tDOM::searchBorder(wstring s, float st) {
 					set_intersection(filteredAlphabet.begin(),filteredAlphabet.end(),regionAlphabet.begin(),regionAlphabet.end(),inserter(intersect,intersect.begin()));
 
 					/*cerr << "s[i]=" << s[i] << endl;
-					for (set<int>::iterator j=filteredAlphabet.begin();j!=filteredAlphabet.end();j++) cerr << *j << " ";
+					for (auto j=filteredAlphabet.begin();j!=filteredAlphabet.end();j++) cerr << *j << " ";
 					cerr << endl;
-					for (set<int>::iterator j=regionAlphabet.begin();j!=regionAlphabet.end();j++) cerr << *j << " ";
+					for (auto j=regionAlphabet.begin();j!=regionAlphabet.end();j++) cerr << *j << " ";
 					cerr << endl;
-					for (set<int>::iterator j=intersect.begin();j!=intersect.end();j++) cerr << *j << " ";
+					for (auto j=intersect.begin();j!=intersect.end();j++) cerr << *j << " ";
 					cerr << endl << endl;*/
 
 					if (intersect.empty()) {
@@ -1036,20 +1018,18 @@ void tDOM::searchBorder(wstring s, float st) {
 	}
 
 	if (regionFound) {
-		vector<tNode *>::const_iterator b,m,e;
-
 		cerr.precision(4);
 		cerr << "region detected (" << regionAlphabet.size() << "): ";
-		for (set<int>::iterator j=regionAlphabet.begin();j!=regionAlphabet.end();j++) cerr << (*j) << " ";
+		for (auto j=regionAlphabet.begin();j!=regionAlphabet.end();j++) cerr << (*j) << " ";
 		cerr << endl << "scores:" << endl;
 		cerr << border + 1 << "\t" << regionAlphabet.size() << "\t" << score[0] << endl;
 		cerr << s.size() - border - 1 << "\t" << filteredAlphabet.size() << "\t" << score[1] << endl;
 		cerr << "% = " << scoreThreshold << endl;
 		cerr << endl;
 
-		b = nodeSequence.begin();
-		m = nodeSequence.begin() + border + 1;
-		e = nodeSequence.end();
+		auto b = nodeSequence.begin();
+		auto m = nodeSequence.begin() + border + 1;
+		auto e = nodeSequence.end();
 
 		if (score[1] > score[0]) {
 			s = s.substr(border+1,s.size());
@@ -1063,7 +1043,7 @@ void tDOM::searchBorder(wstring s, float st) {
 }
 
 void tDOM::buildTagPath(string s, tNode *n, bool print, bool st) {
-	list<tNode *>::iterator i = n->nodes.begin();
+	auto i = n->nodes.begin();
 	string tagStyle,tagClass;
 
 	if (s == "") {
@@ -1116,11 +1096,6 @@ void tDOM::DRE(float st) {
 	tagPathSequenceFilter(st);
 	buildTagPath("",body,false,true);
 
-	if (verbose) {
-		for (size_t i=0;i<tagPathSequence.size();i++)
-			cerr << tagPathSequence[i] << endl;
-	}
-
 	int d[tagPathSequence.size()];
 	map<int, vector<int> > diffMap;
 	map<int, int> TPMap;
@@ -1140,7 +1115,7 @@ void tDOM::DRE(float st) {
 	int l=(*(diffMap.begin())).second[0];
 	int r=l;
 
-	for (map<int,vector<int> >::iterator i=diffMap.begin();i!=diffMap.end();i++) {
+	for (auto i=diffMap.begin();i!=diffMap.end();i++) {
 
 		for (size_t j=0; j<(*i).second.size();j++) {
 			if ((*i).second[j]<l) l = (*i).second[j];
@@ -1151,7 +1126,7 @@ void tDOM::DRE(float st) {
 		if ((float)((float)(r-l)/(float)tagPathSequence.size()) >= st) break;
 	}
 
-	for (map<int,int>::iterator i=TPMap.begin();i!=TPMap.end();i++) {
+	for (auto i=TPMap.begin();i!=TPMap.end();i++) {
 		cout << (*i).first << " " << (*i).second << endl;
 		if ((*i).second > tagCount) {
 			tagCount = (*i).second;
@@ -1161,14 +1136,14 @@ void tDOM::DRE(float st) {
 
 	for (size_t i=0;i<tagPathSequence.size();i++) {
 		if (tagPathSequence[i] == rootTag) {
-			cout << "root: " << i << endl;
+			cout << "root: " << i << " " << nodeSequence[i]->tagName << " : " << nodeSequence[i]->text << endl;
 			p->addNode(nodeSequence[i]);
 		}
 	}
 
 	dr.clear();
-	dr.DRLength = p->nodes.size();
 	dr.groupSize = 1;
+	dr.DRLength = p->nodes.size();
 	dr.p = p;
 	dr.s = p->nodes.begin();
 	dr.e = p->nodes.end();

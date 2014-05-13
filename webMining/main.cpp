@@ -51,7 +51,7 @@ public:
 	virtual void onDataRecordFound(tDataRegion dr) {};
 protected:
 	void searchForm(tNode *n) {
-		list<tNode *>::iterator i = n->getNodes().begin();
+		auto i = n->getNodes().begin();
 
 		for (;i!=n->getNodes().end();i++) {
 			if (((*i)->getTagName() == "input") ||
@@ -82,7 +82,7 @@ public:
 				if (xml) cout << "<scores>";
 				else cout << "<br><div id='scores'>";
 
-				for (list<int>::iterator i=scores.begin();i!=scores.end();i++) {
+				for (auto i=scores.begin();i!=scores.end();i++) {
 					cout << (*i) << ";" << 100.00*(float)(*i)/(float)maxScore << "%";
 					if (!xml) cout << "<br>";
 					cout << endl;
@@ -186,7 +186,7 @@ public:
 						else
 							cout << "<tr><td>" << gr << "</td>";
 
-						for (list<tNode *>::iterator j=fields.begin();j!=fields.end();j++) {
+						for (auto j=fields.begin();j!=fields.end();j++) {
 							if (xml) {
 								cout << "   <field tag=\"";
 								if ((*j)) {

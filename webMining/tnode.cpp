@@ -48,11 +48,9 @@ tNode::tNode(int tp, string tx) {
 }
 
 tNode::~tNode() {
-	list<tNode *>::iterator i;
-
 	if (seed != NULL) seed->nodes.remove(this);
 
-	for (i=nodes.begin();i!=nodes.end();i++) {
+	for (auto i=nodes.begin();i!=nodes.end();i++) {
 		if ((*i)->parent == this) delete (*i);
 		else if ((*i)->seed == this) (*i)->seed = NULL;
 	}
