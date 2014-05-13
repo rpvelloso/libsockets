@@ -264,7 +264,8 @@ int main(int argc, char *argv[])
 	tCustomDOM *d = new tCustomDOM();
 	tCustomDOM *p = new tCustomDOM();
 	tFormExtractDOM *fe = new tFormExtractDOM();
-	fstream patternFile,inputFile,outputFile;
+	fstream patternFile,inputFile;
+	filebuf outputFile;
 
 	while ((opt = getopt(argc, argv, "i:o:t:s:p:f:x:d:mhvcgabrqz")) != -1) {
 		switch (opt) {
@@ -356,12 +357,9 @@ int main(int argc, char *argv[])
 	}
 
 	if (outp != "") {
-		FILE *outf = fopen(outp.c_str(),"w");
+		outputFile.open(outp.c_str(),ios_base::out|ios_base::binary);
 
-		if (outf && !errno) {
-			dup2(fileno(outf),fileno(stdout));
-			fclose(outf);
-		}
+		if (!errno) cout.rdbuf(&outputFile);
 	}
 
 	if (tpsFilter) {
@@ -414,5 +412,6 @@ int main(int argc, char *argv[])
 	delete d;
 	delete p;
 
+	cout.flush();
 	return 0;
 }
