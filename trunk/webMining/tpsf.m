@@ -116,37 +116,55 @@ function [blks,blkfreq] = LZDecomp(seq)
 	end
 end
 
-function [records] = recordDetect(tps)
-d = diff(tps - mean(tps));
-d = d.*(d<0);
+function [records, diff] = recordDetect(tps)
+   d = diff(tps - mean(tps));
+   d = d.*(d<0);
 
-figure; plot(d,'o'); title('negative difference');
+   figure; 
+   hold;
+   plot(d,'o'); 
+   plot(d,'r-'); 
+   title('negative difference');
 
-[v,p]=sort(d);
-l=p(1);
-r=p(1);
-level=v(1);
-gap=0;
-records = [];
+   [v,p]=sort(d);
+   l=p(1);
+   r=p(1);
+   level=v(1);
+   gap=0;
+   diff = [];
 
-i=1;
-while ((gap/length(tps)) < 0.80) and (i<=length(tps))
-j=1;
-interval=+Inf;
-while level==v(i)
-  if p(i) < l l=p(i); end
-  if p(i) > r r=p(i); end
-  records = [records p(i)+1];
-  if j>1
-    int=abs(p(i)-p(i-1));
-    if int < interval interval=int; end
-  end
-  i=i+1;
-  j=j+1;
-end
-if interval!=+Inf gap=gap+((j-1)*interval); end
-level=v(i);
-end
+   i=1;
+   while ((gap/length(tps)) < 0.80) and (i<=length(tps))
+      j=1;
+      interval=+Inf;
+      while level==v(i)
+        if p(i) < l l=p(i); end
+        if p(i) > r r=p(i); end
+        diff = [diff p(i)+1];
+        if j>1
+          int=abs(p(i)-p(i-1));
+          if int < interval interval=int; end
+        end
+        i=i+1;
+        j=j+1;
+      end
+      if interval!=+Inf gap=gap+((j-1)*interval); end
+      level=v(i);
+   end
+   
+   count=0;
+   j=0;
+   for i=1:length(diff)
+      smt = sum(diff(:) == diff(i));
+      if smt > count
+         count = smt;
+         j=i;
+      end
+   end
+   
+   records = tps(:) == tps(diff(j)); 
+   delta=max(tps)-tps(diff(j));
+   records = (records.*delta).+tps(diff(j));
 end
 
 
@@ -166,7 +184,7 @@ while i >= 0
   end
 end
 
-records = recordDetect(tps);
+[records,diff] = recordDetect(tps);
 
 %[blks,blkfreq] = LZDecomp(tps);
 %figure; hold;
@@ -182,11 +200,14 @@ hold;
 plot([1:pos],x'(1:pos),'k.');
 plot([pos+length(tps):length(x)],x'(pos+length(tps):length(x)),'k.');
 plot([pos:pos+length(tps)-1],tps,'ko');
-plot(pos+records,tps(records),'rx');
+plot(pos+diff,tps(diff),'r*');
 title('TPS de pagina do site Youtube');
 xlabel('posicao da sequencia');
 ylabel('codigo tag path');
 legend('TPS','','Regiao principal','location','northwest');
 legend('boxon');
 
-figure; plot(tps,'o');
+figure; hold;
+plot(tps,'o');
+plot(records,'r-');
+
