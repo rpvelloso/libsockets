@@ -80,20 +80,22 @@ public:
 	virtual ~tCustomDOM() {
 		if (!recCountDisplay) {
 			if (r) {
-				if (xml) cout << "<scores>";
-				else cout << "<br><div id='scores'>";
+				if (scores.size()) {
+					if (xml) cout << "<scores>";
+					else cout << "<br><div id='scores'>";
 
-				for (auto i=scores.begin();i!=scores.end();i++) {
-					cout << (*i) << ";" << 100.00*(float)(*i)/(float)maxScore << "%";
-					if (!xml) cout << "<br>";
+					for (auto i=scores.begin();i!=scores.end();i++) {
+						cout << (*i) << ";" << 100.00*(float)(*i)/(float)maxScore << "%";
+						if (!xml) cout << "<br>";
+						cout << endl;
+					}
+
+					if (xml) cout << "</scores>";
+					else cout << "</div>";
 					cout << endl;
+
+					scores.clear();
 				}
-
-				if (xml) cout << "</scores>";
-				else cout << "</div>";
-				cout << endl;
-
-				scores.clear();
 			}
 			if (xml) cout << "<region-count>" << g << "</region-count>" << endl << "<record-count>" << r << "</record-count>" << endl << "</extraction>" << endl;
 			else cout << "<h3>Found " << r << " result(s) in " << g << " region(s).</h3></html>" << endl;
@@ -185,7 +187,7 @@ public:
 						if (xml)
 							cout << "  <record number=\"" << gr << "\">" << endl;
 						else
-							cout << "<tr><td>" << gr << "</td>";
+							cout << "<tr><th>" << gr << "</th>";
 
 						for (auto j=fields.begin();j!=fields.end();j++) {
 							if (xml) {
@@ -218,13 +220,31 @@ public:
 	};
 
 	void onDataRecordFound(vector<wstring> m, vector<unsigned int> recpos) {
+		size_t recsize = m[0].size();
 		r = m.size(); g=1;
-		cout << "<table border=1>" << endl;
-		cout << "<tr><th>#</th><th>Record size:" << m[0].size() << "</th><th>Record count: " << m.size() << "</th><th colspan=" << m[0].size() - 2 << "></th>";
+
+		if (xml) {
+			cout << "<?xml version=\"1.0\"""?>" << endl << "<extraction>" << endl;
+			cout << " <region number=\"" << g << "\" recsize=\"" << recsize << "\" reccount=\"" << r << "\" score=\"" << recsize*r << "\">" << endl;
+		} else {
+			cout << "<table border=1>" << endl;
+			cout << "<tr><th>#</th><th>Record size:" << recsize << "</th><th>Record count: " << r << "</th><th colspan=" << m[0].size() - 2 << "></th>";
+		}
+
 		for (size_t i=0;i<recpos.size();i++) {
-			cout << "<tr><th> #" << i+1 << "</th>";
+
+			if (xml) {
+				cout << "  <record number=\"" << i+1 << "\">" << endl;
+			} else
+				cout << "<tr><th> #" << i+1 << "</th>";
+
 			for (size_t j=0;j<m[i].size();j++) {
-				cout << "<td>";
+
+				if (xml) {
+					cout << "   <field><![CDATA[";
+				} else
+					cout << "<td>";
+
 				if (m[i][j] != 0) {
 					tNode *n = nodeSequence[recpos[i]];
 
@@ -237,11 +257,22 @@ public:
 					}
 					recpos[i]++;
 				}
-				cout << "</td>";
+
+				if (xml) {
+					cout << "]]>";
+					cout << "</field>" << endl;
+				} else
+					cout << "</td>";
 			}
-			cout << "</tr>";
+			if (xml)
+				cout << "  </record>" << endl;
+			else
+				cout << "</tr>";
 		}
-		cout << "</table>" << endl;
+		if (xml)
+			cout << " </region>" << endl;
+		else
+			cout << "</table>" << endl;
 	}
 
 	int filter(tNode *n) {
