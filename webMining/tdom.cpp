@@ -887,26 +887,6 @@ void tDOM::LZExtraction() {
 		cout << start << ":" << end  << ":" << (end-start) << endl;
 		for (int m=start;m<=end;m++) cout << tagPathSequence[m] << ","; cout << endl;
 	}
-	/* TODO:
-	 * primeira ideia:
-	 * 1. armazenar blocos da decomposicao;
-	 * 2. para cada bloco,
-	 * 3.	se houver repeticao; e
-	 * 4.	esta tiver tamanho razoavel; e
-	 * 5.	ela nao ocorrer em nenhum outro bloco seguinte da decomposicao;
-	 * 6.	entao esta eh uma repeticao primitiva
-	 *
-	 * segunda ideia (melhor):
-	 * - agrupar blocos enquanto tiverem tamanho maior que 'S', incuindo desde a menor referencia;
-	 * - não considerar blocos pequenos na sequencia de blocos (mas concatenar eles): filtro;
-	 * - interromper agrupamento quando aparecer bloco de tamanho inferior a 'S';
-	 * - concatenar todos esses blocos;
-	 * - localizar tandem repeat primitivo aproximado da sequencia resultante; ???
-	 * - reinicia agrupamento de blocos quando aparecer novamente um bloco de tamanho superior a 'S';
-	 *
-	 * - extrair os registros iniciando a partir do menor símbolo que ocorre ao menos 2x na sequencia;
-	 * - agrupar num mesmo parent os nós do registro com depth <= ao primeiro nó do registro, caso tenho + d 1;
-	 */
 }
 
 bool tDOM::prune(tNode *n) {
