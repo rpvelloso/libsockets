@@ -1031,11 +1031,12 @@ void tDOM::searchBorder(wstring s, float st) {
 			s = s.substr(0,border);
 			nodeSequence.assign(b,--m);
 		}
+		tagPathSequence = s;
 		searchBorder(s,st);
 	}
 }
 
-void tDOM::buildTagPath(string s, tNode *n, bool print, bool st) {
+void tDOM::buildTagPath(string s, tNode *n, bool print, bool style) {
 	auto i = n->nodes.begin();
 	string tagStyle,tagClass;
 
@@ -1050,7 +1051,7 @@ void tDOM::buildTagPath(string s, tNode *n, bool print, bool st) {
 	tagClass = n->getAttribute("class");
 	if (tagStyle != "") tagStyle = " " + tagStyle;
 	if (tagClass != "") tagClass = " " + tagClass;
-	if (st) s = s + "/" + n->getTagName() + tagClass + tagStyle;
+	if (style) s = s + "/" + n->getTagName() + tagClass + tagStyle;
 	else s = s + "/" + n->getTagName();
 
 	if (tagPathMap.find(s) == tagPathMap.end()) {
@@ -1066,7 +1067,7 @@ void tDOM::buildTagPath(string s, tNode *n, bool print, bool st) {
 	if (!(n->nodes.size())) return;
 
 	for (;i!=n->nodes.end();i++)
-		buildTagPath(s,*i,print,st);
+		buildTagPath(s,*i,print,style);
 }
 
 void tDOM::tagPathSequenceFilter(float st) {
@@ -1087,7 +1088,12 @@ void tDOM::tagPathSequenceFilter(float st) {
 
 void tDOM::DRE(float st) {
 	tagPathSequenceFilter(st);
-	buildTagPath("",body,false,true);
+	//buildTagPath("",body,false,true);
+
+	cerr << "TPS: " << endl;
+	for (size_t i=0;i<tagPathSequence.size();i++)
+		cerr << tagPathSequence[i] << " ";
+	cerr << endl;
 
 	int d[tagPathSequence.size()-1];
 	map<int, vector<int> > diffMap;
@@ -1098,14 +1104,15 @@ void tDOM::DRE(float st) {
 	vector<wstring> m;
 
 
+	cerr << "diff: " << endl;
 	for (size_t i=1;i<tagPathSequence.size();i++) {
-		d[i]=tagPathSequence[i]-tagPathSequence[i-1];
-		if (d[i] < 0) {
-			cout << d[i] << " ";
-			diffMap[d[i]].push_back(i+1);
-		} else cout << 0 << " ";
+		d[i-1]=tagPathSequence[i]-tagPathSequence[i-1];
+		if (d[i-1] < 0) {
+			cerr << d[i-1] << " ";
+			diffMap[d[i-1]].push_back(i);
+		} else cerr << 0 << " ";
 	}
-	cout << endl;
+	cerr << endl;
 
 	int l=(*(diffMap.begin())).second[0];
 	int r=l;
@@ -1118,7 +1125,7 @@ void tDOM::DRE(float st) {
 			if ((*i).second[j]<l) l = (*i).second[j];
 			if ((*i).second[j]>r) r = (*i).second[j];
 			TPMap[tagPathSequence[(*i).second[j]]]++;
-			cout << "TPS[" << (*i).second[j] << "] = " << tagPathSequence[(*i).second[j]] << endl;
+			cerr << "TPS[" << (*i).second[j] << "] = " << tagPathSequence[(*i).second[j]] << endl;
 			if (j>1) {
 				size_t itv = abs((*i).second[j]-(*i).second[j-1]);
 				if (itv < interval) interval = itv;
@@ -1129,7 +1136,7 @@ void tDOM::DRE(float st) {
 	}
 
 	for (auto i=TPMap.begin();i!=TPMap.end();i++) {
-		cout << (*i).first << " " << (*i).second << endl;
+		cerr << (*i).first << " " << (*i).second << endl;
 		if ((*i).second > tagCount) {
 			tagCount = (*i).second;
 			rootTag = (*i).first;
@@ -1141,7 +1148,7 @@ void tDOM::DRE(float st) {
 
 	for (size_t i=0;i<tagPathSequence.size();i++) {
 		if (tagPathSequence[i] == rootTag) {
-			cout << "root: " << i << " " << nodeSequence[i]->tagName << " : " << nodeSequence[i]->text << endl;
+			cerr << "root: " << i << " " << nodeSequence[i]->tagName << " : " << nodeSequence[i]->text << endl;
 			recpos.push_back(i);
 			if (prev==-1) prev=i;
 			else {
