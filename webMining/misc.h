@@ -49,8 +49,6 @@ string to_string(T val) {
 	return ss.str();
 }
 
-// copiado da wikipedia e adaptado;
-
 #define SPACE T(1,'\0')
 
 template <class T>
@@ -90,7 +88,6 @@ unsigned int edit_distance( T &s1,  T &s2, bool align, vector<unsigned int> *spa
 				j--;
 			}
 		}
-
 		s1=s11;
 		s2=s22;
 	}
@@ -120,14 +117,7 @@ void centerStar(vector<T> &M) {
 		}
 	}
 
-	/*cout << minscore << " : " << center << endl;
-
-	for (size_t i=0;i<len;i++) {
-		for (size_t j=0;j<len;j++)
-			cout << d[i][j] << "\t";
-		cout << endl;
-	}*/
-
+	// align
 	for (size_t i=0; i<M.size();i++) {
 		if (i!=center) {
 			vector<unsigned int> spaces;
@@ -144,12 +134,6 @@ void centerStar(vector<T> &M) {
 			}
 		}
 	}
-
-	/*for (size_t i=0;i<M.size();i++) {
-		for (size_t j=0;j<M[i].size();j++)
-			cout << M[i][j] << ";";
-		cout << endl;
-	}*/
 }
 
 

@@ -49,6 +49,7 @@ public:
 	}
 	virtual void onPatternFound(tNode *n, tNode *p, float s) {};
 	virtual void onDataRecordFound(tDataRegion dr) {};
+	virtual void onDataRecordFound(vector<wstring> m, vector<unsigned int> recpos) {};
 protected:
 	void searchForm(tNode *n) {
 		auto i = n->getNodes().begin();
@@ -215,6 +216,33 @@ public:
 			}
 		}
 	};
+
+	void onDataRecordFound(vector<wstring> m, vector<unsigned int> recpos) {
+		r = m.size(); g=1;
+		cout << "<table border=1>" << endl;
+		cout << "<tr><th>#</th><th>Record size:" << m[0].size() << "</th><th>Record count: " << m.size() << "</th><th colspan=" << m[0].size() - 2 << "></th>";
+		for (size_t i=0;i<recpos.size();i++) {
+			cout << "<tr><th> #" << i+1 << "</th>";
+			for (size_t j=0;j<m[i].size();j++) {
+				cout << "<td>";
+				if (m[i][j] != 0) {
+					tNode *n = nodeSequence[recpos[i]];
+
+					if ((n->tagName == "img") || (n->tagName == "a")) {
+						printNode(n,4);
+					} else if (n->type == 2) {
+						cout << n->text;
+					} else if (n->nodes.size() == 0) {
+						cout << n->tagName << " " << n->text;
+					}
+					recpos[i]++;
+				}
+				cout << "</td>";
+			}
+			cout << "</tr>";
+		}
+		cout << "</table>" << endl;
+	}
 
 	int filter(tNode *n) {
 		int ret=1;

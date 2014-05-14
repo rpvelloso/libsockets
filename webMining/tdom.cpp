@@ -1087,26 +1087,58 @@ void tDOM::tagPathSequenceFilter(float st) {
 }
 
 void tDOM::DRE(float st) {
-	tagPathSequenceFilter(st);
-	//buildTagPath("",body,false,true);
+	vector<unsigned int> recpos;
+	vector<wstring> m;
+
+	tagPathSequenceFilter(st); // locate main content region
 
 	cerr << "TPS: " << endl;
 	for (size_t i=0;i<tagPathSequence.size();i++)
 		cerr << tagPathSequence[i] << " ";
 	cerr << endl;
 
-	int d[tagPathSequence.size()-1];
+	// identify the start position of each record
+	recpos = locateRecords(tagPathSequence,st);
+
+	// create a sequence for each record found
+	int prev=-1;
+	for (size_t i=0;i<recpos.size();i++) {
+		if (prev==-1) prev=recpos[i];
+		else {
+			m.push_back(tagPathSequence.substr(prev,recpos[i]-prev+1));
+			prev = recpos[i];
+		}
+	}
+	if (prev != -1)
+		m.push_back(tagPathSequence.substr(prev,tagPathSequence.size()-prev+1));
+
+
+	// align the records (one alternative to 'center star' algorithm is ClustalW)
+	centerStar(m);
+
+	// and extracts them
+	if (m.size()) onDataRecordFound(m,recpos);
+}
+
+vector<unsigned int> tDOM::locateRecords(wstring s, float st) {
+	int d[s.size()-1];
 	map<int, vector<int> > diffMap;
 	map<int, int> TPMap;
-	tDataRegion dr;
+	vector<unsigned int> recpos;
 	int rootTag;
 	int tagCount=0;
-	vector<wstring> m;
+	int l=(*(diffMap.begin())).second[0];
+	int r=l;
+	size_t gap=0;
+	size_t interval=0xffffffff;
 
-
+	/* compute sequence's first difference, keeping only the negative values (i.e. keeping only
+	 * fast transitions from very high to very low values, L - H = negative difference). The
+	 * difference points are stored and processed in ascending order (higher module values first).
+	*/
 	cerr << "diff: " << endl;
-	for (size_t i=1;i<tagPathSequence.size();i++) {
-		d[i-1]=tagPathSequence[i]-tagPathSequence[i-1];
+	for (size_t i=1;i<s.size();i++) {
+		d[i-1]=s[i]-s[i-1];
 		if (d[i-1] < 0) {
 			cerr << d[i-1] << " ";
 			diffMap[d[i-1]].push_back(i);
@@ -1114,27 +1146,24 @@ void tDOM::DRE(float st) {
 	}
 	cerr << endl;
 
-	int l=(*(diffMap.begin())).second[0];
-	int r=l;
-	size_t gap=0;
-	size_t interval=0xffffffff;
-
+	// process lowest values until the gap between points achieve enough sequence coverage
 	for (auto i=diffMap.begin();i!=diffMap.end();i++) {
 
 		for (size_t j=0; j<(*i).second.size();j++) {
 			if ((*i).second[j]<l) l = (*i).second[j];
 			if ((*i).second[j]>r) r = (*i).second[j];
-			TPMap[tagPathSequence[(*i).second[j]]]++;
-			cerr << "TPS[" << (*i).second[j] << "] = " << tagPathSequence[(*i).second[j]] << endl;
+			TPMap[s[(*i).second[j]]]++;
+			cerr << "TPS[" << (*i).second[j] << "] = " << s[(*i).second[j]] << endl;
 			if (j>1) {
 				size_t itv = abs((*i).second[j]-(*i).second[j-1]);
 				if (itv < interval) interval = itv;
 			}
 		}
 		if (interval!=0xffffffff) gap += interval*(*i).second.size();
-		if (((float)gap / (float)tagPathSequence.size()) > st) break;
+		if (((float)gap / (float)s.size()) > st) break;
 	}
 
+	// find the most frequent tag path code within the lowest difference values
 	for (auto i=TPMap.begin();i!=TPMap.end();i++) {
 		cerr << (*i).first << " " << (*i).second << endl;
 		if ((*i).second > tagCount) {
@@ -1143,46 +1172,13 @@ void tDOM::DRE(float st) {
 		}
 	}
 
-	int prev=-1;
-	vector<unsigned int> recpos;
-
-	for (size_t i=0;i<tagPathSequence.size();i++) {
-		if (tagPathSequence[i] == rootTag) {
+	// find the beginning of each record, using the tag path code found before
+	for (size_t i=0;i<s.size();i++) {
+		if (s[i] == rootTag) {
 			cerr << "root: " << i << " " << nodeSequence[i]->tagName << " : " << nodeSequence[i]->text << endl;
 			recpos.push_back(i);
-			if (prev==-1) prev=i;
-			else {
-				m.push_back(tagPathSequence.substr(prev,i-prev+1));
-				prev = i;
-			}
 		}
 	}
-	if (prev != -1)
-		m.push_back(tagPathSequence.substr(prev,tagPathSequence.size()-prev+1));
 
-	centerStar(m);
-
-	cout << "<table border=1>" << endl;
-	cout << "<tr><th>#</th><th>Record size:" << m[0].size() << "</th><th>Record count: " << m.size() << "</th><th colspan=" << m[0].size() - 2 << "></th>";
-	for (size_t i=0;i<recpos.size();i++) {
-		cout << "<tr><th> #" << i+1 << "</th>";
-		for (size_t j=0;j<m[i].size();j++) {
-			cout << "<td>";
-			if (m[i][j] != 0) {
-				tNode *n = nodeSequence[recpos[i]];
-
-				if ((n->tagName == "img") || (n->tagName == "a")) {
-					printNode(n,4);
-				} else if (n->type == 2) {
-					cout << n->text;
-				} else if (n->nodes.size() == 0) {
-					cout << n->tagName << " " << n->text;
-				}
-				recpos[i]++;
-			}
-			cout << "</td>";
-		}
-		cout << "</tr>";
-	}
-	cout << "</table>" << endl;
+	return recpos;
 }
