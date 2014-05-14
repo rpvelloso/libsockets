@@ -68,9 +68,12 @@ protected:
 	void searchBorder(wstring, float);
 	bool prune(tNode *);
 
+	vector<unsigned int> locateRecords(wstring, float);
+
 	virtual void onTagFound(tNode *) = 0;
 	virtual void onPatternFound(tNode *, tNode *, float) = 0;
 	virtual void onDataRecordFound(tDataRegion) = 0;
+	virtual void onDataRecordFound(vector<wstring>, vector<unsigned int>) = 0;
 	virtual void onDataRegionFound(tDataRegion, int, float);
 
 	tNode *root,*body;
