@@ -134,6 +134,12 @@ void centerStar(vector<T> &M) {
 			}
 		}
 	}
+
+	for (size_t i=0;i<M.size();i++) {
+		for (size_t j=0;j<M[i].size();j++)
+			cerr << M[i][j] << ";";
+		cerr << endl;
+	}
 }
 
 
