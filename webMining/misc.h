@@ -49,9 +49,12 @@ string to_string(T val) {
 	return ss.str();
 }
 
-// copiado da wikipedia!
+// copiado da wikipedia e adaptado;
+
+#define SPACE T(1,'\0')
+
 template <class T>
-unsigned int edit_distance( T &s1,  T &s2) {
+unsigned int edit_distance( T &s1,  T &s2, bool align, vector<unsigned int> *spaces) {
 	const size_t len1 = s1.size(), len2 = s2.size();
 	vector<vector<unsigned int> > d(len1 + 1, vector<unsigned int>(len2 + 1));
 
@@ -66,29 +69,88 @@ unsigned int edit_distance( T &s1,  T &s2) {
 		}
 	}
 
-	unsigned int i=len1;
-	unsigned int j=len2;
-	T s11,s22;
-	while ((i>0) && (j>0)) {
-		if ((d[i-1][j-1] <= d[i-1][j]) && (d[i-1][j-1] <= d[i][j-1])) {
-			s11 = s1[i-1] + s11;
-			s22 = s2[j-1] + s22;
-			i--;
-			j--;
-		} else if (d[i-1][j] <= d[i][j-1]) {
-			s11 = s1[i-1] + s11;
-			s22 = (typename T::value_type)(0) + s22;
-			i--;
-		} else {
-			s11 = (typename T::value_type)(0) + s11;
-			s22 = s2[j-1] + s22;
-			j--;
+	if (align) {
+		unsigned int i=len1;
+		unsigned int j=len2;
+		T s11,s22;
+		while ((i>0) && (j>0)) {
+			if ((d[i-1][j-1] <= d[i-1][j]) && (d[i-1][j-1] <= d[i][j-1])) {
+				s11 = s1[i-1] + s11;
+				s22 = s2[j-1] + s22;
+				i--;
+				j--;
+			} else if (d[i-1][j] <= d[i][j-1]) {
+				s11 = s1[i-1] + s11;
+				s22 = SPACE + s22;
+				i--;
+			} else {
+				spaces->push_back(i-1);
+				s11 = SPACE + s11;
+				s22 = s2[j-1] + s22;
+				j--;
+			}
+		}
+
+		s1=s11;
+		s2=s22;
+	}
+
+	return d[len1][len2];
+}
+
+template <class T>
+void centerStar(vector<T> &M) {
+	size_t len = M.size();
+	unsigned int d[len][len];
+	unsigned int minscore=0xffffffff,center;
+
+	// find the center string
+	for (size_t i=0;i<len;i++) {
+		d[i][i]=0;
+		unsigned int score = 0;
+		for (size_t j=i+1;j<len;j++) {
+			d[i][j] = edit_distance(M[i],M[j],false,NULL);
+			d[j][i] = d[i][j];
+			score += d[i][j];
+		}
+		for (size_t j=0;j<=i;j++) score += d[i][j];
+		if (score < minscore) {
+			minscore = score;
+			center = i;
 		}
 	}
 
-	s1=s11;
-	s2=s22;
-	return d[len1][len2];
+	/*cout << minscore << " : " << center << endl;
+
+	for (size_t i=0;i<len;i++) {
+		for (size_t j=0;j<len;j++)
+			cout << d[i][j] << "\t";
+		cout << endl;
+	}*/
+
+	for (size_t i=0; i<M.size();i++) {
+		if (i!=center) {
+			vector<unsigned int> spaces;
+
+			edit_distance(M[center],M[i],true,&spaces);
+			if (spaces.size()) {
+				for (size_t j=i;j>0;j--) {
+					if ((j-1)!=center) {
+						for (size_t k=0;k<spaces.size();k++) {
+							M[j-1].insert(spaces[k],SPACE);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/*for (size_t i=0;i<M.size();i++) {
+		for (size_t j=0;j<M[i].size();j++)
+			cout << M[i][j] << ";";
+		cout << endl;
+	}*/
 }
+
 
 #endif /* MISC_H_ */

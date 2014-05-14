@@ -934,7 +934,7 @@ bool tDOM::prune(tNode *n) {
 void tDOM::searchBorder(wstring s, float st) {
 	set<int> alphabet,filteredAlphabet,regionAlphabet,intersect;
 	map<int,int> currentSymbolCount,symbolCount,thresholds;
-	bool regionFound=0;
+	bool regionFound=false;
 	size_t border;
 	float score[2];
 	float scoreThreshold;
@@ -974,7 +974,6 @@ void tDOM::searchBorder(wstring s, float st) {
 
 		regionAlphabet.clear();
 		currentSymbolCount = symbolCount;
-		regionFound = false;
 		for (size_t i=0;i<s.size();i++) {
 			if (filteredAlphabet.find(s[i]) != filteredAlphabet.end()) {
 				regionAlphabet.insert(s[i]);
@@ -993,15 +992,9 @@ void tDOM::searchBorder(wstring s, float st) {
 
 					if (intersect.empty()) {
 						border=i;
-						score[0] = border + 1 - gapsize;
-						score[1] = s.size() - border - 1;
-						//score[0] = float(score[0])*float(score[0])/float(regionAlphabet.size()+1);
-						//score[1] = float(score[1])*float(score[1])/float(filteredAlphabet.size()+1);
-						//score[0] = float(score[0])/float(regionAlphabet.size()+1);
-						//score[1] = float(score[1])/float(filteredAlphabet.size()+1);
-						scoreThreshold = float(abs(score[0]-score[1]))/float(score[0]+score[1]);
+						scoreThreshold = abs((float)(s.size()-2*i+gapsize) / (float)(s.size()-gapsize));
 
-						if (!filteredAlphabet.empty() && (scoreThreshold > 0.2)) {
+						if (!filteredAlphabet.empty() && (scoreThreshold > 0.1)) {
 							regionFound = true;
 							break;
 						} else {
@@ -1031,7 +1024,7 @@ void tDOM::searchBorder(wstring s, float st) {
 		auto m = nodeSequence.begin() + border + 1;
 		auto e = nodeSequence.end();
 
-		if (score[1] > score[0]) {
+		if (border < s.size()/2) {
 			s = s.substr(border+1,s.size());
 			nodeSequence.assign(m,e);
 		} else {
@@ -1096,24 +1089,28 @@ void tDOM::DRE(float st) {
 	tagPathSequenceFilter(st);
 	buildTagPath("",body,false,true);
 
-	int d[tagPathSequence.size()];
+	int d[tagPathSequence.size()-1];
 	map<int, vector<int> > diffMap;
 	map<int, int> TPMap;
 	tDataRegion dr;
-	tNode *p = new tNode(0,"");
 	int rootTag;
 	int tagCount=0;
+	vector<wstring> m;
 
 
 	for (size_t i=1;i<tagPathSequence.size();i++) {
 		d[i]=tagPathSequence[i]-tagPathSequence[i-1];
 		if (d[i] < 0) {
+			cout << d[i] << " ";
 			diffMap[d[i]].push_back(i+1);
-		}
+		} else cout << 0 << " ";
 	}
+	cout << endl;
 
 	int l=(*(diffMap.begin())).second[0];
 	int r=l;
+	size_t gap=0;
+	size_t interval=0xffffffff;
 
 	for (auto i=diffMap.begin();i!=diffMap.end();i++) {
 
@@ -1122,8 +1119,13 @@ void tDOM::DRE(float st) {
 			if ((*i).second[j]>r) r = (*i).second[j];
 			TPMap[tagPathSequence[(*i).second[j]]]++;
 			cout << "TPS[" << (*i).second[j] << "] = " << tagPathSequence[(*i).second[j]] << endl;
+			if (j>1) {
+				size_t itv = abs((*i).second[j]-(*i).second[j-1]);
+				if (itv < interval) interval = itv;
+			}
 		}
-		if ((float)((float)(r-l)/(float)tagPathSequence.size()) >= st) break;
+		if (interval!=0xffffffff) gap += interval*(*i).second.size();
+		if (((float)gap / (float)tagPathSequence.size()) > st) break;
 	}
 
 	for (auto i=TPMap.begin();i!=TPMap.end();i++) {
@@ -1134,19 +1136,46 @@ void tDOM::DRE(float st) {
 		}
 	}
 
+	int prev=-1;
+	vector<unsigned int> recpos;
+
 	for (size_t i=0;i<tagPathSequence.size();i++) {
 		if (tagPathSequence[i] == rootTag) {
 			cout << "root: " << i << " " << nodeSequence[i]->tagName << " : " << nodeSequence[i]->text << endl;
-			p->addNode(nodeSequence[i]);
+			recpos.push_back(i);
+			if (prev==-1) prev=i;
+			else {
+				m.push_back(tagPathSequence.substr(prev,i-prev+1));
+				prev = i;
+			}
 		}
 	}
+	if (prev != -1)
+		m.push_back(tagPathSequence.substr(prev,tagPathSequence.size()-prev+1));
 
-	dr.clear();
-	dr.groupSize = 1;
-	dr.DRLength = p->nodes.size();
-	dr.p = p;
-	dr.s = p->nodes.begin();
-	dr.e = p->nodes.end();
-	onDataRecordFound(dr);
-	delete p;
+	centerStar(m);
+
+	cout << "<table border=1>" << endl;
+	cout << "<tr><th>#</th><th>Record size:" << m[0].size() << "</th><th>Record count: " << m.size() << "</th><th colspan=" << m[0].size() - 2 << "></th>";
+	for (size_t i=0;i<recpos.size();i++) {
+		cout << "<tr><th> #" << i+1 << "</th>";
+		for (size_t j=0;j<m[i].size();j++) {
+			cout << "<td>";
+			if (m[i][j] != 0) {
+				tNode *n = nodeSequence[recpos[i]];
+
+				if ((n->tagName == "img") || (n->tagName == "a")) {
+					printNode(n,4);
+				} else if (n->type == 2) {
+					cout << n->text;
+				} else if (n->nodes.size() == 0) {
+					cout << n->tagName << " " << n->text;
+				}
+				recpos[i]++;
+			}
+			cout << "</td>";
+		}
+		cout << "</tr>";
+	}
+	cout << "</table>" << endl;
 }
