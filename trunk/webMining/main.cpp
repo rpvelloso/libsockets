@@ -267,6 +267,17 @@ int main(int argc, char *argv[])
 	fstream patternFile,inputFile;
 	filebuf outputFile;
 
+	/*string s01="XGYXYXYX";
+	string s02="XYXYXYTX";
+	string s03="XYXYTX";
+	vector<string> m;
+	vector<unsigned int> spaces;
+
+	m.push_back(s01);
+	m.push_back(s02);
+	m.push_back(s03);
+	centerStar(m); return 0;*/
+
 	while ((opt = getopt(argc, argv, "i:o:t:s:p:f:x:d:mhvcgabrqz")) != -1) {
 		switch (opt) {
 		case 'c':
