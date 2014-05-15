@@ -1072,6 +1072,10 @@ void tDOM::DRE(float st) {
 
 	tagPathSequenceFilter(st); // locate main content region
 
+	/*buildTagPath("",body,false,false);
+	searchBorder(tagPathSequence,st);
+	prune(body);*/
+
 	cerr << "TPS: " << endl;
 	for (size_t i=0;i<tagPathSequence.size();i++)
 		cerr << tagPathSequence[i] << " ";

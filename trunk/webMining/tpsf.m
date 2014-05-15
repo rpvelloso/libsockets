@@ -167,6 +167,26 @@ function [records, diff] = recordDetect(tps)
    records = (records.*delta).+tps(diff(j));
 end
 
+function [a,b,e] = lslr(y)
+   n = length(y);
+   x=(1:n);
+   xy = x.*y;
+   x2=x.^2;
+   sx = sum(x);
+   sy=sum(y);
+   sxy=sum(xy);
+   sx2=sum(x2);
+   delta=n*sx2-sx^2;
+   
+   a=(n*sxy-sy*sx)/delta;
+   b=(sx2*sy-sx*sxy)/delta;
+   e = sum((y - a*x+b).^2);
+   
+   figure; hold;
+   plot(x,y,'.');
+   plot(x,a*x + b,'r-');
+   
+end
 
 x = load('Debug/x');
 
