@@ -1107,8 +1107,6 @@ vector<unsigned int> tDOM::locateRecords(wstring s, float st) {
 	vector<unsigned int> recpos;
 	int rootTag;
 	int tagCount=0;
-	int l=(*(diffMap.begin())).second[0];
-	int r=l;
 	size_t gap=0;
 	size_t interval=0xffffffff;
 
@@ -1127,6 +1125,8 @@ vector<unsigned int> tDOM::locateRecords(wstring s, float st) {
 	cerr << endl;
 
 	// process lowest values until the gap between points achieve enough sequence coverage
+	int l=(*(diffMap.begin())).second[0];
+	int r=l;
 	for (auto i=diffMap.begin();i!=diffMap.end();i++) {
 
 		for (size_t j=0; j<(*i).second.size();j++) {
