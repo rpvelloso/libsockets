@@ -49,7 +49,7 @@ public:
 	}
 	virtual void onPatternFound(tNode *n, tNode *p, float s) {};
 	virtual void onDataRecordFound(tDataRegion dr) {};
-	virtual void onDataRecordFound(vector<wstring> m, vector<unsigned int> recpos) {};
+	virtual void onDataRecordFound(vector<wstring> &m, vector<unsigned int> &recpos) {};
 protected:
 	void searchForm(tNode *n) {
 		auto i = n->getNodes().begin();
@@ -219,34 +219,67 @@ public:
 		}
 	};
 
-	void onDataRecordFound(vector<wstring> m, vector<unsigned int> recpos) {
-		size_t recsize = m[0].size();
-		r = m.size(); g=1;
+	virtual void onDataRecordFound(vector<wstring> &m, vector<unsigned int> &recpos) {
+		if ((m.size() == 0) || (recpos.size() == 0)) return;
+
+		size_t rows=m.size(),cols=m[0].size();
+		vector<vector<tNode *> > table(rows, vector<tNode *>(cols));
+		bool printField[cols];
+		size_t recsize = cols;
+
+		for (size_t i=0;i<rows;i++) {
+			for (size_t j=0,k=0;j<cols;j++) {
+				if (m[i][j] != 0) {
+					table[i][j] = nodeSequence[recpos[i]+k];
+					k++;
+				} else table[i][j]=NULL;
+			}
+		}
+
+		for (size_t j=0;j<cols;j++) {
+			printField[j]=false;
+			for (size_t i=0;i<rows;i++) {
+				if (table[i][j]) {
+					if ((table[i][j]->tagName == "a") ||
+						(table[i][j]->tagName == "img") ||
+						((table[i][j]->type == 2) && (table[i][j]->text != ""))
+						) {
+						printField[j]=true;
+						break;
+					}
+				}
+			}
+			if (!printField[j]) recsize--;
+		}
 
 		if (xml) {
 			cout << "<?xml version=\"1.0\"""?>" << endl << "<extraction>" << endl;
-			cout << " <region number=\"" << g << "\" recsize=\"" << recsize << "\" reccount=\"" << r << "\" score=\"" << recsize*r << "\">" << endl;
+			cout << " <region number=\"" << 1 << "\" recsize=\"" << recsize << "\" reccount=\"" << m.size() << "\" score=\"" << recsize*r << "\">" << endl;
 		} else {
 			cout << "<table border=1>" << endl;
-			cout << "<tr><th>#</th><th>Record size:" << recsize << "</th><th>Record count: " << r << "</th><th colspan=" << m[0].size() - 2 << "></th>";
+			cout << "<tr><th>#</th><th>Record size:" << recsize << "</th><th>Record count: " << rows << "</th><th colspan=" << m[0].size() - 2 << "></th>";
 		}
 
-		for (size_t i=0;i<recpos.size();i++) {
+		for (size_t i=0;i<rows;i++) {
 
 			if (xml) {
 				cout << "  <record number=\"" << i+1 << "\">" << endl;
 			} else
 				cout << "<tr><th> #" << i+1 << "</th>";
 
-			for (size_t j=0;j<m[i].size();j++) {
+			for (size_t j=0;j<cols;j++) {
+
+				if (!printField[j]) {
+					continue;
+				}
 
 				if (xml) {
 					cout << "   <field><![CDATA[";
 				} else
 					cout << "<td>";
 
-				if (m[i][j] != 0) {
-					tNode *n = nodeSequence[recpos[i]];
+				if (table[i][j]) {
+					tNode *n = table[i][j];
 
 					if ((n->tagName == "img") || (n->tagName == "a")) {
 						printNode(n,4);
@@ -255,7 +288,6 @@ public:
 					} else if (n->nodes.size() == 0) {
 						cout << n->tagName << " " << n->text;
 					}
-					recpos[i]++;
 				}
 
 				if (xml) {
@@ -273,6 +305,9 @@ public:
 			cout << " </region>" << endl;
 		else
 			cout << "</table>" << endl;
+
+		g=1;
+		r=rows;
 	}
 
 	int filter(tNode *n) {
@@ -307,7 +342,7 @@ void printUsage(char *p)
 	cout << "-g   mine forms and fields" << endl;
 	cout << "-c   displays only record count of main region." << endl;
 	cout << "-r   apply tag path sequence filter." << endl;
-	cout << "-q   DRE." << endl;
+	cout << "-q   DRDE (difference record detection and extraction)." << endl;
 	cout << "-z   LZ extraction." << endl;
 	exit(-1);
 }
@@ -325,17 +360,6 @@ int main(int argc, char *argv[])
 	tFormExtractDOM *fe = new tFormExtractDOM();
 	fstream patternFile,inputFile;
 	filebuf outputFile;
-
-	/*string s01="XGYXYXYX";
-	string s02="XYXYXYTX";
-	string s03="XYXYTX";
-	vector<string> m;
-	vector<unsigned int> spaces;
-
-	m.push_back(s01);
-	m.push_back(s02);
-	m.push_back(s03);
-	centerStar(m); return 0;*/
 
 	while ((opt = getopt(argc, argv, "i:o:t:s:p:f:x:d:mhvcgabrqz")) != -1) {
 		switch (opt) {
