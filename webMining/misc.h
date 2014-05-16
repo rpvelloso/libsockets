@@ -22,6 +22,7 @@
 
 #include <map>
 #include <sstream>
+#include <cmath>
 
 #define lowerCase(s) std::transform(s.begin(), s.end(), s.begin(), (int(*)(int))std::tolower)
 
@@ -166,10 +167,9 @@ float linearRegression(T s) {
 
 	for (size_t i=0;i<n;i++)
 		e += abs(s[i] - (a*i + b));
-	e /= n;
+	//e /= n;
 
-	cerr << "LR: " << a << " " << b << " " << e << endl;
-	return 1/(float)n; //a/e;
+	return e/a;
 }
 
 #endif /* MISC_H_ */

@@ -29,6 +29,8 @@
 #include <vector>
 #include <set>
 #include <cmath>
+#include <queue>
+#include <utility>
 #include "tdom.h"
 #include "misc.h"
 
@@ -917,11 +919,11 @@ bool tDOM::prune(tNode *n) {
 	return false;
 }
 
-void tDOM::searchBorder(wstring s, float st) {
+size_t tDOM::searchBorder(wstring s, float st) {
 	set<int> alphabet,filteredAlphabet,regionAlphabet,intersect;
 	map<int,int> currentSymbolCount,symbolCount,thresholds;
 	bool regionFound=false;
-	size_t border;
+	size_t border=0;
 	float score[2];
 	float scoreThreshold;
 
@@ -1006,21 +1008,27 @@ void tDOM::searchBorder(wstring s, float st) {
 		cerr << "% = " << scoreThreshold << endl;
 		cerr << endl;
 
-		auto b = nodeSequence.begin();
-		auto m = nodeSequence.begin() + border + 1;
-		auto e = nodeSequence.end();
+		//auto b = nodeSequence.begin();
+		//auto m = nodeSequence.begin() + border + 1;
+		//auto e = nodeSequence.end();
 
-		if (abs(linearRegression(s.substr(border+1,s.size()))) < abs(linearRegression(s.substr(0,border)))) {
-		//if (border < s.size()/2) {
-			s = s.substr(border+1,s.size());
-			nodeSequence.assign(m,e);
+		//if (abs(linearRegression(s.substr(border+1,s.size()))) >= abs(linearRegression(s.substr(0,border)))) {
+		linearRegression(s.substr(0,border));
+		linearRegression(s.substr(border+1,s.size()));
+
+		if (border <= s.size()/2) {
+			border++;
+			s = s.substr(border,s.size());
+			//nodeSequence.assign(m,e);
 		} else {
 			s = s.substr(0,border);
-			nodeSequence.assign(b,--m);
+			border = 0;
+			//nodeSequence.assign(b,--m);
 		}
 		tagPathSequence = s;
-		searchBorder(s,st);
+		border += searchBorder(s,st);
 	}
+	return border;
 }
 
 void tDOM::buildTagPath(string s, tNode *n, bool print, bool style, bool fp) {
@@ -1061,19 +1069,49 @@ void tDOM::buildTagPath(string s, tNode *n, bool print, bool style, bool fp) {
 }
 
 void tDOM::tagPathSequenceFilter(float st) {
-	//vector<tNode *> nodeSeqBkp,setDiff;
+	wstring originalTPS;
+	vector<tNode *> originalNodeSequence;
+	queue<pair<wstring,long int>> q;
+	vector<long int> start;
+	map<long int,long int> region;
 
 	buildTagPath("",body,false,true);
-	//nodeSeqBkp = nodeSequence;
-	searchBorder(tagPathSequence,st);
-	/*cerr << nodeSeqBkp.size() << " " << nodeSequence.size() << " " << tagPathSequence.size() << endl;
-	if ((nodeSeqBkp.size() - nodeSequence.size() > nodeSequence.size())) {
-		sort(nodeSequence.begin(),nodeSequence.end());
-		sort(nodeSeqBkp.begin(),nodeSeqBkp.end());
-		set_difference(nodeSeqBkp.begin(),nodeSeqBkp.end(),nodeSequence.begin(),nodeSequence.end(),inserter(setDiff,setDiff.begin()));
-		nodeSequence = setDiff;
-	}*/
-	prune(body);
+	originalTPS = tagPathSequence;
+	originalNodeSequence = nodeSequence;
+
+	q.push(make_pair(originalTPS,0));
+
+	while (q.size()) {
+		long int len,off,rlen,pos;
+
+		auto s = q.front();
+
+		q.pop();
+
+		len = s.first.size();
+		off = s.second;
+		pos = searchBorder(s.first,st);
+		rlen = tagPathSequence.size();
+
+		cout << "offset: " << off << ", pos: (" << off+pos-rlen+1 << "," << off+pos << ") length: " << rlen << endl;
+		if (pos > 0) {
+			cout << "  +offset: " << off << " pos: (" << off << "," << off+pos-rlen << ") length: " << pos-rlen+1 << endl;
+			cout << "  +offset: " << off+pos+1 << " pos: (" << off+pos+1 << "," << off+len-1 << ") length: " << len-pos-1 <<endl;
+			if ((pos-rlen+1) > 0)
+				q.push(make_pair(originalTPS.substr(off,pos-rlen+1),off));
+			if (((len-pos-1) > 0) ) // && ((off+pos+1) < len))
+				q.push(make_pair(originalTPS.substr(off+pos+1,len-pos-1),off+pos+1));
+			if (off+pos-rlen+1 > 0)
+				region[off+pos-rlen+1]=rlen;
+		}
+	}
+
+	for (auto i=region.begin();i!=region.end();i++) {
+		cerr << "Region: offset=" << (*i).first << ", length=" << (*i).second << " endpos: " << (*i).first+(*i).second - 1
+			<< " " << linearRegression( originalTPS.substr( (*i).first,(*i).second ) ) << endl;
+	}
+
+	//prune(body);
 }
 
 void tDOM::DRE(float st) {

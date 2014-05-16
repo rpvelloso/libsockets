@@ -49,7 +49,7 @@ function [pos, mainregion] = searchRegion(tagPathSequence,tolerance)
         if currentSymbolCount(symbol) == 0
           currentAlphabet = setdiff(currentAlphabet,symbol);
           if length(intersect(currentAlphabet,regionAlphabet)) == 0
-            if (length(currentAlphabet) > 1) && (abs((n-2*i+gapsize)/(n-gapsize)) > tolerance)
+            if (length(currentAlphabet) > 1) %&& (abs((n-2*i+gapsize)/(n-gapsize)) > tolerance)
               regionFound = 1;
               break;
             else
