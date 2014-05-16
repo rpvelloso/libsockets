@@ -142,5 +142,34 @@ void centerStar(vector<T> &M) {
 	}
 }
 
+template <class T>
+float linearRegression(T s) {
+	unsigned long int delta,x,y,xy,x2,sx=0,sy=0,sxy=0,sx2=0,n=s.size();
+	float a,b,e=0;
+
+	for (size_t i=0;i<n;i++) {
+		y = s[i];
+		x = i;
+		xy = x*y;
+		x2 = x*x;
+
+		sx += x;
+		sy += y;
+		sxy += xy;
+		sx2 += x2;
+	}
+
+	delta = (n*sx2)-(sx*sx);
+	a = (float)((float)((n*sxy)-(sy*sx))/(float)delta);
+	b = (float)((float)((sx2*sy)-(sx*sxy))/(float)delta);
+
+
+	for (size_t i=0;i<n;i++)
+		e += abs(s[i] - (a*i + b));
+	e /= n;
+
+	cerr << "LR: " << a << " " << b << " " << e << endl;
+	return 1/(float)n; //a/e;
+}
 
 #endif /* MISC_H_ */
