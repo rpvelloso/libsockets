@@ -96,9 +96,9 @@ public:
 
 					scores.clear();
 				}
+				if (xml) cout << "<region-count>" << g << "</region-count>" << endl << "<record-count>" << r << "</record-count>" << endl << "</extraction>" << endl;
+				else cout << "<h3>Found " << r << " result(s) in " << g << " region(s).</h3></html>" << endl;
 			}
-			if (xml) cout << "<region-count>" << g << "</region-count>" << endl << "<record-count>" << r << "</record-count>" << endl << "</extraction>" << endl;
-			else cout << "<h3>Found " << r << " result(s) in " << g << " region(s).</h3></html>" << endl;
 		} else {
 			cout << maxCount;
 			if (maxCount2) cout << " " << maxCount2;
@@ -328,22 +328,22 @@ public:
 void printUsage(char *p)
 {
 	cout << "usage: "<<p<<" [-i input_file] [-o output_file] [-p pattern file] [-s search_string] [-v] [-t ###.##] [-m] [-xml] [-f str] [-a] [-b] [-g] [-c] [-r] [-q]"<<endl;
-	cout << "-i   input file (default stdin)"<<endl;
-	cout << "-o   output file (default stdout)"<<endl;
-	cout << "-p   pattern file to search for"<<endl;
-	cout << "-s   search string: a list of tags to search for (tag1,tag2,...)"<<endl;
-	cout << "-t   value. Similarity threshold. default 100%. Ex.: -t 90.7 (90.7%)" << endl;
-	cout << "-v   Verbose (do not abbreviate tags/text content." << endl;
-	cout << "-m   performs MDR" << endl;
-	cout << "-xml outputs MDR results in XML format" << endl;
-	cout << "-f   text filter string" << endl;
-	cout << "-a   display tag path of input" << endl;
-	cout << "-b   display tag path of input without style" << endl;
-	cout << "-g   mine forms and fields" << endl;
-	cout << "-c   displays only record count of main region." << endl;
-	cout << "-r   apply tag path sequence filter." << endl;
-	cout << "-q   DRDE (difference record detection and extraction)." << endl;
-	cout << "-z   LZ extraction." << endl;
+	cout << "-i    input file (default stdin)"<<endl;
+	cout << "-o    output file (default stdout)"<<endl;
+	cout << "-p    pattern file to search for"<<endl;
+	cout << "-s    search string: a list of tags to search for (tag1,tag2,...)"<<endl;
+	cout << "-t    value. Similarity threshold. default 100%. Ex.: -t 90.7 (90.7%)" << endl;
+	cout << "-v    Verbose (do not abbreviate tags/text content." << endl;
+	cout << "-m    performs MDR" << endl;
+	cout << "-xml  outputs MDR results in XML format" << endl;
+	cout << "-f    text filter string" << endl;
+	cout << "-a[p] display tag path of input (-ap prints full path)" << endl;
+	cout << "-b[p] display tag path of input without style" << endl;
+	cout << "-g    mine forms and fields" << endl;
+	cout << "-c    displays only record count of main region." << endl;
+	cout << "-r    apply tag path sequence filter." << endl;
+	cout << "-q    DRDE (difference record detection and extraction)." << endl;
+	cout << "-z    LZ extraction." << endl;
 	exit(-1);
 }
 
@@ -352,7 +352,7 @@ void printUsage(char *p)
 int main(int argc, char *argv[])
 {
 	int opt,mdr=0,tp=0,mineForms=0,dbg=0,tpsFilter=0,lz=0;
-	bool style=true,DRE=false;
+	bool style=true,DRE=false,tpcfp=false;
 	float st=1.0; // similarity threshold
 	string inp="",outp="",search="",pattern="",filterStr="";
 	tCustomDOM *d = new tCustomDOM();
@@ -361,7 +361,7 @@ int main(int argc, char *argv[])
 	fstream patternFile,inputFile;
 	filebuf outputFile;
 
-	while ((opt = getopt(argc, argv, "i:o:t:s:p:f:x:d:mhvcgabrqz")) != -1) {
+	while ((opt = getopt(argc, argv, "i:o:t:s:p:f:x:a::b::d:mhvcgrqz")) != -1) {
 		switch (opt) {
 		case 'c':
 			d->recCountDisplay = 1;
@@ -394,11 +394,10 @@ int main(int argc, char *argv[])
 			filterStr = optarg;
 			break;
 		case 'a':
-			tp = 1;
-			break;
 		case 'b':
 			tp = 1;
-			style = false;
+			style = (opt == 'a');
+			if (optarg) tpcfp = (string(optarg) == "p");
 			break;
 		case 'x':
 			if (optarg && string(optarg) == "ml") d->xml=1;
@@ -467,7 +466,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (tp) {
-		d->buildTagPath("",d->getBody(),true,style);
+		d->buildTagPath("",d->getBody(),true,style,tpcfp);
 	}
 
 	if (lz) {

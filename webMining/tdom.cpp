@@ -17,6 +17,12 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/*TODO:
+ * adaptar TPSF para devolver varias regioes
+ * score TPSF por coeficiente angular regressao linear
+ * detectRecord ponderar os pontos da diferença com a frequencia dos simbolos
+*/
+
 #include <string.h>
 #include <string>
 #include <iostream>
@@ -974,7 +980,7 @@ void tDOM::searchBorder(wstring s, float st) {
 						border=i;
 						scoreThreshold = abs((float)(s.size()-2*i+gapsize) / (float)(s.size()-gapsize));
 
-						if (!filteredAlphabet.empty() && (scoreThreshold > 0.1)) {
+						if (!filteredAlphabet.empty()) { // && (scoreThreshold > 0.1)) {
 							regionFound = true;
 							break;
 						} else {
@@ -1004,7 +1010,8 @@ void tDOM::searchBorder(wstring s, float st) {
 		auto m = nodeSequence.begin() + border + 1;
 		auto e = nodeSequence.end();
 
-		if (border < s.size()/2) {
+		if (abs(linearRegression(s.substr(border+1,s.size()))) < abs(linearRegression(s.substr(0,border)))) {
+		//if (border < s.size()/2) {
 			s = s.substr(border+1,s.size());
 			nodeSequence.assign(m,e);
 		} else {
@@ -1016,7 +1023,7 @@ void tDOM::searchBorder(wstring s, float st) {
 	}
 }
 
-void tDOM::buildTagPath(string s, tNode *n, bool print, bool style) {
+void tDOM::buildTagPath(string s, tNode *n, bool print, bool style, bool fp) {
 	auto i = n->nodes.begin();
 	string tagStyle,tagClass;
 
@@ -1041,8 +1048,11 @@ void tDOM::buildTagPath(string s, tNode *n, bool print, bool style) {
 	tagPathSequence = tagPathSequence + wchar_t(tagPathMap[s]);
 	nodeSequence.push_back(n);
 
-	if (print)
-		cout << tagPathSequence.size()-1 << ":" << tagPathMap[s] << ":\t" << s << endl;
+	if (print) {
+		cout << tagPathMap[s];
+		if (fp) cout << ":\t" << s;
+		cout << endl;
+	}
 
 	if (!(n->nodes.size())) return;
 
