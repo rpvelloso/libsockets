@@ -31,6 +31,7 @@
 #include <cmath>
 #include <queue>
 #include <utility>
+#include <cmath>
 #include "tdom.h"
 #include "misc.h"
 
@@ -919,15 +920,14 @@ bool tDOM::prune(tNode *n) {
 	return false;
 }
 
-size_t tDOM::searchBorder(wstring s, float st) {
+long int tDOM::searchBorder(wstring s, float st) {
 	set<int> alphabet,filteredAlphabet,regionAlphabet,intersect;
 	map<int,int> currentSymbolCount,symbolCount,thresholds;
 	bool regionFound=false;
 	size_t border=0;
-	float score[2];
-	float scoreThreshold;
 
 
+	// compute symbol frequency
 	for (size_t i=0;i<s.size();i++) {
 		if (alphabet.find(s[i]) == alphabet.end()) {
 			symbolCount[s[i]]=0;
@@ -936,29 +936,19 @@ size_t tDOM::searchBorder(wstring s, float st) {
 		symbolCount[s[i]]++;
 	}
 
+	// create sorted list of frequency thresholds
 	for (auto i=symbolCount.begin();i!=symbolCount.end();i++)
 		thresholds[(*i).second] = (*i).first;
 	auto threshold = thresholds.begin();
 
 	while (!regionFound && (threshold != thresholds.end())) {
-		int gapsize=0;
-
-		cerr << "Threshold: " << (*threshold).first << endl;
-
+		// filter alphabet
 		filteredAlphabet.clear();
 		for (auto j=symbolCount.begin();j!=symbolCount.end();j++) {
 			if ((*j).second > (*threshold).first) filteredAlphabet.insert((*j).first);
 		}
 		if (filteredAlphabet.size() < 2) break;
 		threshold++;
-
-		/*for (auto j=filteredAlphabet.begin();j!=filteredAlphabet.end();j++) {
-			cerr << *j << "\t" << symbolCount[*j] << endl;
-		}*/
-		cerr.precision(4);
-		cerr << "alphabet size = " << filteredAlphabet.size() << endl;
-		cerr << "TPS size = " << s.size() << endl;
-		cerr << "ratios tps/alpha = " << float(s.size())/float(filteredAlphabet.size()) << " alpha/tps = " << float(filteredAlphabet.size())/float(s.size()) << endl;
 
 		regionAlphabet.clear();
 		currentSymbolCount = symbolCount;
@@ -970,29 +960,14 @@ size_t tDOM::searchBorder(wstring s, float st) {
 					filteredAlphabet.erase(s[i]);
 					set_intersection(filteredAlphabet.begin(),filteredAlphabet.end(),regionAlphabet.begin(),regionAlphabet.end(),inserter(intersect,intersect.begin()));
 
-					/*cerr << "s[i]=" << s[i] << endl;
-					for (auto j=filteredAlphabet.begin();j!=filteredAlphabet.end();j++) cerr << *j << " ";
-					cerr << endl;
-					for (auto j=regionAlphabet.begin();j!=regionAlphabet.end();j++) cerr << *j << " ";
-					cerr << endl;
-					for (auto j=intersect.begin();j!=intersect.end();j++) cerr << *j << " ";
-					cerr << endl << endl;*/
-
 					if (intersect.empty()) {
-						border=i;
-						scoreThreshold = abs((float)(s.size()-2*i+gapsize) / (float)(s.size()-gapsize));
-
-						if (!filteredAlphabet.empty()) { // && (scoreThreshold > 0.1)) {
+						if (!filteredAlphabet.empty()) {
 							regionFound = true;
-							break;
-						} else {
-							gapsize=1;
+							border=i;
 						}
+						break;
 					}
 					intersect.clear();
-				} else {
-					// keep track of gap size between regions in order not to influence score
-					if (gapsize) gapsize++;
 				}
 			}
 		}
@@ -1000,30 +975,13 @@ size_t tDOM::searchBorder(wstring s, float st) {
 
 	if (regionFound) {
 		cerr.precision(4);
-		cerr << "region detected (" << regionAlphabet.size() << "): ";
-		for (auto j=regionAlphabet.begin();j!=regionAlphabet.end();j++) cerr << (*j) << " ";
-		cerr << endl << "scores:" << endl;
-		cerr << border + 1 << "\t" << regionAlphabet.size() << "\t" << score[0] << endl;
-		cerr << s.size() - border - 1 << "\t" << filteredAlphabet.size() << "\t" << score[1] << endl;
-		cerr << "% = " << scoreThreshold << endl;
-		cerr << endl;
-
-		//auto b = nodeSequence.begin();
-		//auto m = nodeSequence.begin() + border + 1;
-		//auto e = nodeSequence.end();
-
-		//if (abs(linearRegression(s.substr(border+1,s.size()))) >= abs(linearRegression(s.substr(0,border)))) {
-		linearRegression(s.substr(0,border));
-		linearRegression(s.substr(border+1,s.size()));
 
 		if (border <= s.size()/2) {
 			border++;
 			s = s.substr(border,s.size());
-			//nodeSequence.assign(m,e);
 		} else {
 			s = s.substr(0,border);
 			border = 0;
-			//nodeSequence.assign(b,--m);
 		}
 		tagPathSequence = s;
 		border += searchBorder(s,st);
@@ -1079,6 +1037,17 @@ void tDOM::tagPathSequenceFilter(float st) {
 	originalTPS = tagPathSequence;
 	originalNodeSequence = nodeSequence;
 
+	float step=10/(float)originalTPS.size(),x=-5;
+	float w[originalTPS.size()];
+	float wmax=-INFINITY;
+	float var=5,sqrt2pi=sqrt(var)*sqrt(2*M_PI);
+	for (size_t j=0;j<originalTPS.size();j++) {
+		w[j] = (pow(M_E,-(x*x)/2*var))/sqrt2pi;
+		if (w[j] > wmax) wmax = w[j];
+		x += step;
+	}
+	wmax *=2;
+
 	q.push(make_pair(originalTPS,0));
 
 	while (q.size()) {
@@ -1093,25 +1062,48 @@ void tDOM::tagPathSequenceFilter(float st) {
 		pos = searchBorder(s.first,st);
 		rlen = tagPathSequence.size();
 
-		cout << "offset: " << off << ", pos: (" << off+pos-rlen+1 << "," << off+pos << ") length: " << rlen << endl;
-		if (pos > 0) {
-			cout << "  +offset: " << off << " pos: (" << off << "," << off+pos-rlen << ") length: " << pos-rlen+1 << endl;
-			cout << "  +offset: " << off+pos+1 << " pos: (" << off+pos+1 << "," << off+len-1 << ") length: " << len-pos-1 <<endl;
-			if ((pos-rlen+1) > 0)
-				q.push(make_pair(originalTPS.substr(off,pos-rlen+1),off));
-			if (((len-pos-1) > 0) ) // && ((off+pos+1) < len))
-				q.push(make_pair(originalTPS.substr(off+pos+1,len-pos-1),off+pos+1));
-			if (off+pos-rlen+1 > 0)
-				region[off+pos-rlen+1]=rlen;
+		if (len > rlen) {
+			if (pos > 0)
+				q.push(make_pair(originalTPS.substr(off,pos),off));
+			if (((len-pos-rlen) > 0) )
+				q.push(make_pair(originalTPS.substr(off+pos+rlen,len-pos-rlen),off+pos+rlen));
+			if (rlen > 0)
+				region[off+pos]=rlen;
 		}
 	}
 
-	for (auto i=region.begin();i!=region.end();i++) {
-		cerr << "Region: offset=" << (*i).first << ", length=" << (*i).second << " endpos: " << (*i).first+(*i).second - 1
-			<< " " << linearRegression( originalTPS.substr( (*i).first,(*i).second ) ) << endl;
+	auto r = region.begin();
+
+	if (r!=region.end()) {
+		if ((*r).first > 0)
+			region[0] = (*r).first;
 	}
 
-	//prune(body);
+	float maxscore=-INFINITY,score;
+	for (auto i=region.begin();i!=region.end();i++) {
+		float sizeScore = (float)((*i).second / (float)originalTPS.size());
+		float positionScore = w[(*i).first + (*i).second/2] * ((float)1/wmax);
+		float angularScore = linearRegression(originalTPS.substr((*i).first,(*i).second));
+		if ((*i).second < originalTPS.size()*0.1) continue;
+		if (angularScore > 0.1) continue;
+		score =  sizeScore * positionScore / angularScore;
+
+		if (score >= maxscore) {
+			cerr << score << endl;
+			r = i;
+			maxscore = score;
+		}
+
+		cerr << "Region: offset=" << (*i).first << ", length=" << (*i).second << " endpos: " << (*i).first+(*i).second - 1
+			<< " " << sizeScore << " " << positionScore << " " << angularScore << " " << score << endl;
+	}
+
+	auto firstNode = originalNodeSequence.begin()+(*r).first;
+	auto lastNode = firstNode + (*r).second;
+
+	nodeSequence.assign(firstNode,lastNode);
+	tagPathSequence = originalTPS.substr((*r).first,(*r).second);
+	prune(body);
 }
 
 void tDOM::DRE(float st) {

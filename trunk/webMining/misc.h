@@ -165,11 +165,14 @@ float linearRegression(T s) {
 	b = (float)((float)((sx2*sy)-(sx*sxy))/(float)delta);
 
 
-	for (size_t i=0;i<n;i++)
-		e += abs(s[i] - (a*i + b));
-	//e /= n;
+	for (size_t i=0;i<n;i++) {
+		float ee;
+		ee = abs(s[i] - (a*i + b));
+		e += ee*ee;
+	}
+	e /= n;
 
-	return e/a;
+	return abs(a);
 }
 
 #endif /* MISC_H_ */
