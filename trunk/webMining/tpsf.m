@@ -61,7 +61,7 @@ function [tagPathSequence,pos] = searchRegion(tagPathSequence)
   if regionFound
     if i < floor(n/2)
       tagPathSequence = tagPathSequence(i+1:n);
-      pos = i+1;
+      pos = i;
     else
       tagPathSequence = tagPathSequence(1:i);
       pos = 0;
@@ -201,8 +201,8 @@ tps=x';
 %end
 figure;
 hold;
-plot([1:pos],x'(1:pos),'k.');
-plot([pos+length(tps):length(x)],x'(pos+length(tps):length(x)),'k.');
+plot(x(1:pos),'k.');
+plot([pos+length(tps)+1:length(x)],x'(pos+length(tps)+1:length(x)),'k.');
 plot([pos:pos+length(tps)-1],tps,'ko');
 plot(pos+diff,tps(diff),'r*');
 title('TPS de pagina do site Youtube');
