@@ -1026,27 +1026,31 @@ void tDOM::buildTagPath(string s, tNode *n, bool print, bool style, bool fp) {
 		buildTagPath(s,*i,print,style);
 }
 
-void tDOM::tagPathSequenceFilter(float st) {
+map<long int, long int> tDOM::tagPathSequenceFilter(float st) {
 	wstring originalTPS;
 	vector<tNode *> originalNodeSequence;
 	queue<pair<wstring,long int>> q;
 	vector<long int> start;
 	map<long int,long int> region;
+	size_t originalTPSsize;
 
 	buildTagPath("",body,false,true);
 	originalTPS = tagPathSequence;
 	originalNodeSequence = nodeSequence;
+	originalTPSsize = originalTPS.size();
 
-	float step=10/(float)originalTPS.size(),x=-5;
-	float w[originalTPS.size()];
+	// Gaussian weighting window [-5,+5]
+	float step=10/(float)originalTPSsize,x=-5;
+	float w[originalTPSsize];
 	float wmax=-INFINITY;
 	float var=5,sqrt2pi=sqrt(var)*sqrt(2*M_PI);
-	for (size_t j=0;j<originalTPS.size();j++) {
+	for (size_t j=0;j<originalTPSsize;j++) {
 		w[j] = (pow(M_E,-(x*x)/2*var))/sqrt2pi;
 		if (w[j] > wmax) wmax = w[j];
 		x += step;
 	}
 	wmax *=2;
+
 
 	q.push(make_pair(originalTPS,0));
 
@@ -1072,76 +1076,73 @@ void tDOM::tagPathSequenceFilter(float st) {
 		}
 	}
 
-	auto r = region.begin();
+	// select structured regions with size at least 10% total page size
+	float angCoeffThreshold=0.07,sizeThreshold=originalTPSsize*0.1;
 
-	if (r!=region.end()) {
-		if ((*r).first > 0)
-			region[0] = (*r).first;
-	}
-
-	float maxscore=-INFINITY,score;
+	map<long int, long int> structured;
 	for (auto i=region.begin();i!=region.end();i++) {
-		float sizeScore = (float)((*i).second / (float)originalTPS.size());
-		float positionScore = w[(*i).first + (*i).second/2] * ((float)1/wmax);
-		float angularScore = linearRegression(originalTPS.substr((*i).first,(*i).second));
-		if ((*i).second < originalTPS.size()*0.1) continue;
-		if (angularScore > 0.1) continue;
-		score =  sizeScore * positionScore / angularScore;
-
-		if (score >= maxscore) {
-			cerr << score << endl;
-			r = i;
-			maxscore = score;
-		}
-
-		cerr << "Region: offset=" << (*i).first << ", length=" << (*i).second << " endpos: " << (*i).first+(*i).second - 1
-			<< " " << sizeScore << " " << positionScore << " " << angularScore << " " << score << endl;
+		if (
+			((*i).second > sizeThreshold) &&
+			(linearRegression(originalTPS.substr((*i).first,(*i).second)) < angCoeffThreshold)
+			)
+			structured.insert(*i);
 	}
+	region.clear();
+	region = structured;
 
-	auto firstNode = originalNodeSequence.begin()+(*r).first;
-	auto lastNode = firstNode + (*r).second;
+	tagPathSequence = originalTPS;
+	nodeSequence = originalNodeSequence;
 
-	nodeSequence.assign(firstNode,lastNode);
-	tagPathSequence = originalTPS.substr((*r).first,(*r).second);
-	prune(body);
+	return region;
 }
 
 void tDOM::DRE(float st) {
+	wstring originalTPS;
+	vector<tNode *> originalNodeSequence;
 	vector<unsigned int> recpos;
 	vector<wstring> m;
+	map<long int, long int> region;
 
-	tagPathSequenceFilter(st); // locate main content region
+	region=tagPathSequenceFilter(st); // locate main content regions
+	originalTPS = tagPathSequence;
+	originalNodeSequence = nodeSequence;
 
-	/*buildTagPath("",body,false,false);
-	searchBorder(tagPathSequence,st);
-	prune(body);*/
+	for (auto i=region.begin();i!=region.end();i++) {
+		auto firstNode = originalNodeSequence.begin()+(*i).first;
+		auto lastNode = firstNode + (*i).second;
 
-	cerr << "TPS: " << endl;
-	for (size_t i=0;i<tagPathSequence.size();i++)
-		cerr << tagPathSequence[i] << " ";
-	cerr << endl;
+		nodeSequence.assign(firstNode,lastNode);
+		tagPathSequence = originalTPS.substr((*i).first,(*i).second);
+		m.clear();
+		recpos.clear();
 
-	// identify the start position of each record
-	recpos = locateRecords(tagPathSequence,st);
+		cerr << "TPS: " << endl;
+		for (size_t i=0;i<tagPathSequence.size();i++)
+			cerr << tagPathSequence[i] << " ";
+		cerr << endl;
 
-	// create a sequence for each record found
-	int prev=-1;
-	for (size_t i=0;i<recpos.size();i++) {
-		if (prev==-1) prev=recpos[i];
-		else {
-			m.push_back(tagPathSequence.substr(prev,recpos[i]-prev+1));
-			prev = recpos[i];
+		// identify the start position of each record
+		recpos = locateRecords(tagPathSequence,st);
+
+		// create a sequence for each record found
+		int prev=-1;
+		for (size_t i=0;i<recpos.size();i++) {
+			if (prev==-1) prev=recpos[i];
+			else {
+				m.push_back(tagPathSequence.substr(prev,recpos[i]-prev+1));
+				prev = recpos[i];
+			}
 		}
+		if (prev != -1)
+			m.push_back(tagPathSequence.substr(prev,tagPathSequence.size()-prev+1));
+
+
+		// align the records (one alternative to 'center star' algorithm is ClustalW)
+		centerStar(m);
+
+		// and extracts them
+		if (m.size()) onDataRecordFound(m,recpos);
 	}
-	if (prev != -1)
-		m.push_back(tagPathSequence.substr(prev,tagPathSequence.size()-prev+1));
-
-
-	// align the records (one alternative to 'center star' algorithm is ClustalW)
-	centerStar(m);
-
-	// and extracts them
-	if (m.size()) onDataRecordFound(m,recpos);
 }
 
 vector<unsigned int> tDOM::locateRecords(wstring s, float st) {
