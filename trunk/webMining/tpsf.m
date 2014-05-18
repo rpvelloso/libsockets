@@ -13,10 +13,11 @@ function filteredAlphabet = filterAlphabet(alphabet, symbolCount, threshold)
   filteredAlphabet = setdiff(filteredAlphabet,[0]);
 end
 
-function [pos, mainregion] = searchRegion(tagPathSequence,tolerance)
+function [tagPathSequence,pos] = searchRegion(tagPathSequence)
   alphabet = [];
   t = 1;
   n = length(tagPathSequence);
+  pos = 0;
   
   for i=1:length(tagPathSequence)
     symbol = tagPathSequence(i);
@@ -40,7 +41,6 @@ function [pos, mainregion] = searchRegion(tagPathSequence,tolerance)
     end
     currentSymbolCount = symbolCount;
     regionAlphabet = [];
-    gapsize = 0;
     for i=1:length(tagPathSequence)
       symbol=tagPathSequence(i);
       if ismember(symbol,currentAlphabet)
@@ -49,17 +49,11 @@ function [pos, mainregion] = searchRegion(tagPathSequence,tolerance)
         if currentSymbolCount(symbol) == 0
           currentAlphabet = setdiff(currentAlphabet,symbol);
           if length(intersect(currentAlphabet,regionAlphabet)) == 0
-            if (length(currentAlphabet) > 1) %&& (abs((n-2*i+gapsize)/(n-gapsize)) > tolerance)
+            if (length(currentAlphabet) > 1)
               regionFound = 1;
-              break;
-            else
-              gapsize = 1;
             end
+            break;
           end
-        end
-      else
-        if (gapsize) 
-          gapsize = gapsize + 1;
         end
       end
     end
@@ -67,15 +61,14 @@ function [pos, mainregion] = searchRegion(tagPathSequence,tolerance)
   if regionFound
     if i < floor(n/2)
       tagPathSequence = tagPathSequence(i+1:n);
-      pos = i;
+      pos = i+1;
     else
       tagPathSequence = tagPathSequence(1:i);
       pos = 0;
     end
-  else
-     pos = -1;
+    [tagPathSequence,p] = searchRegion(tagPathSequence);
+    pos = pos + p;
   end
-  mainregion = tagPathSequence;
 end
 
 function pos = findsubseq(seq,subseq)
@@ -193,16 +186,7 @@ x = load('Debug/x');
 tps=x';
 
 
-i = 0;
-pos = 1;
-
-while i >= 0
-  [i, datareg] = searchRegion(tps,0.1);
-  if i>=0
-     pos = pos + i;
-     tps = datareg;
-  end
-end
+[tps,pos] = searchRegion(tps);
 
 [records,diff] = recordDetect(tps);
 
