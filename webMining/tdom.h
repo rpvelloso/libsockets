@@ -65,7 +65,7 @@ protected:
 	int treeSize(tNode *);
 	int treeDepth(tNode *);
 
-	long int searchBorder(wstring);
+	long int searchRegion(wstring);
 	bool prune(tNode *);
 
 	vector<unsigned int> locateRecords(wstring, float);

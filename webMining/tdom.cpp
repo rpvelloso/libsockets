@@ -920,7 +920,7 @@ bool tDOM::prune(tNode *n) {
 	return false;
 }
 
-long int tDOM::searchBorder(wstring s) {
+long int tDOM::searchRegion(wstring s) {
 	set<int> alphabet,filteredAlphabet,regionAlphabet,intersect;
 	map<int,int> currentSymbolCount,symbolCount,thresholds;
 	bool regionFound=false;
@@ -982,7 +982,7 @@ long int tDOM::searchBorder(wstring s) {
 			border = 0;
 		}
 		tagPathSequence = s;
-		border += searchBorder(s);
+		border += searchRegion(s);
 	}
 	return border;
 }
@@ -1048,7 +1048,7 @@ map<long int, long int> tDOM::tagPathSequenceFilter(void) {
 
 		len = s.first.size();
 		off = s.second;
-		pos = searchBorder(s.first);
+		pos = searchRegion(s.first);
 		rlen = tagPathSequence.size();
 
 		if (len > rlen) {
