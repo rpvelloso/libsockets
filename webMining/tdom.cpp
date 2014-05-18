@@ -920,7 +920,7 @@ bool tDOM::prune(tNode *n) {
 	return false;
 }
 
-long int tDOM::searchBorder(wstring s, float st) {
+long int tDOM::searchBorder(wstring s) {
 	set<int> alphabet,filteredAlphabet,regionAlphabet,intersect;
 	map<int,int> currentSymbolCount,symbolCount,thresholds;
 	bool regionFound=false;
@@ -974,8 +974,6 @@ long int tDOM::searchBorder(wstring s, float st) {
 	}
 
 	if (regionFound) {
-		cerr.precision(4);
-
 		if (border <= s.size()/2) {
 			border++;
 			s = s.substr(border,s.size());
@@ -984,7 +982,7 @@ long int tDOM::searchBorder(wstring s, float st) {
 			border = 0;
 		}
 		tagPathSequence = s;
-		border += searchBorder(s,st);
+		border += searchBorder(s);
 	}
 	return border;
 }
@@ -1026,7 +1024,7 @@ void tDOM::buildTagPath(string s, tNode *n, bool print, bool style, bool fp) {
 		buildTagPath(s,*i,print,style);
 }
 
-map<long int, long int> tDOM::tagPathSequenceFilter(float st) {
+map<long int, long int> tDOM::tagPathSequenceFilter(void) {
 	wstring originalTPS;
 	vector<tNode *> originalNodeSequence;
 	queue<pair<wstring,long int>> q;
@@ -1039,20 +1037,7 @@ map<long int, long int> tDOM::tagPathSequenceFilter(float st) {
 	originalNodeSequence = nodeSequence;
 	originalTPSsize = originalTPS.size();
 
-	// Gaussian weighting window [-5,+5]
-	float step=10/(float)originalTPSsize,x=-5;
-	float w[originalTPSsize];
-	float wmax=-INFINITY;
-	float var=5,sqrt2pi=sqrt(var)*sqrt(2*M_PI);
-	for (size_t j=0;j<originalTPSsize;j++) {
-		w[j] = (pow(M_E,-(x*x)/2*var))/sqrt2pi;
-		if (w[j] > wmax) wmax = w[j];
-		x += step;
-	}
-	wmax *=2;
-
-
-	q.push(make_pair(originalTPS,0));
+	q.push(make_pair(originalTPS,0)); // insert first sequence in queue for processing
 
 	while (q.size()) {
 		long int len,off,rlen,pos;
@@ -1063,7 +1048,7 @@ map<long int, long int> tDOM::tagPathSequenceFilter(float st) {
 
 		len = s.first.size();
 		off = s.second;
-		pos = searchBorder(s.first,st);
+		pos = searchBorder(s.first);
 		rlen = tagPathSequence.size();
 
 		if (len > rlen) {
@@ -1096,14 +1081,14 @@ map<long int, long int> tDOM::tagPathSequenceFilter(float st) {
 	return region;
 }
 
-void tDOM::DRE(float st) {
+void tDOM::DRDE(float st) {
 	wstring originalTPS;
 	vector<tNode *> originalNodeSequence;
 	vector<unsigned int> recpos;
 	vector<wstring> m;
 	map<long int, long int> region;
 
-	region=tagPathSequenceFilter(st); // locate main content regions
+	region=tagPathSequenceFilter(); // locate main content regions
 	originalTPS = tagPathSequence;
 	originalNodeSequence = nodeSequence;
 

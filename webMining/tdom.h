@@ -51,9 +51,9 @@ public:
 	list <tNode *> getRecord(tNode *, tNode *);
 	vector<tNode *> partialTreeAlignment(tDataRegion);
 	string getRegEx(tNode *, int, int = 0);
-	map<long int, long int> tagPathSequenceFilter(float);
+	map<long int, long int> tagPathSequenceFilter(void);
 	void LZExtraction();
-	void DRE(float);
+	void DRDE(float);
 
 protected:
     void treeAlign(tNode *, tNode *, int **, tNode *);
@@ -65,7 +65,7 @@ protected:
 	int treeSize(tNode *);
 	int treeDepth(tNode *);
 
-	long int searchBorder(wstring, float);
+	long int searchBorder(wstring);
 	bool prune(tNode *);
 
 	vector<unsigned int> locateRecords(wstring, float);

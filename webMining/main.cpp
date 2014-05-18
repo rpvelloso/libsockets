@@ -457,7 +457,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (tpsFilter) {
-		d->tagPathSequenceFilter(1.0-st);
+		d->tagPathSequenceFilter();
 	}
 
 	if (mineForms) {
@@ -496,7 +496,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (DRE) {
-		d->DRE(st);
+		d->DRDE(st);
 	}
 
 	if (search == "" && pattern == "" && !mdr && !tp && !lz && !DRE) {
