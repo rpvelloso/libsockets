@@ -161,7 +161,7 @@ function [blks,blkfreq] = LZDecomp(seq)
 end
 
 function [records, diff] = recordDetect(tps)
-   d = diff(tps - mean(tps));
+   d = diff(tps - mean(tps))./(tps(2:length(tps)).^2);
    d = d.*(d<0);
 
    figure; 
@@ -206,7 +206,7 @@ function [records, diff] = recordDetect(tps)
       end
    end
    
-   records = tps(:) == tps(diff(j)); 
+   records = tps(:) == diff(j); 
 end
 
 function a = linearRegression(y)
