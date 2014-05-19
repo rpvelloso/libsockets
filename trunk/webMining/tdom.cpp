@@ -1041,21 +1041,23 @@ map<long int, long int> tDOM::tagPathSequenceFilter(void) {
 
 	while (q.size()) {
 		long int len,off,rlen,pos;
+		wstring tps;
 
 		auto s = q.front();
 
 		q.pop();
 
-		len = s.first.size();
+		tps = s.first;
+		len = tps.size();
 		off = s.second;
-		pos = searchRegion(s.first);
+		pos = searchRegion(tps);
 		rlen = tagPathSequence.size();
 
 		if (len > rlen) {
 			if (pos > 0)
-				q.push(make_pair(originalTPS.substr(off,pos),off));
+				q.push(make_pair(tps.substr(0,pos),off));
 			if (((len-pos-rlen) > 0) )
-				q.push(make_pair(originalTPS.substr(off+pos+rlen,len-pos-rlen),off+pos+rlen));
+				q.push(make_pair(tps.substr(pos+rlen),off+pos+rlen));
 			if (rlen > 0)
 				region[off+pos]=rlen;
 		}

@@ -71,10 +71,61 @@ function [tagPathSequence,pos] = searchRegion(tagPathSequence)
   end
 end
 
+function regions = tpsSeg(tps)
+   queueSize = 1;
+   queuePos = 1;
+   queue{queueSize} = {tps,0};
+   regionPos = 1;
+   regions{regionPos} = [];
+   
+   while ~isempty(queue{queuePos})
+      off = queue{queuePos}{2};
+      if off == 0 off=1; end
+      tps = queue{queuePos}{1};
+      queue{queuePos} = [];
+      [seq,pos] = searchRegion(tps);
+      printf('region tps(%d) length %d\n',pos,length(seq));
+      if ((length(tps) > length(seq)) && (pos > 0))
+         if pos > 1
+            printf('   +1) (%d:%d)\n',off+1,off+pos-1);
+            queueSize += 1;
+            queue{queueSize} = {tps(1:pos-1),off};
+         end
+         if pos+length(seq) <= length(tps)
+            pos 
+            length(seq)
+            length(tps)
+            printf('   +2) (%d:%d)\n',off+pos+length(seq),off+length(tps));
+            queueSize += 1;
+            queue{queueSize} = {tps(pos+length(seq):length(tps)),off+pos+length(seq)};
+         end
+         regions{regionPos} = {seq,off+pos};
+         regionPos += 1;
+         queuePos += 1;
+      end
+   end
+end
+
+function regions = detectRegions(regions,minsize)
+   j=1;
+   r{j} = [];
+   for i=1:length(regions)
+      seq = regions{i}{1};
+      off = regions{i}{2};
+      a = linearRegression(seq);
+      printf('region %d) off=%d a=%f\n',i,a,off);
+      if ((a < 0.07) && (length(seq) > minsize))
+         r{j} = regions{i};
+         j += 1;
+      end
+   end
+   regions = r;
+end
+
 function pos = findsubseq(seq,subseq)
 	pos = 0;
 	for i=1:(length(seq)-length(subseq)+1)
-		if ( seq(i)==subseq(1) )
+		if seq(i)==subseq(1)
 			if seq(i:i+length(subseq)-1) == subseq
 				pos = i;
 				break;
@@ -87,25 +138,25 @@ function [blks,blkfreq] = LZDecomp(seq)
 	blkcount=0; i=1;
 	blkfreq=zeros(1,length(seq));
 	while i < length(seq)
-	len=pos=0;
-	prefix = seq(1:i-1);
-	suffix = seq(i:length(seq));
-	for l=min(length(suffix),length(prefix)):-1:1
-		prior = suffix(1:l);
-		pos=findsubseq(prefix,prior);
-		if pos > 0
-			len=l;
-			break;
-		end
-	end
-	if len > 0
-		blkcount = blkcount + 1;
-		blks{blkcount}=[i pos pos+len len];
-		%blkfreq=blkfreq + [zeros(1,pos-1) ones(1,len) zeros(1,i-pos-len) ones(1,len) zeros(1,length(seq)-i-len+1)];
-		blkfreq=blkfreq + [zeros(1,pos-1) ones(1,len) zeros(1,i-pos-len) zeros(1,length(seq)-i+1)];
-		i = i + l - 1;
-	end
-	i = i + 1;
+	   len=pos=0;
+	   prefix = seq(1:i-1);
+	   suffix = seq(i:length(seq));
+	   for l=min(length(suffix),length(prefix)):-1:1
+		   prior = suffix(1:l);
+		   pos=findsubseq(prefix,prior);
+		   if pos > 0
+			   len=l;
+			   break;
+		   end
+	   end
+	   if len > 0
+		   blkcount = blkcount + 1;
+		   blks{blkcount}=[i pos pos+len len];
+		   %blkfreq=blkfreq + [zeros(1,pos-1) ones(1,len) zeros(1,i-pos-len) ones(1,len) zeros(1,length(seq)-i-len+1)];
+		   blkfreq=blkfreq + [zeros(1,pos-1) ones(1,len) zeros(1,i-pos-len) zeros(1,length(seq)-i+1)];
+		   i = i + l - 1;
+	   end
+	   i = i + 1;
 	end
 end
 
@@ -160,7 +211,7 @@ function [records, diff] = recordDetect(tps)
    records = (records.*delta).+tps(diff(j));
 end
 
-function [a,b,e] = lslr(y)
+function a = linearRegression(y)
    n = length(y);
    x=(1:n);
    xy = x.*y;
@@ -172,23 +223,38 @@ function [a,b,e] = lslr(y)
    delta=n*sx2-sx^2;
    
    a=(n*sxy-sy*sx)/delta;
-   b=(sx2*sy-sx*sxy)/delta;
-   e = sum((y - a*x+b).^2);
-   
-   figure; hold;
-   plot(x,y,'.');
-   plot(x,a*x + b,'r-');
-   
+   %b=(sx2*sy-sx*sxy)/delta;
+   %error = sum((y - a*x+b).^2);
 end
 
 x = load('Debug/x');
-
 tps=x';
 
+regions = tpsSeg(tps);
+regions = detectRegions(regions,length(tps)*0.1);
+for i=1:length(regions)
+   [r,d] = recordDetect(regions{i}{1});
+   records{i}={r,d};
+end
 
-[tps,pos] = searchRegion(tps);
-
-[records,diff] = recordDetect(tps);
+figure;
+hold on;
+plot(tps,'k.');
+for i=1:length(records)
+   seq = regions{i}{1};
+   off = regions{i}{2};
+   len = length(seq);
+   
+   pos = off;
+   if off == 0 pos=1; end
+   
+   plot((pos:off+len-1),seq,'r-');
+end
+title('TPS de pagina do site');
+xlabel('posicao da sequencia');
+ylabel('codigo tag path');
+%legend('TPS','','Regiao principal','location','northwest');
+%legend('boxon');
 
 %[blks,blkfreq] = LZDecomp(tps);
 %figure; hold;
@@ -199,19 +265,4 @@ tps=x';
 %	j=j+1;
 %	th = b(2);
 %end
-figure;
-hold;
-plot(x(1:pos),'k.');
-plot([pos+length(tps)+1:length(x)],x'(pos+length(tps)+1:length(x)),'k.');
-plot([pos:pos+length(tps)-1],tps,'ko');
-plot(pos+diff,tps(diff),'r*');
-title('TPS de pagina do site Youtube');
-xlabel('posicao da sequencia');
-ylabel('codigo tag path');
-legend('TPS','','Regiao principal','location','northwest');
-legend('boxon');
-
-figure; hold;
-plot(tps,'o');
-plot(records,'r-');
 
