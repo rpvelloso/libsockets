@@ -1031,11 +1031,13 @@ map<long int, long int> tDOM::tagPathSequenceFilter(void) {
 	vector<long int> start;
 	map<long int,long int> region;
 	size_t originalTPSsize;
+	float sizeThreshold;
 
 	buildTagPath("",body,false,true);
 	originalTPS = tagPathSequence;
 	originalNodeSequence = nodeSequence;
 	originalTPSsize = originalTPS.size();
+	sizeThreshold = originalTPSsize*0.1;
 
 	q.push(make_pair(originalTPS,0)); // insert first sequence in queue for processing
 
@@ -1054,9 +1056,9 @@ map<long int, long int> tDOM::tagPathSequenceFilter(void) {
 		rlen = tagPathSequence.size();
 
 		if (len > rlen) {
-			if (pos > 0)
+			if ((pos > 0) && (pos > sizeThreshold))
 				q.push(make_pair(tps.substr(0,pos),off));
-			if (((len-pos-rlen) > 0) )
+			if (((len-pos-rlen) > 0) && (pos+rlen > sizeThreshold))
 				q.push(make_pair(tps.substr(pos+rlen),off+pos+rlen));
 			if (rlen > 0)
 				region[off+pos]=rlen;
@@ -1064,7 +1066,7 @@ map<long int, long int> tDOM::tagPathSequenceFilter(void) {
 	}
 
 	// select structured regions with size at least 10% total page size
-	float angCoeffThreshold=0.07,sizeThreshold=originalTPSsize*0.1;
+	float angCoeffThreshold=0.07;
 
 	map<long int, long int> structured;
 	for (auto i=region.begin();i!=region.end();i++) {

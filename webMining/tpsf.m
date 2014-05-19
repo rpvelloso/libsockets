@@ -74,7 +74,7 @@ end
 function regions = tpsSeg(tps)
    queueSize = 1;
    queuePos = 1;
-   queue{queueSize} = {tps,0};
+   queue{queueSize} = {tps,1};
    regionPos = 1;
    regions{regionPos} = [];
    
@@ -85,19 +85,19 @@ function regions = tpsSeg(tps)
       queue{queuePos} = [];
       [seq,pos] = searchRegion(tps);
       printf('region tps(%d) length %d\n',pos,length(seq));
+      pos 
+      length(seq)
+      length(tps)
       if ((length(tps) > length(seq)) && (pos > 0))
          if pos > 1
-            printf('   +1) (%d:%d)\n',off+1,off+pos-1);
+            printf('   +1) (%d:%d) %d\n',1,pos-1,pos-1);
             queueSize += 1;
             queue{queueSize} = {tps(1:pos-1),off};
          end
-         if pos+length(seq) <= length(tps)
-            pos 
-            length(seq)
-            length(tps)
-            printf('   +2) (%d:%d)\n',off+pos+length(seq),off+length(tps));
+         if pos+length(seq) < length(tps)
+            printf('   +2) (%d:%d) %d\n',pos+length(seq),length(tps),length(tps)-(length(seq)+pos));
             queueSize += 1;
-            queue{queueSize} = {tps(pos+length(seq):length(tps)),off+pos+length(seq)};
+            queue{queueSize} = {tps(pos+length(seq):length(tps)),off+pos+length(seq)-1};
          end
          regions{regionPos} = {seq,off+pos};
          regionPos += 1;
@@ -112,8 +112,8 @@ function regions = detectRegions(regions,minsize)
    for i=1:length(regions)
       seq = regions{i}{1};
       off = regions{i}{2};
-      a = linearRegression(seq);
-      printf('region %d) off=%d a=%f\n',i,a,off);
+      a = abs(linearRegression(seq));
+      printf('region %d) off=%d a=%3.5f len=%d\n',i,off,a,length(seq));
       if ((a < 0.07) && (length(seq) > minsize))
          r{j} = regions{i};
          j += 1;
@@ -207,8 +207,6 @@ function [records, diff] = recordDetect(tps)
    end
    
    records = tps(:) == tps(diff(j)); 
-   delta=max(tps)-tps(diff(j));
-   records = (records.*delta).+tps(diff(j));
 end
 
 function a = linearRegression(y)
@@ -244,11 +242,13 @@ for i=1:length(records)
    seq = regions{i}{1};
    off = regions{i}{2};
    len = length(seq);
+   rec = records{i}{2};
    
    pos = off;
    if off == 0 pos=1; end
    
    plot((pos:off+len-1),seq,'r-');
+   plot(rec.+off,tps(rec(1)+off),'b*');
 end
 title('TPS de pagina do site');
 xlabel('posicao da sequencia');
