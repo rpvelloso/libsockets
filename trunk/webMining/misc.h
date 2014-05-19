@@ -145,7 +145,7 @@ void centerStar(vector<T> &M) {
 
 template <class T>
 float linearRegression(T s) {
-	unsigned long int delta,x,y,xy,x2,sx=0,sy=0,sxy=0,sx2=0,n=s.size();
+	float delta,x,y,xy,x2,sx=0,sy=0,sxy=0,sx2=0,n=s.size();
 	float a,b,e=0;
 
 	for (size_t i=0;i<n;i++) {

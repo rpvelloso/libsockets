@@ -1031,7 +1031,7 @@ map<long int, long int> tDOM::tagPathSequenceFilter(void) {
 	vector<long int> start;
 	map<long int,long int> region;
 	size_t originalTPSsize;
-	float sizeThreshold;
+	long int sizeThreshold;
 
 	buildTagPath("",body,false,true);
 	originalTPS = tagPathSequence;
@@ -1056,11 +1056,11 @@ map<long int, long int> tDOM::tagPathSequenceFilter(void) {
 		rlen = tagPathSequence.size();
 
 		if (len > rlen) {
-			if ((pos > 0) && (pos > sizeThreshold))
+			if (pos > 0)
 				q.push(make_pair(tps.substr(0,pos),off));
-			if (((len-pos-rlen) > 0) && (pos+rlen > sizeThreshold))
+			if ((len-pos-rlen) > 0)
 				q.push(make_pair(tps.substr(pos+rlen),off+pos+rlen));
-			if (rlen > 0)
+			if (rlen > sizeThreshold)
 				region[off+pos]=rlen;
 		}
 	}
@@ -1070,10 +1070,11 @@ map<long int, long int> tDOM::tagPathSequenceFilter(void) {
 
 	map<long int, long int> structured;
 	for (auto i=region.begin();i!=region.end();i++) {
-		if (
-			((*i).second > sizeThreshold) &&
-			(linearRegression(originalTPS.substr((*i).first,(*i).second)) < angCoeffThreshold)
-			)
+		float a = linearRegression(originalTPS.substr((*i).first,(*i).second));
+
+		cerr << "size: " << (*i).second << "ang.coeff.: " << a << endl;
+
+		if (a < angCoeffThreshold)
 			structured.insert(*i);
 	}
 	region.clear();
