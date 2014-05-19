@@ -122,6 +122,71 @@ function regions = detectRegions(regions,minsize)
    regions = r;
 end
 
+function [records, diff] = recordDetect(tps)
+   d = diff(tps).*tps(1:length(tps)-1);
+   d = d.*(d<0);
+
+   figure; 
+   hold;
+   plot(d,'o'); 
+   plot(d,'r-'); 
+   title('negative difference');
+
+   [v,p]=sort(d);
+   l=p(1);
+   r=p(1);
+   level=v(1);
+   gap=0;
+   diff = [];
+
+   i=1;
+   while ((gap/length(tps)) < 0.80) and (i<=length(tps))
+      j=1;
+      interval=+Inf;
+      while level==v(i)
+        if p(i) < l l=p(i); end
+        if p(i) > r r=p(i); end
+        diff = [diff p(i)+1];
+        if j>1
+          int=abs(p(i)-p(i-1));
+          if int < interval interval=int; end
+        end
+        i=i+1;
+        j=j+1;
+      end
+      if interval!=+Inf gap=gap+((j-1)*interval); end
+      level=v(i);
+   end
+   
+   count=0;
+   j=0;
+   for i=1:length(diff)
+      smt = sum(tps(diff(:)) == tps(diff(i)));
+      if smt > count
+         count = smt;
+         j=i;
+      end
+   end
+   
+   records = find(tps == tps(diff(j))); 
+end
+
+function a = linearRegression(y)
+   n = length(y);
+   x=(1:n);
+   xy = x.*y;
+   x2=x.^2;
+   sx = sum(x);
+   sy=sum(y);
+   sxy=sum(xy);
+   sx2=sum(x2);
+   delta=n*sx2-sx^2;
+   
+   a=(n*sxy-sy*sx)/delta;
+   %b=(sx2*sy-sx*sxy)/delta;
+   %error = sum((y - a*x+b).^2);
+end
+
 function pos = findsubseq(seq,subseq)
 	pos = 0;
 	for i=1:(length(seq)-length(subseq)+1)
@@ -160,71 +225,6 @@ function [blks,blkfreq] = LZDecomp(seq)
 	end
 end
 
-function [records, diff] = recordDetect(tps)
-   d = diff(tps - mean(tps))./(tps(2:length(tps)).^2);
-   d = d.*(d<0);
-
-   figure; 
-   hold;
-   plot(d,'o'); 
-   plot(d,'r-'); 
-   title('negative difference');
-
-   [v,p]=sort(d);
-   l=p(1);
-   r=p(1);
-   level=v(1);
-   gap=0;
-   diff = [];
-
-   i=1;
-   while ((gap/length(tps)) < 0.80) and (i<=length(tps))
-      j=1;
-      interval=+Inf;
-      while level==v(i)
-        if p(i) < l l=p(i); end
-        if p(i) > r r=p(i); end
-        diff = [diff p(i)+1];
-        if j>1
-          int=abs(p(i)-p(i-1));
-          if int < interval interval=int; end
-        end
-        i=i+1;
-        j=j+1;
-      end
-      if interval!=+Inf gap=gap+((j-1)*interval); end
-      level=v(i);
-   end
-   
-   count=0;
-   j=0;
-   for i=1:length(diff)
-      smt = sum(diff(:) == diff(i));
-      if smt > count
-         count = smt;
-         j=i;
-      end
-   end
-   
-   records = tps(:) == diff(j); 
-end
-
-function a = linearRegression(y)
-   n = length(y);
-   x=(1:n);
-   xy = x.*y;
-   x2=x.^2;
-   sx = sum(x);
-   sy=sum(y);
-   sxy=sum(xy);
-   sx2=sum(x2);
-   delta=n*sx2-sx^2;
-   
-   a=(n*sxy-sy*sx)/delta;
-   %b=(sx2*sy-sx*sxy)/delta;
-   %error = sum((y - a*x+b).^2);
-end
-
 x = load('Debug/x');
 tps=x';
 
@@ -242,13 +242,13 @@ for i=1:length(records)
    seq = regions{i}{1};
    off = regions{i}{2};
    len = length(seq);
-   rec = records{i}{2};
+   rec = records{i}{1};
    
    pos = off;
    if off == 0 pos=1; end
    
    plot((pos:off+len-1),seq,'r-');
-   plot(rec.+pos.-1,tps(rec(1)+off-1),'b*');
+   plot(off.+rec.-1,seq(rec),'b*');
 end
 title('TPS de pagina do site');
 xlabel('posicao da sequencia');

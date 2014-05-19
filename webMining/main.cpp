@@ -256,7 +256,7 @@ public:
 			cout << "<?xml version=\"1.0\"""?>" << endl << "<extraction>" << endl;
 			cout << " <region number=\"" << 1 << "\" recsize=\"" << recsize << "\" reccount=\"" << m.size() << "\" score=\"" << recsize*r << "\">" << endl;
 		} else {
-			cout << "<meta http-equiv=""Content-Type"" content=""text/html;charset=utf-8"">" << endl;
+			cout << "<meta http-equiv=""Content-Type"" content=""text/html;charset=ISO-8859-1"">" << endl;
 			cout << "<table border=1>" << endl;
 			cout << "<tr><th>#</th><th>Record size:" << recsize << "</th><th>Record count: " << rows << "</th><th colspan=" << m[0].size() - 2 << "></th>";
 		}

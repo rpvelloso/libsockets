@@ -1037,7 +1037,7 @@ map<long int, long int> tDOM::tagPathSequenceFilter(void) {
 	originalTPS = tagPathSequence;
 	originalNodeSequence = nodeSequence;
 	originalTPSsize = originalTPS.size();
-	sizeThreshold = originalTPSsize*0.1;
+	sizeThreshold = (originalTPSsize*5)/100;
 
 	q.push(make_pair(originalTPS,0)); // insert first sequence in queue for processing
 
@@ -1072,7 +1072,7 @@ map<long int, long int> tDOM::tagPathSequenceFilter(void) {
 	for (auto i=region.begin();i!=region.end();i++) {
 		float a = linearRegression(originalTPS.substr((*i).first,(*i).second));
 
-		cerr << "size: " << (*i).second << "ang.coeff.: " << a << endl;
+		cerr << "size: " << (*i).second << " ang.coeff.: " << a << endl;
 
 		if (a < angCoeffThreshold)
 			structured.insert(*i);
@@ -1136,8 +1136,8 @@ void tDOM::DRDE(float st) {
 }
 
 vector<unsigned int> tDOM::locateRecords(wstring s, float st) {
-	float d[s.size()-1];
-	map<float, vector<int> > diffMap;
+	int d[s.size()-1];
+	map<int, vector<int> > diffMap;
 	map<int, int> TPMap;
 	vector<unsigned int> recpos;
 	int rootTag;
@@ -1153,7 +1153,7 @@ vector<unsigned int> tDOM::locateRecords(wstring s, float st) {
 	*/
 	cerr << "diff: " << endl;
 	for (size_t i=1;i<s.size();i++) {
-		d[i-1]=(float)(s[i]-s[i-1])/(float)(s[i]);
+		d[i-1]=(s[i]-s[i-1])*s[i-1];
 		if (d[i-1] < 0) {
 			cerr << d[i-1]*s[i] << " ";
 			diffMap[d[i-1]].push_back(i);
