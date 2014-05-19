@@ -286,8 +286,8 @@ public:
 						printNode(n,4);
 					} else if (n->type == 2) {
 						cout << n->text;
-					} else if (n->nodes.size() == 0) {
-						cout << n->tagName << " " << n->text;
+					/*} else if (n->nodes.size() == 0) {
+						cout << n->tagName << " " << n->text;*/
 					}
 				}
 

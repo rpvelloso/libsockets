@@ -1136,8 +1136,8 @@ void tDOM::DRDE(float st) {
 }
 
 vector<unsigned int> tDOM::locateRecords(wstring s, float st) {
-	int d[s.size()-1];
-	map<int, vector<int> > diffMap;
+	float d[s.size()-1];
+	map<float, vector<int> > diffMap;
 	map<int, int> TPMap;
 	vector<unsigned int> recpos;
 	int rootTag;
@@ -1147,13 +1147,15 @@ vector<unsigned int> tDOM::locateRecords(wstring s, float st) {
 
 	/* compute sequence's first difference, keeping only the negative values (i.e. keeping only
 	 * fast transitions from very high to very low values, L - H = negative difference). The
-	 * difference points are stored and processed in ascending order (higher module values first).
+	 * difference points are stored and processed in ascending order (higher absolute values first).
+	 *
+	 * the difference is weighted with the inverse TPC value, the lower, the better
 	*/
 	cerr << "diff: " << endl;
 	for (size_t i=1;i<s.size();i++) {
-		d[i-1]=s[i]-s[i-1];
+		d[i-1]=(float)(s[i]-s[i-1])/(float)(s[i]);
 		if (d[i-1] < 0) {
-			cerr << d[i-1] << " ";
+			cerr << d[i-1]*s[i] << " ";
 			diffMap[d[i-1]].push_back(i);
 		} else cerr << 0 << " ";
 	}
