@@ -248,7 +248,7 @@ for i=1:length(records)
    if off == 0 pos=1; end
    
    plot((pos:off+len-1),seq,'r-');
-   plot(rec.+off,tps(rec(1)+off),'b*');
+   plot(rec.+pos.-1,tps(rec(1)+off-1),'b*');
 end
 title('TPS de pagina do site');
 xlabel('posicao da sequencia');
