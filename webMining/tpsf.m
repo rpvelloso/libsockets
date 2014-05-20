@@ -104,6 +104,9 @@ function regions = tpsSeg(tps)
          queuePos += 1;
       end
    end
+   if isempty(regions{1})
+      regions{1} = {tps,0};
+   end
 end
 
 function regions = detectRegions(regions,minsize)
@@ -114,7 +117,7 @@ function regions = detectRegions(regions,minsize)
       off = regions{i}{2};
       a = abs(linearRegression(seq));
       printf('region %d) off=%d a=%3.5f len=%d\n',i,off,a,length(seq));
-      if ((a < 0.07) && (length(seq) > minsize))
+      if ((a < 0.3) && (length(seq) > minsize))
          r{j} = regions{i};
          j += 1;
       end
@@ -225,7 +228,7 @@ function [blks,blkfreq] = LZDecomp(seq)
 	end
 end
 
-x = load('Debug/x');
+x = load('Debug/testbed4/tps/cnet2.html.tps');
 tps=x';
 
 regions = tpsSeg(tps);
@@ -245,9 +248,13 @@ for i=1:length(records)
    rec = records{i}{1};
    
    pos = off;
-   if off == 0 pos=1; end
+   if off == 0 
+      pos=1; 
+   else
+      len -= 1;
+   end
    
-   plot((pos:off+len-1),seq,'r-');
+   plot((pos:off+len),seq,'r-');
    plot(off.+rec.-1,seq(rec),'b*');
 end
 title('TPS de pagina do site');
@@ -265,4 +272,3 @@ ylabel('codigo tag path');
 %	j=j+1;
 %	th = b(2);
 %end
-
