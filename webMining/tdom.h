@@ -51,9 +51,9 @@ public:
 	list <tNode *> getRecord(tNode *, tNode *);
 	vector<tNode *> partialTreeAlignment(tDataRegion);
 	string getRegEx(tNode *, int, int = 0);
-	map<long int, long int> tagPathSequenceFilter(void);
+	map<long int, long int> tagPathSequenceFilter(bool);
 	void LZExtraction();
-	void DRDE(float);
+	void DRDE(bool, float);
 
 protected:
     void treeAlign(tNode *, tNode *, int **, tNode *);
