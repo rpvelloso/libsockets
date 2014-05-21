@@ -987,7 +987,7 @@ long int tDOM::searchRegion(wstring s) {
 	return border;
 }
 
-void tDOM::buildTagPath(string s, tNode *n, bool print, bool style, bool fp) {
+void tDOM::buildTagPath(string s, tNode *n, bool print, bool css, bool fp) {
 	auto i = n->nodes.begin();
 	string tagStyle,tagClass;
 
@@ -1002,7 +1002,7 @@ void tDOM::buildTagPath(string s, tNode *n, bool print, bool style, bool fp) {
 	tagClass = n->getAttribute("class");
 	if (tagStyle != "") tagStyle = " " + tagStyle;
 	if (tagClass != "") tagClass = " " + tagClass;
-	if (style) s = s + "/" + n->getTagName() + tagClass + tagStyle;
+	if (css) s = s + "/" + n->getTagName() + tagClass + tagStyle;
 	else s = s + "/" + n->getTagName();
 
 	if (tagPathMap.find(s) == tagPathMap.end()) {
@@ -1021,10 +1021,10 @@ void tDOM::buildTagPath(string s, tNode *n, bool print, bool style, bool fp) {
 	if (!(n->nodes.size())) return;
 
 	for (;i!=n->nodes.end();i++)
-		buildTagPath(s,*i,print,style);
+		buildTagPath(s,*i,print,css);
 }
 
-map<long int, long int> tDOM::tagPathSequenceFilter(void) {
+map<long int, long int> tDOM::tagPathSequenceFilter(bool css) {
 	wstring originalTPS;
 	vector<tNode *> originalNodeSequence;
 	queue<pair<wstring,long int>> q;
@@ -1033,7 +1033,7 @@ map<long int, long int> tDOM::tagPathSequenceFilter(void) {
 	size_t originalTPSsize;
 	long int sizeThreshold;
 
-	buildTagPath("",body,false,true);
+	buildTagPath("",body,false,css);
 	originalTPS = tagPathSequence;
 	originalNodeSequence = nodeSequence;
 	originalTPSsize = originalTPS.size();
@@ -1092,14 +1092,14 @@ map<long int, long int> tDOM::tagPathSequenceFilter(void) {
 	return region;
 }
 
-void tDOM::DRDE(float st) {
+void tDOM::DRDE(bool css, float st) {
 	wstring originalTPS;
 	vector<tNode *> originalNodeSequence;
 	vector<unsigned int> recpos;
 	vector<wstring> m;
 	map<long int, long int> region;
 
-	region=tagPathSequenceFilter(); // locate main content regions
+	region=tagPathSequenceFilter(css); // locate main content regions
 	originalTPS = tagPathSequence;
 	originalNodeSequence = nodeSequence;
 

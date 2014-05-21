@@ -339,12 +339,12 @@ void printUsage(char *p)
 	cout << "-xml  outputs MDR results in XML format" << endl;
 	cout << "-f    text filter string" << endl;
 	cout << "-a[p] display tag path of input (-ap prints full path)" << endl;
-	cout << "-b[p] display tag path of input without style" << endl;
 	cout << "-g    mine forms and fields" << endl;
 	cout << "-c    displays only record count of main region." << endl;
 	cout << "-r    apply tag path sequence filter." << endl;
-	cout << "-q    DRDE (difference record detection and extraction)." << endl;
-	cout << "-z    LZ extraction." << endl;
+	cout << "-q    DRDE ([D]ifference [R]ecord [D]etection and [E]xtraction). -qs usesr css defs." << endl;
+	cout << "-css  Use style definitions when creating tag path sequences." << endl;
+	cout << "-z    LZ extraction." << endl << endl;
 	exit(-1);
 }
 
@@ -353,7 +353,7 @@ void printUsage(char *p)
 int main(int argc, char *argv[])
 {
 	int opt,mdr=0,tp=0,mineForms=0,dbg=0,tpsFilter=0,lz=0;
-	bool style=true,DRE=false,tpcfp=false;
+	bool DRDE=false,CSS=false,tpcfp=false;
 	float st=1.0; // similarity threshold
 	string inp="",outp="",search="",pattern="",filterStr="";
 	tCustomDOM *d = new tCustomDOM();
@@ -362,10 +362,11 @@ int main(int argc, char *argv[])
 	fstream patternFile,inputFile;
 	filebuf outputFile;
 
-	while ((opt = getopt(argc, argv, "i:o:t:s:p:f:x:a::b::d:mhvcgrqz")) != -1) {
+	while ((opt = getopt(argc, argv, "i:o:t:s:p:f:x:a::d:c::qmhvcgrz")) != -1) {
 		switch (opt) {
 		case 'c':
-			d->recCountDisplay = 1;
+			if (!optarg) d->recCountDisplay = 1;
+			else if (string(optarg) == "ss") CSS = true;
 			break;
 		case 'i':
 			inp = optarg;
@@ -395,9 +396,7 @@ int main(int argc, char *argv[])
 			filterStr = optarg;
 			break;
 		case 'a':
-		case 'b':
 			tp = 1;
-			style = (opt == 'a');
 			if (optarg) tpcfp = (string(optarg) == "p");
 			break;
 		case 'x':
@@ -408,7 +407,7 @@ int main(int argc, char *argv[])
 			mineForms = 1;
 			break;
 		case 'q':
-			DRE = true;
+			DRDE = true;
 			break;
 		case 'z':
 			lz = 1;
@@ -423,6 +422,10 @@ int main(int argc, char *argv[])
 	    break;
 		}
 	}
+
+	cerr << "CSS: " << (CSS?"on":"off") << endl
+		 << "threshold: " << st*100 << "%" << endl
+		 << endl;
 
 	if (!dbg) fclose(stderr);
 
@@ -457,7 +460,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (tpsFilter) {
-		d->tagPathSequenceFilter();
+		d->tagPathSequenceFilter(CSS);
 	}
 
 	if (mineForms) {
@@ -467,7 +470,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (tp) {
-		d->buildTagPath("",d->getBody(),true,style,tpcfp);
+		d->buildTagPath("",d->getBody(),true,CSS,tpcfp);
 	}
 
 	if (lz) {
@@ -495,11 +498,11 @@ int main(int argc, char *argv[])
 		cerr << "Similarity threshold used: " << st << endl;
 	}
 
-	if (DRE) {
-		d->DRDE(st);
+	if (DRDE) {
+		d->DRDE(CSS,st);
 	}
 
-	if (search == "" && pattern == "" && !mdr && !tp && !lz && !DRE) {
+	if (search == "" && pattern == "" && !mdr && !tp && !lz && !DRDE) {
 		d->printDOM();
 	}
 

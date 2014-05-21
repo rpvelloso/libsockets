@@ -78,15 +78,15 @@ unsigned int edit_distance( T &s1,  T &s2, bool align, vector<unsigned int> *spa
 				s22 = s2[j-1] + s22;
 				i--;
 				j--;
-			} else if (d[i-1][j] <= d[i][j-1]) {
-				s11 = s1[i-1] + s11;
-				s22 = SPACE + s22;
-				i--;
-			} else {
+			} else if (d[i-1][j] >= d[i][j-1]) {
 				spaces->push_back(i-1);
 				s11 = SPACE + s11;
 				s22 = s2[j-1] + s22;
 				j--;
+			} else {
+				s11 = s1[i-1] + s11;
+				s22 = SPACE + s22;
+				i--;
 			}
 		}
 		s1=s11;
