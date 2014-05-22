@@ -56,7 +56,7 @@ public:
 	void DRDE(bool, float);
 
 protected:
-    void treeAlign(tNode *, tNode *, int **, tNode *);
+    void treeAlign(tNode *, tNode *, vector<vector<int> > &, tNode *);
 	size_t STM(tNode *, tNode *, tNode *);
 	void getAlignment(tNode *, tNode *, list<tNode *> &);
 	int treeMatch(tNode *, tNode *);
