@@ -46,7 +46,7 @@ public:
 	tNode *findNext(tNode *, string);
     void setVerbose(int);
     list<tDataRegion> MDR(tNode *, int, float, int);
-    void buildTagPath(string, tNode *, bool, bool, bool = false);
+    void buildTagPath(string, tNode *, bool, bool, bool);
 	void printNode(tNode *, int);
 	list <tNode *> getRecord(tNode *, tNode *);
 	vector<tNode *> partialTreeAlignment(tDataRegion);

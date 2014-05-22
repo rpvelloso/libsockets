@@ -1021,7 +1021,7 @@ void tDOM::buildTagPath(string s, tNode *n, bool print, bool css, bool fp) {
 	if (!(n->nodes.size())) return;
 
 	for (;i!=n->nodes.end();i++)
-		buildTagPath(s,*i,print,css);
+		buildTagPath(s,*i,print,css,fp);
 }
 
 map<long int, long int> tDOM::tagPathSequenceFilter(bool css) {
@@ -1033,7 +1033,7 @@ map<long int, long int> tDOM::tagPathSequenceFilter(bool css) {
 	size_t originalTPSsize;
 	long int sizeThreshold;
 
-	buildTagPath("",body,false,css);
+	buildTagPath("",body,false,css,false);
 	originalTPS = tagPathSequence;
 	originalNodeSequence = nodeSequence;
 	originalTPSsize = originalTPS.size();
