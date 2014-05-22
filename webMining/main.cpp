@@ -474,7 +474,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (lz) {
-		d->buildTagPath("",d->getBody(),false,true);
+		d->buildTagPath("",d->getBody(),false,CSS,false);
 		d->LZExtraction();
 	}
 
