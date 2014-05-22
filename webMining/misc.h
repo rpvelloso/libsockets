@@ -78,15 +78,15 @@ unsigned int edit_distance( T &s1,  T &s2, bool align, vector<unsigned int> *spa
 				s22 = s2[j-1] + s22;
 				i--;
 				j--;
-			} else if (d[i-1][j] >= d[i][j-1]) {
+			} else if (d[i-1][j] < d[i][j-1]) {
+				s11 = s1[i-1] + s11;
+				s22 = SPACE + s22;
+				i--;
+			} else {
 				spaces->push_back(i-1);
 				s11 = SPACE + s11;
 				s22 = s2[j-1] + s22;
 				j--;
-			} else {
-				s11 = s1[i-1] + s11;
-				s22 = SPACE + s22;
-				i--;
 			}
 		}
 		s1=s11;
@@ -99,13 +99,15 @@ unsigned int edit_distance( T &s1,  T &s2, bool align, vector<unsigned int> *spa
 template <class T>
 void centerStar(vector<T> &M) {
 	size_t len = M.size();
-	unsigned int d[len][len];
-	unsigned int minscore=0xffffffff,center;
+	vector<vector<unsigned int> > d(len,vector<unsigned int>(len));
+	//unsigned int d[len][len];
+	unsigned int minscore=INFINITY,center;
 
 	// find the center string
+	unsigned int score;
 	for (size_t i=0;i<len;i++) {
 		d[i][i]=0;
-		unsigned int score = 0;
+		score = 0;
 		for (size_t j=i+1;j<len;j++) {
 			d[i][j] = edit_distance(M[i],M[j],false,NULL);
 			d[j][i] = d[i][j];

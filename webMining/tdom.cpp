@@ -353,17 +353,18 @@ size_t tDOM::STM(tNode *a, tNode *b, tNode *rec)
 	else {
 		int k=a->nodes.size();
 		int n=b->nodes.size();
-		int *m[k+1],i,j,r;
+		vector<vector<int> > m(k+1,vector<int>(n+1));
+		//int *m[k+1],i,j,r;
 
-		for (i=0;i<=k;i++) m[i] = new int[n+1];
+		//for (i=0;i<=k;i++) m[i] = new int[n+1];
 
-		for (i=0;i<=k;i++) m[i][0]=0;
-		for (j=0;j<=n;j++) m[0][j]=0;
+		for (int i=0;i<=k;i++) m[i][0]=0;
+		for (int j=0;j<=n;j++) m[0][j]=0;
 
 		auto ii = a->nodes.begin();
-		for (i=1;i<=k;i++,ii++) {
+		for (int i=1;i<=k;i++,ii++) {
 			auto jj = b->nodes.begin();
-			for (j=1;j<=n;j++,jj++) {
+			for (int j=1;j<=n;j++,jj++) {
 				int z = m[i-1][j-1]+STM(*ii,*jj,rec);
 
 				m[i][j] = max(max(m[i][j-1],m[i-1][j]),z);
@@ -372,15 +373,15 @@ size_t tDOM::STM(tNode *a, tNode *b, tNode *rec)
 
 		if (rec) treeAlign(a,b,m,rec);
 
-		r = m[k][n]+1;
+		return m[k][n]+1;
 
-		for (i=0;i<=k;i++) delete m[i];
+		//for (int i=0;i<=k;i++) delete m[i];
 
-		return r;
+		//return r;
 	}
 }
 
-void tDOM::treeAlign(tNode* a, tNode* b, int **m, tNode *rec) {
+void tDOM::treeAlign(tNode* a, tNode* b, vector<vector<int> > &m, tNode *rec) {
 	int pi,i,k=a->nodes.size();
 	int pj,j,n=b->nodes.size();
 	int insert=1;
@@ -574,7 +575,8 @@ list<tDataRegion> tDOM::MDR(tNode *p, int k, float st, int mineRegions) {
 		tNode *a,*b;
 		int n=0,DRFound;
 		size_t r=0;
-		float simTable[k+1][p->nodes.size()];
+		vector<vector<float> > simTable(k+1,vector<float>(p->nodes.size()));
+		//float simTable[k+1][p->nodes.size()];
 		tDataRegion bestDR, currentDR;
 		vector<tNode *>v(p->nodes.begin(),p->nodes.end()); // Remaining children, not covered by any DR, to call MDR recursively
 
@@ -1142,7 +1144,7 @@ void tDOM::DRDE(bool css, float st) {
 }
 
 vector<unsigned int> tDOM::locateRecords(wstring s, float st) {
-	int d[s.size()-1];
+	vector<int> d(s.size()-1);
 	map<int, vector<int> > diffMap;
 	map<int, int> TPMap;
 	vector<unsigned int> recpos;
