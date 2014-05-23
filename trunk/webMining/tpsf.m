@@ -88,20 +88,22 @@ function regions = tpsSeg(tps)
       pos 
       length(seq)
       length(tps)
-      if ((length(tps) > length(seq)) && (pos > 0))
-         if pos > 1
-            printf('   +1) (%d:%d) %d\n',1,pos-1,pos-1);
-            queueSize += 1;
-            queue{queueSize} = {tps(1:pos-1),off};
+      if pos > 0
+         if length(tps) > length(seq)
+            if pos > 1
+               printf('   +1) (%d:%d) %d\n',1,pos-1,pos-1);
+               queueSize += 1;
+               queue{queueSize} = {tps(1:pos-1),off};
+            end
+            if pos+length(seq) < length(tps)
+               printf('   +2) (%d:%d) %d\n',pos+length(seq),length(tps),length(tps)-(length(seq)+pos));
+               queueSize += 1;
+               queue{queueSize} = {tps(pos+length(seq):length(tps)),off+pos+length(seq)-1};
+            end
+            regions{regionPos} = {seq,off+pos};
+            regionPos += 1;
+            queuePos += 1;
          end
-         if pos+length(seq) < length(tps)
-            printf('   +2) (%d:%d) %d\n',pos+length(seq),length(tps),length(tps)-(length(seq)+pos));
-            queueSize += 1;
-            queue{queueSize} = {tps(pos+length(seq):length(tps)),off+pos+length(seq)-1};
-         end
-         regions{regionPos} = {seq,off+pos};
-         regionPos += 1;
-         queuePos += 1;
       end
    end
    if isempty(regions{1})
@@ -109,7 +111,7 @@ function regions = tpsSeg(tps)
    end
 end
 
-function regions = detectRegions(regions,minsize)
+function regions = detectRegions(regions,minsize,maxang)
    j=1;
    r{j} = [];
    for i=1:length(regions)
@@ -117,15 +119,17 @@ function regions = detectRegions(regions,minsize)
       off = regions{i}{2};
       a = abs(linearRegression(seq));
       printf('region %d) off=%d a=%3.5f len=%d\n',i,off,a,length(seq));
-      if ((a < 0.3) && (length(seq) > minsize))
-         r{j} = regions{i};
-         j += 1;
+      if length(seq) > minsize
+         if a < maxang
+            r{j} = regions{i};
+            j += 1;
+         end
       end
    end
    regions = r;
 end
 
-function [records, diff] = recordDetect(tps)
+function [records] = recordDetect(tps)
    d = diff(tps).*tps(1:length(tps)-1);
    d = d.*(d<0);
 
@@ -143,9 +147,9 @@ function [records, diff] = recordDetect(tps)
    diff = [];
 
    i=1;
-   while ((gap/length(tps)) < 0.80) and (i<=length(tps))
+   interval=+Inf;
+   while gap/length(tps) < 0.80
       j=1;
-      interval=+Inf;
       while level==v(i)
         if p(i) < l l=p(i); end
         if p(i) > r r=p(i); end
@@ -157,19 +161,27 @@ function [records, diff] = recordDetect(tps)
         i=i+1;
         j=j+1;
       end
-      if interval!=+Inf gap=gap+((j-1)*interval); end
+      if interval!=+Inf gap=gap+(j*interval); end
       level=v(i);
    end
    
    count=0;
    j=0;
+   printf('length = %d\n',length(tps));
    for i=1:length(diff)
-      smt = sum(tps(diff(:)) == tps(diff(i)));
+      smt = sum(tps == tps(diff(i)));
+      printf('tpc %d = %d\n',tps(diff(i)),smt);
       if smt > count
          count = smt;
          j=i;
+      elseif smt = count
+         if diff(i) < diff(j)
+            count = smt;
+            j=i;
+         end
       end
    end
+   printf('*** %d = %d\n',tps(diff(j)),count);
    
    records = find(tps == tps(diff(j))); 
 end
@@ -228,14 +240,14 @@ function [blks,blkfreq] = LZDecomp(seq)
 	end
 end
 
-x = load('Debug/testbed4/tps/cnet2.html.tps');
+x = load('Debug/x');
 tps=x';
 
 regions = tpsSeg(tps);
-regions = detectRegions(regions,length(tps)*0.1);
+regions = detectRegions(regions,length(tps)*0.1,0.3);
 for i=1:length(regions)
-   [r,d] = recordDetect(regions{i}{1});
-   records{i}={r,d};
+   r = recordDetect(regions{i}{1});
+   records{i}=r;
 end
 
 figure;
@@ -245,7 +257,7 @@ for i=1:length(records)
    seq = regions{i}{1};
    off = regions{i}{2};
    len = length(seq);
-   rec = records{i}{1};
+   rec = records{i};
    
    pos = off;
    if off == 0 

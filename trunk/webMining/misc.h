@@ -101,7 +101,7 @@ void centerStar(vector<T> &M) {
 	size_t len = M.size();
 	vector<vector<unsigned int> > d(len,vector<unsigned int>(len));
 	//unsigned int d[len][len];
-	unsigned int minscore=INFINITY,center;
+	unsigned int minscore=0xffffffff,center;
 
 	// find the center string
 	unsigned int score;
