@@ -7,8 +7,8 @@
 
 \newtheorem{definition}{Definição}
 
-\titulo{Método Automático para Segmentação e Remoção de Ruído de
-Páginas $web$ Utilizando $tag$ $paths$}
+\titulo{Algoritmo não Supervisionado para Segmentação e Remoção de
+Ruído de Páginas $web$ Utilizando $tag$ $paths$}
 \autor{Roberto Panerai Velloso}
 \data{01}{março}{2014}
 \orientador[Orientadora]{Profa. Dra. Carina F. Dorneles}
@@ -56,10 +56,10 @@ essenciais no processo de extração de dados estruturados. Identificar a região
 principal da página, eliminando o que não é importante (menus, anúncios, etc.),
 pode melhorar significativamente o desempenho do processo de extração. Para essa
 tarefa é proposto um novo algoritmo, totalmente automático, que utiliza uma
-seqüência $tag$ $paths$ (TPS) como representação da página $web$.
+seqüência de $tag$ $paths$ (TPS) como representação da página $web$.
 A TPS é composta por uma seqüência de símbolos ($string$), cada um representando
-um $tag$ $path$ diferente. A técnica proposta procura por posições na TPS onde é
-possível dividi-la em duas regiões de tal forma que seus alfabetos não se
+um $tag$ $path$ diferente. O algoritmo proposto procura por posições na
+TPS onde é possível dividi-la em duas regiões de tal forma que seus alfabetos não se
 intersectem, o que significa que as regiões têm conjuntos de $tag$ $paths$
 completamente distintos e, portanto, são regiões diferentes da página. Os
 resultados mostram que o algoritmo é muito efetivo em identificar o conteúdo
@@ -114,15 +114,22 @@ trabalhos nesta área e, de acordo com \citeonline{Editorial04}, o ruído
 existente nas páginas pode prejudicar consideravelmente a mineração de dados na
 $web$.
 
-Na extração estruturada, a maioria das técnicas existentes utilizam algum tipo
-de reconhecimento de padrão para identificar os registros (como definido em
-\citeonline{MDR03}) presentes nas páginas. O problema é que, em geral, apenas os
-registros da região principal da página interessam, porém outras regiões da
-página (menus, anúncios, etc.) freqüentemente contém padrões que também são
-extraídos ($e.g.$ Figura \ref{fig:exr}). Portanto, é importante efetuar a
-limpeza das páginas $web$ antes de extrair seu conteúdo estruturado.
+A extração de dados estruturados de páginas $web$, na maioria das propostas
+existentes, consiste na identificação e localização de padrões estruturais no
+documento HTML, os quais podem representar registros.
+Em \citeonline{MDR03}, é dada uma definição para o termo ``registro'', neste
+contexto. O problema é que, em geral, apenas os registros da região principal da
+página são de interesse, porém outras regiões do documento (como menus,
+anúncios, etc.) freqüentemente contém padrões em sua estrutura, fazendo com que
+sejam identificados como registros e, conseqüentemente, extraídos prejudicando a
+precisão da extração dos dados. Daí surge a importância de se efetuar a limpeza
+das páginas $web$ antes de se extrair seu conteúdo estruturado. A Figura
+\ref{fig:exr} apresenta uma página típica de comércio eletrônico, onde os
+registros de interesse são os produtos apresentados no corpo do documento e
+não os menus (que também seguem um padrão estrutural) na barra lateral esquerda
+e no cabeçalho da página.
 
-\begin{figure}[H]
+ \begin{figure}[H]
   \centering
     \includegraphics[scale=0.22]{exemploruido.jpg}
   \caption{Exemplo de uma página de comércio eletrônico com os registros e
@@ -135,19 +142,20 @@ Atualmente, alguns trabalhos na área de remoção de ruído e segmentação são
 direcionados para indexação e $clustering$ de páginas ($i.e.$ é assumido que a
 região principal é textual/não estruturada) como em
 \citeonline{SiteOriented11,Noisy03} e, devido às diferenças intrínsecas entre
-conteúdo estruturado e não estruturado, estas técnicas não podem ser utilizadas
-para extração estruturada. As técnicas existentes que podem ser utilizadas para
-este fim requerem definições \textit{a priori} \cite{vips03}, ou treinamento
-prévio \cite{Graph08}, ou então dependem de aspectos específicos da linguagem
-\abreviatura{HTML}{hypertext markup language}HTML para funcionar, como em
-\citeonline{Entropy09}.
+conteúdo estruturado e não estruturado, estas propostas não podem ser utilizadas
+para extração estruturada. As propostas existentes, que podem ser utilizadas
+para este fim, na sua maioria ou requerem definições \textit{a priori} de regras
+estáticas e/ou bases de dados \cite{vips03}, ou são supervisionadas (não
+automáticas) \cite{Graph08}, ou então dependem de aspectos específicos da
+linguagem \abreviatura{HTML}{hypertext markup language}HTML para funcionar, como
+em \citeonline{Entropy09}.
 
 O presente trabalho descreve um algoritmo para segmentação e remoção de ruído de
 páginas $web$ que utiliza a representação de seqüência de $tag$ $paths$ de uma
 página e que é simples e computacionalmente eficiente.
-Trata-se de uma técnica geral de segmentação de páginas, utilizada aqui no
-contexto de extração estruturada, levando em consideração o estilo e a estrutura
-da página. As principais contribuições são as seguintes:
+Trata-se de um algoritmo de segmentação das regiões de um documento HTML, de
+forma geral, utilizado aqui no contexto de extração estruturada, levando em
+consideração o estilo e a estrutura da página. As principais contribuições são as seguintes:
 
 \begin{itemize}
 \item{Totalmente automática}: não necessita de treinamento nem intervenção
@@ -161,11 +169,11 @@ que constitui uma grande vantagem desta proposta, como discutido em
 \citeonline{Editorial04}.
 \end{itemize}
 
-Para avaliar o quão efetivo é o método proposto neste trabalho, foi comparado
+Para avaliar o quão efetivo é o algoritmo proposto neste trabalho, foi comparado
 o ruído de saída do \abreviatura{MDR}{mine data records}MDR \cite{MDR03}, uma
 conhecida técnica de extração estruturada, contra o ruído de saída do MDR
-combinado com a técnica proposta, como ilustrado na Figura \ref{fig:method},
-obtendo-se uma média de 88,86\% de ruído removido das páginas do conjunto de
+combinado com o algoritmo proposto, como ilustrado na Figura
+\ref{fig:method}, obtendo-se uma média de 88,86\% de ruído removido das páginas do conjunto de
 teste.
 
 \begin{figure}[H]
@@ -176,9 +184,9 @@ teste.
 \end{figure}
 
 Durante a discussão dos resultados, são apresentadas e discutidas, também, as
-situações em que o método não obteve sucesso (total ou parcial). São apontadas
-as causas e sugeridas maneiras de se atacar as limitações identificadas durante
-a realização dos experimentos.
+situações em que o algoritmo não obteve sucesso (total ou parcial). São
+apontadas as causas e sugeridas maneiras de se atacar as limitações
+identificadas durante a realização dos experimentos.
 
 Esta dissertação está organizada da seguinte maneira: %no Capítulo
 % \ref{ch:obj} são apresentados os objetivos da pesquisa; no Capítulo
@@ -189,7 +197,7 @@ Capítulo \ref{ch:met} são enunciadas as definições necessárias ao entendimento
 da proposta e são detalhados e ilustrados os algoritmos desenvolvidos a partir
 da formulação do problema e das hipóteses; no Capítulo \ref{ch:results} o método de
 avaliação dos resultados é detalhado e também são apresentados os resultados
-obtidos e as limitações do método proposto e, finalmente; no Capítulo
+obtidos e as limitações do algoritmo proposto e, finalmente; no Capítulo
 \ref{ch:conclusion} uma breve conclusão e sugestões de trabalhos futuros.
 
 %\section{Objetivos}\label{ch:obj}
@@ -220,11 +228,11 @@ obtidos e as limitações do método proposto e, finalmente; no Capítulo
 
 Existem muitos trabalhos propondo formas de segmentar páginas $web$ e
 identificar o que é conteúdo e o que é ruído nelas. Elas podem ser agrupadas em
-três categorias: as que utilizam o texto da página, as que utilizam a
-árvore \abreviatura{DOM}{document object model}DOM e as que utilizam informação
-visual.
+três categorias: as que utilizam o texto da página (sem considerar a estrutura
+do documento), as que utilizam a árvore \abreviatura{DOM}{document object
+model}DOM e as que utilizam informação visual (o documento renderizado).
 
-\section{Técnicas baseadas no texto}\label{sec:txt}
+\section{Propostas baseadas no texto}\label{sec:txt}
 Nos trabalhos detalhados nesta seção 
 \cite{Densiometric08,Boilerplate10,CETR10} a
 %\cite{Densiometric08,Boilerplate10,CETR10,NonTemplate13} a
@@ -265,7 +273,7 @@ sendo parte do conteúdo principal ou não.
 \end{itemize}
 		
 
-\section{Técnicas baseadas na árvore DOM}\label{sec:dom} 
+\section{Propostas baseadas na árvore DOM}\label{sec:dom} 
 Nos trabalhos detalhados nesta seção
 \cite{Noisy03,Graph08,Entropy09,SiteOriented11,Entropy12,desc2013} a
 segmentação é realizada utilizando a árvore DOM da página, portanto estas
@@ -331,7 +339,7 @@ submissão de um formulário.
 
 \end{itemize}
 	
-\section{Técnicas baseadas em informação visual}\label{sec:vis}
+\section{Propostas baseadas em informação visual}\label{sec:vis}
 Além das técnicas baseadas no texto e na árvore DOM da página, existem também
 algumas que utilizam informação visual, como
 \citeonline{vips03,viper05,BlockImp07,vide10}.
@@ -461,8 +469,8 @@ ruído com relação às seguintes características:
 Como é possível observar, na Tabela \ref{table:comp}, as técnicas existentes,
 que foram analisadas, para eliminação de ruído, aplicáveis à extração
 estruturada (Linhas \#4 a \#13), com exceção de \citeonline{viper05} (Linha
-\#11), não atendem a todos os requisitos que o método proposto atende (Linha
-\#14). Por exemplo: os métodos que não dependem da sintaxe HTML, necessitam de
+\#11), não atendem a todos os requisitos que o algoritmo proposto atende (Linha
+\#14). Por exemplo: as técnicas que não dependem da sintaxe HTML, necessitam de
 treinamento e/ou definições \textit{a priori}. A abordagem adotada em
 \citeonline{viper05} atende à todos os requisitos, no entanto, utiliza um
 renderizador (que é computacionalmente dispendioso) e só identifica o ruído
@@ -470,10 +478,10 @@ posteriormente à identificação dos registros, desperdiçando uma
 oportunidade de otimizar o processo, identificando e eliminando o ruído antes
 de submeter a página à extração.
 
-\chapter{Método para remoção de ruído}\label{ch:met}
+\chapter{Algoritmo para remoção de ruído}\label{ch:met}
 
-Neste capítulo são apresentadas, primeiro, as definições necessárias para
-formular o problema na Seção \ref{sec:def}. Na Seção \ref{sec:probform} o
+Neste capítulo são apresentadas, primeiro, na Seção \ref{sec:def}, as definições
+necessárias para formular o problema. Na Seção \ref{sec:probform} o
 problema é enunciado a partir das definições e das hipóteses levantadas. Na
 Seção \ref{sec:alg} são apresentados os algoritmos desenvolvidos a partir do
 enunciado do problema e na Seção \ref{sec:compl} é feita a análise da
@@ -507,8 +515,8 @@ onde dois $tag$ $paths$ $TP_i$ e $TP_j$, com $i\neq{}j$, são considerados iguais
 apenas se seus caminhos e suas definições de estilo são iguais, caso
 contrário eles são considerados diferentes.
 \end{definition}
-Esta é a mesma definição utilizada em \citeonline{SuffixTree12}, onde cada $tag$
-$path$ é representado na seqüência por um símbolo, exceto que neste trabalho
+Esta definição é similar à utilizada em \citeonline{SuffixTree12}, onde cada
+$tag$ $path$ é representado na seqüência por um símbolo, exceto que neste trabalho
 foram incorporadas as definições de estilo das $tags$. Na Figura \ref{fig:ex1}
 é mostrada a $TPS$ de um dado trecho de código HTML, onde cada $TP$ recebe um
 código, produzindo $TPS = (1,2,3,4,4,3,4,4)$.
@@ -523,13 +531,14 @@ Informalmente falando, o alfabeto contém todos os símbolos distintos de uma
 determinada seqüência. Na Figura \ref{fig:ex1}, a $TPS$ é formada apenas pelos
 símbolos ``1'',``2'', ``3'' e ``4'', então seu alfabeto é $\Sigma=\{1,2,3,4\}$.
 
-\begin{definition}[\textbf{Conjunto de freqüências de $tag$ $paths$}]\label{def:tpfs}
-Seja $(s,f)$ um par ordenado onde ``s'' é um símbolo de um alfabeto de uma
-determinada TPS e ``f'' é o número de vezes que ``s'' ocorre na TPS, então o
-conjunto de freqüências de $tag$ $paths$ é definido como sendo o conjunto de
-todos os pares $(s,f)$ existentes em uma TPS. Seja $FS =
+\begin{definition}[\textbf{Conjunto de freqüências de $tag$
+$paths$}]\label{def:tpfs} Seja $(s,f)$ um par ordenado onde ``s'' é um símbolo
+de um alfabeto de uma determinada TPS e ``f'' é o número de vezes que o
+símbolo ``s'' ocorre nesta TPS, então o conjunto de freqüências $FS$ de uma
+TPS é definido como sendo o conjunto de todos os pares $(s,f)$
+existentes nesta TPS, ou seja $FS =
 \{(s_1,f_{s1}),(s_2,f_{s2}),(s_3,f_{s3}),\ldots,(s_{n-1},f_{sn-1}),(s_n,f_{sn})\}$,
-onde ``n" é o tamanho da TPS.
+onde ``n" é o tamanho do alfabeto da TPS.
 \end{definition}
 Na Figura \ref{fig:ex1}, o símbolo ``1'' ocorre uma vez na seqüência, o símbolo
 ``2'' ocorre uma vez também, o símbolo ``3'' duas vezes e o símbolo ``4'' quatro
@@ -565,11 +574,12 @@ são regiões distintas de $TPS$, pois $\Sigma_a \cap \Sigma_b=\emptyset$.
 
 \section{Proposta}\label{sec:probform}
 
-Nesta pesquisa é proposta uma nova técnica para segmentação das regiões de uma
-página $web$ e identificação da região principal. A técnica proposta é simples,
-computacionalmente eficiente e leva em consideração a estrutura e os estilos de
-formatação das páginas. A página $web$ é representada na forma de $tag$ $paths$.
-É um método de segmentação genérico, utilizado aqui no contexto da extração
+Nesta pesquisa é proposto um novo algoritmo para segmentação das regiões de uma
+página $web$ e identificação da região principal. O algoritmo proposto é
+simples, computacionalmente eficiente e leva em consideração a estrutura e o
+estilo de formatação das páginas. A página $web$ é representada na forma de
+$tag$ $paths$.
+É um algoritmo de segmentação genérico, utilizado aqui no contexto da extração
 estruturada.
 
 O algoritmo proposto é formulado a partir de duas hipóteses:
@@ -1267,7 +1277,7 @@ implementar a Linha $6$ do algoritmo \ref{alg:tpsfilter2}.
 
 \chapter{Conclusões e Trabalhos Futuros}\label{ch:conclusion}
 
-Como mostrado nos resultados, o método proposto para segmentação da página e
+Como mostrado nos resultados, o algoritmo proposto para segmentação da página e
 remoção do ruído foi bastante efetivo em várias páginas
 comerciais/institucionais.
 Na maioria dos casos uma grande quantidade de ruído foi removido sem comprometer
@@ -1275,22 +1285,22 @@ os registros de interesse. Também, quando aplicada em conjunto com o MDR, foi
 observado um incremento considerável na precisão da extração e na qualidade
 geral da extração ($e.g.$ aumento do f-measure de 31,83\% para 78,55\%).
 
-Nas situações em que o método proposto atua aquém das expectativas, outras
+Nas situações em que o algoritmo proposto atua aquém das expectativas, outras
 técnicas podem ser combinadas dependendo da aplicação. Em casos extremos, onde a
 página possuir estrutura muito homogênea (de forma que não seja possível
 encontrar as diferentes regiões) ou muito heterogênea (onde o conteúdo principal
 está espalhado em diversas regiões diferentes), o conteúdo principal poderia,
 talvez, ser detectado através do uso de uma técnica semântica.
 
-O método mostrou excelente performance, pois apresentou resultados
+O algoritmo mostrou excelente performance, pois apresentou resultados
 satisfatórios para a maioria dos $sites$ comerciais nos quais foi testado. Ele
 também supera as limitações (necessidade de treinamento, dependência de $tags$
 HTML, anotações manuais, entre outras) de trabalhos anteriores na área de
 limpeza, remoção de ruído e segmentação de página, como mencionado no Capítulo
 \ref{ch:rev}.
 
-Uma sugestão para trabalho futuro seria encontrar maneiras de adaptar/corrigir o
-método para melhorar seus resultados nas seguintes situações:
+Uma sugestão para trabalho futuro seria encontrar maneiras de adaptar o
+algoritmo para melhorar seus resultados nas seguintes situações:
 \begin{itemize}
   \item páginas que apresentem estrutura muito heterogênea: encontrar uma forma
   de agrupar as várias regiões principais em uma só;
