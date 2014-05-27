@@ -257,27 +257,37 @@ o ``assunto'' da página.
 \begin{itemize}
 
 \item Em \citeonline{Densiometric08} a página é modelada como uma seqüência de
-blocos de texto separados por $tags$ (chamados de $gaps$), os blocos de texto
-são analisados segundo sua densidade textual e os blocos contíguos, com
-aproximadamente a mesma densidade, são agrupados para formar blocos maiores e a
-região principal da página seria a de maior densidade textual.
+blocos de texto delimitados por $tags$ de abertura e fechamento (chamados de
+$gaps$), os blocos de texto são analisados segundo sua densidade textual e os
+blocos contíguos, com aproximadamente a mesma densidade, são agrupados para
+formar blocos maiores e a região principal da página seria a de maior densidade
+textual. A densidade de texto é calculada segundo a Fórmula \ref{eq:dt}, onde
+$p(b_x)$ é a densidade do bloco $b_x$, $n_{tokens_x}$ é o número de palavras do
+bloco e $n_{lines_x}$ é o número de linhas do bloco, sendo que cada linha tem
+um tamanho arbitrário de 80 caracteres.
+
+\begin{equation}\label{eq:dt}
+p(b_x) = \frac{n_{tokens_x}}{n_{lines_x}}
+\end{equation}
 
 \item Em \citeonline{Boilerplate10}, a mesma medida de densidade textual
-proposta em \citeonline{Densiometric08} é utilizada, porém uma série de outras
-características são agregadas ao problema como: o tamanho das palavras, tamanho
-das sentenças, numero de palavras e a densidade de $links$, além de um conjunto
-de regras bem específicas para tratar textos e $tags$ do documento. Estas
-outras informações agregadas são utilizadas para gerar uma árvore de decisão
-utilizada para identificar o conteúdo principal do documento.
+proposta em \citeonline{Densiometric08} (Fórmula \ref{eq:dt}) é utilizada, porém
+uma série de outras características são agregadas ao problema como: o tamanho das
+palavras, tamanho das sentenças, número de palavras e a densidade de $links$,
+além de um conjunto de regras bem específicas para tratar textos e $tags$ do
+documento. Estas outras informações agregadas são utilizadas para gerar uma
+árvore de decisão utilizada para identificar o conteúdo principal do documento.
 	
 \item Em \citeonline{CETR10} é mencionada a desvantagem de se utilizar regras
 vinculadas a $tags$ HTML específicas, o que pode invalidar uma abordagem no caso
 de uma eventual mudança na sintaxe HTML ou nas práticas de desenvolvimento
-atuais. Neste trabalho, em cada linha do documento, é calculada a taxa de
-$tags$, que consiste na relação entre o número de caracteres que não são $tag$ e
-o número de $tags$ existentes em uma determinada linha do documento, essas
-linhas são, então, agrupadas de acordo com esta informação e classificadas como
-sendo parte do conteúdo principal ou não.
+atuais. Neste trabalho, em cada linha do código fonte HTML do documento, é
+calculada a taxa de $tags$, que consiste na relação entre o número de caracteres
+que não são $tag$ e o número de $tags$ existentes em uma determinada linha do
+código fonte do documento. O histograma resultante é suavizado com uma curva
+gaussiana e a região com o conteúdo principal (com taxa de $tags$ elevada) é
+identificada por $clustering$ ou pela escolha de um limiar. No caso da
+identificação por limiar, este tem que ser encontrado por experimentação.
 \end{itemize}
 		
 
