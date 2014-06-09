@@ -310,29 +310,35 @@ conteúdo semelhantes, enquanto que o conteúdo é diverso e possui formatação dive
 
 \item Em \citeonline{Graph08} o problema de segmentar uma página é modelado como
 um problema de minimização de energia em cima de um grafo ponderado construído a
-partir de amostras de páginas anotadas manualmente. Os nós da árvore DOM são os
-nós do grafo e os pesos das arestas representam o custo de se segmentar os dois
-nós, que estão interligados, juntos ou separados. Apenas a questão da
-segmentação é abordada, sem a preocupação em identificar quais partes da
-página contém conteúdo relevante e quais contém ruído.
+partir de amostras de páginas anotadas manualmente com relação à sua
+segmentação. Os nós da árvore DOM são os nós do grafo e os pesos das arestas
+representam o custo de se segmentar os dois nós, que estão interligados no
+grafo, juntos ou separados. O custo é calculado a partir das características de
+cada nó (formato, cor de fundo, fonte, tamanho, etc.) e o peso de cada
+característica é determinado a partir do conjunto de treinamento. Apenas a
+questão da segmentação é abordada, sem a preocupação em identificar quais partes
+da página contém conteúdo relevante e quais contém ruído.
 
 \item Em \citeonline{Entropy09}, uma árvore ``visual'' é gerada a partir da
-árvore DOM, dividindo a página em blocos, com o auxílio de um dicionário de
-$tags$ pré-definido. Cada nó da árvore visual tem sua entropia calculada com
-relação ao atributo $CLASS$, utilizando três metodologias distintas: entropia
-dos nós filhos (\textit{child entropy}), entropia do caminho (\textit{path
-entropy}) e entropia do caminho parcial (\textit{partial path entropy}). Após o
-cálculo da entropia, estes valores são analisados, comparados à um limiar
-estipulado e cada bloco da página é, então, classificado como: CB
+árvore DOM, redefinindo a árvore original com o auxílio de um dicionário de
+$tags$ pré-definido que indica quais $tags$ são relevantes na estrutura do
+documento. Cada nó da árvore visual tem sua entropia calculada com relação ao
+atributo $CLASS$. O trabalho propõe três metodologias distintas de avaliação da
+entropia: entropia dos nós filhos (\textit{child entropy}), entropia do caminho
+(\textit{path entropy}) e entropia do caminho parcial (\textit{partial path
+entropy}). Após o cálculo da entropia, estes valores são analisados, comparados
+a um limiar estipulado e cada bloco da página é, então, classificado como: CB
 (\textit{container block}), PB (\textit{presentation block}), FB
-(\textit{functional block}) ou IB (\textit{informative block}, conteúdo relevante).
+(\textit{functional block}) ou IB (\textit{informative block} (conteúdo
+relevante).
 
-\item \citeonline{SiteOriented11} é uma abordagem orientada a $site$, assim como
-\citeonline{Noisy03}, onde um conjunto de árvores DOM de páginas de um mesmo
-$site$ são alinhadas para identificar os segmentos de uma página a partir das
-semelhanças entre elas, o resultado do alinhamento é, então, refinado, de acordo
-com regras heurísticas, e o resultado final representa a
-subdivisão/organização/$template$ do $site$ analisado pelo algoritmo. Este
+\item Em \citeonline{SiteOriented11} é adotada uma abordagem orientada a $site$,
+assim como \citeonline{Noisy03}, onde um conjunto de árvores DOM de páginas de
+um mesmo $site$ são alinhadas para identificar os segmentos de uma página a
+partir das semelhanças entre elas. O resultado do alinhamento é, então,
+refinado, de acordo com duas regras heurísticas (agrupamento de nós textuais
+próximos e agrupamento dos nós filhos com o nó pai), e o resultado final
+representa a subdivisão/organização/$template$ do $site$ analisado pelo algoritmo. Este
 trabalho apenas segmenta a página, sem identificar quais blocos/segmentos seriam
 ruído ou conteúdo. Apesar de necessitar de treinamento, este é realizado de
 maneira não supervisionada.
@@ -340,10 +346,17 @@ maneira não supervisionada.
 \item Em \citeonline{Entropy12} é utilizada uma base de dados de termos
 associados a ``papéis semânticos'' para encontrar, na árvore DOM, os nós folha
 que desempenham estes papéis, atribuindo, a cada um, uma medida de ``entropia
-semântica-estrutural'', de acordo com o papel desempenhado por aquele nó folha.
-A entropia dos demais nós é calculada recursivamente, a partir da entropia dos nós
-descendentes. Quanto maior for esta medida de entropia, maior a probabilidade de
-se tratar de uma região de interesse.
+semântica-estrutural'' de acordo como papel desempenhado por aquele nó folha.
+A entropia dos demais nós é calculada recursivamente, a partir da entropia dos
+nós descendentes. Quanto maior for esta medida de entropia, maior a
+probabilidade de se tratar de uma região de interesse. A entropia é calculada
+conforme a Fórmula \ref{eq:ese}, onde $n$ é um nó da árvore DOM e $p_i$ é a
+proporção de nós folha, descendentes de $n$, que desempenham o papél $i$.
+
+\begin{equation}\label{eq:ese}
+H_n = \sum_{i=1}^m p_ilog(p_i)
+\end{equation}
+
 
 \item Em \citeonline{desc2013} de forma semelhante à \citeonline{Boilerplate10},
 são utilizadas as densidades de texto e de $links$, porém, neste trabalho, o
@@ -364,12 +377,12 @@ algumas que utilizam informação visual, como
 Em geral utilizam a árvore DOM em conjunto com as características visuais do
 documento, as quais são obtidas por intermédio de um navegador $web$, utilizado
 para renderizar a página e fornecer as informações necessárias ($e.g.$
-coordenadas de tela, definições de estilo, etc.). A relação custo-benefício
-(complexidade computacional $versus$ ganho na precisão) de se
-utilizar um renderizador para obtenção destes dados teria que ser melhor
-estudada. Em \citeonline{Densiometric08}, é mencionada a desvantagem das abordagens
-visuais, devido à sua grande complexidade computacional das mesmas, pois
-precisam renderizar a página para obter as informações de $layout$
+coordenadas de tela, definições de estilo, etc.). Não existe um consenso, na
+comunidade científica, com relação ao custo-benefício (complexidade
+computacional $versus$ ganho na precisão) de se utilizar um renderizador para
+esta finalidade. Em \citeonline{Densiometric08}, é mencionada a desvantagem
+destas abordagens visuais, devido a grande complexidade computacional das
+mesmas, pois precisam renderizar a página para obter as informações de $layout$.
 
 \begin{itemize}
 
@@ -383,19 +396,19 @@ visuais. Neste trabalho, assim como em \citeonline{Graph08}, não há preocupação
 em identificar quais blocos visuais da página contém conteúdo relevante e quais
 contém ruído.
 
-\item \citeonline{viper05} trata-se de uma técnica de extração estruturada, com
-identificação do conteúdo/ruído. Utiliza o renderizador de um navegador $web$
-para corrigir (no caso de HTML mal formado) e processar o HTML e para obter as
-informações visuais necessárias ao algoritmo.
+\item Em \citeonline{viper05} é proposta uma técnica de extração estruturada,
+com identificação do conteúdo/ruído que utiliza o renderizador de um navegador
+$web$ para corrigir (no caso de HTML mal formado) e processar o HTML e para
+obter as informações visuais necessárias ao algoritmo.
 A etapa de extração é uma adaptação/melhoramento do algoritmo MDR \cite{MDR03}
 que incorpora o uso das informações visuais.
 A etapa de identificação do conteúdo principal ocorre após a identificação dos
-padrões, onde estes recebem um peso, inversamente proporcional à distância que
-se encontram do centro da página. Outra melhoria proposta, relativa à
-identificação de padrões dos registros, é o tratamento de repetições
-consecutivas (\textit{tandem repeats}) na comparação da estrutura dos registros.
-Esta abordagem identificada o ruído apenas após a etapa de extração, sem
-evitar o custo computacional de procurar por padrões no ruído.
+padrões, onde recebem um peso, inversamente proporcional à distância que se
+encontram do centro da página. Outra melhoria proposta, relativa à identificação
+de padrões dos registros, é o tratamento de repetições consecutivas
+(\textit{tandem repeats}) na comparação da estrutura dos registros.
+Esta abordagem identificada o ruído apenas após a etapa de extração, sem evitar
+o custo computacional de procurar por padrões no ruído.
 
 \item Em \citeonline{BlockImp07}, é utilizada a abordagem de \citeonline{vips03}
 para segmentar a página em blocos. Um conjunto de páginas são analisadas e suas
@@ -406,12 +419,12 @@ importância é atribuído a cada bloco. Apesar de necessitar de um conjunto de
 páginas para treinamento, toda a análise do conjunto é realizada de forma não
 supervisionada.
 
-\item \citeonline{vide10} é, na verdade, uma abordagem para extração estruturada
-que, assim como \citeonline{BlockImp07}, se baseia em \citeonline{vips03} para
-criar a representação visual do documento e, então, utilizar as características
-visuais das páginas da $web$ oculta para localizar e extrair os registros
-contidos no documento. As características visuais utilizadas para identificação
-do conteúdo principal são:
+\item Em \citeonline{vide10} é proposta uma abordagem para extração estruturada
+que, assim como no trabalho de \citeonline{BlockImp07}, se baseia em
+\citeonline{vips03} para criar a representação visual do documento e, então,
+utilizar as características visuais das páginas da $web$ oculta para localizar e
+extrair os registros contidos no documento. As características visuais
+utilizadas para identificação do conteúdo principal são:
 posição (centralização horizontal), tamanho (conteúdo relevante é maior que
 demais blocos), $layout$ (registros possuem arranjos semelhantes), semelhança
 visual (registros possuem formatação semelhante).
@@ -723,7 +736,6 @@ problema definido na Seção \ref{sec:probform}. Quais sejam:
 \end{itemize}
 
 \subsection{Algoritmo $tagPathSequenceFilter()$}
-
 \begin{algorithm}[H]
 \caption{Filtra o ruído de uma página $web$}
 \label{alg:tpsfilter}
@@ -752,7 +764,6 @@ documento retornado na Linha $6$.
 Abaixo são detalhados os algoritmos $convertToSeq()$, $searchRegion()$,
 $filterAlphabet()$ e $pruneDOMTree()$. O algoritmo $parseHTML()$ não faz parte
 do escopo deste trabalho, portanto não será discutido aqui.
-
 
 \subsection{Algoritmo $convertToSeq()$}
 
@@ -954,8 +965,6 @@ extração estruturada.
 
 \section{Complexidade do Algoritmo}\label{sec:compl}
 
-Para analisar a complexidade do algoritmo, é suficiente 
-
 Com relação à complexidade do algoritmo é suficiente analisar apenas o
 procedimento $searchRegion()$, pois é este procedimento que concentra o
 processamento principal do algoritmo. Observando as Linhas $14$ e $22$ do
@@ -967,8 +976,8 @@ região e, se encontrada, a região é processada recursivamente.
 No pior caso, quando a intersecção dos alfabetos só é vazia na última posição da
 TPS, a complexidade é, no máximo, $O(n^2 f)$, onde $n$ é o tamanho da TPS e $f$
 é o tamanho do conjunto $thresholds$. Na prática, o tamanho do conjunto
-$thresholds$ e bem menor do que o tamanho da TPS, então é possível afirmar que a
-complexidade de tempo se aproxima de $O(n^2)$ como mostrado na Equação
+$thresholds$ é bem menor do que o tamanho da TPS, então é possível afirmar que
+a complexidade de tempo se aproxima de $O(n^2)$ como mostrado na Equação
 \ref{eq:w}.
   \begin{equation}\label{eq:w}
   T(n) = T(n - 1) + \Theta(n) \Longrightarrow \sum_{i=1}^{n}
