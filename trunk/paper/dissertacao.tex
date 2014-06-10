@@ -6,6 +6,7 @@
 \usepackage{algpseudocode}
 \usepackage{array}
 \usepackage{listings}
+\usepackage[table]{xcolor}
 
 \newtheorem{definition}{Definição}
 \renewcommand{\lstlistingname}{Listagem}
@@ -184,19 +185,11 @@ identificadas durante a realização dos experimentos.
 Para avaliar o quão efetivo é o algoritmo proposto neste trabalho, foi comparado
 o ruído de saída do \abreviatura{MDR}{mine data records}MDR \cite{MDR03}, uma
 conhecida técnica de extração estruturada, contra o ruído de saída do MDR
-combinado com o algoritmo proposto, como ilustrado na Figura \ref{fig:method}. O
-conjunto de testes consiste em uma coleção de 51 páginas de $sites$ com conteúdo
-estruturado em diversos domínios como: vídeos, buscas, comércio eletrônico de
-vários segmentos, notícias, periódicos científicos, bancos, entre outros. O
-resultado obtido foi uma média de 88,86\% de ruído removido das páginas do
-conjunto de teste.
-
-\begin{figure}[H]
-  \centering
-    \includegraphics[scale=0.22]{metodo.jpg}
-  \caption{Método de avaliação adotado.}
-  \label{fig:method}
-\end{figure}
+combinado com o algoritmo proposto. O conjunto de testes consiste em uma coleção
+de 51 páginas de $sites$ com conteúdo estruturado em diversos domínios como:
+vídeos, buscas, comércio eletrônico de vários segmentos, notícias, periódicos
+científicos, bancos, entre outros. O resultado obtido foi uma média de 88,86\%
+de ruído removido das páginas do conjunto de teste.
 
 Esta dissertação está organizada da seguinte maneira: %no Capítulo
 % \ref{ch:obj} são apresentados os objetivos da pesquisa; no Capítulo
@@ -811,8 +804,14 @@ principal e, para facilitar seu entendimento, foi incluída uma ilustração do seu
 funcionamento (a Figura \ref{fig:alg}). A Figura \ref{fig:alg} apresenta uma
 ilustração da execução do algoritmo na qual foi omitido o procedimento de
 filtragem dos símbolos com baixas freqüências para maior clareza, pois a
-intenção é passar a idéia principal. Os detalhes e minúcias podem ser
-verificados na listagem do algoritmo e na sua descrição.
+intenção é passar a idéia principal. Na Figura \ref{fig:alg} estão representadas
+as várias iterações feitas em cima da seqüência até o ponto em que a região
+principal é localizada; em cada iteração o cursor percorre as posições da
+seqüência e verifica, em cada posição, se não há intersecção entre os alfabetos
+das subseqüências ``a'' e ``b'' e, neste caso, inicia uma nova iteração, em cima
+da maior subseqüência resultante, até que esta não possa mais ser subdividida,
+situação em que a região principal foi localizada. Uma descrição detalhada é
+apresentada para a listagem do algoritmo.
 
 \begin{figure}[H]
   \centering
@@ -821,7 +820,7 @@ verificados na listagem do algoritmo e na sua descrição.
   \label{fig:alg}
 \end{figure}
 
-%\begin{tiny}
+\begin{tiny}
 \begin{algorithm}[H]
 \caption{Busca regiões da TPS com alfabetos diferentes}
 \label{alg:searchreg}
@@ -878,7 +877,7 @@ verificados na listagem do algoritmo e na sua descrição.
 \EndProcedure
 \end{algorithmic}
 %\end{algorithm}
-% \end{tiny}
+\end{tiny}
 
 O procedimento $searchRegion()$ no Algoritmo \ref{alg:searchreg} calcula o
 alfabeto da TPS e as freqüências correspondentes de cada símbolo nas Linhas $4$
@@ -1021,7 +1020,8 @@ servir de exemplo, para esclarecer como eles foram compilados na Tabela
 Para avaliar os resultados da técnica proposta, será utilizado o algoritmo MDR
 \cite{MDR03}, uma conhecida técnica de extração estruturada. O resultado da
 extração pura (apenas MDR) será considerado como $baseline$ para comparação com
-o resultado da extração combinada com a técnica proposta de remoção de ruído.
+o resultado da extração combinada com a técnica proposta de remoção de ruído,
+como ilustrado na Figura \ref{fig:method}.
 
 A avaliação dos resultados é constituída das seguintes etapas:
 \begin{itemize}
@@ -1037,13 +1037,19 @@ A avaliação dos resultados é constituída das seguintes etapas:
   precisão (remoção de ruído).
 \end{itemize}
 
+\begin{figure}[H]
+  \centering
+    \includegraphics[scale=0.22]{metodo.jpg}
+  \caption{Método de avaliação adotado.}
+  \label{fig:method}
+\end{figure}
+
 Para primeira etapa foi escolhido o MDR para realizar a extração, pois esta
 técnica possui diversas implementações disponíveis, vários trabalhos publicados
 a respeito, funciona em uma única página e os resultados da extração são
 razoáveis para avaliar a técnica proposta neste trabalho. Outras técnicas
 poderiam ser utilizadas, se estivessem disponíveis, e desde que não necessitem
-de várias páginas HTML como entrada ($e.g.$ $RoadRunner$
-\cite{RRunner01}).
+de várias páginas HTML como entrada ($e.g.$ $RoadRunner$ \cite{RRunner01}).
 
 
 \section{Detalhamento dos Experimentos}\label{sec:clar}
@@ -1051,14 +1057,15 @@ de várias páginas HTML como entrada ($e.g.$ $RoadRunner$
 Os resultados da extração obtidos utilizando apenas o MDR, foram considerados
 como $baseline$ a ser comparado com os resultados obtidos através do uso
 combinado da técnica proposta com o MDR, como ilustrado na Figura
-\ref{fig:method}.
+\ref{fig:method}. A seguir um dos experimentos realizado é detalhado para
+exemplificar como os resultados estão compilados na Tabela \ref{table:results}.
    
 Quando ambas abordagens (MDR e filtragem TPS + MDR) são aplicadas a uma página
 de busca com 20 resultados do $web$ $site$ ``YouTube'' (\#38), os seguintes
 resultados são obtidos:
 
 \begin{itemize}
-\item{}página $web$ 'crua' ($i.e.$ página original, sem filtragem da TPS)
+\item{}página $web$ não filtrada ($i.e.$ página original)
 \begin{itemize}
 \item{}árvore DOM processada: $1424$ nós;
 \item{}resultados do MDR: $82$ registros no total ($62$ ruído/$20$ alvo);
@@ -1077,9 +1084,9 @@ removido $100\%$
 Neste resultado observa-se uma melhora na extração dos registros, assim como uma
 redução considerável do tamanho da árvore DOM que precisou ser processada. Um
 percentual de $52.67\%$ da árvore DOM foi podado sem que ocorresse a perda dos
-registros de interesse (alvo) durante o processo. Tudo o que foi podado da
-árvore, neste caso, era ruído. A Figura \ref{fig:ex2} ilustra a região principal
-da página e a Figura \ref{fig:tps} mostra a respectiva TPS e a região principal
+registros de interesse durante o processo. Tudo o que foi podado da árvore,
+neste caso, era ruído. A Figura \ref{fig:ex2} ilustra a região principal da
+página e a Figura \ref{fig:tps} mostra a respectiva TPS e a região principal
 detectada pelo algoritmo proposto.
 
 \begin{figure}[H]
@@ -1125,13 +1132,15 @@ respectivamente, exibindo o total geral de registros extraídos e o total de
 registros de interesse ($target$) extraídos para ambas abordagens. A última
 coluna mostra o percentual de ruído removido, calculado conforme a Equação
 \ref{eq:noise}.
- 
+
+\rowcolors{2}{gray!25}{white}
+
 \begin{table}[H]
 \caption{Resultados}
 \label{table:results}
 \centering
 \begin{tiny}
-\begin{tabular}{r l r r r c r r r r r}
+\begin{tabular}{r l| r r r| c| r r |r r |r}
 \hline\hline
 & \multicolumn{5}{c}{} & \multicolumn{4}{c}{MDR (\# registros)} & (eq. \ref
 {eq:noise})\\
@@ -1225,7 +1234,7 @@ relativamente pequena.
 Como conseqüência da remoção de ruído, podemos observar um aumento considerável
 na precisão média da extração, como relatado na tabela \ref{table:prec}. A
 redução no $recall$ corresponde às situações onde o filtro falhou, as quais são
-discutidos e tratados na Subseção \ref{sub:disc}, e, apesar desta redução, as
+discutidas e tratadas na Subseção \ref{sub:disc}, e, apesar desta redução, as
 medidas F e G apresentaram melhora significativa.
 
 \begin{table}[H]
@@ -1356,7 +1365,7 @@ algoritmo para melhorar seus resultados nas seguintes situações:
 
 Este trabalho também foi publicado no \textit{JIDM - Journal of Information and
 Data Management} no ano de 2013, como artigo completo \cite{TPS2013}, e os
-algoritmos descritos neste trabalho foram implementados em linguagem
+algoritmos descritos neste trabalho foram implementados nas linguagens
 \textit{C++} e $M$ (MatLab/Octave) e estão disponíveis para acesso.
 
 \bibliographystyle{ufscThesis/ufsc-alf}
