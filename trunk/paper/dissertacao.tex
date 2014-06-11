@@ -90,6 +90,8 @@ precision of the extraction step by removing irrelevant results.
 \keywords{noise removal. page segmentation. structured extraction. web mining}
 
 \begin{document}
+\rowcolors{2}{gray!25}{white}
+
 
 \capa  
 \folhaderosto[comficha]
@@ -1012,12 +1014,12 @@ realização.
 Para obter os resultados apresentados na Subseção \ref{sub:res}, o algoritmo
 proposto foi implementado e testado em vários $web$ $sites$ comerciais e
 institucionais. Na Seção \ref{sec:clar} um destes resultados é detalhado, para
-servir de exemplo, para esclarecer como eles foram compilados na Tabela
+exemplificar e esclarecer como os dados foram obtidos e compilados na Tabela
 \ref{table:results}.
 
 \section{Metodologia de avaliação dos resultados}\label{sec:met}
 
-Para avaliar os resultados da técnica proposta, será utilizado o algoritmo MDR
+Para avaliar os resultados da técnica proposta, foi utilizado o algoritmo MDR
 \cite{MDR03}, uma conhecida técnica de extração estruturada. O resultado da
 extração pura (apenas MDR) será considerado como $baseline$ para comparação com
 o resultado da extração combinada com a técnica proposta de remoção de ruído,
@@ -1086,8 +1088,8 @@ redução considerável do tamanho da árvore DOM que precisou ser processada. Um
 percentual de $52.67\%$ da árvore DOM foi podado sem que ocorresse a perda dos
 registros de interesse durante o processo. Tudo o que foi podado da árvore,
 neste caso, era ruído. A Figura \ref{fig:ex2} ilustra a região principal da
-página e a Figura \ref{fig:tps} mostra a respectiva TPS e a região principal
-detectada pelo algoritmo proposto.
+página e a Figura \ref{fig:tps} mostra o gráfico da respectiva TPS e a
+região principal detectada pelo algoritmo proposto.
 
 \begin{figure}[H]
   \centering
@@ -1100,8 +1102,8 @@ detectada pelo algoritmo proposto.
 \begin{figure}[H]
   \centering
     \includegraphics[scale=0.28]{tps-pt.jpg}
-  \caption{A TPS de uma página do $site$ YouTube com a região principal que foi
-  detectada pelo algoritmo.}
+  \caption{Gráfico da TPS ``código TP vs posição'' de uma página do $site$
+  YouTube com a região principal que foi detectada pelo algoritmo.}
   \label{fig:tps}
 \end{figure}
 
@@ -1132,8 +1134,6 @@ respectivamente, exibindo o total geral de registros extraídos e o total de
 registros de interesse ($target$) extraídos para ambas abordagens. A última
 coluna mostra o percentual de ruído removido, calculado conforme a Equação
 \ref{eq:noise}.
-
-\rowcolors{2}{gray!25}{white}
 
 \begin{table}[H]
 \caption{Resultados}
@@ -1232,7 +1232,7 @@ apenas a identificação da região principal falhou, já que neste caso, era
 relativamente pequena.
 
 Como conseqüência da remoção de ruído, podemos observar um aumento considerável
-na precisão média da extração, como relatado na tabela \ref{table:prec}. A
+na precisão média da extração, como relatado na Tabela \ref{table:prec}. A
 redução no $recall$ corresponde às situações onde o filtro falhou, as quais são
 discutidas e tratadas na Subseção \ref{sub:disc}, e, apesar desta redução, as
 medidas F e G apresentaram melhora significativa.
