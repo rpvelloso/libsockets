@@ -822,13 +822,13 @@ apresentada para a listagem do algoritmo.
   \label{fig:alg}
 \end{figure}
 
-\begin{tiny}
 \begin{algorithm}[H]
+\begin{tiny}
 \caption{Busca regiões da TPS com alfabetos diferentes}
 \label{alg:searchreg}
 \textbf{Entrada:} $tagPathSequence$ - a $TPS$ de uma determinada página $web$ \\
 \textbf{Saída:} a região principal da $TPS$, armazenada em $tagPathSequence$
-\end{algorithm}
+%\end{algorithm}
 \begin{algorithmic}[1]
 \Procedure{searchRegion}{$tagPathSequence[1..n]$ by reference}
 \State $\Sigma \leftarrow \emptyset$ \Comment{alfabeto da seqüência}
@@ -878,8 +878,8 @@ apresentada para a listagem do algoritmo.
 \EndIf
 \EndProcedure
 \end{algorithmic}
-%\end{algorithm}
 \end{tiny}
+\end{algorithm}
 
 O procedimento $searchRegion()$ no Algoritmo \ref{alg:searchreg} calcula o
 alfabeto da TPS e as freqüências correspondentes de cada símbolo nas Linhas $4$
