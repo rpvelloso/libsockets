@@ -717,12 +717,12 @@ problema definido na Seção \ref{sec:probform}. Quais sejam:
 
 \begin{itemize}
   \item{\textbf{$tagPathSequenceFilter()$}} é o algoritmo
-  principal, que recebe um arquivo HTML como entrada, chama os demais algoritmos
-  e retorna uma árvore DOM, podada, apenas com o conteúdo da região principal;
+  de nível mais alto, que recebe um arquivo HTML como entrada, chama os demais
+  algoritmos e retorna uma árvore DOM, podada, apenas com o conteúdo da região principal;
   \item{\textbf{$convertToSeq()$}} converte a árvore DOM de uma página
   $web$ para sua representação $TPS$;
-  \item{\textbf{$searchRegion()$}} realiza a busca, propriamente dita, pela
-  região principal da $TPS$;
+  \item{\textbf{$searchRegion()$}} é o algoritmo principal, que realiza a busca,
+  propriamente dita, pela região principal da $TPS$;
   \item{\textbf{$filterAlphabet()$}} filtra um alfabeto, removendo os
   símbolos de menor freqüência, tornando o algoritmo de busca mais robusto e resistente ao ruído;
   \item{\textbf{$pruneDOMTree()$}} poda a árvore DOM original,
@@ -756,7 +756,7 @@ $4$, procura recursivamente pela maior região da TPS que possui um alfabeto
 todos os nós que não estão na TPS resultante, preservando a estrutura do
 documento retornado na Linha $6$.
 
-Abaixo são detalhados os algoritmos $convertToSeq()$, $searchRegion()$,
+Em seguida são detalhados os algoritmos $convertToSeq()$, $searchRegion()$,
 $filterAlphabet()$ e $pruneDOMTree()$. O algoritmo $parseHTML()$ não faz parte
 do escopo deste trabalho, portanto não será discutido aqui.
 
@@ -810,7 +810,7 @@ intenção é passar a idéia principal. Na Figura \ref{fig:alg} estão representadas
 as várias iterações feitas em cima da seqüência até o ponto em que a região
 principal é localizada; em cada iteração o cursor percorre as posições da
 seqüência e verifica, em cada posição, se não há intersecção entre os alfabetos
-das subseqüências ``a'' e ``b'' e, neste caso, inicia uma nova iteração, em cima
+das subseqüências ``a'' e ``b'' e, neste caso, inicia uma nova iteração em cima
 da maior subseqüência resultante, até que esta não possa mais ser subdividida,
 situação em que a região principal foi localizada. Uma descrição detalhada é
 apresentada para a listagem do algoritmo.
@@ -1145,7 +1145,7 @@ coluna mostra o percentual de ruído removido, calculado conforme a Equação
 & \multicolumn{5}{c}{} & \multicolumn{4}{c}{MDR (\# registros)} & (eq. \ref
 {eq:noise})\\
 & & \multicolumn{3}{c}{Tam. DOM (\# nós)} & Cont. & \multicolumn{2}{c}{Orig.}
-& \multicolumn{2}{c}{Pruned} & Ruído\\
+& \multicolumn{2}{c}{Podado} & Ruído\\
 \# & $Site$ & Orig. & Podado & Red. & princ. & Tot & Tgt & Tot & Tgt & rem. \\
 \hline
 1 & ACM & 601 & 340 & -43,43\% & Sim & 61 & 10 & 16 & 10 & 88,24\% \\
@@ -1214,8 +1214,8 @@ removeu, com este conjunto de teste, uma média de 88,86\% de todo o ruído
 presente nos dados, como mostra a média da coluna ``Ruído rem.''.
 
 A média de 50,18\% de redução no tamanho da árvore DOM é um resultado
-interessante. Primeiro, por que significa que quase metade da árvore DOM é
-ruído, na média. Segundo, por que este valor ficou bem próximo do valor
+interessante. Primeiro, por que significa que praticamente metade da árvore DOM
+é ruído, na média. Segundo, por que este valor ficou bem próximo do valor
 relatado, de forma independente, em \citeonline{Volume05} como sendo o tamanho
 do ``template'' das páginas (em torno de 50\%).
 
