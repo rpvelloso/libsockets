@@ -719,19 +719,29 @@ problema definido na Seção \ref{sec:probform}. Quais sejam:
   \item{\textbf{$tagPathSequenceFilter()$}} é o algoritmo
   de nível mais alto, que recebe um arquivo HTML como entrada, chama os demais
   algoritmos e retorna uma árvore DOM, podada, apenas com o conteúdo da região principal;
+  \vspace{-8mm}
+  
   \item{\textbf{$convertToSeq()$}} converte a árvore DOM de uma página
   $web$ para sua representação $TPS$;
+  \vspace{-8mm}
+  
   \item{\textbf{$searchRegion()$}} é o algoritmo principal, que realiza a busca,
   propriamente dita, pela região principal da $TPS$;
+  \vspace{-8mm}
+  
   \item{\textbf{$filterAlphabet()$}} filtra um alfabeto, removendo os
   símbolos de menor freqüência, tornando o algoritmo de busca mais robusto e resistente ao ruído;
+  \vspace{-8mm}
+  
   \item{\textbf{$pruneDOMTree()$}} poda a árvore DOM original,
   deixando apenas o conteúdo da região principal encontrado com $searchRegion$,
   mantendo a estrutura do documento original.
+  
 \end{itemize}
+\pagebreak
 
 \subsection{Algoritmo $tagPathSequenceFilter()$}
-\begin{algorithm}[H]
+\begin{algorithm}[h]
 \caption{Filtra o ruído de uma página $web$}
 \label{alg:tpsfilter}
 \textbf{Input:} $inputFile$ - um arquivo HTML \\
@@ -756,13 +766,16 @@ $4$, procura recursivamente pela maior região da TPS que possui um alfabeto
 todos os nós que não estão na TPS resultante, preservando a estrutura do
 documento retornado na Linha $6$.
 
-Em seguida são detalhados os algoritmos $convertToSeq()$, $searchRegion()$,
-$filterAlphabet()$ e $pruneDOMTree()$. O algoritmo $parseHTML()$ não faz parte
-do escopo deste trabalho, portanto não será discutido aqui.
+Em seguida são detalhados os algoritmos $convertToSeq()$, \\$searchRegion()$,
+$filterAlphabet()$ e $pruneDOMTree()$. O algoritmo $parseHTML()$, que
+consistiria em gerar a árvore DOM a partir do código HTML, não faz parte do
+escopo deste trabalho e, portanto, não será discutido aqui.
+\vspace{5cm}
+\pagebreak
 
 \subsection{Algoritmo $convertToSeq()$}
 
-\begin{algorithm}[H]
+\begin{algorithm}[h]
 \caption{Converte uma árvore DOM para a representação de seqüência de $tag$ $path$}
 \label{alg:tree2seq}
 \textbf{Input:} $node$ - um nó da árvore DOM, inicialmente a raiz da árvore \\
@@ -821,6 +834,7 @@ apresentada para a listagem do algoritmo.
   \caption{Ilustração da execução do algoritmo.}
   \label{fig:alg}
 \end{figure}
+\pagebreak
 
 \begin{algorithm}[H]
 \begin{tiny}
@@ -930,6 +944,8 @@ Nas Linhas $3$ to $7$ apenas os símbolos com freqüência maior ou igual a
 $threshold$ são inseridos no conjunto resultante. O resultado de $filterAlphabet()$ é
 utilizado no Algoritmo \ref{alg:searchreg}, Linha $24$, onde apenas os símbolos
 em $curr\Sigma$ são considerados durante a busca pela região principal.
+\vspace{3.3cm}
+\pagebreak
 
 \subsection{Algoritmo $pruneDOMTree()$}
 
@@ -1028,20 +1044,25 @@ como ilustrado na Figura \ref{fig:method}.
 A avaliação dos resultados é constituída das seguintes etapas:
 \begin{itemize}
   \item escolha de uma técnica de extração automática de dados estruturados;
+  
   \item definição de um conjunto de páginas para teste;
+
   \item aplicação da técnica de extração no conjunto de teste, documentando os
   resultados obtidos como \textit{target} (registro de interesse) ou
   \textit{noise} (ruído);
+
   \item nova aplicação da técnica de extração no mesmo conjunto de teste,
   mas desta vez filtrando-o antes, utilizando a técnica proposta neste trabalho,
   documentando os resultados da mesma maneira;
+
   \item comparação de ambos os resultados e medição do aumento/redução da
   precisão (remoção de ruído).
 \end{itemize}
+\pagebreak
 
 \begin{figure}[H]
   \centering
-    \includegraphics[scale=0.22]{metodo.jpg}
+    \includegraphics[scale=0.19]{metodo.jpg}
   \caption{Método de avaliação adotado.}
   \label{fig:method}
 \end{figure}
@@ -1082,6 +1103,7 @@ redução de $-52,67\%$
 removido $100\%$
 \end{itemize}
 \end{itemize}
+\pagebreak
 
 Neste resultado observa-se uma melhora na extração dos registros, assim como uma
 redução considerável do tamanho da árvore DOM que precisou ser processada. Um
@@ -1098,6 +1120,8 @@ região principal detectada pelo algoritmo proposto.
   delimitada.}
   \label{fig:ex2}
 \end{figure}
+\vspace{5cm}
+\pagebreak
 
 \begin{figure}[H]
   \centering
@@ -1140,9 +1164,9 @@ coluna mostra o percentual de ruído removido, calculado conforme a Equação
 \label{table:results}
 \centering
 \begin{tiny}
-\begin{tabular}{r l| r r r| c| r r |r r |r}
-\hline\hline
-& \multicolumn{5}{c}{} & \multicolumn{4}{c}{MDR (\# registros)} & (eq. \ref
+\begin{tabular}{p{1mm}| p{19mm}| p{3mm} p{6mm} p{9mm}| p{6mm}| p{2mm} p{2mm} |
+p{2mm} p{2mm} |r} 
+\hline\hline & \multicolumn{5}{c}{} & \multicolumn{4}{c}{MDR (\# registros)} & (eq. \ref
 {eq:noise})\\
 & & \multicolumn{3}{c}{Tam. DOM (\# nós)} & Cont. & \multicolumn{2}{c}{Orig.}
 & \multicolumn{2}{c}{Podado} & Ruído\\
@@ -1252,6 +1276,8 @@ G-$measure$ & 43,51\% & 78,63\% & 35,13\% \\
 \hline
 \end{tabular}
 \end{table}
+\vspace{3cm}
+\pagebreak
 
 \subsection{Discussão dos Resultados}\label{sub:disc}
 
