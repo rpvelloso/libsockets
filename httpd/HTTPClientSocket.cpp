@@ -267,7 +267,7 @@ void HTTPClientSocket::processInput() {
 			scriptName = stringTok(requestURI,"?");
 			query = requestURI;
 			requestURI = scriptName;
-			if (query[0]=='?') requestURI = requestURI + '?';
+			if (query[0]=='?') requestURI = requestURI + query;
 			httpVersion = line;
 		} else {
 			string parm;
