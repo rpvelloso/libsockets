@@ -345,9 +345,9 @@ void HTTPClientSocket::processInput() {
 }
 
 static string idx[] = {
-		"index.php",
-		"index.htm",
-		"index.html",
+		"/index.php",
+		"/index.htm",
+		"/index.html",
 		""
 };
 
