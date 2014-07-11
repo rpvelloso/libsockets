@@ -60,7 +60,6 @@ protected:
     string hostname;
     bool nonBlocking;
     int linger;
-
 };
 
 
