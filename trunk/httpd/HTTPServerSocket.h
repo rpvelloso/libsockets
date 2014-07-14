@@ -26,6 +26,8 @@
 #include "HTTPLogger.h"
 #include "CGIControlThread.h"
 
+extern string rootDir;
+
 class HTTPServerSocket : public AbstractServerSocket<HTTPClientSocket> {
 public:
 	HTTPServerSocket() : AbstractServerSocket<HTTPClientSocket>() {
@@ -42,7 +44,7 @@ public:
 	};
 
 	void onServerUp() {
-		log("(*) Server started. Addr: %s:%d, root directory: %s\n",getIPAddress().c_str(),getPort(),documentRoot.c_str());
+		log("(*) Server started. Addr: %s:%d, root directory: %s\n",getIPAddress().c_str(),getPort(),rootDir.c_str());
 	};
 
     void onServerDown() {
@@ -51,7 +53,7 @@ public:
 
 	void onClientConnect(HTTPClientSocket *c) {
 		log("(+) Client connected from %s:%d.\n",c->getIPAddress().c_str(),c->getPort());
-		c->setDocumentRoot(documentRoot);
+		c->setDocumentRoot(rootDir);
 		c->setServerSocket(this);
 	};
 
@@ -63,11 +65,7 @@ public:
 		return cgiControlThread;
 	};
 
-	void setDocumentRoot(string dr) {
-		documentRoot = dr;
-	}
 protected:
-	string documentRoot;
     LoggerInterface *logger;
     CGIControlThread *cgiControlThread;
 
