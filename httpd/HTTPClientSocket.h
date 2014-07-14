@@ -97,7 +97,7 @@ class CGIThread;
 class HTTPClientSocket: public AbstractMultiplexedClientSocket {
 public:
 	HTTPClientSocket();
-	HTTPClientSocket(int, sockaddr_in*);
+	HTTPClientSocket(int, sockaddr_in*, SSL_CTX *);
 	virtual ~HTTPClientSocket();
 
 	void onSend(void *, size_t);
