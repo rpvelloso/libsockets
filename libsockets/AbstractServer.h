@@ -36,10 +36,11 @@ public:
 		delete serverSocket;
 	};
 
-	bool start(string addr,unsigned short port) {
+	bool start(string addr,unsigned short port, bool ssl=false, string cert = "", string key = "") {
 		C *clientSocket;
 
-		if (!serverSocket->openSocket(addr,port)) return false;
+		serverSocket->setSSLPEMFiles(cert,key);
+		if (!serverSocket->openSocket(addr,port,ssl)) return false;
 		while (serverSocket->getSocketStatus() == SOCKET_LISTENING) {
 			clientSocket = serverSocket->acceptConnection();
 			if (clientSocket) onClientConnect(clientSocket);

@@ -30,6 +30,8 @@ AbstractSocket::AbstractSocket() : Object() {
     hostname = "";
     nonBlocking = false;
     linger = -1;
+    sslContext = NULL;
+    sslHandler = NULL;
 }
 
 AbstractSocket::~AbstractSocket() {

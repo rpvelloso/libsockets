@@ -26,7 +26,7 @@ AbstractMultiplexedClientSocket::AbstractMultiplexedClientSocket() : AbstractCli
 	outputBuffer = NULL;
 }
 
-AbstractMultiplexedClientSocket::AbstractMultiplexedClientSocket(int fd, sockaddr_in *sin) : AbstractClientSocket(fd,sin) {
+AbstractMultiplexedClientSocket::AbstractMultiplexedClientSocket(int fd, sockaddr_in *sin, SSL_CTX *ctx=NULL) : AbstractClientSocket(fd,sin,ctx) {
 	multiplexer = NULL;
 	outputBuffer = NULL;
 }

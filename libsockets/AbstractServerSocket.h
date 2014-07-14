@@ -20,6 +20,7 @@
 #ifndef ABSTRACTSERVERSOCKET_H_
 #define ABSTRACTSERVERSOCKET_H_
 
+#include <iostream>
 #include <cstdio>
 #include <arpa/inet.h>
 #include "AbstractSocket.h"
@@ -33,11 +34,17 @@ public:
  	   int reuse=1;
 
  	   if (setsockopt(socketFd,SOL_SOCKET,SO_REUSEADDR,(char *)&reuse,sizeof(int))<0) perror("setsockopt()");
+ 	   certificateFile = keyFile = "";
 	};
 
 	virtual ~AbstractServerSocket() {};
 
-    virtual bool openSocket(string addr, unsigned short port) {
+	virtual void setSSLPEMFiles(string cert, string key) {
+		certificateFile = cert;
+		keyFile = key;
+	}
+
+    virtual bool openSocket(string addr, unsigned short port, bool ssl=false) {
     	socklen_t size = sizeof(socketAddress);
 
     	if (socketStatus == SOCKET_CLOSED) {
@@ -47,6 +54,24 @@ public:
 			if (listen(socketFd,SERVER_BACKLOG)) return false;
 			getsockname(socketFd,(struct sockaddr *)&socketAddress,&size);
 			socketStatus = SOCKET_LISTENING;
+			if (ssl && (certificateFile != "") && (keyFile != "")) {
+				if (!(sslContext = SSL_CTX_new(SSLv23_server_method()))) {
+					ERR_print_errors_fp(stderr);
+					return false;
+				}
+			    if (SSL_CTX_use_certificate_file(sslContext,certificateFile.c_str(),SSL_FILETYPE_PEM) <= 0) {
+			        ERR_print_errors_fp(stderr);
+					return false;
+			    }
+			    if (SSL_CTX_use_PrivateKey_file(sslContext,keyFile.c_str(),SSL_FILETYPE_PEM) <= 0) {
+			        ERR_print_errors_fp(stderr);
+					return false;
+			    }
+			    if (!SSL_CTX_check_private_key(sslContext)) {
+			        fprintf(stderr, "Private key does not match the public certificate\n");
+					return false;
+			    }
+			}
 			onServerUp();
 			return true;
     	}
@@ -58,6 +83,10 @@ public:
            onServerDown();
            shutdown(socketFd,SHUT_RDWR);
            close(socketFd);
+           if (sslContext) {
+        	   SSL_CTX_free(sslContext);
+        	   sslContext = NULL;
+           }
            socketStatus = SOCKET_CLOSED;
         }
     };
@@ -73,7 +102,7 @@ public:
      	   clientFd = accept(socketFd,(struct sockaddr *)&clientAddress,&size);
      	   if (clientFd > 0) {
      		   setCloseOnExec(clientFd);
-     		   clientSocket = new C(clientFd,&clientAddress);
+     		   clientSocket = new C(clientFd,&clientAddress,sslContext);
      		   clientSocket->onConnect();
      		   onClientConnect(clientSocket);
      	   }
@@ -84,6 +113,8 @@ public:
     virtual void onServerUp() = 0;
     virtual void onServerDown() = 0;
     virtual void onClientConnect(C *) = 0;
+private:
+    string certificateFile,keyFile;
 };
 
 #endif /* ABSTRACTSERVERSOCKET_H_ */

@@ -26,6 +26,8 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
 #include "Object.h"
 
 enum SocketStatus {
@@ -38,7 +40,7 @@ class AbstractSocket : public Object {
 public:
 	AbstractSocket();
 	virtual ~AbstractSocket();
-    virtual bool openSocket(string, unsigned short) = 0;
+    virtual bool openSocket(string, unsigned short, bool) = 0;
     virtual void closeSocket() = 0;
     bool resolveHost(string);
     string getHostname();
@@ -60,6 +62,8 @@ protected:
     string hostname;
     bool nonBlocking;
     int linger;
+    SSL_CTX *sslContext;
+    SSL *sslHandler;
 };
 
 
