@@ -28,7 +28,7 @@ class ClientSocketMultiplexer;
 class AbstractMultiplexedClientSocket: public AbstractClientSocket {
 public:
 	AbstractMultiplexedClientSocket();
-	AbstractMultiplexedClientSocket(int, sockaddr_in *);
+	AbstractMultiplexedClientSocket(int, sockaddr_in *, SSL_CTX *);
 	virtual ~AbstractMultiplexedClientSocket();
 	bool hasDataToSend();
     void sendBufferedData(void *, streamsize);

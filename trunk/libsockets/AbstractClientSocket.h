@@ -25,9 +25,9 @@
 class AbstractClientSocket : public AbstractSocket {
 public:
 	AbstractClientSocket();
-	AbstractClientSocket(int, sockaddr_in *);
+	AbstractClientSocket(int, sockaddr_in *, SSL_CTX *);
 	virtual ~AbstractClientSocket();
-    bool openSocket(string, unsigned short);
+    bool openSocket(string, unsigned short, bool);
     void closeSocket();
     int sendData(void *, size_t);
     int sendData(string);
