@@ -113,7 +113,7 @@ HTTPClientSocket::HTTPClientSocket() : AbstractMultiplexedClientSocket() {
 	logger = NULL;
 }
 
-HTTPClientSocket::HTTPClientSocket(int fd, sockaddr_in *sin) : AbstractMultiplexedClientSocket(fd,sin) {
+HTTPClientSocket::HTTPClientSocket(int fd, sockaddr_in *sin, SSL_CTX *ctx=NULL) : AbstractMultiplexedClientSocket(fd,sin,ctx) {
 	outputBuffer = new stringstream;
 	requestState = HTTP_RECEIVE_HEADER;
 	headerLineNo = 0;
