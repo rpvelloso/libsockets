@@ -599,7 +599,7 @@ void HTTPClientSocket::executeCGI() {
 
 		char errstr[80];
 		strerror_r(errno,errstr,80);
-		log("(.) execve(%s %s) error:\n",argv[0],argv[1]?argv[1]:"",errstr);
+		log("(.) execve(%s %s) error: (%d) %s\n",argv[0],argv[1]?argv[1]:"",errno,errstr);
 		reply(REPLY_500_INTERNAL_SERVER_ERROR);
 		exit(-1);
 	} else if (CGIPID == -1) {
