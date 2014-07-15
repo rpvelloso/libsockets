@@ -593,7 +593,11 @@ void HTTPClientSocket::executeCGI() {
 		dup2(((fdbuf *)CGIOutput.rdbuf())->fd(),fileno(stdout));
 		//fclose(stderr);
 		execve(argv[0],argv,envp);
-		log("(.) execve(%s %s) error.\n",argv[0],argv[1]?argv[1]:"");
+
+		char errstr[80];
+		strerror_r(errno,errstr,80);
+		log("(.) execve(%s %s) error:\n",argv[0],argv[1]?argv[1]:"",errstr);
+		reply(REPLY_500_INTERNAL_SERVER_ERROR);
 		exit(-1);
 	} else if (CGIPID == -1) {
 		log("(.) CGI process not started.\n");
