@@ -571,6 +571,7 @@ void HTTPClientSocket::executeCGI() {
 		envp[i++] = strdup(("QUERY_STRING=" + query).c_str());
 		envp[i++] = strdup(("REQUEST_URI=" + requestURI).c_str());
 		envp[i++] = strdup(("SCRIPT_NAME=" + scriptName).c_str());
+		if (sslContext) envp[i++] = strdup("HTTPS=on");
 		if (!boundary.empty())
 			envp[i++] = strdup(("CONTENT_TYPE=" + contentType + "; boundary=" + boundary).c_str());
 		else
