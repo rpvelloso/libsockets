@@ -115,6 +115,7 @@ public:
 	LoggerInterface* getLogger();
 	void setLogger(LoggerInterface *);
 
+	static string stringTok(string &, string);
 private:
 	void processInput();
 	void processRequest();
@@ -139,7 +140,6 @@ private:
 	void setOutputBuffer(iostream *);
 	void restoreOutputBuffer();
 
-	string stringTok(string &, string);
 	string unescapeUri(string);
 
 	HTTPRequestState requestState;
