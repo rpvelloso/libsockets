@@ -41,10 +41,11 @@ void signalHandler(int sig) {
 }
 
 void printUsage(char *p) {
-	cout << "usage: "<<p<<" [-a bind_addr] [-p bind_port]"<< endl;
+	cout << "usage: "<<p<<" [-a bind_addr] [-p bind_port] [-c server.crt,server.key]"<< endl;
 	cout << "-a bind_addr: the IP address to bind the server to. Default 127.0.0.1"<< endl;
 	cout << "-p bind_port: the server port number. Default 80"<< endl;
 	cout << "-r dir: document root directory. Default $PWD."<< endl;
+	cout << "-c server.crt,server.key. Certificate and private key files in PEM format. Starts the server in SSL mode." << endl;
 	exit(-1);
 }
 
@@ -53,12 +54,14 @@ string rootDir;
 int main(int argc, char **argv) {
 	int opt;
 	string bindAddr="127.0.0.1";
+	string certFile="",keyFile="";
+	bool ssl=false;
 	unsigned short bindPort=80;
 	char cwd[BUFSIZ];
 
 	rootDir = getcwd(cwd,BUFSIZ);
 
-	while ((opt = getopt(argc, argv, "a:p:r:h")) != -1) {
+	while ((opt = getopt(argc, argv, "c:a:p:r:h")) != -1) {
 		switch (opt) {
 		case 'a':
 			bindAddr = optarg;
@@ -72,10 +75,20 @@ int main(int argc, char **argv) {
 				else rootDir = rootDir + "/" + optarg;
 			}
 			break;
+		case 'c':
+			if (optarg) {
+				string strarg = optarg;
+				certFile = HTTPClientSocket::stringTok(strarg,",");
+				keyFile = strarg;
+			}
+			if ((certFile!="") && (keyFile!="")) {
+				ssl = true;
+			} else printUsage(argv[0]);
+			break;
 		case 'h':
 		default:
 	    	printUsage(argv[0]);
-	    break;
+	    	break;
 		}
 	}
 
@@ -92,8 +105,14 @@ int main(int argc, char **argv) {
 		sigaddset(&sigset,SIGCHLD);
 		sigprocmask(SIG_BLOCK,&sigset,NULL); // needed by CGIControlThread.
 
-		SSL_load_error_strings();
-		SSL_library_init();
+		if (ssl) {
+			cout << "(*) Starting server in SSL mode." << endl
+			<< "(*) Certificate file: " << certFile << endl
+			<< "(*) Private key file: " << keyFile << endl;
+
+			SSL_load_error_strings();
+			SSL_library_init();
+		}
 
     	server = new HTTPServer(5);
 
@@ -104,7 +123,7 @@ int main(int argc, char **argv) {
     	signal(SIGSTOP,signalHandler);
     	signal(SIGQUIT,signalHandler);
 
-		if (!server->start(bindAddr,bindPort,true,"server.crt","server.key"))
+		if (!server->start(bindAddr,bindPort,ssl,certFile,keyFile))
 			perror("Could not start the server");
 		delete server;
 	}
