@@ -93,8 +93,10 @@ private:
 };
 
 class CGIThread;
+class LuaControlThread;
 
 class HTTPClientSocket: public AbstractMultiplexedClientSocket {
+friend class LuaControlThread;
 public:
 	HTTPClientSocket();
 	HTTPClientSocket(int, sockaddr_in*, SSL_CTX *);

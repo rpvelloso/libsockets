@@ -25,6 +25,7 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <string>
+#include <lua.hpp>
 #include "HTTPClientSocket.h"
 #include "HTTPServerSocket.h"
 
@@ -70,6 +71,7 @@ static string mime[][2] = {
 		{".mp3.wav","audio/"},
 		{".mpeg.avi.mp4.mkv.mpg.asf.flv","video/"},
 		{".php.php3.phps","application/php"},
+		{".lua","application/lua"},
 		{".css","text/css"},
 		{"", ""}
 		};
@@ -394,6 +396,35 @@ void HTTPClientSocket::processRequest() {
 	commitBuffer();
 }
 
+class LuaControlThread : public AbstractThread {
+public:
+	LuaControlThread(HTTPClientSocket *c) : AbstractThread() {
+		client = c;
+	}
+	virtual ~LuaControlThread() {
+
+	}
+    void onStart() {};
+    void onStop() {
+    	client->closeSocket();
+    };
+    void execute() {
+		lua_State *L = lua_open();
+
+		luaL_openlibs(L);
+
+		int s = luaL_loadfile(L, client->scriptFileName.c_str());
+		if (!s) s = lua_pcall(L, 0, LUA_MULTRET, 0);
+		else {
+			std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
+			lua_pop(L, 1);
+		}
+		lua_close(L);
+    }
+protected:
+    HTTPClientSocket *client;
+};
+
 void HTTPClientSocket::GET() {
 	string mt = mimeType(scriptName);
 
@@ -402,6 +433,8 @@ void HTTPClientSocket::GET() {
 
 		executeCGI();
 
+	} else if (mt == "application/lua") {
+		(new LuaControlThread(this))->execute();
 	} else {
 
 		if (HEAD()) {
