@@ -118,6 +118,8 @@ public:
 	void setLogger(LoggerInterface *);
 
 	static string stringTok(string &, string);
+
+	iostream *getCGIOutputBuffer();
 private:
 	void processInput();
 	void processRequest();
