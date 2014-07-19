@@ -51,6 +51,8 @@ enum HTTPReply {
 #define LF '\n'
 #define CRLF "\r\n"
 
+#define ENV_VAR_COUNT 21
+
 // class to enable access to fstream file fd
 class fdbuf : public filebuf {
 public:

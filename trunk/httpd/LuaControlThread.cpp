@@ -22,6 +22,7 @@
 
 #include <lua.hpp>
 #include "LuaControlThread.h"
+#include "HTTPServerSocket.h"
 
 static int lua_cgi_print(lua_State *L) {
 	HTTPClientSocket *client;
@@ -47,7 +48,7 @@ LuaControlThread::LuaControlThread(HTTPClientSocket *c) : AbstractThread() {
 	client = c;
 }
 
-virtual LuaControlThread::~LuaControlThread() {
+LuaControlThread::~LuaControlThread() {
 
 }
 
