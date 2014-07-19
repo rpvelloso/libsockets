@@ -476,7 +476,7 @@ void HTTPClientSocket::reply(HTTPReply r) {
 	string html;
 	stringstream len;
 
-	log("(.) Replied %d to client %s:%d.\n",r,getIPAddress().c_str(),getPort());
+	log("(.) Replied %d to client %s:%d. File: %s\n",r,getIPAddress().c_str(),getPort(),scriptFileName.c_str());
 	switch (r) {
 		case REPLY_403_FORBIDDEN:
 			html = REPLY_403;
