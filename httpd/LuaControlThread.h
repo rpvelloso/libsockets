@@ -23,6 +23,31 @@
 #include <libsockets.h>
 #include "HTTPClientSocket.h"
 
+
+#define LUA_SET_GLOBAL_NUMBER(L,name,value) \
+	do { \
+		lua_pushnumber(L,value); \
+		lua_setglobal(L,name); \
+		} while (0)
+
+#define LUA_SET_GLOBAL_STRING(L,name,value) \
+	do { \
+		lua_pushstring(L,value.c_str()); \
+		lua_setglobal(L,name); \
+		} while (0)
+
+#define LUA_SET_GLOBAL_LUDATA(L,name,value) \
+	do { \
+		lua_pushlightuserdata(L,value); \
+		lua_setglobal(L,name); \
+		} while (0)
+
+#define LUA_SET_GLOBAL_CFUNC(L,name,value) \
+	do { \
+		lua_pushcfunction(L,value); \
+		lua_setglobal(L,name); \
+		} while (0)
+
 class LuaControlThread : public AbstractThread {
 public:
 	LuaControlThread(HTTPClientSocket *);
