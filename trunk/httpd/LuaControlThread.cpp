@@ -29,17 +29,21 @@ static int lua_cgi_print(lua_State *L) {
 	int nargs = lua_gettop(L);
 
 	lua_getglobal(L,"CLIENT_SOCKET");
-	client = (HTTPClientSocket *)lua_touserdata(L,lua_gettop(L));
+	client = (HTTPClientSocket *)lua_touserdata(L,-1);
 	lua_pop(L,1);
 	if (!client) return 0;
 
 	for (int i=1;i<=nargs;i++) {
-		const char *cstr=lua_tostring(L,i);
-		string arg;
+		int len=luaL_len(L,i);
+		char *buf=NULL;
 
-		if (cstr) arg=cstr;
-		else arg="(null)";
-		*(client->getCGIOutputBuffer()) << arg;
+		if (lua_isstring(L,i) || lua_isnumber(L,i))
+			buf=(char *)lua_tostring(L,i);
+		else if (lua_isuserdata(L,i))
+			buf=(char *)lua_touserdata(L,i);
+
+		if (buf && (len > 0))
+			client->getCGIOutputBuffer()->write(buf,len);
 	}
 	return 0;
 }
