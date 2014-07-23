@@ -41,8 +41,6 @@
 #define PARSE_ERROR(l,c,s) cerr << "parse error (" << state << ") at line " \
 							<< line << " col " << col << endl; return -1;
 
-#define MAX_TXT_SIZE 50
-
 static string ltags[] = {
 		"table","tbody","tfoot","thead","tr",
 		"ul","ol","dl","frameset","colgroup",
@@ -189,7 +187,7 @@ void tDOM::addNode(int tp, string tx) {
 }
 
 void tDOM::printDOM() {
-	printNode(root,0);
+	if (root) root->printNode(0,verbose);
 	cout << "Node count: " << count << endl;
 }
 
@@ -519,48 +517,6 @@ tNode *tDOM::getRoot() {
 
 tNode *tDOM::getBody() {
 	return body;
-}
-
-void tDOM::printNode(tNode *n, int lvl) {
-	if (n) {
-		for (int j=1;j<lvl;j++) cout << " ";
-		switch (n->type) {
-			case 0:
-				cout << "<"; break;
-			case 1:
-				cout << "</"; break;
-			case 2:
-				cout << ""; break;
-			case 3:
-				cout << "<!--"; break;
-			default: break;
-		}
-
-		if (n->type != -1) {
-			if (n->type < 2) cout << n->tagName;
-			if (n->text.size() > 0) {
-				cout << " " << (verbose?n->text:n->text.substr(0,MAX_TXT_SIZE));
-				if (!verbose && (n->text.size() > MAX_TXT_SIZE)) cout << " ...";
-			}
-			if (n->type == 3) cout << "--";
-			if (n->type != 2) {
-				if (!verbose) cout << " (" << n->depth << ", " << n->size << ")";
-				cout << ">";
-			}
-			cout << endl;
-		}
-
-		for (auto i = n->nodes.begin();i!=n->nodes.end();i++) printNode(*i,lvl+1);
-
-		// close current tag
-		if ((n->type != -1) && (singleTags.find(n->tagName) == singleTags.end())) {
-			if (n->type != 2) for (int j=1;j<lvl;j++) cout << " ";
-			if (n->type == 3) cout << "-->" << endl;
-			else if (n->type != 2) {
-				cout << "</" << n->tagName << ">" << endl;
-			}
-		}
-	}
 }
 
 void tDOM::setVerbose(int v)

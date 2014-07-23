@@ -21,6 +21,7 @@
 #include <iostream>
 #include <string>
 #include <list>
+#include <set>
 #include "tnode.h"
 #include "misc.h"
 
@@ -163,4 +164,48 @@ string tNode::getAttribute(string attr) {
 		else return stringTok(t," ");
 	}
 	return "";
+}
+
+extern set<string> singleTags;
+#define MAX_TXT_SIZE 50
+
+
+void tNode::printNode(int lvl, int verbose) {
+	for (int j=1;j<lvl;j++) cout << " ";
+	switch (this->type) {
+		case 0:
+			cout << "<"; break;
+		case 1:
+			cout << "</"; break;
+		case 2:
+			cout << ""; break;
+		case 3:
+			cout << "<!--"; break;
+		default: break;
+	}
+
+	if (this->type != -1) {
+		if (this->type < 2) cout << this->tagName;
+		if (this->text.size() > 0) {
+			cout << " " << (verbose?this->text:this->text.substr(0,MAX_TXT_SIZE));
+			if (!verbose && (this->text.size() > MAX_TXT_SIZE)) cout << " ...";
+		}
+		if (this->type == 3) cout << "--";
+		if (this->type != 2) {
+			if (!verbose) cout << " (" << this->depth << ", " << this->size << ")";
+			cout << ">";
+		}
+		cout << endl;
+	}
+
+	for (auto i = this->nodes.begin();i!=this->nodes.end();i++) (*i)->printNode(lvl+1,verbose);
+
+	// close current tag
+	if ((this->type != -1) && (singleTags.find(this->tagName) == singleTags.end())) {
+		if (this->type != 2) for (int j=1;j<lvl;j++) cout << " ";
+		if (this->type == 3) cout << "-->" << endl;
+		else if (this->type != 2) {
+			cout << "</" << this->tagName << ">" << endl;
+		}
+	}
 }
