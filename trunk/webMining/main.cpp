@@ -109,7 +109,7 @@ public:
 	virtual void onTagFound(tNode *n) {
 		r++;
 		if (verbose) {
-			printNode(n,1);
+			if (n) n->printNode(1,verbose);
 			cout << endl;
 		} else {
 			switch (n->getType()) {
@@ -137,7 +137,7 @@ public:
 
 	virtual void onPatternFound(tNode *n, tNode *p, float s) {
 		cout << "<DIV class=\"pattern\"> " << ++r << " Similarity " << (s*100.0) << "%" << endl;
-		printNode(n,1);
+		if (n) n->printNode(1,verbose);
 		cout << "</DIV>" << endl << endl;
 	};
 
@@ -194,13 +194,13 @@ public:
 								cout << "   <field tag=\"";
 								if ((*j)) {
 									cout << (*j)->tagName << "\"><![CDATA[";
-									printNode(*j,4);
+									(*j)->printNode(4,verbose);
 									cout << "]]>";
 								} else cout << "\">";
 								cout << "</field>" << endl;
 							} else {
 								cout << "<td>";
-								if ((*j)) printNode(*j,1);
+								if ((*j)) (*j)->printNode(1,verbose);
 								cout << "</td>";
 							}
 						}
@@ -283,7 +283,7 @@ public:
 					tNode *n = table[i][j];
 
 					if ((n->tagName == "img") || (n->tagName == "a")) {
-						printNode(n,4);
+						n->printNode(4,verbose);
 					} else if (n->type == 2) {
 						cout << n->text;
 					/*} else if (n->nodes.size() == 0) {

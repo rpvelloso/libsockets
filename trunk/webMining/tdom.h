@@ -45,30 +45,37 @@ public:
 	void setRoot(tNode *);
 	tNode *findNext(tNode *, string);
     void setVerbose(int);
+	string getRegEx(tNode *, int, int = 0);
+	void LZExtraction();
+
+    // MDR
     list<tDataRegion> MDR(tNode *, int, float, int);
-    void buildTagPath(string, tNode *, bool, bool, bool);
-	void printNode(tNode *, int);
 	list <tNode *> getRecord(tNode *, tNode *);
 	vector<tNode *> partialTreeAlignment(tDataRegion);
-	string getRegEx(tNode *, int, int = 0);
-	map<long int, long int> tagPathSequenceFilter(bool);
-	void LZExtraction();
-	void DRDE(bool, float);
-
-protected:
     void treeAlign(tNode *, tNode *, vector<vector<int> > &, tNode *);
 	size_t STM(tNode *, tNode *, tNode *);
 	void getAlignment(tNode *, tNode *, list<tNode *> &);
+	// *** end MDR
+
+
+	// TPS
+    void buildTagPath(string, tNode *, bool, bool, bool);
+	map<long int, long int> tagPathSequenceFilter(bool);
+	void DRDE(bool, float);
+	long int searchRegion(wstring);
+	bool prune(tNode *);
+	vector<unsigned int> locateRecords(wstring, float);
+	map<string, int> tagPathMap;
+	wstring tagPathSequence;
+	vector<tNode *> nodeSequence;
+	// *** end TPS
+
+protected:
 	int treeMatch(tNode *, tNode *);
 	void searchTree(tNode *, tNode *, float);
 	int searchString(tNode *, string, string, int);
 	int treeSize(tNode *);
 	int treeDepth(tNode *);
-
-	long int searchRegion(wstring);
-	bool prune(tNode *);
-
-	vector<unsigned int> locateRecords(wstring, float);
 
 	virtual void onTagFound(tNode *) = 0;
 	virtual void onPatternFound(tNode *, tNode *, float) = 0;
@@ -83,9 +90,6 @@ protected:
 	string ignoring;
 	int formOpen;
 	int pathCount;
-	map<string, int> tagPathMap;
-	wstring tagPathSequence;
-	vector<tNode *> nodeSequence;
 };
 
 #endif /* TDOM_H_ */

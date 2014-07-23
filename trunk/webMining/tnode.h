@@ -48,6 +48,7 @@ public:
 	void setDepth(int);
 	list<tNode *> &getNodes();
 	string getAttribute(string);
+	void printNode(int, int);
 protected:
 	void align(tNode *, tNode *);
 	list<tNode *> nodes;
