@@ -30,8 +30,12 @@ using namespace std;
 class tDOM;
 
 class tNode {
+friend class tMDR;
+friend class tCustomMDR;
 friend class tDOM;
 friend class tCustomDOM;
+friend class tTPSFilter;
+friend class tCustomTPS;
 public:
 	tNode(int, string);
 	virtual ~tNode();

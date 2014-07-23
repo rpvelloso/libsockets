@@ -27,6 +27,8 @@
 #include "tnode.h"
 #include "tdom.h"
 #include "misc.h"
+#include "tMDR.h"
+#include "tTPSFilter.h"
 
 
 using namespace std;
@@ -73,39 +75,12 @@ protected:
 class tCustomDOM : public tDOM {
 public:
 	tCustomDOM() : tDOM() {
-		g = r = xml = maxScore = maxCount = maxCount2 = recCountDisplay = 0;
+		r = 0;
 		filterStr = "";
 		filterTag = "";
 	};
-	virtual ~tCustomDOM() {
-		if (!recCountDisplay) {
-			if (r) {
-				if (scores.size()) {
-					if (xml) cout << "<scores>";
-					else cout << "<br><div id='scores'>";
+	virtual ~tCustomDOM() {};
 
-					for (auto i=scores.begin();i!=scores.end();i++) {
-						cout << (*i) << ";" << 100.00*(float)(*i)/(float)maxScore << "%";
-						if (!xml) cout << "<br>";
-						cout << endl;
-					}
-
-					if (xml) cout << "</scores>";
-					else cout << "</div>";
-					cout << endl;
-
-					scores.clear();
-				}
-				if (xml) cout << "<region-count>" << g << "</region-count>" << endl << "<record-count>" << r << "</record-count>" << endl << "</extraction>" << endl;
-				else cout << "<h3>Found " << r << " result(s) in " << g << " region(s).</h3></html>" << endl;
-			}
-		} else {
-			cout << maxCount;
-			if (maxCount2) cout << " " << maxCount2;
-			cout << endl;
-		}
-		exit(0);
-	};
 	virtual void onTagFound(tNode *n) {
 		r++;
 		if (verbose) {
@@ -141,13 +116,70 @@ public:
 		cout << "</DIV>" << endl << endl;
 	};
 
+	int filter(tNode *n) {
+		int ret=1;
+
+		if ((filterStr != "") || (filterTag != "")) {
+			if (filterTag == "") filterTag = "#text";
+			ret = searchString(n,filterTag,filterStr,0);
+		}
+		return ret && n->depth>2;
+	};
+
+	int r;
+	string filterStr,filterTag;
+};
+
+class tCustomMDR : public tMDR {
+public:
+	int xml,g,r,maxScore,maxCount,maxCount2,recCountDisplay,verbose;
+	list<int> scores;
+
+	tCustomMDR() : tMDR() {
+		xml = g = r = maxScore = maxCount = maxCount2 = recCountDisplay = verbose = 0;
+	}
+
+	void setVerbose(int v) {verbose = v;}
+	void setRecCountDisplay(int r) {recCountDisplay=r;}
+	void setXML(int x) {xml=x;};
+
+	~tCustomMDR() {
+		if (!recCountDisplay) {
+			if (r) {
+				if (scores.size()) {
+					if (xml) cout << "<scores>";
+					else cout << "<br><div id='scores'>";
+
+					for (auto i=scores.begin();i!=scores.end();i++) {
+						cout << (*i) << ";" << 100.00*(float)(*i)/(float)maxScore << "%";
+						if (!xml) cout << "<br>";
+						cout << endl;
+					}
+
+					if (xml) cout << "</scores>";
+					else cout << "</div>";
+					cout << endl;
+
+					scores.clear();
+				}
+				if (xml) cout << "<region-count>" << g << "</region-count>" << endl << "<record-count>" << r << "</record-count>" << endl << "</extraction>" << endl;
+				else cout << "<h3>Found " << r << " result(s) in " << g << " region(s).</h3></html>" << endl;
+			}
+		} else {
+			cout << maxCount;
+			if (maxCount2) cout << " " << maxCount2;
+			cout << endl;
+		}
+		exit(0);
+	}
+
 	virtual void onDataRecordFound(tDataRegion dr) {
-		vector<tNode *> recs = partialTreeAlignment(dr);
+		vector<tNode *> recs = tMDR::partialTreeAlignment(dr);
 		list<tNode *> alignments[recs.size()];
 		size_t reccount=0,recsize=0;
 
 		for (size_t i=0;i<recs.size();i++) {
-			alignments[i] = getRecord(recs[0],recs[i]);
+			alignments[i] = tMDR::getRecord(recs[0],recs[i]);
 			reccount += (alignments[i].size()>0);
 			recsize = max(recsize,alignments[i].size());
 		}
@@ -218,6 +250,19 @@ public:
 			}
 		}
 	};
+
+};
+
+class tCustomTPS : public tTPSFilter {
+public:
+	tCustomTPS(tDOM *d) : tTPSFilter(d) {
+		g = r = xml = verbose = 0;
+	};
+
+	~tCustomTPS() {};
+
+	void setVerbose(int v) {verbose=v;};
+	void setXML(int x) {xml=x;};
 
 	virtual void onDataRecordFound(vector<wstring> &m, vector<unsigned int> &recpos) {
 		if ((m.size() == 0) || (recpos.size() == 0)) return;
@@ -310,22 +355,9 @@ public:
 		g++;
 		r+=rows;
 	}
-
-	int filter(tNode *n) {
-		int ret=1;
-
-		if ((filterStr != "") || (filterTag != "")) {
-			if (filterTag == "") filterTag = "#text";
-			ret = searchString(n,filterTag,filterStr,0);
-		}
-		return ret && n->depth>2;
-	};
-
-	int g,r,xml,maxScore,maxCount,maxCount2,recCountDisplay;
-	string filterStr,filterTag;
-	list<int> scores;
+protected:
+	int xml=0,r,g,verbose;
 };
-
 void printUsage(char *p)
 {
 	cout << "usage: "<<p<<" [-i input_file] [-o output_file] [-p pattern file] [-s search_string] [-v] [-t ###.##] [-m] [-xml] [-f str] [-a] [-b] [-g] [-c] [-r] [-q]"<<endl;
@@ -342,7 +374,7 @@ void printUsage(char *p)
 	cout << "-g    mine forms and fields" << endl;
 	cout << "-c    displays only record count of main region." << endl;
 	cout << "-r    apply tag path sequence filter." << endl;
-	cout << "-q    DRDE ([D]ifference [R]ecord [D]etection and [E]xtraction). -qs usesr css defs." << endl;
+	cout << "-q    DRDE ([D]ifference [R]ecord [D]etection and [E]xtraction)." << endl;
 	cout << "-css  Use style definitions when creating tag path sequences." << endl;
 	cout << "-z    LZ extraction." << endl << endl;
 	exit(-1);
@@ -352,20 +384,21 @@ void printUsage(char *p)
 
 int main(int argc, char *argv[])
 {
-	int opt,mdr=0,tp=0,mineForms=0,dbg=0,tpsFilter=0,lz=0;
+	int opt,mdr=0,tp=0,mineForms=0,dbg=0,tpsFilter=0,lz=0,verbose=0,recCountDisplay=0,xml=0;
 	bool DRDE=false,CSS=false,tpcfp=false;
 	float st=1.0; // similarity threshold
 	string inp="",outp="",search="",pattern="",filterStr="";
 	tCustomDOM *d = new tCustomDOM();
 	tCustomDOM *p = new tCustomDOM();
 	tFormExtractDOM *fe = new tFormExtractDOM();
+	tCustomTPS *tpsf = new tCustomTPS(d);
 	fstream patternFile,inputFile;
 	filebuf outputFile;
 
 	while ((opt = getopt(argc, argv, "i:o:t:s:p:f:x:a::d:c::qmhvcgrz")) != -1) {
 		switch (opt) {
 		case 'c':
-			if (!optarg) d->recCountDisplay = 1;
+			if (!optarg) recCountDisplay = 1;
 			else if (string(optarg) == "ss") CSS = true;
 			break;
 		case 'i':
@@ -384,7 +417,7 @@ int main(int argc, char *argv[])
 			st = atof(optarg)/100;
 			break;
 		case 'v':
-			d->setVerbose(1);
+			verbose=1;
 			break;
 		case 'm':
 			mdr = 1;
@@ -400,7 +433,7 @@ int main(int argc, char *argv[])
 			if (optarg) tpcfp = (string(optarg) == "p");
 			break;
 		case 'x':
-			if (optarg && string(optarg) == "ml") d->xml=1;
+			if (optarg && string(optarg) == "ml") xml=1;
 			else printUsage(argv[0]);
 			break;
 		case 'g':
@@ -423,11 +456,17 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	if (!dbg) {
+		fclose(stderr);
+	}
+
 	cerr << "CSS: " << (CSS?"on":"off") << endl
 		 << "threshold: " << st*100 << "%" << endl
 		 << endl;
 
-	if (!dbg) fclose(stderr);
+	d->setVerbose(verbose);
+	tpsf->setVerbose(verbose);
+	tpsf->setXML(xml);
 
 	if (pattern != "") {
 		patternFile.open(pattern.c_str());
@@ -459,24 +498,16 @@ int main(int argc, char *argv[])
 		if (!errno) cout.rdbuf(&outputFile);
 	}
 
-	if (tpsFilter) {
-		d->tagPathSequenceFilter(CSS);
-	}
-
 	if (mineForms) {
 		fe->setRoot(d->getRoot());
 		fe->searchTag("form","");
 		return 0;
 	}
 
-	if (tp) {
-		d->buildTagPath("",d->getBody(),true,CSS,tpcfp);
-	}
-
-	if (lz) {
+	/*if (lz) {
 		d->buildTagPath("",d->getBody(),false,CSS,false);
 		d->LZExtraction();
-	}
+	}*/
 
 	if (!tp && !mdr && search != "") {
 		string t,s=search;
@@ -492,14 +523,24 @@ int main(int argc, char *argv[])
 	}
 
 	if (mdr) {
-		d->filterTag = search;
-		d->filterStr = filterStr;
-		d->MDR(d->getRoot(),K,st,1);
+		tCustomMDR *MDR = new tCustomMDR();
+		MDR->setVerbose(verbose);
+		MDR->setRecCountDisplay(recCountDisplay);
+		MDR->setXML(xml);
+		MDR->MDR(d->getRoot(),K,st,1);
 		cerr << "Similarity threshold used: " << st << endl;
 	}
 
+	if (tpsFilter) {
+		tpsf->tagPathSequenceFilter(CSS);
+	}
+
+	if (tp) {
+		tpsf->buildTagPath("",d->getBody(),true,CSS,tpcfp);
+	}
+
 	if (DRDE) {
-		d->DRDE(CSS,st);
+		tpsf->DRDE(CSS,st);
 	}
 
 	if (search == "" && pattern == "" && !mdr && !tp && !lz && !DRDE) {
