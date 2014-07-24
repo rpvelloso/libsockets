@@ -350,6 +350,7 @@ public:
 protected:
 	int xml=0,r,g,verbose;
 };
+
 void printUsage(char *p)
 {
 	cout << "usage: "<<p<<" [-i input_file] [-o output_file] [-p pattern file] [-s search_string] [-v] [-t ###.##] [-m] [-xml] [-f str] [-a] [-b] [-g] [-c] [-r] [-q]"<<endl;
