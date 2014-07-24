@@ -30,10 +30,11 @@ public:
 	tMDR();
 	virtual ~tMDR();
 
-	list<tDataRegion> MDR(tNode *, int , float , int );
+	void mineDataRecords(tDOM *, int, float, int);
 
 	static size_t STM(tNode *, tNode *, tNode *);
 protected:
+	list<tDataRegion> MDR(tNode *, int , float , int );
 	static void treeAlign(tNode *, tNode *, vector<vector<int> > &, tNode *);
 	static string getRegEx(tNode*, int, int = 0);
 	static list <tNode *> getRecord(tNode *, tNode *);
@@ -41,7 +42,9 @@ protected:
 	static vector<tNode *> partialTreeAlignment(tDataRegion dr);
 
 	virtual void onDataRegionFound(tDataRegion, int, float);
-	virtual void onDataRecordFound(tDataRegion) = 0;
+	virtual void onDataRecordFound(tDataRegion);
+
+	list<vector<tNode *> > dataRegions;
 };
 
 #endif /* TMDR_H_ */

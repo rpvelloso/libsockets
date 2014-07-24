@@ -50,8 +50,6 @@ public:
 		cout << endl;
 	}
 	virtual void onPatternFound(tNode *n, tNode *p, float s) {};
-	virtual void onDataRecordFound(tDataRegion dr) {};
-	virtual void onDataRecordFound(vector<wstring> &m, vector<unsigned int> &recpos) {};
 protected:
 	void searchForm(tNode *n) {
 		auto i = n->getNodes().begin();
@@ -173,19 +171,21 @@ public:
 		exit(0);
 	}
 
-	virtual void onDataRecordFound(tDataRegion dr) {
-		vector<tNode *> recs = tMDR::partialTreeAlignment(dr);
-		list<tNode *> alignments[recs.size()];
-		size_t reccount=0,recsize=0;
+	void displayRecords() {
+		while (dataRegions.size()) {
+			vector<tNode *> recs = dataRegions.front();
+			dataRegions.pop_front();
+			list<tNode *> alignments[recs.size()];
+			size_t recsize,reccount;
 
-		for (size_t i=0;i<recs.size();i++) {
-			alignments[i] = tMDR::getRecord(recs[0],recs[i]);
-			reccount += (alignments[i].size()>0);
-			recsize = max(recsize,alignments[i].size());
-		}
+			for (size_t i=0;i<recs.size();i++) {
+				alignments[i] = tMDR::getRecord(recs[0],recs[i]);
+				reccount += (alignments[i].size()>0);
+				recsize = max(recsize,alignments[i].size());
+			}
 
-		if (reccount > 0) {
 			int gr=0,score=reccount*recsize;
+
 
 			maxScore = max(maxScore,score);
 			if (maxScore == score) {
@@ -249,8 +249,7 @@ public:
 					cout << "</table><br>" << endl;
 			}
 		}
-	};
-
+	}
 };
 
 class tCustomTPS : public tTPSFilter {
@@ -264,96 +263,89 @@ public:
 	void setVerbose(int v) {verbose=v;};
 	void setXML(int x) {xml=x;};
 
-	virtual void onDataRecordFound(vector<wstring> &m, vector<unsigned int> &recpos) {
-		if ((m.size() == 0) || (recpos.size() == 0)) return;
+	void displayRecords() {
+		while (dataRegions.size()) {
+			vector<vector<tNode *> > table = dataRegions.front();
+			size_t rows=table.size(),cols=table[0].size();
+			size_t recsize = cols;
+			bool printField[cols];
 
-		size_t rows=m.size(),cols=m[0].size();
-		vector<vector<tNode *> > table(rows, vector<tNode *>(cols));
-		bool printField[cols];
-		size_t recsize = cols;
-
-		for (size_t i=0;i<rows;i++) {
-			for (size_t j=0,k=0;j<cols;j++) {
-				if (m[i][j] != 0) {
-					table[i][j] = nodeSequence[recpos[i]+k];
-					k++;
-				} else table[i][j]=NULL;
-			}
-		}
-
-		for (size_t j=0;j<cols;j++) {
-			printField[j]=false;
-			for (size_t i=0;i<rows;i++) {
-				if (table[i][j]) {
-					if ((table[i][j]->tagName == "a") ||
-						(table[i][j]->tagName == "img") ||
-						((table[i][j]->type == 2) && (table[i][j]->text != ""))
-						) {
-						printField[j]=true;
-						break;
-					}
-				}
-			}
-			if (!printField[j]) recsize--;
-		}
-
-		if (xml) {
-			cout << "<?xml version=\"1.0\"""?>" << endl << "<extraction>" << endl;
-			cout << " <region number=\"" << 1 << "\" recsize=\"" << recsize << "\" reccount=\"" << m.size() << "\" score=\"" << recsize*r << "\">" << endl;
-		} else {
-			cout << "<meta http-equiv=""Content-Type"" content=""text/html;charset=ISO-8859-1"">" << endl;
-			cout << "<table border=1>" << endl;
-			cout << "<tr><th>#</th><th>Record size:" << recsize << "</th><th>Record count: " << rows << "</th><th colspan=" << m[0].size() - 2 << "></th>";
-		}
-
-		for (size_t i=0;i<rows;i++) {
-
-			if (xml) {
-				cout << "  <record number=\"" << i+1 << "\">" << endl;
-			} else
-				cout << "<tr><th> #" << i+1 << "</th>";
+			dataRegions.pop_front();
 
 			for (size_t j=0;j<cols;j++) {
-
-				if (!printField[j]) {
-					continue;
-				}
-
-				if (xml) {
-					cout << "   <field><![CDATA[";
-				} else
-					cout << "<td>";
-
-				if (table[i][j]) {
-					tNode *n = table[i][j];
-
-					if ((n->tagName == "img") || (n->tagName == "a")) {
-						n->printNode(4,verbose);
-					} else if (n->type == 2) {
-						cout << n->text;
-					/*} else if (n->nodes.size() == 0) {
-						cout << n->tagName << " " << n->text;*/
+				printField[j]=false;
+				for (size_t i=0;i<rows;i++) {
+					if (table[i][j]) {
+						if ((table[i][j]->tagName == "a") ||
+							(table[i][j]->tagName == "img") ||
+							((table[i][j]->type == 2) && (table[i][j]->text != ""))
+							) {
+							printField[j]=true;
+							break;
+						}
 					}
 				}
+				if (!printField[j]) recsize--;
+			}
+
+			if (xml) {
+				cout << "<?xml version=\"1.0\"""?>" << endl << "<extraction>" << endl;
+				cout << " <region number=\"" << 1 << "\" recsize=\"" << recsize << "\" reccount=\"" << rows << "\" score=\"" << recsize*r << "\">" << endl;
+			} else {
+				cout << "<meta http-equiv=""Content-Type"" content=""text/html;charset=ISO-8859-1"">" << endl;
+				cout << "<table border=1>" << endl;
+				cout << "<tr><th>#</th><th>Record size:" << recsize << "</th><th>Record count: " << rows << "</th><th colspan=" << cols - 2 << "></th>";
+			}
+
+			for (size_t i=0;i<rows;i++) {
 
 				if (xml) {
-					cout << "]]>";
-					cout << "</field>" << endl;
+					cout << "  <record number=\"" << i+1 << "\">" << endl;
 				} else
-					cout << "</td>";
+					cout << "<tr><th> #" << i+1 << "</th>";
+
+				for (size_t j=0;j<cols;j++) {
+
+					if (!printField[j]) {
+						continue;
+					}
+
+					if (xml) {
+						cout << "   <field><![CDATA[";
+					} else
+						cout << "<td>";
+
+					if (table[i][j]) {
+						tNode *n = table[i][j];
+
+						if ((n->tagName == "img") || (n->tagName == "a")) {
+							n->printNode(4,verbose);
+						} else if (n->type == 2) {
+							cout << n->text;
+						/*} else if (n->nodes.size() == 0) {
+							cout << n->tagName << " " << n->text;*/
+						}
+					}
+
+					if (xml) {
+						cout << "]]>";
+						cout << "</field>" << endl;
+					} else
+						cout << "</td>";
+				}
+				if (xml)
+					cout << "  </record>" << endl;
+				else
+					cout << "</tr>";
 			}
 			if (xml)
-				cout << "  </record>" << endl;
+				cout << " </region>" << endl;
 			else
-				cout << "</tr>";
-		}
-		if (xml)
-			cout << " </region>" << endl;
-		else
-			cout << "</table>" << endl;
+				cout << "</table>" << endl;
 
-		g++;
-		r+=rows;
+			g++;
+			r+=rows;
+		}
 	}
 protected:
 	int xml=0,r,g,verbose;
@@ -527,7 +519,8 @@ int main(int argc, char *argv[])
 		MDR->setVerbose(verbose);
 		MDR->setRecCountDisplay(recCountDisplay);
 		MDR->setXML(xml);
-		MDR->MDR(d->getRoot(),K,st,1);
+		MDR->mineDataRecords(d,K,st,1);
+		MDR->displayRecords();
 		cerr << "Similarity threshold used: " << st << endl;
 	}
 
@@ -541,6 +534,7 @@ int main(int argc, char *argv[])
 
 	if (DRDE) {
 		tpsf->DRDE(CSS,st);
+		tpsf->displayRecords();
 	}
 
 	if (search == "" && pattern == "" && !mdr && !tp && !lz && !DRDE) {
