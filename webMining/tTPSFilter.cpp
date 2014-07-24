@@ -159,7 +159,7 @@ void tTPSFilter::buildTagPath(string s, tNode *n, bool print, bool css, bool fp)
 map<long int, long int> tTPSFilter::tagPathSequenceFilter(bool css) {
 	wstring originalTPS;
 	vector<tNode *> originalNodeSequence;
-	queue<pair<wstring,long int>> q;
+	queue<pair<wstring,long int>> seqQueue;
 	vector<long int> start;
 	map<long int,long int> region;
 	size_t originalTPSsize;
@@ -171,15 +171,15 @@ map<long int, long int> tTPSFilter::tagPathSequenceFilter(bool css) {
 	originalTPSsize = originalTPS.size();
 	sizeThreshold = (originalTPSsize*10)/100; // 10% page size
 
-	q.push(make_pair(originalTPS,0)); // insert first sequence in queue for processing
+	seqQueue.push(make_pair(originalTPS,0)); // insert first sequence in queue for processing
 
-	while (q.size()) {
+	while (seqQueue.size()) {
 		long int len,off,rlen,pos;
 		wstring tps;
 
-		auto s = q.front();
+		auto s = seqQueue.front();
 
-		q.pop();
+		seqQueue.pop();
 
 		tps = s.first;
 		len = tps.size();
@@ -189,9 +189,9 @@ map<long int, long int> tTPSFilter::tagPathSequenceFilter(bool css) {
 
 		if (len > rlen) {
 			if (pos > 0)
-				q.push(make_pair(tps.substr(0,pos),off));
+				seqQueue.push(make_pair(tps.substr(0,pos),off));
 			if ((len-pos-rlen) > 0)
-				q.push(make_pair(tps.substr(pos+rlen),off+pos+rlen));
+				seqQueue.push(make_pair(tps.substr(pos+rlen),off+pos+rlen));
 			if (rlen > sizeThreshold)
 				region[off+pos]=rlen;
 		}
@@ -230,6 +230,8 @@ void tTPSFilter::DRDE(bool css, float st) {
 	vector<unsigned int> recpos;
 	vector<wstring> m;
 	map<long int, long int> region;
+
+	dataRegions.clear();
 
 	region=tagPathSequenceFilter(css); // locate main content regions
 	originalTPS = tagPathSequence;
@@ -336,4 +338,22 @@ vector<unsigned int> tTPSFilter::locateRecords(wstring s, float st) {
 	}
 
 	return recpos;
+}
+
+void tTPSFilter::onDataRecordFound(vector<wstring> &m, vector<unsigned int> &recpos) {
+	if ((m.size() == 0) || (recpos.size() == 0)) return;
+
+	size_t rows=m.size(),cols=m[0].size();
+	vector<vector<tNode *> > table(rows, vector<tNode *>(cols));
+
+	for (size_t i=0;i<rows;i++) {
+		for (size_t j=0,k=0;j<cols;j++) {
+			if (m[i][j] != 0) {
+				table[i][j] = nodeSequence[recpos[i]+k];
+				k++;
+			} else table[i][j]=NULL;
+		}
+	}
+
+	dataRegions.push_back(table);
 }

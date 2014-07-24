@@ -18,6 +18,7 @@
  */
 
 #include <iostream>
+#include "tdom.h"
 #include "tMDR.h"
 #include "misc.h"
 
@@ -27,16 +28,13 @@ tMDR::tMDR() {
 tMDR::~tMDR() {
 }
 
-size_t tMDR::STM(tNode *a, tNode *b, tNode *rec)
+size_t tMDR::STM(tNode *a, tNode *b, tNode *record)
 {
 	if (!a->compare(b)) return 0;
 	else {
 		int k=a->nodes.size();
 		int n=b->nodes.size();
 		vector<vector<int> > m(k+1,vector<int>(n+1));
-		//int *m[k+1],i,j,r;
-
-		//for (i=0;i<=k;i++) m[i] = new int[n+1];
 
 		for (int i=0;i<=k;i++) m[i][0]=0;
 		for (int j=0;j<=n;j++) m[0][j]=0;
@@ -45,19 +43,15 @@ size_t tMDR::STM(tNode *a, tNode *b, tNode *rec)
 		for (int i=1;i<=k;i++,ii++) {
 			auto jj = b->nodes.begin();
 			for (int j=1;j<=n;j++,jj++) {
-				int z = m[i-1][j-1]+STM(*ii,*jj,rec);
+				int z = m[i-1][j-1]+STM(*ii,*jj,record);
 
 				m[i][j] = max(max(m[i][j-1],m[i-1][j]),z);
 			}
 		}
 
-		if (rec) treeAlign(a,b,m,rec);
+		if (record) treeAlign(a,b,m,record);
 
 		return m[k][n]+1;
-
-		//for (int i=0;i<=k;i++) delete m[i];
-
-		//return r;
 	}
 }
 
@@ -219,6 +213,12 @@ vector<tNode *> tMDR::partialTreeAlignment(tDataRegion dr) {
 	}
 	return trees;
 }
+
+void tMDR::mineDataRecords(tDOM* d, int k, float st, int mineRegions) {
+	dataRegions.clear();
+	MDR(d->getBody(),k,st,mineRegions);
+}
+
 
 list<tDataRegion> tMDR::MDR(tNode *p, int k, float st, int mineRegions) {
 	list<tDataRegion> ret;
@@ -384,4 +384,11 @@ void tMDR::onDataRegionFound(tDataRegion region, int K, float st) {
 	onDataRecordFound(region);
 	n->clear();
 	delete n;
+}
+
+void tMDR::onDataRecordFound(tDataRegion dr) {
+	vector<tNode *> recs = tMDR::partialTreeAlignment(dr);
+
+	if (recs.size())
+		dataRegions.push_back(recs);
 }

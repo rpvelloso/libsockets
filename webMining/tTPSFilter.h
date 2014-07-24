@@ -39,13 +39,15 @@ protected:
 	bool prune(tNode *);
 	vector<unsigned int> locateRecords(wstring, float);
 
-	virtual void onDataRecordFound(vector<wstring> &, vector<unsigned int> &) = 0;
+	virtual void onDataRecordFound(vector<wstring> &, vector<unsigned int> &);
 
 	map<string, int> tagPathMap;
 	wstring tagPathSequence;
 	vector<tNode *> nodeSequence;
 	int count,pathCount;
 	tDOM *dom;
+
+	list<vector<vector<tNode *> > > dataRegions;
 };
 
 #endif /* TTPSFILTER_H_ */
