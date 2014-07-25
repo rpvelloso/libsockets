@@ -23,17 +23,18 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <deque>
 #include "tnode.h"
-#include "tdom.h"
 
 class tTPSFilter {
 public:
-	tTPSFilter(tDOM *d);
+	tTPSFilter();
 	virtual ~tTPSFilter();
 
     void buildTagPath(string, tNode *, bool, bool, bool);
-	map<long int, long int> tagPathSequenceFilter(bool);
-	void DRDE(bool, float);
+	map<long int, long int> tagPathSequenceFilter(tNode *, bool);
+	void DRDE(tNode *, bool, float);
+	vector<tNode *> getRecord(int, int);
 protected:
 	long int searchRegion(wstring);
 	bool prune(tNode *);
@@ -44,10 +45,9 @@ protected:
 	map<string, int> tagPathMap;
 	wstring tagPathSequence;
 	vector<tNode *> nodeSequence;
-	int count,pathCount;
-	tDOM *dom;
+	int count=0,pathCount=0;
 
-	list<vector<vector<tNode *> > > dataRegions;
+	deque<vector<vector<tNode *> > > dataRegions;
 };
 
 #endif /* TTPSFILTER_H_ */

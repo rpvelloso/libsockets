@@ -29,6 +29,7 @@
 #include "misc.h"
 #include "tMDR.h"
 #include "tTPSFilter.h"
+#include "tlua.h"
 
 
 using namespace std;
@@ -254,7 +255,7 @@ public:
 
 class tCustomTPS : public tTPSFilter {
 public:
-	tCustomTPS(tDOM *d) : tTPSFilter(d) {
+	tCustomTPS() : tTPSFilter() {
 		g = r = xml = verbose = 0;
 	};
 
@@ -384,7 +385,7 @@ int main(int argc, char *argv[])
 	tCustomDOM *d = new tCustomDOM();
 	tCustomDOM *p = new tCustomDOM();
 	tFormExtractDOM *fe = new tFormExtractDOM();
-	tCustomTPS *tpsf = new tCustomTPS(d);
+	tCustomTPS *tpsf = new tCustomTPS();
 	fstream patternFile,inputFile;
 	filebuf outputFile;
 
@@ -473,6 +474,11 @@ int main(int argc, char *argv[])
 	}
 
 	if (inp != "") {
+
+		delete (new tlua(inp.c_str()));
+		return 0;
+
+
 		inputFile.open(inp.c_str());
 		if (inputFile.is_open()) {
 			d->scan(inputFile);
@@ -526,7 +532,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (tpsFilter) {
-		tpsf->tagPathSequenceFilter(CSS);
+		tpsf->tagPathSequenceFilter(d->getBody(),CSS);
 	}
 
 	if (tp) {
@@ -534,7 +540,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (DRDE) {
-		tpsf->DRDE(CSS,st);
+		tpsf->DRDE(d->getBody(),CSS,st);
 		tpsf->displayRecords();
 	}
 

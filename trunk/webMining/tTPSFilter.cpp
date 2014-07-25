@@ -18,13 +18,13 @@
  */
 
 #include <queue>
+#include <iostream>
+#include <set>
 #include "tTPSFilter.h"
 #include "misc.h"
 
-tTPSFilter::tTPSFilter(tDOM *d) {
-	count = pathCount = 0;
-	nodeSequence.clear();
-	dom = d;
+tTPSFilter::tTPSFilter() {
+	pathCount = count = 0;
 }
 
 tTPSFilter::~tTPSFilter() {
@@ -156,7 +156,7 @@ void tTPSFilter::buildTagPath(string s, tNode *n, bool print, bool css, bool fp)
 		buildTagPath(s,*i,print,css,fp);
 }
 
-map<long int, long int> tTPSFilter::tagPathSequenceFilter(bool css) {
+map<long int, long int> tTPSFilter::tagPathSequenceFilter(tNode *n, bool css) {
 	wstring originalTPS;
 	vector<tNode *> originalNodeSequence;
 	queue<pair<wstring,long int>> seqQueue;
@@ -165,7 +165,7 @@ map<long int, long int> tTPSFilter::tagPathSequenceFilter(bool css) {
 	size_t originalTPSsize;
 	long int sizeThreshold;
 
-	buildTagPath("",dom->getBody(),false,css,false);
+	buildTagPath("",n,false,css,false);
 	originalTPS = tagPathSequence;
 	originalNodeSequence = nodeSequence;
 	originalTPSsize = originalTPS.size();
@@ -224,7 +224,9 @@ map<long int, long int> tTPSFilter::tagPathSequenceFilter(bool css) {
 	return region;
 }
 
-void tTPSFilter::DRDE(bool css, float st) {
+void tTPSFilter::DRDE(tNode *n, bool css, float st) {
+	cerr << "entrou" << endl;
+
 	wstring originalTPS;
 	vector<tNode *> originalNodeSequence;
 	vector<unsigned int> recpos;
@@ -233,7 +235,7 @@ void tTPSFilter::DRDE(bool css, float st) {
 
 	dataRegions.clear();
 
-	region=tagPathSequenceFilter(css); // locate main content regions
+	region=tagPathSequenceFilter(n,css); // locate main content regions
 	originalTPS = tagPathSequence;
 	originalNodeSequence = nodeSequence;
 
@@ -340,6 +342,11 @@ vector<unsigned int> tTPSFilter::locateRecords(wstring s, float st) {
 	return recpos;
 }
 
+vector<tNode*> tTPSFilter::getRecord(int dr, int rec) {
+	vector<vector<tNode *> > table = dataRegions[dr];
+	return table[rec];
+}
+
 void tTPSFilter::onDataRecordFound(vector<wstring> &m, vector<unsigned int> &recpos) {
 	if ((m.size() == 0) || (recpos.size() == 0)) return;
 
@@ -355,5 +362,6 @@ void tTPSFilter::onDataRecordFound(vector<wstring> &m, vector<unsigned int> &rec
 		}
 	}
 
+	cout << rows << "x" << cols << endl;
 	dataRegions.push_back(table);
 }
