@@ -28,6 +28,8 @@
 #include <vector>
 #include "tnode.h"
 #include "tdataregion.h"
+#include "tMDR.h"
+#include "tTPSFilter.h"
 
 using namespace std;
 
@@ -47,6 +49,9 @@ public:
     void setVerbose(int);
 	//void LZExtraction();
 
+	tMDR mdr;
+	tTPSFilter tpsf;
+
 protected:
 	int treeMatch(tNode *, tNode *);
 	void searchTree(tNode *, tNode *, float);
@@ -54,8 +59,8 @@ protected:
 	int treeSize(tNode *);
 	int treeDepth(tNode *);
 
-	virtual void onTagFound(tNode *) = 0;
-	virtual void onPatternFound(tNode *, tNode *, float) = 0;
+	virtual void onTagFound(tNode *) {};//= 0;
+	virtual void onPatternFound(tNode *, tNode *, float) {};//= 0;
 
 	tNode *root,*body;
 	tNode *current;
