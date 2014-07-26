@@ -23,8 +23,7 @@
 #include "tTPSFilter.h"
 #include "misc.h"
 
-tTPSFilter::tTPSFilter() {
-	pathCount = count = 0;
+tTPSFilter::tTPSFilter() : count(0),pathCount(0) {
 }
 
 tTPSFilter::~tTPSFilter() {
@@ -342,9 +341,13 @@ vector<unsigned int> tTPSFilter::locateRecords(wstring s, float st) {
 	return recpos;
 }
 
-vector<tNode*> tTPSFilter::getRecord(int dr, int rec) {
-	vector<vector<tNode *> > table = dataRegions[dr];
-	return table[rec];
+vector<tNode*> tTPSFilter::getRecord(size_t dr, size_t rec) {
+	if (dr < dataRegions.size()) {
+		vector<vector<tNode *> > table = dataRegions[dr];
+		if (rec < table.size())
+			return table[rec];
+	}
+	return vector<tNode *>(0);
 }
 
 void tTPSFilter::onDataRecordFound(vector<wstring> &m, vector<unsigned int> &recpos) {
@@ -362,6 +365,5 @@ void tTPSFilter::onDataRecordFound(vector<wstring> &m, vector<unsigned int> &rec
 		}
 	}
 
-	cout << rows << "x" << cols << endl;
 	dataRegions.push_back(table);
 }

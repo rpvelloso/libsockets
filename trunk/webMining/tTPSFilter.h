@@ -34,7 +34,7 @@ public:
     void buildTagPath(string, tNode *, bool, bool, bool);
 	map<long int, long int> tagPathSequenceFilter(tNode *, bool);
 	void DRDE(tNode *, bool, float);
-	vector<tNode *> getRecord(int, int);
+	vector<tNode *> getRecord(size_t, size_t);
 protected:
 	long int searchRegion(wstring);
 	bool prune(tNode *);

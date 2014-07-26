@@ -14,7 +14,7 @@
 using namespace std;
 
 extern "C" {
-static int lua_api_loadDOM(lua_State *L) {
+static int lua_api_loadDOMTree(lua_State *L) {
 	int nargs = lua_gettop(L);
 	tlua *ctx;
 	tDOM *dom;
@@ -36,7 +36,6 @@ static int lua_api_loadDOM(lua_State *L) {
 				return 1;
 			}
 		}
-		return 0;
 	}
 	return 0;
 }
@@ -54,23 +53,28 @@ static int lua_api_DRDExtract(lua_State *L) {
 	return 0;
 }
 
-static int lua_api_DRDEGetRecord(lua_State *L) {
+static int lua_api_DRDEGetDataRegion(lua_State *L) {
 	int nargs = lua_gettop(L);
 
-	if (nargs == 3) {
-		if (lua_islightuserdata(L,-3) && lua_isnumber(L,-2) && lua_isnumber(L,-1)) {
-			tDOM *dom = (tDOM *)lua_touserdata(L,-3);
-			int dtr_no = lua_tonumber(L,-2);
-			int rec_no = lua_tonumber(L,-1);
-			vector<tNode *> rec = dom->tpsf.getRecord(dtr_no,rec_no);
-			cout << rec.size() << endl;
-			for (size_t i=0;i<rec.size();i++) {
-				if (rec[i])
+	if (nargs == 2) {
+		if (lua_islightuserdata(L,-2) && lua_isnumber(L,-1)) {
+			tDOM *dom = (tDOM *)lua_touserdata(L,-2);
+			size_t dtr_no = lua_tonumber(L,-1);
+			size_t rec_no=0;
+			vector<tNode *> rec;
+
+			lua_createtable(L,0,0);
+			while ((rec = dom->tpsf.getRecord(dtr_no,rec_no++)).size()) {
+				lua_pushnumber(L,rec_no);
+				lua_createtable(L,rec.size(),0);
+				for (size_t i=0;i<rec.size();i++) {
+					lua_pushnumber(L,i+1);
 					lua_pushlightuserdata(L,rec[i]);
-				else
-					lua_pushnil(L);
+					lua_settable(L,-3);
+				}
+				lua_settable(L,-3);
 			}
-			return rec.size();
+			return 1;
 		}
 	}
 	return 0;
@@ -83,10 +87,12 @@ static int lua_api_printField(lua_State *L) {
 		if (lua_islightuserdata(L,-1)) {
 			tNode *n = (tNode *)lua_touserdata(L,-1);
 
-			if ((n->getTagName() == "img") || (n->getTagName() == "a")) {
-				n->printNode(4,true);
-			} else if (n->getType() == 2)
-				cout << n->getText();
+			if (n) {
+				if ((n->getTagName() == "img") || (n->getTagName() == "a")) {
+					n->printNode(4,true);
+				} else if (n->getType() == 2)
+					cout << n->getText();
+			}
 		}
 	}
 	return 0;
@@ -108,13 +114,13 @@ tlua::tlua(const char *inp) {
 
 	if (!s) {
 		LUA_SET_GLOBAL_LUDATA(L,"CONTEXT",this);
-		LUA_SET_GLOBAL_CFUNC(L,"loadDOM",lua_api_loadDOM);
+		LUA_SET_GLOBAL_CFUNC(L,"loadDOMTree",lua_api_loadDOMTree);
 		LUA_SET_GLOBAL_CFUNC(L,"DRDExtract",lua_api_DRDExtract);
-		LUA_SET_GLOBAL_CFUNC(L,"DRDEGetRecord",lua_api_DRDEGetRecord);
+		LUA_SET_GLOBAL_CFUNC(L,"DRDEGetDataRegion",lua_api_DRDEGetDataRegion);
 		LUA_SET_GLOBAL_CFUNC(L,"printField",lua_api_printField);
 		s = lua_pcall(L, 0, LUA_MULTRET, 0);
 	} else {
-		cerr << "Lua error: %s\n",lua_tostring(L, -1);
+		cout << "Lua error: " << lua_tostring(L, -1) << endl;
 		lua_pop(L, 1);
 	}
 	lua_close(L);
