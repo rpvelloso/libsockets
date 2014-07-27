@@ -209,3 +209,46 @@ void tNode::printNode(int lvl, int verbose) {
 		}
 	}
 }
+
+string tNode::toString(int lvl, int verbose) {
+	string nstr="";
+
+	for (int j=1;j<lvl;j++) nstr.append(" ");
+	switch (this->type) {
+		case 0:
+			nstr.append("<"); break;
+		case 1:
+			nstr.append("</"); break;
+		case 2:
+			break;
+		case 3:
+			nstr.append("<!--"); break;
+		default: break;
+	}
+
+	if (this->type != -1) {
+		if (this->type < 2) nstr.append(this->tagName);
+		if (this->text.size() > 0) {
+			nstr.append(" "+(verbose?this->text:this->text.substr(0,MAX_TXT_SIZE)));
+			if (!verbose && (this->text.size() > MAX_TXT_SIZE)) nstr.append(" ...");
+		}
+		if (this->type == 3) nstr.append("--");
+		if (this->type != 2) {
+			if (!verbose) nstr.append(" ("+to_string(this->depth)+", "+to_string(this->size)+")");
+			nstr.append(">");
+		}
+		nstr.append(CRLF);
+	}
+
+	for (auto i = this->nodes.begin();i!=this->nodes.end();i++) nstr.append((*i)->toString(lvl+1,verbose));
+
+	// close current tag
+	if ((this->type != -1) && (singleTags.find(this->tagName) == singleTags.end())) {
+		if (this->type != 2) for (int j=1;j<lvl;j++) nstr.append(" ");
+		if (this->type == 3) nstr.append("-->" CRLF);
+		else if (this->type != 2) {
+			nstr.append("</"+this->tagName+">"+CRLF);
+		}
+	}
+	return nstr;
+}
