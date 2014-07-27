@@ -35,6 +35,7 @@ public:
 	map<long int, long int> tagPathSequenceFilter(tNode *, bool);
 	void DRDE(tNode *, bool, float);
 	vector<tNode *> getRecord(size_t, size_t);
+	const wstring& getTagPathSequence();
 protected:
 	long int searchRegion(wstring);
 	bool prune(tNode *);

@@ -129,6 +129,29 @@ static int lua_api_fieldToString(lua_State *L) {
 	return 0;
 }
 
+static int lua_api_DOMTPS(lua_State *L) {
+	int nargs = lua_gettop(L);
+
+	if (nargs == 1) {
+		if (lua_islightuserdata(L,-1)) {
+			tDOM *dom = (tDOM *)lua_touserdata(L,-1);
+
+			if (checkDOM(L,dom)) {
+				wstring tps = dom->tpsf.getTagPathSequence();
+
+				lua_createtable(L,tps.size(),0);
+				for (size_t i=0;i<tps.size();i++) {
+					lua_pushnumber(L,i+1);
+					lua_pushnumber(L,tps[i]);
+					lua_settable(L,-3);
+				}
+				return 1;
+			}
+		}
+	}
+	return 0;
+}
+
 }
 
 void tlua::insertDOM(tDOM *d) {
@@ -153,6 +176,7 @@ tlua::tlua(const char *inp) {
 		LUA_SET_GLOBAL_CFUNC(L,"DRDExtract",lua_api_DRDExtract);
 		LUA_SET_GLOBAL_CFUNC(L,"DRDEGetDataRegion",lua_api_DRDEGetDataRegion);
 		LUA_SET_GLOBAL_CFUNC(L,"fieldToString",lua_api_fieldToString);
+		LUA_SET_GLOBAL_CFUNC(L,"DOMTPS",lua_api_DOMTPS);
 		s = lua_pcall(L, 0, LUA_MULTRET, 0);
 	} else {
 		cout << "Lua error: " << lua_tostring(L, -1) << endl;
