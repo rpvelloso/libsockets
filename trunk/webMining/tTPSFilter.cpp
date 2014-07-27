@@ -29,6 +29,10 @@ tTPSFilter::tTPSFilter() : count(0),pathCount(0) {
 tTPSFilter::~tTPSFilter() {
 }
 
+const wstring& tTPSFilter::getTagPathSequence() {
+	return tagPathSequence;
+}
+
 bool tTPSFilter::prune(tNode *n) {
 	list<tNode *> remove;
 
@@ -274,6 +278,8 @@ void tTPSFilter::DRDE(tNode *n, bool css, float st) {
 		// and extracts them
 		if (m.size()) onDataRecordFound(m,recpos);
 	}
+	tagPathSequence = originalTPS;
+	nodeSequence = originalNodeSequence;
 }
 
 vector<unsigned int> tTPSFilter::locateRecords(wstring s, float st) {
