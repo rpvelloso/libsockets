@@ -26,6 +26,8 @@
 
 #define lowerCase(s) std::transform(s.begin(), s.end(), s.begin(), (int(*)(int))std::tolower)
 
+#define CRLF "\n"
+
 string &trim(string &);
 string stringTok(string &, string);
 
