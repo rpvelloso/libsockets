@@ -22,29 +22,29 @@
 
 #include <vector>
 #include <list>
+#include <deque>
 #include "tnode.h"
 #include "tdataregion.h"
+#include "tExtractInterface.h"
 
-class tMDR {
+class tMDR : public tExtractInterface {
 public:
 	tMDR();
 	virtual ~tMDR();
 
-	void mineDataRecords(tDOM *, int, float, int);
+	void mineDataRecords(tNode *, int, float, int);
 
 	static size_t STM(tNode *, tNode *, tNode *);
 protected:
 	list<tDataRegion> MDR(tNode *, int , float , int );
 	static void treeAlign(tNode *, tNode *, vector<vector<int> > &, tNode *);
 	static string getRegEx(tNode*, int, int = 0);
-	static list <tNode *> getRecord(tNode *, tNode *);
-	static void getAlignment(tNode *, tNode *, list<tNode *> &);
+	static vector<tNode *> getAlignedRecord(tNode *, tNode *);
+	static void getAlignment(tNode *, tNode *, vector<tNode *> &);
 	static vector<tNode *> partialTreeAlignment(tDataRegion dr);
 
 	virtual void onDataRegionFound(tDataRegion, int, float);
 	virtual void onDataRecordFound(tDataRegion);
-
-	list<vector<tNode *> > dataRegions;
 };
 
 #endif /* TMDR_H_ */

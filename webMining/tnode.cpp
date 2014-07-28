@@ -30,7 +30,7 @@ using namespace std;
 tNode::tNode(int tp, string tx) {
 	type = tp;
 	text = tx;
-	parent = seed = NULL;
+	parent = NULL;
 	if (type == 0 || type == 1) {
 		tagName = text.substr(0,text.find_first_of(" \r\n\t"));
 		lowerCase(tagName);
@@ -49,11 +49,9 @@ tNode::tNode(int tp, string tx) {
 }
 
 tNode::~tNode() {
-	if (seed != NULL) seed->nodes.remove(this);
-
+	//cout << this << " : " << nodes.size() << " : " << tagName << " : " << text << endl;
 	for (auto i=nodes.begin();i!=nodes.end();i++) {
-		if ((*i)->parent == this) delete (*i);
-		else if ((*i)->seed == this) (*i)->seed = NULL;
+		//if ((*i)->parent == this) delete (*i);
 	}
 	nodes.clear();
 	alignments.clear();
@@ -62,16 +60,14 @@ tNode::~tNode() {
 tNode *tNode::addNode(tNode *n) {
 	if (n) {
 		addNode(nodes.end(),n);
-		n->seed = NULL;
 	}
 	return n;
 };
 
 list<tNode *>::iterator tNode::addNode(list<tNode *>::iterator p, tNode *n) {
 	if (n) {
-		if (!n->parent) n->parent = this;
+		if (n->parent == NULL) n->parent = this;
 		size += n->size;
-		n->seed = this;
 		return nodes.insert(p,n);
 	}
 	return p;

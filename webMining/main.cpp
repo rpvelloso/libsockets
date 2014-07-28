@@ -172,7 +172,7 @@ public:
 		exit(0);
 	}
 
-	void displayRecords() {
+	/*void displayRecords() {
 		while (dataRegions.size()) {
 			vector<tNode *> recs = dataRegions.front();
 			dataRegions.pop_front();
@@ -250,7 +250,7 @@ public:
 					cout << "</table><br>" << endl;
 			}
 		}
-	}
+	}*/
 };
 
 class tCustomTPS : public tTPSFilter {
@@ -526,8 +526,8 @@ int main(int argc, char *argv[])
 		MDR->setVerbose(verbose);
 		MDR->setRecCountDisplay(recCountDisplay);
 		MDR->setXML(xml);
-		MDR->mineDataRecords(d,K,st,1);
-		MDR->displayRecords();
+		MDR->mineDataRecords(d->getBody(),K,st,1);
+		//MDR->displayRecords();
 		cerr << "Similarity threshold used: " << st << endl;
 	}
 

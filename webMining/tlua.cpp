@@ -50,6 +50,26 @@ static int lua_api_loadDOMTree(lua_State *L) {
 	return 0;
 }
 
+static int lua_api_unloadDOMTree(lua_State *L) {
+	int nargs = lua_gettop(L);
+	tlua *ctx;
+
+	if (nargs == 1) {
+		lua_getglobal(L,"context");
+		ctx = (tlua *)lua_touserdata(L,-1);
+		lua_pop(L,1);
+
+		if (lua_islightuserdata(L,-1)) {
+			tDOM *dom = (tDOM *)lua_touserdata(L,-1);
+			if (checkDOM(L,dom)) {
+				ctx->removeDOM(dom);
+				delete dom;
+			}
+		}
+	}
+	return 0;
+}
+
 static int lua_api_DRDExtract(lua_State *L) {
 	int nargs = lua_gettop(L);
 
@@ -65,26 +85,65 @@ static int lua_api_DRDExtract(lua_State *L) {
 	return 0;
 }
 
-static int lua_api_DRDEGetDataRegion(lua_State *L) {
+static int lua_api_MDRExtract(lua_State *L) {
 	int nargs = lua_gettop(L);
 
 	if (nargs == 2) {
 		if (lua_islightuserdata(L,-2) && lua_isnumber(L,-1)) {
 			tDOM *dom = (tDOM *)lua_touserdata(L,-2);
-
 			if (checkDOM(L,dom)) {
+				float st = lua_tonumber(L,-1);
+				dom->mdr.mineDataRecords(dom->getBody(),10,st,1);
+			}
+		}
+	}
+	return 0;
+}
+
+static int lua_api_GetDataRegion(lua_State *L) {
+	int nargs = lua_gettop(L);
+
+	if (nargs == 3) {
+		if (lua_islightuserdata(L,-3) && lua_isstring(L,-2) && lua_isnumber(L,-1)) {
+			tDOM *dom = (tDOM *)lua_touserdata(L,-3);
+			string methodstr = lua_tostring(L,-2);
+
+			if (checkDOM(L,dom) && ((methodstr == "mdr") || (methodstr == "drde"))) {
 				size_t dtr_no = lua_tonumber(L,-1);
 				size_t rec_no=0;
 				vector<tNode *> rec;
+				wstring tps = dom->tpsf.getTagPathSequence(dtr_no);
+				tExtractInterface *method;
 
+				if (methodstr == "mdr")
+					method = &(dom->mdr);
+				else
+					method = &(dom->tpsf);
+
+				// main table returned
 				lua_createtable(L,0,0);
+
+				// tps array of this data region
+				if (methodstr == "drde") {
+					lua_pushstring(L,"tps");
+					lua_createtable(L,tps.size(),0);
+					for (size_t i=0;i<tps.size();i++) {
+						lua_pushnumber(L,i+1);
+						lua_pushnumber(L,tps[i]);
+						lua_settable(L,-3);
+					}
+					lua_settable(L,-3);
+				}
+
+				// no. of cols of table "records"
 				lua_pushstring(L,"cols");
-				lua_pushnumber(L,dom->tpsf.getRecord(dtr_no,0).size());
+				lua_pushnumber(L,method->getRecord(dtr_no,0).size());
 				lua_settable(L,-3);
 
+				// bidimensional table containing the records
 				lua_pushstring(L,"records");
 				lua_createtable(L,0,0);
-				while ((rec = dom->tpsf.getRecord(dtr_no,rec_no++)).size()) {
+				while ((rec = method->getRecord(dtr_no,rec_no++)).size()) {
 					lua_pushnumber(L,rec_no);
 					lua_createtable(L,rec.size(),0);
 					for (size_t i=0;i<rec.size();i++) {
@@ -103,9 +162,12 @@ static int lua_api_DRDEGetDataRegion(lua_State *L) {
 					lua_settable(L,-3);
 				}
 				lua_settable(L,-3);
+
+				// no. of rows of table "records"
 				lua_pushstring(L,"rows");
 				lua_pushnumber(L,rec_no-1);
 				lua_settable(L,-3);
+
 				return 1;
 			}
 		}
@@ -137,7 +199,7 @@ static int lua_api_DOMTPS(lua_State *L) {
 			tDOM *dom = (tDOM *)lua_touserdata(L,-1);
 
 			if (checkDOM(L,dom)) {
-				wstring tps = dom->tpsf.getTagPathSequence();
+				wstring tps = dom->tpsf.getTagPathSequence(-1);
 
 				lua_createtable(L,tps.size(),0);
 				for (size_t i=0;i<tps.size();i++) {
@@ -159,6 +221,11 @@ void tlua::insertDOM(tDOM *d) {
 		dom_set.insert(d);
 }
 
+void tlua::removeDOM(tDOM *d) {
+	if (checkDOM(d))
+		dom_set.erase(d);
+}
+
 int tlua::checkDOM(tDOM *d) {
 	return dom_set.find(d) != dom_set.end();
 }
@@ -173,8 +240,10 @@ tlua::tlua(const char *inp) {
 	if (!s) {
 		LUA_SET_GLOBAL_LUDATA(L,"context",this);
 		LUA_SET_GLOBAL_CFUNC(L,"loadDOMTree",lua_api_loadDOMTree);
+		LUA_SET_GLOBAL_CFUNC(L,"unloadDOMTree",lua_api_unloadDOMTree);
 		LUA_SET_GLOBAL_CFUNC(L,"DRDExtract",lua_api_DRDExtract);
-		LUA_SET_GLOBAL_CFUNC(L,"DRDEGetDataRegion",lua_api_DRDEGetDataRegion);
+		LUA_SET_GLOBAL_CFUNC(L,"MDRExtract",lua_api_MDRExtract);
+		LUA_SET_GLOBAL_CFUNC(L,"GetDataRegion",lua_api_GetDataRegion);
 		LUA_SET_GLOBAL_CFUNC(L,"fieldToString",lua_api_fieldToString);
 		LUA_SET_GLOBAL_CFUNC(L,"DOMTPS",lua_api_DOMTPS);
 		s = lua_pcall(L, 0, LUA_MULTRET, 0);

@@ -146,8 +146,8 @@ string tMDR::getRegEx(tNode* seed, int reccount, int lvl) {
 	return trim(ret);
 }
 
-list <tNode *> tMDR::getRecord(tNode * seed, tNode *rec) {
-	list<tNode *> ret;
+vector<tNode *> tMDR::getAlignedRecord(tNode * seed, tNode *rec) {
+	vector<tNode *> ret;
 	size_t recsize=0;
 
 	getAlignment(seed,rec,ret);
@@ -156,22 +156,22 @@ list <tNode *> tMDR::getRecord(tNode * seed, tNode *rec) {
 	return ret;
 }
 
-void tMDR::getAlignment(tNode *seed, tNode *rec, list<tNode *> &attrs) {
+void tMDR::getAlignment(tNode *seed, tNode *tree, vector<tNode *> &record) {
 	for (auto i=seed->nodes.begin();i!=seed->nodes.end();i++) {
 		if ((*i)->nodes.size() == 0) {
-			if ((*i)->alignments.find(rec) != (*i)->alignments.end()) {
+			if ((*i)->alignments.find(tree) != (*i)->alignments.end()) {
 				tNode *n;
 
 				if ((*i)->nodes.size() == 0) {
-					if ((*i)->alignments[rec]->parent->tagName == "a")
-						n = (*i)->alignments[rec]->parent;
+					if ((*i)->alignments[tree]->parent->tagName == "a")
+						n = (*i)->alignments[tree]->parent;
 					else
-						n = (*i)->alignments[rec];
-					if (find(attrs.begin(),attrs.end(),n) == attrs.end())
-						attrs.push_back(n);
+						n = (*i)->alignments[tree];
+					if (find(record.begin(),record.end(),n) == record.end())
+						record.push_back(n);
 				}
-			} else attrs.push_back(NULL);
-		} else getAlignment(*i,rec,attrs);
+			} else record.push_back(NULL);
+		} else getAlignment(*i,tree,record);
 	}
 }
 
@@ -214,9 +214,9 @@ vector<tNode *> tMDR::partialTreeAlignment(tDataRegion dr) {
 	return trees;
 }
 
-void tMDR::mineDataRecords(tDOM* d, int k, float st, int mineRegions) {
+void tMDR::mineDataRecords(tNode* n, int k, float st, int mineRegions) {
 	dataRegions.clear();
-	MDR(d->getBody(),k,st,mineRegions);
+	MDR(n,k,st,mineRegions);
 }
 
 
@@ -387,8 +387,16 @@ void tMDR::onDataRegionFound(tDataRegion region, int K, float st) {
 }
 
 void tMDR::onDataRecordFound(tDataRegion dr) {
-	vector<tNode *> recs = tMDR::partialTreeAlignment(dr);
+	vector<tNode *> trees = tMDR::partialTreeAlignment(dr);
+	vector<vector<tNode *> > records;
 
-	if (recs.size())
-		dataRegions.push_back(recs);
+	for (size_t i=0;i<trees.size();i++) {
+		vector<tNode *> rec = tMDR::getAlignedRecord(trees[0],trees[i]);
+
+		if (rec.size())
+			records.push_back(rec);
+	}
+
+	if (records.size())
+		dataRegions.push_back(records);
 }

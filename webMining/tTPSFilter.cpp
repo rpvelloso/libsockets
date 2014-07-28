@@ -29,8 +29,17 @@ tTPSFilter::tTPSFilter() : count(0),pathCount(0) {
 tTPSFilter::~tTPSFilter() {
 }
 
-const wstring& tTPSFilter::getTagPathSequence() {
-	return tagPathSequence;
+const wstring& tTPSFilter::getTagPathSequence(int dr) {
+	if (dr < 0)
+		return tagPathSequence;
+	else {
+		size_t i = dr;
+
+		if (i < subSequences.size())
+			return subSequences[dr];
+		else
+			return tagPathSequence;
+	}
 }
 
 bool tTPSFilter::prune(tNode *n) {
@@ -237,6 +246,7 @@ void tTPSFilter::DRDE(tNode *n, bool css, float st) {
 	map<long int, long int> region;
 
 	dataRegions.clear();
+	subSequences.clear();
 
 	region=tagPathSequenceFilter(n,css); // locate main content regions
 	originalTPS = tagPathSequence;
@@ -347,15 +357,6 @@ vector<unsigned int> tTPSFilter::locateRecords(wstring s, float st) {
 	return recpos;
 }
 
-vector<tNode*> tTPSFilter::getRecord(size_t dr, size_t rec) {
-	if (dr < dataRegions.size()) {
-		vector<vector<tNode *> > table = dataRegions[dr];
-		if (rec < table.size())
-			return table[rec];
-	}
-	return vector<tNode *>(0);
-}
-
 void tTPSFilter::onDataRecordFound(vector<wstring> &m, vector<unsigned int> &recpos) {
 	if ((m.size() == 0) || (recpos.size() == 0)) return;
 
@@ -372,4 +373,5 @@ void tTPSFilter::onDataRecordFound(vector<wstring> &m, vector<unsigned int> &rec
 	}
 
 	dataRegions.push_back(table);
+	subSequences.push_back(tagPathSequence);
 }
