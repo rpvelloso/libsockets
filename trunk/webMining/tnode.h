@@ -58,7 +58,7 @@ protected:
 	void align(tNode *, tNode *);
 	list<tNode *> nodes;
 	map<tNode *,tNode *> alignments;
-	tNode *parent,*seed;
+	tNode *parent;
 	int type,size,depth,matches,aligned;
 	string text, tagName;
 };

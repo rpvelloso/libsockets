@@ -40,6 +40,7 @@ public:
 	tlua(const char *);
 	virtual ~tlua();
 	void insertDOM(tDOM *);
+	void removeDOM(tDOM *);
 	int checkDOM(tDOM *);
 protected:
 	set<tDOM *> dom_set;

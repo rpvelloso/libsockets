@@ -25,8 +25,9 @@
 #include <string>
 #include <deque>
 #include "tnode.h"
+#include "tExtractInterface.h"
 
-class tTPSFilter {
+class tTPSFilter : public tExtractInterface {
 public:
 	tTPSFilter();
 	virtual ~tTPSFilter();
@@ -34,8 +35,7 @@ public:
     void buildTagPath(string, tNode *, bool, bool, bool);
 	map<long int, long int> tagPathSequenceFilter(tNode *, bool);
 	void DRDE(tNode *, bool, float);
-	vector<tNode *> getRecord(size_t, size_t);
-	const wstring& getTagPathSequence();
+	const wstring& getTagPathSequence(int = -1);
 protected:
 	long int searchRegion(wstring);
 	bool prune(tNode *);
@@ -48,7 +48,7 @@ protected:
 	vector<tNode *> nodeSequence;
 	int count=0,pathCount=0;
 
-	deque<vector<vector<tNode *> > > dataRegions;
+	vector<wstring> subSequences;
 };
 
 #endif /* TTPSFILTER_H_ */

@@ -95,7 +95,8 @@ tDOM::tDOM() {
 };
 
 tDOM::~tDOM() {
-	delete root;
+	if (root)
+		delete root;
 };
 
 int tDOM::searchTag(string tag, string text) {
@@ -217,6 +218,7 @@ int tDOM::scan(istream &htmlInput) {
 	if (root) {
 		delete root;
 		root = current = new tNode(-1,"");
+		//root->parent = root;
 		count = 0;
 	}
 
