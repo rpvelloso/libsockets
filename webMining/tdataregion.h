@@ -39,7 +39,7 @@ public:
 	size_t groupSize; // group size
 	size_t DRLength;
 	size_t start;
-	size_t end;
+	int end;
 };
 
 #endif /* TDATAREGION_H_ */

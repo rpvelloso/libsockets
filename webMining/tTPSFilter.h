@@ -26,6 +26,15 @@
 #include <deque>
 #include "tnode.h"
 #include "tExtractInterface.h"
+#include "misc.h"
+
+struct tTPSRegion {
+	long int len,pos;
+	wstring tps;
+	int rec_idx;
+	tLinearCoeff lc;
+};
+
 
 class tTPSFilter : public tExtractInterface {
 public:
@@ -33,22 +42,26 @@ public:
 	virtual ~tTPSFilter();
 
     void buildTagPath(string, tNode *, bool, bool, bool);
-	map<long int, long int> tagPathSequenceFilter(tNode *, bool);
+	map<long int, tTPSRegion> tagPathSequenceFilter(tNode *, bool);
 	void DRDE(tNode *, bool, float);
 	const wstring& getTagPathSequence(int = -1);
+	tTPSRegion *getRegion(size_t);
+	virtual size_t getRegionCount();
+	virtual vector<tNode*> getRecord(size_t, size_t);
 protected:
 	long int searchRegion(wstring);
 	bool prune(tNode *);
 	vector<unsigned int> locateRecords(wstring, float);
 
-	virtual void onDataRecordFound(vector<wstring> &, vector<unsigned int> &);
+	virtual int onDataRecordFound(vector<wstring> &, vector<unsigned int> &);
 
 	map<string, int> tagPathMap;
 	wstring tagPathSequence;
 	vector<tNode *> nodeSequence;
 	int count=0,pathCount=0;
 
-	vector<wstring> subSequences;
+	map<long int, tTPSRegion> _regions;
+	vector<tTPSRegion> regions;
 };
 
 #endif /* TTPSFILTER_H_ */

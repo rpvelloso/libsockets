@@ -17,7 +17,8 @@ public:
 	tExtractInterface();
 	virtual ~tExtractInterface();
 
-	virtual vector<tNode *> getRecord(size_t, size_t);
+	virtual vector<tNode *> getRecord(size_t, size_t) = 0;
+	virtual size_t getRegionCount() = 0;
 protected:
 	deque<vector<vector<tNode *> > > dataRegions;
 };

@@ -28,7 +28,7 @@ tMDR::tMDR() {
 tMDR::~tMDR() {
 }
 
-size_t tMDR::STM(tNode *a, tNode *b, tNode *record)
+int tMDR::STM(tNode *a, tNode *b, tNode *record)
 {
 	if (!a->compare(b)) return 0;
 	else {
@@ -148,7 +148,7 @@ string tMDR::getRegEx(tNode* seed, int reccount, int lvl) {
 
 vector<tNode *> tMDR::getAlignedRecord(tNode * seed, tNode *rec) {
 	vector<tNode *> ret;
-	size_t recsize=0;
+	int recsize=0;
 
 	getAlignment(seed,rec,ret);
 	for (auto i=ret.begin();i!=ret.end();i++) recsize += ((*i)!=NULL);
@@ -399,4 +399,17 @@ void tMDR::onDataRecordFound(tDataRegion dr) {
 
 	if (records.size())
 		dataRegions.push_back(records);
+}
+
+size_t tMDR::getRegionCount() {
+	return dataRegions.size();
+}
+
+vector<tNode*> tMDR::getRecord(size_t dr, size_t rec) {
+	if (dr < dataRegions.size()) {
+		vector<vector<tNode *> > table = dataRegions[dr];
+		if (rec < table.size())
+			return table[rec];
+	}
+	return vector<tNode *>(0);
 }

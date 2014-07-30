@@ -34,7 +34,9 @@ public:
 
 	void mineDataRecords(tNode *, int, float, int);
 
-	static size_t STM(tNode *, tNode *, tNode *);
+	static int STM(tNode *, tNode *, tNode *);
+	virtual size_t getRegionCount();
+	virtual vector<tNode*> getRecord(size_t, size_t);
 protected:
 	list<tDataRegion> MDR(tNode *, int , float , int );
 	static void treeAlign(tNode *, tNode *, vector<vector<int> > &, tNode *);
