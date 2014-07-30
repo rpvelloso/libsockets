@@ -267,15 +267,15 @@ public:
 	void displayRecords() {
 		while (dataRegions.size()) {
 			vector<vector<tNode *> > table = dataRegions.front();
-			size_t rows=table.size(),cols=table[0].size();
-			size_t recsize = cols;
+			int rows=table.size(),cols=table[0].size();
+			int recsize = cols;
 			bool printField[cols];
 
 			dataRegions.pop_front();
 
-			for (size_t j=0;j<cols;j++) {
+			for (int j=0;j<cols;j++) {
 				printField[j]=false;
-				for (size_t i=0;i<rows;i++) {
+				for (int i=0;i<rows;i++) {
 					if (table[i][j]) {
 						if ((table[i][j]->tagName == "a") ||
 							(table[i][j]->tagName == "img") ||
@@ -298,14 +298,14 @@ public:
 				cout << "<tr><th>#</th><th>Record size:" << recsize << "</th><th>Record count: " << rows << "</th><th colspan=" << cols - 2 << "></th>";
 			}
 
-			for (size_t i=0;i<rows;i++) {
+			for (int i=0;i<rows;i++) {
 
 				if (xml) {
 					cout << "  <record number=\"" << i+1 << "\">" << endl;
 				} else
 					cout << "<tr><th> #" << i+1 << "</th>";
 
-				for (size_t j=0;j<cols;j++) {
+				for (int j=0;j<cols;j++) {
 
 					if (!printField[j]) {
 						continue;

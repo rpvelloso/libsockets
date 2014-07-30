@@ -100,7 +100,25 @@ static int lua_api_MDRExtract(lua_State *L) {
 	return 0;
 }
 
-static int lua_api_GetDataRegion(lua_State *L) {
+static int lua_api_getRegionCount(lua_State *L) {
+	int nargs = lua_gettop(L);
+
+	if (nargs == 2) {
+		tDOM *dom = (tDOM *)lua_touserdata(L,-2);
+		string methodstr = lua_tostring(L,-1);
+		tExtractInterface *method;
+
+		if (methodstr == "drde")
+			method = &(dom->tpsf);
+		else
+			method = &(dom->mdr);
+		lua_pushnumber(L,method->getRegionCount());
+		return 1;
+	}
+	return 0;
+}
+
+static int lua_api_getDataRegion(lua_State *L) {
 	int nargs = lua_gettop(L);
 
 	if (nargs == 3) {
@@ -109,11 +127,11 @@ static int lua_api_GetDataRegion(lua_State *L) {
 			string methodstr = lua_tostring(L,-2);
 
 			if (checkDOM(L,dom) && ((methodstr == "mdr") || (methodstr == "drde"))) {
-				size_t dtr_no = lua_tonumber(L,-1);
-				size_t rec_no=0;
+				int dtr_no = lua_tonumber(L,-1);
+				int rec_no=0;
 				vector<tNode *> rec;
-				wstring tps = dom->tpsf.getTagPathSequence(dtr_no);
 				tExtractInterface *method;
+				tTPSRegion *tpsreg;
 
 				if (methodstr == "mdr")
 					method = &(dom->mdr);
@@ -123,16 +141,29 @@ static int lua_api_GetDataRegion(lua_State *L) {
 				// main table returned
 				lua_createtable(L,0,0);
 
-				// tps array of this data region
+				// tps data of this data region
 				if (methodstr == "drde") {
-					lua_pushstring(L,"tps");
-					lua_createtable(L,tps.size(),0);
-					for (size_t i=0;i<tps.size();i++) {
-						lua_pushnumber(L,i+1);
-						lua_pushnumber(L,tps[i]);
+					tpsreg = dom->tpsf.getRegion(dtr_no);
+					if (tpsreg && tpsreg->tps.size()) {
+						lua_pushstring(L,"tps");
+						lua_createtable(L,tpsreg->tps.size(),0);
+						for (size_t i=0;i<tpsreg->tps.size();i++) {
+							lua_pushnumber(L,i+1);
+							lua_pushnumber(L,tpsreg->tps[i]);
+							lua_settable(L,-3);
+						}
+						lua_settable(L,-3);
+
+						lua_pushstring(L,"a");
+						lua_pushnumber(L,tpsreg->lc.a);
+						lua_settable(L,-3);
+						lua_pushstring(L,"b");
+						lua_pushnumber(L,tpsreg->lc.b);
+						lua_settable(L,-3);
+						lua_pushstring(L,"e");
+						lua_pushnumber(L,tpsreg->lc.e);
 						lua_settable(L,-3);
 					}
-					lua_settable(L,-3);
 				}
 
 				// no. of cols of table "records"
@@ -222,8 +253,10 @@ void tlua::insertDOM(tDOM *d) {
 }
 
 void tlua::removeDOM(tDOM *d) {
-	if (checkDOM(d))
+	if (checkDOM(d)) {
 		dom_set.erase(d);
+		delete d;
+	}
 }
 
 int tlua::checkDOM(tDOM *d) {
@@ -243,7 +276,8 @@ tlua::tlua(const char *inp) {
 		LUA_SET_GLOBAL_CFUNC(L,"unloadDOMTree",lua_api_unloadDOMTree);
 		LUA_SET_GLOBAL_CFUNC(L,"DRDExtract",lua_api_DRDExtract);
 		LUA_SET_GLOBAL_CFUNC(L,"MDRExtract",lua_api_MDRExtract);
-		LUA_SET_GLOBAL_CFUNC(L,"GetDataRegion",lua_api_GetDataRegion);
+		LUA_SET_GLOBAL_CFUNC(L,"getDataRegion",lua_api_getDataRegion);
+		LUA_SET_GLOBAL_CFUNC(L,"getRegionCount",lua_api_getRegionCount);
 		LUA_SET_GLOBAL_CFUNC(L,"fieldToString",lua_api_fieldToString);
 		LUA_SET_GLOBAL_CFUNC(L,"DOMTPS",lua_api_DOMTPS);
 		s = lua_pcall(L, 0, LUA_MULTRET, 0);

@@ -64,7 +64,7 @@ protected:
 
 	tNode *root,*body;
 	tNode *current;
-	size_t count;
+	int count;
 	int verbose;
 	string ignoring;
 	int formOpen;
