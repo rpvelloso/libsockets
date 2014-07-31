@@ -265,7 +265,7 @@ public:
 	void setXML(int x) {xml=x;};
 
 	void displayRecords() {
-		while (dataRegions.size()) {
+	/*	while (dataRegions.size()) {
 			vector<vector<tNode *> > table = dataRegions.front();
 			int rows=table.size(),cols=table[0].size();
 			int recsize = cols;
@@ -323,8 +323,8 @@ public:
 							n->printNode(4,verbose);
 						} else if (n->type == 2) {
 							cout << n->text;
-						/*} else if (n->nodes.size() == 0) {
-							cout << n->tagName << " " << n->text;*/
+						//} else if (n->nodes.size() == 0) {
+						//	cout << n->tagName << " " << n->text;
 						}
 					}
 
@@ -346,7 +346,7 @@ public:
 
 			g++;
 			r+=rows;
-		}
+		}*/
 	}
 protected:
 	int xml=0,r,g,verbose;
