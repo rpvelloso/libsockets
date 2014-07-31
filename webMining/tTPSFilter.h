@@ -31,8 +31,8 @@
 struct tTPSRegion {
 	long int len,pos;
 	wstring tps;
-	int rec_idx;
 	tLinearCoeff lc;
+	vector<vector<tNode *> > records;
 };
 
 
@@ -53,7 +53,7 @@ protected:
 	bool prune(tNode *);
 	vector<unsigned int> locateRecords(wstring, float);
 
-	virtual int onDataRecordFound(vector<wstring> &, vector<unsigned int> &);
+	virtual void onDataRecordFound(vector<wstring> &, vector<unsigned int> &, tTPSRegion *);
 
 	map<string, int> tagPathMap;
 	wstring tagPathSequence;

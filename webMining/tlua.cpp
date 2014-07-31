@@ -163,6 +163,9 @@ static int lua_api_getDataRegion(lua_State *L) {
 						lua_pushstring(L,"e");
 						lua_pushnumber(L,tpsreg->lc.e);
 						lua_settable(L,-3);
+						lua_pushstring(L,"pos");
+						lua_pushnumber(L,tpsreg->pos);
+						lua_settable(L,-3);
 					}
 				}
 

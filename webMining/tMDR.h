@@ -47,6 +47,8 @@ protected:
 
 	virtual void onDataRegionFound(tDataRegion, int, float);
 	virtual void onDataRecordFound(tDataRegion);
+
+	deque<vector<vector<tNode *> > > dataRegions;
 };
 
 #endif /* TMDR_H_ */
