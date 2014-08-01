@@ -56,7 +56,7 @@ string to_string(T val) {
 
 template <class T>
 unsigned int edit_distance( T &s1,  T &s2, bool align, vector<unsigned int> *spaces) {
-	const int len1 = s1.size(), len2 = s2.size();
+	const size_t len1 = s1.size(), len2 = s2.size();
 	vector<vector<unsigned int> > d(len1 + 1, vector<unsigned int>(len2 + 1));
 
 	d[0][0] = 0;
@@ -123,15 +123,15 @@ void centerStar(vector<T> &M) {
 	}
 
 	// align
-	for (int i=0; i<M.size();i++) {
+	for (size_t i=0; i<M.size();i++) {
 		if (i!=center) {
 			vector<unsigned int> spaces;
 
 			edit_distance(M[center],M[i],true,&spaces);
 			if (spaces.size()) {
-				for (int j=i;j>0;j--) {
+				for (size_t j=i;j>0;j--) {
 					if ((j-1)!=center) {
-						for (int k=0;k<spaces.size();k++) {
+						for (size_t k=0;k<spaces.size();k++) {
 							M[j-1].insert(spaces[k],SPACE);
 						}
 					}
@@ -140,8 +140,8 @@ void centerStar(vector<T> &M) {
 		}
 	}
 
-	for (int i=0;i<M.size();i++) {
-		for (int j=0;j<M[i].size();j++)
+	for (size_t i=0;i<M.size();i++) {
+		for (size_t j=0;j<M[i].size();j++)
 			cerr << M[i][j] << ";";
 		cerr << endl;
 	}
