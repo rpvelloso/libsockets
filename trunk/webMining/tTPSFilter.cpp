@@ -213,7 +213,7 @@ map<long int, tTPSRegion> tTPSFilter::tagPathSequenceFilter(tNode *n, bool css) 
 
 	if (_regions.size()) {
 		auto r=_regions.begin();
-		if ((*r).first > 0) {
+		if ((*r).first > sizeThreshold) {
 			_regions[0].len = (*r).first;
 			_regions[0].tps = originalTPS.substr(0,(*r).first);
 		}
