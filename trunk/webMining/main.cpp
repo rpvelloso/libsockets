@@ -473,6 +473,12 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	if (outp != "") {
+		outputFile.open(outp.c_str(),ios_base::out|ios_base::binary);
+
+		if (!errno) cout.rdbuf(&outputFile);
+	}
+
 	if (inp != "") {
 
 		delete (new tlua(inp.c_str()));
@@ -489,12 +495,6 @@ int main(int argc, char *argv[])
 		}
 	} else {
 		d->scan(cin);
-	}
-
-	if (outp != "") {
-		outputFile.open(outp.c_str(),ios_base::out|ios_base::binary);
-
-		if (!errno) cout.rdbuf(&outputFile);
 	}
 
 	if (mineForms) {
