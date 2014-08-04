@@ -51,7 +51,7 @@ tNode::tNode(int tp, string tx) {
 tNode::~tNode() {
 	//cout << this << " : " << nodes.size() << " : " << tagName << " : " << text << endl;
 	for (auto i=nodes.begin();i!=nodes.end();i++) {
-		//if ((*i)->parent == this) delete (*i);
+		if ((*i)->parent == this) delete (*i);
 	}
 	nodes.clear();
 	alignments.clear();
