@@ -245,9 +245,7 @@ existentes sobre segmentação e remoção de ruído, que atuam sobre o texto, são
 direcionados para este tipo de aplicação, cujo objetivo principal é identificar
 o ``assunto'' da página.
 
-\begin{itemize}
-
-\item Em \citeonline{Densiometric08} a página é modelada como uma seqüência de
+Em \citeonline{Densiometric08} a página é modelada como uma seqüência de
 blocos de texto delimitados por $tags$ de abertura e fechamento (chamados de
 $gaps$), os blocos de texto são analisados segundo sua densidade textual e os
 blocos contíguos, com aproximadamente a mesma densidade, são agrupados para
@@ -261,7 +259,7 @@ um tamanho arbitrário de 80 caracteres.
 p(b_x) = \frac{n_{tokens_x}}{n_{lines_x}}
 \end{equation}
 
-\item Em \citeonline{Boilerplate10}, a mesma medida de densidade textual
+Em \citeonline{Boilerplate10}, a mesma medida de densidade textual
 proposta em \citeonline{Densiometric08} (Fórmula \ref{eq:dt}) é utilizada, porém
 uma série de outras características são agregadas ao problema como: o tamanho das
 palavras, tamanho das sentenças, número de palavras e a densidade de $links$,
@@ -269,7 +267,7 @@ além de um conjunto de regras bem específicas para tratar textos e $tags$ do
 documento. Estas outras informações agregadas são utilizadas para gerar uma
 árvore de decisão utilizada para identificar o conteúdo principal do documento.
 	
-\item Em \citeonline{CETR10} é mencionada a desvantagem de se utilizar regras
+Em \citeonline{CETR10} é mencionada a desvantagem de se utilizar regras
 vinculadas a $tags$ HTML específicas, o que pode invalidar uma abordagem no caso
 de uma eventual mudança na sintaxe HTML ou nas práticas de desenvolvimento
 atuais. Neste trabalho, em cada linha do código fonte HTML do documento, é
@@ -279,7 +277,6 @@ código fonte do documento. O histograma resultante é suavizado com uma curva
 gaussiana e a região com o conteúdo principal (com taxa de $tags$ elevada) é
 identificada por $clustering$ ou pela escolha de um limiar. No caso da
 identificação por limiar, este tem que ser encontrado por experimentação.
-\end{itemize}
 		
 
 \section{Propostas baseadas na árvore DOM}\label{sec:dom} 
@@ -289,9 +286,7 @@ segmentação é realizada utilizando a árvore DOM da página, portanto estas
 técnicas levam em consideração a estrutura da página $web$ e, conseqüentemente,
 podem ser aplicadas no contexto de extração estruturada.
 
-\begin{itemize}
-
-\item Em \citeonline{Noisy03} é construída uma árvore de estilos (com base
+Em \citeonline{Noisy03} é construída uma árvore de estilos (com base
 nas definições \abreviatura{CSS}{cascade style sheet}CSS) para um determinado
 $site$, a partir de várias amostras de suas páginas, para determinar o que seria
 ruído e o que seria conteúdo nas páginas deste $site$, especificamente. Após a
@@ -299,7 +294,7 @@ construção da árvore de estilos do $site$ o ruído é determinado com base na
 seguinte observação feita pelos autores: os blocos de ruído possuem formatação e
 conteúdo semelhantes, enquanto que o conteúdo é diverso e possui formatação diversa.
 
-\item Em \citeonline{Graph08} o problema de segmentar uma página é modelado como
+Em \citeonline{Graph08} o problema de segmentar uma página é modelado como
 um problema de minimização de energia em cima de um grafo ponderado construído a
 partir de amostras de páginas anotadas manualmente com relação à sua
 segmentação. Os nós da árvore DOM são os nós do grafo e os pesos das arestas
@@ -310,7 +305,7 @@ característica é determinado a partir do conjunto de treinamento. Apenas a
 questão da segmentação é abordada, sem a preocupação em identificar quais partes
 da página contém conteúdo relevante e quais contém ruído.
 
-\item Em \citeonline{Entropy09}, uma árvore ``visual'' é gerada a partir da
+Em \citeonline{Entropy09}, uma árvore ``visual'' é gerada a partir da
 árvore DOM, redefinindo a árvore original com o auxílio de um dicionário de
 $tags$ pré-definido que indica quais $tags$ são relevantes na estrutura do
 documento. Cada nó da árvore visual tem sua entropia calculada com relação ao
@@ -323,7 +318,7 @@ a um limiar estipulado e cada bloco da página é, então, classificado como: CB
 (\textit{functional block}) ou IB (\textit{informative block} (conteúdo
 relevante).
 
-\item Em \citeonline{SiteOriented11} é adotada uma abordagem orientada a $site$,
+Em \citeonline{SiteOriented11} é adotada uma abordagem orientada a $site$,
 assim como \citeonline{Noisy03}, onde um conjunto de árvores DOM de páginas de
 um mesmo $site$ são alinhadas para identificar os segmentos de uma página a
 partir das semelhanças entre elas. O resultado do alinhamento é, então,
@@ -334,7 +329,7 @@ trabalho apenas segmenta a página, sem identificar quais blocos/segmentos seriam
 ruído ou conteúdo. Apesar de necessitar de treinamento, este é realizado de
 maneira não supervisionada.
 
-\item Em \citeonline{Entropy12} é utilizada uma base de dados de termos
+Em \citeonline{Entropy12} é utilizada uma base de dados de termos
 associados a ``papéis semânticos'' para encontrar, na árvore DOM, os nós folha
 que desempenham estes papéis, atribuindo, a cada um, uma medida de ``entropia
 semântica-estrutural'' de acordo como papel desempenhado por aquele nó folha.
@@ -349,7 +344,7 @@ H_n = \sum_{i=1}^m p_ilog(p_i)
 \end{equation}
 
 
-\item Em \citeonline{desc2013} de forma semelhante à \citeonline{Boilerplate10},
+Em \citeonline{desc2013} de forma semelhante à \citeonline{Boilerplate10},
 são utilizadas as densidades de texto e de $links$, porém, neste trabalho, o
 documento é tratado como uma árvore DOM e não como uma seqüência de blocos. Além
 destas informações (densidade e texto e $links$), são utilizados os dados dos
@@ -359,8 +354,6 @@ treinamento para uma árvore de decisão gerada com o algoritmo C4.5
 quais nós da árvore DOM são ruído e quais são conteúdo relevante na resposta à
 submissão de um formulário.
 
-\end{itemize}
-	
 \section{Propostas baseadas em informação visual}\label{sec:vis}
 Além das técnicas baseadas no texto e na árvore DOM da página, existem também
 algumas que utilizam informação visual, como
@@ -375,9 +368,7 @@ esta finalidade. Em \citeonline{Densiometric08}, é mencionada a desvantagem
 destas abordagens visuais, devido a grande complexidade computacional das
 mesmas, pois precisam renderizar a página para obter as informações de $layout$.
 
-\begin{itemize}
-
-\item Em \citeonline{vips03} é utilizado um renderizador de um navegador $web$
+Em \citeonline{vips03} é utilizado um renderizador de um navegador $web$
 para obter informação visual (principalmente coordenadas e formatação) de uma
 página e, assim, construir uma estrutura de árvore que representa a hierarquia
 dos blocos visuais do documento. Além da informação visual, também é utilizado
@@ -387,7 +378,7 @@ visuais. Neste trabalho, assim como em \citeonline{Graph08}, não há preocupação
 em identificar quais blocos visuais da página contém conteúdo relevante e quais
 contém ruído.
 
-\item Em \citeonline{viper05} é proposta uma técnica de extração estruturada,
+Em \citeonline{viper05} é proposta uma técnica de extração estruturada,
 com identificação do conteúdo/ruído que utiliza o renderizador de um navegador
 $web$ para corrigir (no caso de HTML mal formado) e processar o HTML e para
 obter as informações visuais necessárias ao algoritmo.
@@ -401,7 +392,7 @@ de padrões dos registros, é o tratamento de repetições consecutivas
 Esta abordagem identificada o ruído apenas após a etapa de extração, sem evitar
 o custo computacional de procurar por padrões no ruído.
 
-\item Em \citeonline{BlockImp07}, é utilizada a abordagem de \citeonline{vips03}
+Em \citeonline{BlockImp07}, é utilizada a abordagem de \citeonline{vips03}
 para segmentar a página em blocos. Um conjunto de páginas são analisadas e suas
 estruturas são comparadas para verificar se são equivalentes. Páginas com
 estruturas equivalentes são então analisadas com respeito às informações
@@ -410,7 +401,7 @@ importância é atribuído a cada bloco. Apesar de necessitar de um conjunto de
 páginas para treinamento, toda a análise do conjunto é realizada de forma não
 supervisionada.
 
-\item Em \citeonline{vide10} é proposta uma abordagem para extração estruturada
+Em \citeonline{vide10} é proposta uma abordagem para extração estruturada
 que, assim como no trabalho de \citeonline{BlockImp07}, se baseia em
 \citeonline{vips03} para criar a representação visual do documento e, então,
 utilizar as características visuais das páginas da $web$ oculta para localizar e
@@ -419,27 +410,6 @@ utilizadas para identificação do conteúdo principal são:
 posição (centralização horizontal), tamanho (conteúdo relevante é maior que
 demais blocos), $layout$ (registros possuem arranjos semelhantes), semelhança
 visual (registros possuem formatação semelhante).
-
-\end{itemize}
-
-
-\section{Representação TPS}
-A representação da página $web$ utilizada nesta pesquisa (seqüência de $tag$
-$paths$) foi anteriormente empregada em \citeonline{TPC09} e
-\citeonline{SuffixTree12}, embora em ambos os casos para a extração e não para
-segmentação e remoção de ruído. Estes dois trabalhos são citados aqui apenas
-para ilustrar que, de acordo com seus resultados, esta representação, assim como
-a árvore DOM, também é capaz de expor a estrutura da página $web$ e, portanto,
-serve para os propósitos desta pesquisa.
-A Figura \ref{fig:ex1} ilustra como o código HTML de uma página $web$ é
-convertido para representação de $tag$ $paths$.
-
-\begin{figure}[h]
-  \centering
-     \includegraphics[scale=0.51]{example1-pt.jpg}
-  \caption{Exemplo de uma seqüência de $tag$ $paths$ construída a partir do código HTML.}
-  \label{fig:ex1}
-\end{figure}
 
 \section{Análise Comparativa dos Trabalhos}\label{sec:tbcomp}
 Na Tabela \ref{table:comp} é feito um comparativo entre as técnicas que foram
@@ -462,33 +432,34 @@ são comparadas com relação às seguintes características:
 \begin{tiny}
 \caption{Comparativo entre técnicas de segmentação de página}
 \label{table:comp}
-\begin{tabular}{p{0.1cm}|p{3cm} p{0.5cm} p{0.5cm} p{1cm} p{1cm} p{1cm}}
-\hline\hline
+\begin{tabular}{p{0.1cm}|p{3cm} p{0.5cm} p{0.5cm} p{0.5cm} p{1cm} p{0.5cm}
+p{1cm}} \hline\hline
 \# 
 &Técnica   
-& Entrada
-& Única página   
-& Treinamento     
-& Informação a priori 
-& Independe HTML \\
+&Entrada
+&Única página   
+&Treina-mento     
+&Informação a priori 
+&Indep. HTML 
+&Abordagem \\
 \hline
-1 & \citeonline{Densiometric08} & Texto & - & - & - & - \\
-2 & \citeonline{Boilerplate10} & Texto & - & - & - & - \\
-3 & \citeonline{CETR10} & Texto & - & - & - & - \\
+1 & \citeonline{Densiometric08} & Texto & - & - & - & - & Densid. Textual\\
+2 & \citeonline{Boilerplate10} & Texto & - & - & - & - & Decision tree\\
+3 & \citeonline{CETR10} & Texto & - & - & - & - & Clustering e limiar\\
 %- & \citeonline{NonTemplate13} & Texto & - & - & - & - \\
-4 & \citeonline{Noisy03} & DOM & Não & Sim & Não & Sim \\
+4 & \citeonline{Noisy03} & DOM & Não & Sim & Não & Sim & Heurística\\
 %11 & \citeonline{Jointop07} & DOM & Não & Sim & Não & Sim \\
-5 & \citeonline{Graph08} & DOM & Não & Sim & Não & Sim \\
-6 & \citeonline{Entropy09} & DOM & Sim & Não & Sim & Não \\
-7 & \citeonline{SiteOriented11} & DOM & Não & Sim & Não & Sim \\
-8 & \citeonline{Entropy12} & DOM & Sim & Não & Sim & Sim \\
-9 & \citeonline{desc2013} & DOM & Não & Sim & Não & Sim \\
-10 & \citeonline{vips03} & Visual & Sim & Não & Sim & Não \\
-11 & \citeonline{viper05} & Visual & Sim & Não & Não & Sim \\
-12 & \citeonline{BlockImp07} & Visual & Não & Sim & Não & Não \\
-13 & \citeonline{vide10} & Visual & Sim & Não & Sim & Não \\
+5 & \citeonline{Graph08} & DOM & Não & Sim & Não & Sim & Grafos \\
+6 & \citeonline{Entropy09} & DOM & Sim & Não & Sim & Não & Entropia\\
+7 & \citeonline{SiteOriented11} & DOM & Não & Sim & Não & Sim & Heurística\\
+8 & \citeonline{Entropy12} & DOM & Sim & Não & Sim & Sim & Entropia Semântica\\
+9 & \citeonline{desc2013} & DOM & Não & Sim & Não & Sim & Decision tree\\
+10 & \citeonline{vips03} & Visual & Sim & Não & Sim & Não & Conjunto de regras\\
+11 & \citeonline{viper05} & Visual & Sim & Não & Não & Sim & Distância \\
+12 & \citeonline{BlockImp07} & Visual & Não & Sim & Não & Não & Estatística\\
+13 & \citeonline{vide10} & Visual & Sim & Não & Sim & Não & \\
 \hline
-14 & \citeonline{TPS2013} & TPS & Sim & Não & Não & Sim \\
+14 & \citeonline{TPS2013} & TPS & Sim & Não & Não & Sim & \\
 \end{tabular}
 \end{tiny}
 \end{table}
@@ -507,12 +478,31 @@ de submeter a página à extração.
 
 \chapter{Algoritmo para remoção de ruído}\label{ch:met}
 
-Neste capítulo são apresentadas, primeiro, na Seção \ref{sec:def}, as definições
-necessárias para formular o problema. Na Seção \ref{sec:probform} o
-problema é enunciado a partir das definições e das hipóteses levantadas. Na
-Seção \ref{sec:alg} são apresentados os algoritmos desenvolvidos a partir do
-enunciado do problema e na Seção \ref{sec:compl} é feita a análise da
-complexidade destes algoritmos.
+Neste capítulo é apresentada, primeiro, na Seção \ref{sec:reptps}, a forma de
+representação dos documentos HTML utilizada neste trabalho (TPS). Na Seção
+\ref{sec:def}, as definições necessárias para formular o problema.
+Na Seção \ref{sec:probform} o problema é enunciado a partir das definições e das
+hipóteses levantadas. Na Seção \ref{sec:alg} são apresentados os algoritmos
+desenvolvidos a partir do enunciado do problema e na Seção \ref{sec:compl} é
+feita a análise da complexidade destes algoritmos.
+
+\section{Representação TPS}\label{sec:reptps}
+A representação da página $web$ utilizada nesta pesquisa (seqüência de $tag$
+$paths$) foi anteriormente empregada em \citeonline{TPC09} e
+\citeonline{SuffixTree12}, embora em ambos os casos para a extração e não para
+segmentação e remoção de ruído. Estes dois trabalhos são citados aqui apenas
+para ilustrar que, de acordo com seus resultados, esta representação, assim como
+a árvore DOM, também é capaz de expor a estrutura da página $web$ e, portanto,
+serve para os propósitos desta pesquisa.
+A Figura \ref{fig:ex1} ilustra como o código HTML de uma página $web$ é
+convertido para representação de $tag$ $paths$.
+
+\begin{figure}[h]
+  \centering
+     \includegraphics[scale=0.51]{example1-pt.jpg}
+  \caption{Exemplo de uma seqüência de $tag$ $paths$ construída a partir do código HTML.}
+  \label{fig:ex1}
+\end{figure}
 
 \section{Definições básicas}\label{sec:def}
 
@@ -1025,9 +1015,32 @@ Neste capítulo são descritos e discutidos os resultados dos experimentos e sua
 realização.
 Para obter os resultados apresentados na Subseção \ref{sub:res}, o algoritmo
 proposto foi implementado e testado em vários $web$ $sites$ comerciais e
-institucionais. Na Seção \ref{sec:clar} um destes resultados é detalhado, para
-exemplificar e esclarecer como os dados foram obtidos e compilados na Tabela
-\ref{table:results}.
+institucionais da maneira descrita na Seção \ref{sec:setup}. Na Seção
+\ref{sec:clar} um destes resultados é detalhado, para exemplificar e esclarecer
+como os dados foram obtidos e compilados na Tabela \ref{table:results}.
+
+\section{\textit{Setup} dos Experimentos}\label{sec:setup}
+Os experimentos foram realizados em páginas da $web$, em HTML, de $sites$ que
+apresentam conteúdo estruturado. O conjunto de dados foi previamente salvo em
+disco para acesso \textit{offline}. Para medir a performance do algoritmo foram
+utilizadas as medidas de praxe em \textit{data mining}: precisão ($precision$),
+revocação ($recall$) e \textit{F-measure}. A medida \textit{F-measure} é importante
+para evidenciar que, mesmo em situações com diminuição de $recall$, ainda assim a
+qualidade total da mineração de dados apresenta ganho, devido aumento maior na
+precisão.
+
+Além das medidas de praxe, os experimentos foram avaliados, também, quanto ao
+percentual de ruído removido, pois o algoritmo proposto pode ser combinado em
+série com outros algoritmos de extração, servindo como etapa de otimização, pois
+evitaria o processamento do ruído. Essas medidas são particularmente relevantes
+em situações em que o algoritmo de extração possua complexidade quadrática ou
+superior.
+
+O ruído removido é apresentado sob duas perspectivas: percentual de ruído podado
+da árvore DOM (coluna 'Red.' da Tabela \ref{table:results}) e percentual de
+registros espúrios removidos (coluna 'Ruído rem.' da Tabela
+\ref{table:results}), calculado conforme a Fórmula \ref{eq:noise}. Ambos são
+detalhados na Seção \ref{sec:clar}.
 
 \section{Metodologia de avaliação dos resultados}\label{sec:met}
 
@@ -1071,7 +1084,7 @@ poderiam ser utilizadas, se estivessem disponíveis, e desde que não necessitem
 de várias páginas HTML como entrada ($e.g.$ $RoadRunner$ \cite{RRunner01}).
 
 
-\section{Detalhamento dos Experimentos}\label{sec:clar}
+\section{Exemplificação dos Experimentos}\label{sec:clar}
 
 Os resultados da extração obtidos utilizando apenas o MDR, foram considerados
 como $baseline$ a ser comparado com os resultados obtidos através do uso
@@ -1268,7 +1281,7 @@ medidas F e G apresentaram melhora significativa.
 Precisão & 18,93\%  & 75,08\% & 56,15\% \\
 $Recall$   & 100,00\% & 82,35\% & -17,65\% \\
 F-$measure$ & 31,83\% & 78,55\% & 46,72\% \\
-G-$measure$ & 43,51\% & 78,63\% & 35,13\% \\
+%G-$measure$ & 43,51\% & 78,63\% & 35,13\% \\
 \hline
 \end{tabular}
 \end{table}
