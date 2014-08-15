@@ -116,21 +116,6 @@ trabalhos nesta área e, de acordo com \citeonline{Editorial04}, o ruído
 existente nas páginas pode prejudicar consideravelmente a mineração de dados na
 $web$.
 
-A extração de dados estruturados de páginas $web$, na maioria das propostas
-existentes, consiste na identificação e localização de padrões estruturais no
-documento HTML, os quais podem representar registros.
-Em \citeonline{MDR03}, é dada uma definição para o termo ``registro'', neste
-contexto. O problema é que, em geral, apenas os registros da região principal da
-página são de interesse, porém outras regiões do documento (como menus,
-anúncios, etc.) freqüentemente contém padrões em sua estrutura, fazendo com que
-sejam identificados como registros e, conseqüentemente, extraídos prejudicando a
-precisão da extração dos dados. Daí surge a importância de se efetuar a limpeza
-das páginas $web$ antes de se extrair seu conteúdo estruturado. A Figura
-\ref{fig:exr} apresenta uma página típica de comércio eletrônico, onde os
-registros de interesse são os produtos apresentados no corpo do documento e
-não os menus (que também seguem um padrão estrutural) na barra lateral esquerda
-e no cabeçalho da página.
-
  \begin{figure}[H]
   \centering
     \includegraphics[scale=0.22]{exemploruido.jpg}
@@ -139,6 +124,22 @@ e no cabeçalho da página.
   \label{fig:exr}
 \end{figure}
 
+A extração de dados estruturados de páginas $web$, na maioria das propostas
+existentes, consiste na identificação e localização de padrões estruturais no
+documento HTML, os quais podem representar registros.
+Em \citeonline{MDR03}, é dada uma definição, embora um tanto informal, para o
+termo ``registro'', neste contexto: ``objetos regularmente estruturados,
+organizados em listas, que frequentemente descrevem objetos similares''.
+O problema é que, em geral, apenas os registros da região principal da página
+são de interesse, porém outras regiões do documento (como menus, anúncios, etc.)
+freqüentemente contém padrões em sua estrutura, fazendo com que sejam
+identificados como registros e, conseqüentemente, extraídos prejudicando a
+precisão da extração dos dados. Daí surge a importância de se efetuar a limpeza
+das páginas $web$ antes de se extrair seu conteúdo estruturado. A Figura
+\ref{fig:exr} apresenta uma página típica de comércio eletrônico, onde os
+registros de interesse são os produtos apresentados no corpo do documento e não
+os menus (que também seguem um padrão estrutural) na barra lateral esquerda e no
+cabeçalho da página.
 
 Atualmente, alguns trabalhos na área de remoção de ruído e segmentação são
 direcionados para indexação e $clustering$ de páginas ($i.e.$ é assumido que a
@@ -161,18 +162,19 @@ $tag$ $paths$ da árvore DOM. Conforme a análise apresentada na Seção
 forma mais ampla, de um algoritmo de segmentação das regiões de um documento
 HTML que é utilizado aqui no contexto de extração estruturada e que leva em
 consideração o estilo (CSS) e a estrutura da página. As principais contribuições
-são as seguintes:
+da proposta deste trabalho são as seguintes:
 
 \begin{itemize}
-\item{Totalmente automática}: não necessita de treinamento nem intervenção
-humana;
-\item{Independente de domínio}: o único requisito é que a página possua
-conteúdo estruturado, não importando a que domínio pertença;
-\item{Independente da sintaxe HTML}: não existem regras associadas a $tags$
-HTML específicas;
-\item{Funciona em uma página}: é necessária apenas uma página como entrada, o
-que constitui uma grande vantagem desta proposta, como discutido em
-\citeonline{Editorial04}.
+\item{Algoritmo totalmente automático}: o algoritmo proposto não necessita de
+treinamento nem de intervenção humana;
+\item{Independência de domínio}: nenhuma suposição é feita com relação ao
+domínio do conteúdo das páginas de entrada do algoritmo;
+\item{Independência da sintaxe HTML}: não existe associação de regras, no
+algoritmo, a \textit{tags} HTML específicas;
+\item{Operação sobre uma única página}: como entrada, é necessária apenas uma
+única página, e não um conjunto de amostras de páginas de um mesmo
+\textit{site}, o que constitui uma grande vantagem desta proposta, como discutido 
+em \citeonline{Editorial04}.
 \end{itemize}
 
 Durante a discussão dos resultados, são apresentadas e discutidas, também, as
@@ -235,22 +237,20 @@ três categorias: as que utilizam o conteúdo textual da página e $tags$ HTML
 (o documento renderizado).
 
 \section{Propostas baseadas no texto}\label{sec:txt}
-Nos trabalhos detalhados nesta seção 
-\cite{Densiometric08,Boilerplate10,CETR10} a
-%\cite{Densiometric08,Boilerplate10,CETR10,NonTemplate13} a
-segmentação das partes de uma página é realizada utilizando o conteúdo textual
-do documento. O foco destes trabalhos, entretanto, não é em extração
-estruturada, mas em indexação e $clustering$ de páginas. A maioria dos trabalhos
-existentes sobre segmentação e remoção de ruído, que atuam sobre o texto, são
-direcionados para este tipo de aplicação, cujo objetivo principal é identificar
-o ``assunto'' da página.
+Nos trabalhos detalhados nesta seção \cite{Densiometric08,Boilerplate10,CETR10}
+a 'segmentação das partes de uma página é realizada utilizando o conteúdo
+textual do documento. O foco principal destes trabalhos, entretanto, não é em
+extração estruturada, mas em indexação e $clustering$ de páginas. A maioria dos trabalhos
+existentes sobre segmentação e remoção de ruído, que atuam sobre o texto, é
+direcionada para este tipo de aplicação, cujo objetivo principal é identificar o
+``assunto'' da página.
 
 Em \citeonline{Densiometric08} a página é modelada como uma seqüência de
 blocos de texto delimitados por $tags$ de abertura e fechamento (chamados de
 $gaps$), os blocos de texto são analisados segundo sua densidade textual e os
 blocos contíguos, com aproximadamente a mesma densidade, são agrupados para
 formar blocos maiores e a região principal da página seria a de maior densidade
-textual. A densidade de texto é calculada segundo a Fórmula \ref{eq:dt}, onde
+textual. A densidade de texto é calculada segundo a Equação \ref{eq:dt}, onde
 $p(b_x)$ é a densidade do bloco $b_x$, $n_{tokens_x}$ é o número de palavras do
 bloco e $n_{lines_x}$ é o número de linhas do bloco, sendo que cada linha tem
 um tamanho arbitrário de 80 caracteres.
@@ -259,13 +259,14 @@ um tamanho arbitrário de 80 caracteres.
 p(b_x) = \frac{n_{tokens_x}}{n_{lines_x}}
 \end{equation}
 
-Em \citeonline{Boilerplate10}, a mesma medida de densidade textual
-proposta em \citeonline{Densiometric08} (Fórmula \ref{eq:dt}) é utilizada, porém
-uma série de outras características são agregadas ao problema como: o tamanho das
-palavras, tamanho das sentenças, número de palavras e a densidade de $links$,
-além de um conjunto de regras bem específicas para tratar textos e $tags$ do
-documento. Estas outras informações agregadas são utilizadas para gerar uma
-árvore de decisão utilizada para identificar o conteúdo principal do documento.
+Em \citeonline{Boilerplate10}, a mesma medida de densidade textual proposta em
+\citeonline{Densiometric08} (Equação \ref{eq:dt}) é utilizada, porém uma série
+de outras características são agregadas ao problema de identificação da região
+principal como: o tamanho das palavras, tamanho das sentenças, número de
+palavras e a densidade de $links$, além de um conjunto de regras bem específicas
+para tratar textos e $tags$ do documento. Estas outras informações agregadas são
+utilizadas para gerar uma árvore de decisão utilizada para identificar o
+conteúdo principal do documento.
 	
 Em \citeonline{CETR10} é mencionada a desvantagem de se utilizar regras
 vinculadas a $tags$ HTML específicas, o que pode invalidar uma abordagem no caso
@@ -305,12 +306,15 @@ característica é determinado a partir do conjunto de treinamento. Apenas a
 questão da segmentação é abordada, sem a preocupação em identificar quais partes
 da página contém conteúdo relevante e quais contém ruído.
 
-Em \citeonline{Entropy09}, uma árvore ``visual'' é gerada a partir da
-árvore DOM, redefinindo a árvore original com o auxílio de um dicionário de
-$tags$ pré-definido que indica quais $tags$ são relevantes na estrutura do
-documento. Cada nó da árvore visual tem sua entropia calculada com relação ao
-atributo $CLASS$. O trabalho propõe três metodologias distintas de avaliação da
-entropia: entropia dos nós filhos (\textit{child entropy}), entropia do caminho
+Em \citeonline{Entropy09}, uma árvore ``visual'' (não é, de fato, renderizada
+como nas técnicas visuais propriamente ditas) é gerada a partir da árvore DOM,
+redefinindo a árvore original com o auxílio de um dicionário de \textit{tags}
+pré-definido que indica quais \textit{tags} são relevantes na estrutura do
+documento.
+Cada nó da árvore ``visual'' tem sua entropia calculada com relação ao atributo
+\textit{CLASS}. O trabalho propõe três metodologias distintas de avaliação da
+entropia:
+entropia dos nós filhos (\textit{child entropy}), entropia do caminho
 (\textit{path entropy}) e entropia do caminho parcial (\textit{partial path
 entropy}). Após o cálculo da entropia, estes valores são analisados, comparados
 a um limiar estipulado e cada bloco da página é, então, classificado como: CB
@@ -336,7 +340,7 @@ semântica-estrutural'' de acordo como papel desempenhado por aquele nó folha.
 A entropia dos demais nós é calculada recursivamente, a partir da entropia dos
 nós descendentes. Quanto maior for esta medida de entropia, maior a
 probabilidade de se tratar de uma região de interesse. A entropia é calculada
-conforme a Fórmula \ref{eq:ese}, onde $n$ é um nó da árvore DOM e $p_i$ é a
+conforme a Equação \ref{eq:ese}, onde $n$ é um nó da árvore DOM e $p_i$ é a
 proporção de nós folha, descendentes de $n$, que desempenham o papél $i$.
 
 \begin{equation}\label{eq:ese}
@@ -378,28 +382,30 @@ visuais. Neste trabalho, assim como em \citeonline{Graph08}, não há preocupação
 em identificar quais blocos visuais da página contém conteúdo relevante e quais
 contém ruído.
 
-Em \citeonline{viper05} é proposta uma técnica de extração estruturada,
-com identificação do conteúdo/ruído que utiliza o renderizador de um navegador
-$web$ para corrigir (no caso de HTML mal formado) e processar o HTML e para
-obter as informações visuais necessárias ao algoritmo.
+Em \citeonline{viper05} é proposta uma técnica de extração estruturada, com
+identificação do conteúdo/ruído que utiliza o renderizador de um navegador $web$
+para corrigir (no caso de HTML mal formado) e processar o HTML e para obter as
+informações visuais necessárias ao algoritmo.
 A etapa de extração é uma adaptação/melhoramento do algoritmo MDR \cite{MDR03}
 que incorpora o uso das informações visuais.
 A etapa de identificação do conteúdo principal ocorre após a identificação dos
-padrões, onde recebem um peso, inversamente proporcional à distância que se
-encontram do centro da página. Outra melhoria proposta, relativa à identificação
-de padrões dos registros, é o tratamento de repetições consecutivas
-(\textit{tandem repeats}) na comparação da estrutura dos registros.
+padrões estruturais (ou registros), onde recebem um peso, inversamente
+proporcional à distância que se encontram do centro da página. Outra melhoria
+proposta, relativa à identificação de padrões dos registros, é o tratamento de
+repetições consecutivas (\textit{tandem repeats}) na comparação da estrutura dos
+registros.
 Esta abordagem identificada o ruído apenas após a etapa de extração, sem evitar
 o custo computacional de procurar por padrões no ruído.
 
-Em \citeonline{BlockImp07}, é utilizada a abordagem de \citeonline{vips03}
-para segmentar a página em blocos. Um conjunto de páginas são analisadas e suas
-estruturas são comparadas para verificar se são equivalentes. Páginas com
-estruturas equivalentes são então analisadas com respeito às informações
-estatísticas dos termos contidos em seus blocos (subdivisões) e um $score$ de
-importância é atribuído a cada bloco. Apesar de necessitar de um conjunto de
-páginas para treinamento, toda a análise do conjunto é realizada de forma não
-supervisionada.
+Em \citeonline{BlockImp07}, é utilizada a abordagem visual de
+\citeonline{vips03} para segmentar a página em blocos. Um conjunto de páginas
+são analisadas e suas estruturas são comparadas para verificar se são
+equivalentes.
+Páginas com estruturas equivalentes são então analisadas com respeito às
+informações estatísticas dos termos contidos em seus blocos (subdivisões) e um
+$score$ de importância é atribuído a cada bloco. Apesar de necessitar de um
+conjunto de páginas para treinamento, toda a análise do conjunto é realizada de
+forma não supervisionada.
 
 Em \citeonline{vide10} é proposta uma abordagem para extração estruturada
 que, assim como no trabalho de \citeonline{BlockImp07}, se baseia em
@@ -455,7 +461,7 @@ p{1cm}} \hline\hline
 8 & \citeonline{Entropy12} & DOM & Sim & Não & Sim & Sim & Entropia Semântica\\
 9 & \citeonline{desc2013} & DOM & Não & Sim & Não & Sim & Decision tree\\
 10 & \citeonline{vips03} & Visual & Sim & Não & Sim & Não & Conjunto de regras\\
-11 & \citeonline{viper05} & Visual & Sim & Não & Não & Sim & Distância \\
+11 & \citeonline{viper05} & Visual & Sim & Não & Não & Sim & MDR e Distância \\
 12 & \citeonline{BlockImp07} & Visual & Não & Sim & Não & Não & Estatística\\
 13 & \citeonline{vide10} & Visual & Sim & Não & Sim & Não & \\
 \hline
@@ -470,7 +476,7 @@ estruturada (Linhas \#4 a \#13), com exceção de \citeonline{viper05} (Linha
 \#11), não atendem a todos os requisitos que o algoritmo proposto atende (Linha
 \#14). As técnicas que não dependem da sintaxe HTML, necessitam de
 treinamento e/ou definições \textit{a priori}. A abordagem adotada
-em \citeonline{viper05} atende à todos os requisitos, no entanto, utiliza um
+em \citeonline{viper05} atende a todos os requisitos, no entanto, utiliza um
 renderizador (que é computacionalmente dispendioso) e só identifica o ruído
 posteriormente à identificação dos registros, desperdiçando uma
 oportunidade de otimizar o processo, identificando e eliminando o ruído antes
@@ -478,22 +484,23 @@ de submeter a página à extração.
 
 \chapter{Algoritmo para remoção de ruído}\label{ch:met}
 
-Neste capítulo é apresentada, primeiro, na Seção \ref{sec:reptps}, a forma de
+Neste capítulo, é apresentada, primeiro, na Seção \ref{sec:reptps}, a forma de
 representação dos documentos HTML utilizada neste trabalho (TPS). Na Seção
 \ref{sec:def}, as definições necessárias para formular o problema.
-Na Seção \ref{sec:probform} o problema é enunciado a partir das definições e das
-hipóteses levantadas. Na Seção \ref{sec:alg} são apresentados os algoritmos
-desenvolvidos a partir do enunciado do problema e na Seção \ref{sec:compl} é
+Na Seção \ref{sec:probform}, o problema é enunciado a partir das definições e
+das hipóteses levantadas. Na Seção \ref{sec:alg}, são apresentados os algoritmos
+desenvolvidos a partir do enunciado do problema e na Seção \ref{sec:compl}, é
 feita a análise da complexidade destes algoritmos.
 
 \section{Representação TPS}\label{sec:reptps}
-A representação da página $web$ utilizada nesta pesquisa (seqüência de $tag$
-$paths$) foi anteriormente empregada em \citeonline{TPC09} e
-\citeonline{SuffixTree12}, embora em ambos os casos para a extração e não para
-segmentação e remoção de ruído. Estes dois trabalhos são citados aqui apenas
-para ilustrar que, de acordo com seus resultados, esta representação, assim como
-a árvore DOM, também é capaz de expor a estrutura da página $web$ e, portanto,
-serve para os propósitos desta pesquisa.
+A representação da página $web$ utilizada no presente trabalho foi anteriormente
+empregada em \citeonline{TPC09} e \citeonline{SuffixTree12}. Em ambos os casos,
+esta representação foi usada para a extração e não para segmentação e remoção de
+ruído.
+Estes dois trabalhos são citados aqui apenas para ilustrar que, de acordo com
+seus resultados, esta representação, assim como a árvore DOM, também é capaz de
+expor a estrutura da página $web$ e, portanto, serve para os propósitos dos
+algoritmos discutidos no presente trabalho.
 A Figura \ref{fig:ex1} ilustra como o código HTML de uma página $web$ é
 convertido para representação de $tag$ $paths$.
 
@@ -503,6 +510,15 @@ convertido para representação de $tag$ $paths$.
   \caption{Exemplo de uma seqüência de $tag$ $paths$ construída a partir do código HTML.}
   \label{fig:ex1}
 \end{figure}
+
+Na Figura \ref{fig:ex1}, no passo ``1'' a árvore DOM é construída através do
+\textit{parsing} do código HTML. No passo ``2'' a árvore DOM é então percorrida
+da raiz até cada um de seus nós para construir cada \textit{tag path},
+atribuindo um código (ou símbolo) para cada caminho diferente encontrado,
+reutilizando o mesmo código para \textit{tag paths} iguais.
+No passo ``3'' é construída uma \textit{string} apenas com os códigos dos
+\textit{tag paths}, chamada de TPS (seqüência de \textit{tag paths}) e seu
+respectivo alfabeto (conjunto de símbolos da seqüência).
 
 \section{Definições básicas}\label{sec:def}
 
@@ -593,10 +609,10 @@ alfabetos é vazia. % $\Sigma_a \cap
 
 \section{Proposta}\label{sec:probform}
 
-Nesta pesquisa é proposto um novo algoritmo para segmentação das regiões de uma
-página $web$ e identificação da região principal. O algoritmo proposto leva em
+No presente trabalho é proposto um novo algoritmo para segmentação das regiões
+de uma página $web$ e identificação da região principal. O algoritmo proposto leva em
 consideração a estrutura e o estilo de formatação das páginas e é
-computacionalmente eficiente pois, conforme demonstrado na Seção
+computacionalmente eficiente pois, conforme demonstrado mais adiante, na Seção
 \ref{sec:compl}, sua complexidade é, na média, linear em relação ao tamanho da
 página. A página $web$, que é submetida ao algoritmo, é representada como uma
 seqüência de $tag$ $paths$.
@@ -612,10 +628,10 @@ são descritas ou utilizando $tags$ distintas para cada região ou, se as $tags$
 forem semelhantes, com diferentes estilos, para que cada região possa ser
 facilmente distinguida pelo usuário/leitor da página. Se todas as regiões de uma
 página se parecessem, seria mais difícil, para o usuário, distingui-las.
-Então, pela Definição \ref{def:tps}, pode-se notar que os símbolos utilizadas em
+Então, pela Definição \ref{def:tps}, pode-se notar que os símbolos utilizados em
 cada região de uma página $web$ deveriam ser diferentes, e então deve ser
-possível segmentar a página como na Definição \ref{def:region}. Esta hipótese,
-como é possível observar, é geral o suficiente para poder ser reutilizada em
+possível segmentar a página como apresentado na Definição \ref{def:region}. Esta
+hipótese, como é possível observar, é geral o suficiente para poder ser reutilizada em
 outros contextos, com ojetivo de segmentar páginas web, que não o de
 extração estruturada.
   
@@ -698,7 +714,7 @@ $publicidade = (6,...,6)$
 
 \section{Algoritmos}\label{sec:alg}
 
-Nesta seção são apresentados os algoritmos desenvolvidos para tratar o
+Nesta seção, são apresentados os algoritmos desenvolvidos para tratar o
 problema definido na Seção \ref{sec:probform}. Quais sejam:
 
 \begin{itemize}
@@ -726,7 +742,7 @@ problema definido na Seção \ref{sec:probform}. Quais sejam:
 \end{itemize}
 \pagebreak
 
-\subsection{Algoritmo $tagPathSequenceFilter()$}
+\subsection{$tagPathSequenceFilter()$}
 \begin{algorithm}[h]
 \caption{Filtra o ruído de uma página $web$}
 \label{alg:tpsfilter}
@@ -759,7 +775,7 @@ escopo deste trabalho e, portanto, não será discutido aqui.
 \vspace{5cm}
 \pagebreak
 
-\subsection{Algoritmo $convertToSeq()$}
+\subsection{$convertToSeq()$}
 
 \begin{algorithm}[h]
 \caption{Converte uma árvore DOM para a representação de seqüência de $tag$ $path$}
@@ -794,11 +810,11 @@ definições de estilo, com objetivo de distinguir caminhos repetidos com estilos
 diferentes; na Linha $3$, é verificado se o $tag$ $path$ atual já foi visto
 antes pelo algoritmo ou não ($tagPathMap$ é utilizado para este propósito) e, se
 não, na Linha $4$, ele é inserido no conjunto $tagPathMap$ e um novo código é
-atribuído à ele na Linha $5$, como mostrado na Definição \ref{def:tps}; na Linha
+atribuído a ele na Linha $5$, como mostrado na Definição \ref{def:tps}; na Linha
 $7$, o código do $tag$ $path$ é concatenado ao final da seqüência e, finalmente,
 o procedimento é invocado recursivamente na Linha $9$ para cara filho de $node$.
 
-\subsection{Algoritmo $searchRegion()$}
+\subsection{$searchRegion()$}
 
 Este é o algoritmo central, já que é responsável por encontrar a região
 principal e, para facilitar seu entendimento, foi incluída uma ilustração do seu
@@ -901,7 +917,7 @@ uma região sob condições ambíguas (nos experimentos foi utilizado o valor de
 encontrada, chamando o procedimento $searchRegion()$ recursivamente na Linha
 $45$.
 
-\subsection{Algoritmo $filterAlphabet()$}
+\subsection{$filterAlphabet()$}
 
 \begin{algorithm}[H]
 \caption{Filtra símbolos de baixa freqüência no alfabeto}
@@ -933,7 +949,7 @@ em $curr\Sigma$ são considerados durante a busca pela região principal.
 \vspace{3.3cm}
 \pagebreak
 
-\subsection{Algoritmo $pruneDOMTree()$}
+\subsection{$pruneDOMTree()$}
 
 \begin{algorithm}[H]
 \caption{Poda da árvore DOM nós que não pertencem à seqüência}
@@ -1011,44 +1027,65 @@ assim, afirmar que a complexidade de tempo é $O(n)$.
 
 \chapter{Resultados Experimentais}\label{ch:results}
 
-Neste capítulo são descritos e discutidos os resultados dos experimentos e sua
+Neste capítulo, são descritos e discutidos os resultados dos experimentos e sua
 realização.
-Para obter os resultados apresentados na Subseção \ref{sub:res}, o algoritmo
-proposto foi implementado e testado em vários $web$ $sites$ comerciais e
-institucionais da maneira descrita na Seção \ref{sec:setup}. Na Seção
-\ref{sec:clar} um destes resultados é detalhado, para exemplificar e esclarecer
+Para obter os resultados apresentados na Seção \ref{sec:res}, o algoritmo
+proposto foi implementado e testado em vários \textit{web sites} comerciais
+e institucionais da maneira descrita na Seção \ref{sec:setup}. Na Seção
+\ref{sec:clar}, um destes resultados é detalhado, para exemplificar e esclarecer
 como os dados foram obtidos e compilados na Tabela \ref{table:results}.
 
 \section{\textit{Setup} dos Experimentos}\label{sec:setup}
 Os experimentos foram realizados em páginas da $web$, em HTML, de $sites$ que
-apresentam conteúdo estruturado. O conjunto de dados foi previamente salvo em
-disco para acesso \textit{offline}. Para medir a performance do algoritmo foram
-utilizadas as medidas de praxe em \textit{data mining}: precisão ($precision$),
-revocação ($recall$) e \textit{F-measure}. A medida \textit{F-measure} é importante
-para evidenciar que, mesmo em situações com diminuição de $recall$, ainda assim a
-qualidade total da mineração de dados apresenta ganho, devido aumento maior na
-precisão.
+apresentam conteúdo estruturado. São páginas de diversos domínios, de
+empresas/instituições que são referência em seus segmentos de atuação. O
+conjunto de dados foi previamente salvo em disco para acesso \textit{offline}.
+
+Para medir a performance do algoritmo foram utilizadas as medidas de praxe em
+\textit{data mining}: precisão ($precision$), revocação ($recall$) e
+\textit{F-measure}. A medida \textit{F-measure} é importante para evidenciar
+que, mesmo em situações com diminuição de $recall$, ainda assim a qualidade
+total da mineração de dados apresenta ganho, devido aumento maior na precisão.
 
 Além das medidas de praxe, os experimentos foram avaliados, também, quanto ao
 percentual de ruído removido, pois o algoritmo proposto pode ser combinado em
 série com outros algoritmos de extração, servindo como etapa de otimização, pois
-evitaria o processamento do ruído. Essas medidas são particularmente relevantes
+evitaria o processamento do ruído. Essas métricas são particularmente relevantes
 em situações em que o algoritmo de extração possua complexidade quadrática ou
 superior.
 
 O ruído removido é apresentado sob duas perspectivas: percentual de ruído podado
-da árvore DOM (coluna 'Red.' da Tabela \ref{table:results}) e percentual de
-registros espúrios removidos (coluna 'Ruído rem.' da Tabela
-\ref{table:results}), calculado conforme a Fórmula \ref{eq:noise}. Ambos são
-detalhados na Seção \ref{sec:clar}.
+da árvore DOM (coluna 'Red.' da Tabela \ref{table:results}), que é simplesmente
+a quantidade do nós retirados da árvore DOM original, e percentual de registros
+espúrios removidos (coluna 'Ruído rem.' da Tabela \ref{table:results}),
+calculado conforme a Equação \ref{eq:noise}. As duas métricas são
+detalhadas na Seção \ref{sec:clar}.
+\begin{equation}\label{eq:noise}
+NoiseRemoved=1-\frac{\#Rec_{totalTPS}-\#Rec_{targetTPS}}{\#Rec_{total}-\#Rec_{target}}
+\end{equation}
+Onde $\#Rec_{total}$ e $\#Rec_{target}$ são o total de registros e o total de
+registros de interesse, respectivamente, da página original, e
+$\#Rec_{totalTPS}$ e $\#Rec_{targetTPS}$ são o total de registros e o total de
+registro de interesse, respectivamente, da página $web$ filtrada.
+
 
 \section{Metodologia de avaliação dos resultados}\label{sec:met}
 
-Para avaliar os resultados da técnica proposta, foi utilizado o algoritmo MDR
-\cite{MDR03}, uma conhecida técnica de extração estruturada. O resultado da
-extração pura (apenas MDR) será considerado como $baseline$ para comparação com
-o resultado da extração combinada com a técnica proposta de remoção de ruído,
-como ilustrado na Figura \ref{fig:method}.
+O principal objetivo do algoritmo proposto é eliminar ruídos em páginas
+\textit{web}, a fim de evitar que algoritmos que precisem processar estas
+páginas possam trabalhar apenas com conteúdo útil. Assim, para testar a efetiva
+eliminação de rúidos, foi utilizado o algoritmo MDR \cite{MDR03} é uma conhecida
+técnica de extração estruturada. O resultado da extração pura (apenas MDR) será
+considerado como $baseline$ para comparação com o resultado da extração
+combinada com a técnica proposta de remoção de ruído, como ilustrado na Figura
+\ref{fig:method}.
+
+\begin{figure}[H]
+  \centering
+    \includegraphics[scale=0.19]{metodo.jpg}
+  \caption{Método de avaliação adotado.}
+  \label{fig:method}
+\end{figure}
 
 A avaliação dos resultados é constituída das seguintes etapas:
 \begin{itemize}
@@ -1067,14 +1104,6 @@ A avaliação dos resultados é constituída das seguintes etapas:
   \item comparação de ambos os resultados e medição do aumento/redução da
   precisão (remoção de ruído).
 \end{itemize}
-\pagebreak
-
-\begin{figure}[H]
-  \centering
-    \includegraphics[scale=0.19]{metodo.jpg}
-  \caption{Método de avaliação adotado.}
-  \label{fig:method}
-\end{figure}
 
 Para primeira etapa foi escolhido o MDR para realizar a extração, pois esta
 técnica possui diversas implementações disponíveis, vários trabalhos publicados
@@ -1148,17 +1177,10 @@ página e que deve ser removido. Quando o filtro é utilizado, desta vez são
 obtidos apenas os $20$ registros de interesse na fase de extração, resultando em
 uma precisão de $100\%$, o que significa que todo o ruído da página foi
 removido, neste caso. O percentual de ruído removido é calculado como
-\begin{equation}\label{eq:noise}
-NoiseRemoved=1-\frac{\#Rec_{totalTPS}-\#Rec_{targetTPS}}{\#Rec_{total}-\#Rec_{target}}
-\end{equation}
-Onde $\#Rec_{total}$ e $\#Rec_{target}$ são o total de registros e o total de
-registros de interesse, respectivamente, da página original, e
-$\#Rec_{totalTPS}$ e $\#Rec_{targetTPS}$ são o total de registros e o total de
-registro de interesse, respectivamente, da página $web$ filtrada.
 
-\subsection{Resultados}\label{sub:res}
+\section{Resultados}\label{sec:res}
 
-Na Tabela \ref{table:results} são apresentados, nas três primeiras colunas, o
+Na Tabela \ref{table:results}, são apresentados, nas três primeiras colunas, o
 tamanho da árvore DOM processada pelo MDR ($i.e.$ original) e a redução obtida
 após remoção do ruído ($i.e.$ podado). A coluna ``Conteúdo principal'' indica se
 o processo de remoção de ruído preservou a região principal ou não. As próximas
@@ -1267,12 +1289,12 @@ relativamente pequena.
 Como conseqüência da remoção de ruído, podemos observar um aumento considerável
 na precisão média da extração, como relatado na Tabela \ref{table:prec}. A
 redução no $recall$ corresponde às situações onde o filtro falhou, as quais são
-discutidas e tratadas na Subseção \ref{sub:disc}, e, apesar desta redução, as
+discutidas e tratadas na Seção \ref{sec:disc}, e, apesar desta redução, as
 medidas F e G apresentaram melhora significativa.
 
 \begin{table}[H]
 \centering
-\caption{Precisão, $recall$, F-$measure$ e G-$measure$.}
+\caption{Precisão, $recall$ e F-$measure$.}
 \label{table:prec}
 \begin{tabular}{l l l l}
 \hline\hline
@@ -1288,7 +1310,7 @@ F-$measure$ & 31,83\% & 78,55\% & 46,72\% \\
 \vspace{3cm}
 \pagebreak
 
-\subsection{Discussão dos Resultados}\label{sub:disc}
+\section{Discussão dos Resultados}\label{sec:disc}
 
 Existem três situações principais onde o algoritmo poderia ser melhorado e,
 destas, apenas duas podem levar a perda de conteúdo de interesse. Na Tabela
@@ -1303,7 +1325,7 @@ durante o processo de filtragem.
   suficiente para uma diferenciação entre as regiões da página, já que todas se
   parecem. Não são perdidos registros de interesse, mas a quantidade total de
   ruído removido é baixa;
-  \item{\textbf{páginas com \textit{templates} muito heterogêneos}}. São paginas
+  \item{\textbf{páginas com \textit{templates} muito heterogêneos}}. São páginas
   onde o conteúdo principal é subdividido em mais de uma região. Neste caso, a
   região principal acaba por ser dividida várias vezes durante o processo de
   filtragem e apenas a parte maior acaba passando pelo filtro (e ainda assim,
@@ -1368,8 +1390,8 @@ implementar a Linha $6$ do algoritmo \ref{alg:tpsfilter2}.
 Como mostrado nos resultados, o algoritmo proposto para segmentação da página e
 remoção do ruído foi bastante efetivo em várias páginas
 comerciais/institucionais.
-Na maioria dos casos uma grande quantidade de ruído foi removido sem comprometer
-os registros de interesse. Também, quando aplicada em conjunto com o MDR, foi
+Na maioria dos casos, uma grande quantidade de ruído foi removido sem
+comprometer os registros de interesse. Também, quando aplicada em conjunto com o MDR, foi
 observado um incremento considerável na precisão da extração e na qualidade
 geral da extração ($e.g.$ aumento do f-measure de 31,83\% para 78,55\%).
 
