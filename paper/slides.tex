@@ -4,8 +4,8 @@
 \usepackage[T1]{fontenc}
 \usetheme{Laughlin}
 \begin{document}
-\title{Remoção automática de ruído de páginas web utilizando tag paths
-- voltado para dados estruturados}
+\title{Algoritmo não Supervisionado para Segmentação e Remoção de
+Ruído de Páginas \textit{web} Utilizando \textit{tag paths}}
 %\author[Roberto Panerai Velloso]{Orientando: Roberto Panerai Velloso \\
 %Orientadora: Carina F. Dorneles \\ \{rvelloso, dorneles\}@gmail.com }
 \author[Roberto Panerai Velloso]{Roberto Panerai Velloso, Carina F. Dorneles \\ 
@@ -13,11 +13,18 @@
 %\date{\today}
 \date{}
 %\institute{Universidade Federal de Santa Catarina}
-\institute{28º Simpósio Brasileiro de Bancos de Dados 
+\institute{
+%UFSC - Universidade Federal de Santa Catarina \\ PPGCC - Programa de
+% Pós-Graduação em Ciência da Computação
 \begin{figure}[H]
-  \label{fig:logosbbd}
-    \includegraphics[scale=0.30]{sbbd2013.jpg}
+  \label{fig:logo1}
+    \includegraphics[scale=0.50]{brasao_ufsc_80.png}
+    \includegraphics[scale=0.30]{brasao_418.jpg}
 \end{figure}
+%\begin{figure}[H]
+%  \label{fig:logo2}
+%    \includegraphics[scale=0.30]{brasao_ufsc_80.png}
+%\end{figure}
 }
 
 \frame{
@@ -26,15 +33,29 @@
 
 \frame{\frametitle{Sumário}\tableofcontents}
 
-\section{Problema} 
+\section{Introdução} 
 %\frame{\tableofcontents[currentsection]}
+\frame{\frametitle{Introdução}
+\begin{itemize} 
+	\item Data mining na web (relevância);
+	\begin{itemize}
+	\item Usage mining (sistemas de recomendação);
+	\item IR (indexing, clustering \& Análise de hyperlinks);
+	\item Extração estruturada.
+	\end{itemize}
+	\item Contexto do trabalho;
+	\item Extração estruturada;
+	\item Remoção de ruído (importância).
+\end{itemize}
+}
+
 \frame{\frametitle{Problema}
 \begin{itemize} 
-	\item Ruído: anúncios, menus, $template$, etc.
+	\item Ruído: anúncios, menus, $template$, etc;
 	\item Identificar a região principal de uma página $web$, com o objetivo de
-	eliminar o restante da página (ruído) antes da fase de extração dos dados.
+	eliminar o restante da página (ruído) antes da fase de extração dos dados;
 	\item Etapa de limpeza é fundamental para obtenção de resultados satisfatórios
-	na fase de extração de dados.
+	na fase de extração de dados;
 	\item Poucos trabalhos na área (LIU; CHANG, 2004).
 \end{itemize}
 }
@@ -45,10 +66,25 @@
   HTML.}
   \label{fig:ex2}
   \centering
-    \includegraphics[scale=0.29]{example2-gs.jpg}
+    \includegraphics[scale=0.29]{example2-gs-pt.jpg}
 \end{figure}
 }
 
+\section{Objetivo} 
+%\frame{\tableofcontents[currentsection]}
+\frame{\frametitle{Objetivo} 
+Contribuir para a área de extração estruturada de dados da $web$ com uma nova
+técnica de remoção de ruído que possibilite incrementar a precisão dos métodos
+de extração e que tenha as seguintes características:
+\begin{itemize}
+  \item Independente de domínio;
+  \item Independente de características da linguagem HTML; 
+  \item Totalmente automática;
+  \item Necessite de apenas uma página (ao invés de um conjunto de páginas);
+  \item Não dependa de treinamento;
+  \item Não dependa de bases de dados e/ou definições $a$ $priori$.
+\end{itemize}
+}
 \section{Trabalhos correlatos} 
 %\frame{\tableofcontents[currentsection]}
 \frame{\frametitle{Trabalhos correlatos} 
@@ -81,23 +117,8 @@
   HTML.}
   \label{fig:ex1}
   \centering
-    \includegraphics[scale=0.33]{example1.jpg}
+    \includegraphics[scale=0.45]{example1-pt.jpg}
 \end{figure}
-}
-\section{Objetivo} 
-%\frame{\tableofcontents[currentsection]}
-\frame{\frametitle{Objetivo} 
-Contribuir para a área de extração estruturada de dados da $web$ com uma nova
-técnica de remoção de ruído que possibilite incrementar a precisão dos métodos
-de extração e que tenha as seguintes características:
-\begin{itemize}
-  \item Independente de domínio;
-  \item Independente de características da linguagem HTML; 
-  \item Totalmente automática;
-  \item Necessite de apenas uma página (ao invés de um conjunto de páginas);
-  \item Não dependa de treinamento;
-  \item Não dependa de bases de dados e/ou definições $a$ $priori$.
-\end{itemize}
 }
 \section{Hipótese} 
 %\frame{\tableofcontents[currentsection]}
@@ -126,7 +147,7 @@ de extração e que tenha as seguintes características:
   \caption{Detecção da região principal em uma página web real.}
   \label{fig:alg}
   \centering
-    \includegraphics[scale=0.40]{tps.jpg}
+    \includegraphics[scale=0.24]{tps.jpg}
 \end{figure}
 }
 
