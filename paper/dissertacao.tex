@@ -131,7 +131,7 @@ termo ``registro'', neste contexto: ``objetos regularmente estruturados,
 organizados em listas que, frequentemente, descrevem objetos similares''.
 O problema é que, em geral, apenas os registros da região principal da página
 são de interesse, porém outras regiões do documento (como menus, anúncios, etc.)
-frequentemente contém padrões em sua estrutura, fazendo com que sejam
+frequentemente contêm padrões em sua estrutura, fazendo com que sejam
 identificados como registros e, consequentemente, extraídos prejudicando a
 precisão da extração dos dados. Daí surge a importância de se efetuar a limpeza
 das páginas \textit{web} antes de se extrair seu conteúdo estruturado. A Figura
@@ -242,7 +242,7 @@ Existem muitos trabalhos propondo formas de segmentar páginas \textit{web} e
 identificar o que é conteúdo e o que é ruído nelas. Elas podem ser agrupadas em
 três categorias: as que utilizam o conteúdo textual da página e \textit{tags} HTML
 (porém sem considerar a estrutura da árvore DOM), as que utilizam a árvore
-\abreviatura{DOM}{document object model}DOM e as que utilizam informação visual
+\abreviatura{DOM}{Document Object Model}DOM e as que utilizam informação visual
 (o documento renderizado). O presente trabalho não utiliza nenhuma destas
 representações, embora necessite da árvore DOM para gerar a TPS do documento
 HTML.
@@ -295,11 +295,16 @@ limiar, este tem que ser encontrado por experimentação.
 
 \section{Propostas baseadas na árvore DOM}\label{sec:dom} 
 Nos trabalhos detalhados nesta seção
-\cite{Noisy03,Graph08,Entropy09,SiteOriented11,Entropy12,desc2013} a
+\cite{Noisy03,Graph08,Entropy09,SiteOriented11,Entropy12,desc2013,Augusto2013} a
 segmentação, e subsequente identificação da região principal, é realizada
 utilizando a árvore DOM da página, portanto estas técnicas levam em consideração
 a estrutura da página \textit{web} e, consequentemente, podem ser aplicadas no contexto
 de extração estruturada.
+
+Em \citeonline{Augusto2013} a região principal é identificada através da
+localização das estruturas da árvore DOM que mais se repetem na página com
+auxílio de uma base de conhecimento previamente existente
+e, também, de regras heurísticas vinculadas à \textit{tags} HTML.
 
 Em \citeonline{Noisy03} é construída uma árvore de estilos (com base nas
 definições \abreviatura{CSS}{cascade style sheet}CSS) para um determinado
@@ -320,7 +325,7 @@ grafo, juntos ou separados. O custo é calculado a partir das características de
 cada nó (formato, cor de fundo, fonte, tamanho, etc.) e o peso de cada
 característica é determinado a partir do conjunto de treinamento. Apenas a
 questão da segmentação é abordada, sem a preocupação em identificar quais partes
-da página contém conteúdo relevante e quais contém ruído.
+da página contêm conteúdo relevante e quais contêm ruído.
 
 Em \citeonline{Entropy09}, uma árvore ``visual'' (não é, de fato, renderizada
 como nas técnicas visuais propriamente ditas) é gerada a partir da árvore DOM,
@@ -396,8 +401,8 @@ dos blocos visuais do documento. Além da informação visual, também é utilizado
 um extenso conjunto de regras que servem para dar tratamento diferenciado a
 \textit{tags} HTML específicas com objetivo principal de identificar separadores
 visuais. Neste trabalho, assim como em \citeonline{Graph08}, não há preocupação
-em identificar quais blocos visuais da página contém conteúdo relevante e quais
-contém ruído.
+em identificar quais blocos visuais da página contêm conteúdo relevante e quais
+contêm ruído.
 
 Em \citeonline{viper05} é proposta uma técnica de extração estruturada, com
 identificação do conteúdo/ruído que utiliza o renderizador de um navegador \textit{web}
@@ -459,7 +464,7 @@ são comparadas com relação às seguintes características:
 \begin{tiny}
 \caption{Comparativo entre técnicas de segmentação de página}
 \label{table:comp}
-\begin{tabular}{p{0.1cm}|p{3cm} p{0.5cm} p{0.5cm} p{0.5cm} p{1cm} p{0.5cm}
+\begin{tabular}{p{0.1cm}|p{3cm} p{0.6cm} p{0.5cm} p{0.5cm} p{1cm} p{0.5cm}
 p{1cm}} \hline\hline
 \# 
 &Técnica   
@@ -474,28 +479,29 @@ p{1cm}} \hline\hline
 2 & \citeonline{Boilerplate10} & Texto & - & - & - & - & \textit{Decision tree}\\
 3 & \citeonline{CETR10} & Texto & - & - & - & - & \textit{Clustering} e limiar\\
 %- & \citeonline{NonTemplate13} & Texto & - & - & - & - \\
-4 & \citeonline{Noisy03} & DOM & Não & Sim & Não & Sim & Heurística\\
+4 & \citeonline{Augusto2013} & DOM & Sim & Não & Sim & Não & Heurística\\
+5 & \citeonline{Noisy03} & DOM & Não & Sim & Não & Sim & Heurística\\
 %11 & \citeonline{Jointop07} & DOM & Não & Sim & Não & Sim \\
-5 & \citeonline{Graph08} & DOM & Não & Sim & Não & Sim & Grafos \\
-6 & \citeonline{Entropy09} & DOM & Sim & Não & Sim & Não & Entropia\\
-7 & \citeonline{SiteOriented11} & DOM & Não & Sim & Não & Sim & Heurística\\
-8 & \citeonline{Entropy12} & DOM & Sim & Não & Sim & Sim & Entropia Semântica\\
-9 & \citeonline{desc2013} & DOM & Não & Sim & Não & Sim & \textit{Decision tree}\\
-10 & \citeonline{vips03} & Visual & Sim & Não & Sim & Não & Conjunto de regras\\
-11 & \citeonline{viper05} & Visual & Sim & Não & Não & Sim & Distância \\
-12 & \citeonline{BlockImp07} & Visual & Não & Sim & Não & Não & Estatística\\
-13 & \citeonline{vide10} & Visual & Sim & Não & Sim & Não & \textit{Clustering}\\
+6 & \citeonline{Graph08} & DOM & Não & Sim & Não & Sim & Grafos \\
+7 & \citeonline{Entropy09} & DOM & Sim & Não & Sim & Não & Entropia\\
+8 & \citeonline{SiteOriented11} & DOM & Não & Sim & Não & Sim & Heurística\\
+9 & \citeonline{Entropy12} & DOM & Sim & Não & Sim & Sim & Entropia Semântica\\
+10 & \citeonline{desc2013} & DOM & Não & Sim & Não & Sim & \textit{Decision tree}\\
+11 & \citeonline{vips03} & Visual & Sim & Não & Sim & Não & Conjunto de regras\\
+12 & \citeonline{viper05} & Visual & Sim & Não & Não & Sim & Distância \\
+13 & \citeonline{BlockImp07} & Visual & Não & Sim & Não & Não & Estatística\\
+14 & \citeonline{vide10} & Visual & Sim & Não & Sim & Não & \textit{Clustering}\\
 \hline
-14 & \citeonline{TPS2013} & TPS & Sim & Não & Não & Sim & Segment. TPS\\
+15 & \citeonline{TPS2013} & TPS & Sim & Não & Não & Sim & Segment. TPS\\
 \end{tabular}
 \end{tiny}
 \end{table}
 
 Como é possível observar, na Tabela \ref{table:comp}, as técnicas existentes,
 que foram analisadas, para eliminação de ruído, aplicáveis à extração
-estruturada (Linhas \#4 a \#13), com exceção de \citeonline{viper05} (Linha
-\#11), não atendem a todos os requisitos que o algoritmo proposto atende (Linha
-\#14). As técnicas que não dependem da sintaxe HTML ou necessitam de treinamento
+estruturada (Linhas \#4 a \#14), com exceção de \citeonline{viper05} (Linha
+\#12), não atendem a todos os requisitos que o algoritmo proposto atende (Linha
+\#15). As técnicas que não dependem da sintaxe HTML ou necessitam de treinamento
 e/ou de definições \textit{a priori}. A abordagem adotada em
 \citeonline{viper05} atende a todos os requisitos estipulados, no entanto,
 utiliza um renderizador (que é computacionalmente dispendioso) e só identifica o ruído
@@ -554,56 +560,64 @@ respectivo alfabeto (conjunto de símbolos da sequência).
 Nesta seção são apresentados os conceitos e definições necessários para o
 entendimento do problema e do algoritmo proposto. As definições são
 exemplificadas com o auxílio da Figura \ref{fig:ex1}.
-%\begin{definition}[\textbf{Árvore DOM}]\label{def:domtree}
-%A árvore DOM é uma estrutura hierárquica, derivada do código HTML, que
-%representa a página \textit{web}.
-%\end{definition}
-%Na Figura \ref{fig:ex1} um pequeno trecho de código é utilizado para ilustrar a
-%árvore DOM e as próximas definições.
 
-\begin{definition}[\textbf{\textit{tag paths}}]\label{def:tp} Um \textit{tag path}
-(\abreviatura{TP}{tag path}TP) é uma $string$ descrevendo o caminho absoluto, a
-partir da raiz da árvore DOM, até um dado nó da árvore. Seja ``$n_i$'' um
-determinado nó da árvore DOM, onde ``i'' representa a posição/ordem, em
-profundidade, do nó $``n_i"$ na árvore, então é dito que $TP_i$ é a $string$ 
-descrevendo o caminho, a partir da raiz da árvore DOM, até o nó $``n_i"$.
+\begin{definition}[\textbf{Árvore DOM}].
+\label{def:domtree}
+A árvore DOM (\textit{Document Object Model}) é uma estrutura hierárquica,
+derivada do código HTML, que representa uma página web.
+Cada nó desta árvore representa um ``objeto'' do documento HTML. A especificação
+de referência é mantida pelo consórcio $W3C$ \cite{w3c} que é o órgão
+encarregado de manter os padrões e especificações da \textit{web}.
+\end{definition}
+Na Figura \ref{fig:ex1} um pequeno trecho de código HTML é utilizado para
+ilustrar como uma árvore DOM é construída a partir do código.
+
+\begin{definition}[\textbf{\textit{tag paths}}].
+\label{def:tp} 
+Um \textit{tag path} (\abreviatura{TP}{tag path}TP) é uma $string$ descrevendo o
+caminho absoluto, a partir da raiz da árvore DOM, até um dado nó da árvore. Seja
+``$n_i$'' um determinado nó da árvore DOM, onde ``i'' representa a
+posição/ordem, em profundidade, do nó $``n_i"$ na árvore, então é dito que
+$TP_i$ é a $string$ descrevendo o caminho, a partir da raiz da árvore DOM, até o
+nó $``n_i"$.
 \end{definition}
 Na Figura \ref{fig:ex1}, o caminho absoluto $TP_4$ do nó $body$ até a célula da
 tabela $td_4$ é $TP_4=``body/table/tr/td"$.
 
-\begin{definition}[\textbf{Sequência de \textit{\textit{tag paths}}}]\label{def:tps}
-Uma sequência de \textit{tag paths} (\abreviatura{TPS}{tag path sequence}TPS) de uma
-árvore DOM com ``n'' nós é definida como sendo a sequência ordenada $TPS[1..n] = (TP_1,TP_2,TP_3, ...,TP_{n-1},TP_n)$
-onde dois \textit{tag paths} $TP_i$ e $TP_j$, com $i\neq{}j$, são considerados iguais
-apenas se seus caminhos e suas definições de estilo são iguais, caso
-contrário eles são considerados diferentes.
+\begin{definition}[\textbf{Sequência de \textit{tag paths}}].
+\label{def:tps} 
+Uma sequência de \textit{tag paths} (\abreviatura{TPS}{tag path sequence}TPS) de
+uma árvore DOM com ``n'' nós é definida como sendo a sequência ordenada
+$TPS[1..n] = (TP_1,TP_2,TP_3, ...,TP_{n-1},TP_n)$ onde dois \textit{tag paths}
+$TP_i$ e $TP_j$, com $i\neq{}j$, são considerados iguais apenas se seus caminhos
+e suas definições de estilo são iguais, caso contrário eles são considerados
+diferentes.
 \end{definition}
-Na sequência de \textit{tag paths} os
-\textit{tag paths} não são representados pelas suas \textit{strings}, mas sim
-por códigos (ou símbolos), com objetivo de facilitar sua manipulação, onde
-\textit{tag paths} iguais recebem o mesmo código. Esta definição é similar à
-utilizada em \citeonline{SuffixTree12}, onde cada \textit{tag path} é representado 
-na sequência por um símbolo, exceto que neste trabalho
-foram incorporadas as definições de estilo das \textit{tags}. Na Figura
-\ref{fig:ex1} é mostrada a $TPS$ de um dado trecho de
-código HTML, onde cada $TP$ recebe um código, produzindo $TPS = (1,2,3,4,4,3,4,4)$.
+Na sequência de \textit{tag paths} os \textit{tag paths} não são representados
+pelas suas \textit{strings}, mas sim por códigos (ou símbolos), com objetivo de
+facilitar sua manipulação, onde \textit{tag paths} iguais recebem o mesmo
+código. Esta definição é similar à utilizada em \citeonline{SuffixTree12}, onde
+cada \textit{tag path} é representado na sequência por um símbolo, exceto que
+neste trabalho foram incorporadas as definições de estilo das \textit{tags}. Na
+Figura \ref{fig:ex1} é mostrada a $TPS$ de um dado trecho de código HTML, onde
+cada $TP$ recebe um código, produzindo $TPS = (1,2,3,4,4,3,4,4)$.
 
-\begin{definition}[\textbf{Alfabeto da TPS}]\label{def:alpha} Seja $\Sigma$ o
-conjunto contendo todos os símbolos de uma dada sequência $TPS$ de tamanho
-``n'', $\Sigma$ é dito o alfabeto de $TPS$ definido como $\Sigma =
-\{\alpha | TPS[i]=\alpha \wedge 1 \leq i \leq n\}$, onde $\alpha$ é
-um símbolo do alfabeto.
+\begin{definition}[\textbf{Alfabeto da TPS}].
+\label{def:alpha} Seja $\Sigma$ o conjunto contendo todos os símbolos de uma
+dada sequência $TPS$ de tamanho ``n'', $\Sigma$ é dito o alfabeto de $TPS$
+definido como $\Sigma = \{\alpha | TPS[i]=\alpha \wedge 1 \leq i \leq n\}$, onde
+$\alpha$ é um símbolo do alfabeto.
 \end{definition}
 Informalmente falando, o alfabeto contém todos os símbolos distintos de uma
 determinada sequência. Na Figura \ref{fig:ex1}, a $TPS$ é formada apenas pelos
 símbolos ``1'',``2'', ``3'' e ``4'', então seu alfabeto é $\Sigma=\{1,2,3,4\}$.
 
-\begin{definition}[\textbf{Conjunto de frequências de $tag$
-$paths$}]\label{def:tpfs} Seja $(s,f)$ um par ordenado onde ``s'' é um símbolo
-de um alfabeto de uma determinada TPS e ``f'' é o número de vezes que o
-símbolo ``s'' ocorre nesta TPS, então o conjunto de frequências $FS$ de uma
-TPS é definido como sendo o conjunto de todos os pares $(s,f)$
-existentes nesta TPS, ou seja $FS =
+\begin{definition}[\textbf{Conjunto de frequências de $tag$ $paths$}].
+\label{def:tpfs} Seja $(s,f)$ um par ordenado onde ``s'' é um símbolo de um
+alfabeto de uma determinada TPS e ``f'' é o número de vezes que o símbolo ``s''
+ocorre nesta TPS, então o conjunto de frequências $FS$ de uma TPS é definido
+como sendo o conjunto de todos os pares $(s,f)$ existentes nesta TPS, ou seja
+$FS =
 \{(s_1,f_{s1}),(s_2,f_{s2}),(s_3,f_{s3}),\ldots,(s_{n-1},f_{sn-1}),(s_n,f_{sn})\}$,
 onde ``n" é o tamanho do alfabeto da TPS.
 \end{definition}
@@ -613,33 +627,34 @@ vezes, então para esta sequência $FS = \{(1,1), (2,1), (3,2), (4,4)\}$. O
 conjunto $FS$ é o mapeamento de todos os símbolos de uma sequência para suas
 respectivas frequências.
 
-\begin{definition}[\textbf{Limiares de frequência}]\label{def:ft}
-Dada uma $TPS$ com alfabeto $\Sigma$ e conjunto de frequências $FS$, os
-limiares de frequência $FT$ são definidos como sendo a sequência ordenada
-contendo apenas as frequências de $FS$. Seja $FT = \{f|\exists{(s,f)} \wedge
-(s,f) \in FS \wedge s \in \Sigma \}$, onde ``s'' é um símbolo do alfabeto
-$\Sigma$ e ``f'' é sua respectiva frequência.
+\begin{definition}[\textbf{Limiares de frequência}].
+\label{def:ft}
+Dada uma $TPS$ com alfabeto $\Sigma$ e conjunto de frequências $FS$, os limiares
+de frequência $FT$ são definidos como sendo a sequência ordenada contendo apenas
+as frequências de $FS$. Seja $FT = \{f|\exists{(s,f)} \wedge (s,f) \in FS \wedge
+s \in \Sigma \}$, onde ``s'' é um símbolo do alfabeto $\Sigma$ e ``f'' é sua
+respectiva frequência.
 \end{definition}
 Na TPS exibida na Figura \ref{fig:ex1}, o conjunto de frequências dos
-\textit{tag paths} é $FS=\{(1,1), (2,1), (3,2), (4,4)\}$, neste caso o
-conjunto dos limiares de frequência é igual a $FT=\{1,2,4\}$, pois os 
-símbolos ``1'' e ``2'' tem frequência igual a
-\textbf{1}, o símbolo ``3'' tem frequência igual a \textit{2} e o símbolo ``4''
-tem frequência igual a \textit{4}. O conjunto $FT$ é necessário para filtrar os
-símbolos da TPS. Se $FT=\{1,2,4\}$, então não faria sentido filtrar símbolos com
-frequência igual a \textit{3}, pois não existem símbolos na sequência com esta
-frequência.
+\textit{tag paths} é $FS=\{(1,1), (2,1), (3,2), (4,4)\}$, neste caso o conjunto
+dos limiares de frequência é igual a $FT=\{1,2,4\}$, pois os símbolos ``1'' e
+``2'' tem frequência igual a \textbf{1}, o símbolo ``3'' tem frequência igual a
+\textit{2} e o símbolo ``4'' tem frequência igual a \textit{4}. O conjunto $FT$
+é necessário para filtrar os símbolos da TPS. Se $FT=\{1,2,4\}$, então não faria
+sentido filtrar símbolos com frequência igual a \textit{3}, pois não existem
+símbolos na sequência com esta frequência.
 
-\begin{definition}[\textbf{Região}]\label{def:region} 
+\begin{definition}[\textbf{Região}].
+\label{def:region} 
 Seja uma TPS a concatenação de duas outras sequências $TPS=TPS_a . TPS_b$, então
 é dito que $TPS_a$ e $TPS_b$ são regiões de $TPS$, $sse$ $\Sigma_a \cap \Sigma_b
 = \emptyset$.
 \end{definition}
 Na Figura \ref{fig:ex1} a TPS pode ser dividida em duas subsequências
 $TPS_a=TPS[1..2]=(1,2)$ e $TPS_b=TPS[3..8]=(3,4,4,3,4,4)$, com alfabetos
-$\Sigma_a=\{1,2\}$ e $\Sigma_b=\{3,4\}$, então $TPS_a$ a $TPS_b$
-são regiões distintas de $TPS$, pois a intersecção de seus respectivos
-alfabetos é vazia. % $\Sigma_a \cap
+$\Sigma_a=\{1,2\}$ e $\Sigma_b=\{3,4\}$, então $TPS_a$ a $TPS_b$ são regiões
+distintas de $TPS$, pois a intersecção de seus respectivos alfabetos é vazia. 
+%$\Sigma_a \cap
 % \Sigma_b=\emptyset$.
 
 \section{Proposta}\label{sec:probform}
@@ -680,7 +695,7 @@ trabalho é aplicada (\textit{i.e.} extração estruturada). Como se está considera
 apenas páginas com registros, e para descrever a estrutura desses registros são
 necessários nós da árvore DOM, então são necessários mais nós para descrever
 conteúdo estruturado do que é necessário para conteúdo não estruturado (\textit{e.g.}
-texto). Portanto, é razoável assumir que, para páginas que contém registros, a
+texto). Portanto, é razoável assumir que, para páginas que contêm registros, a
 região principal da página é a maior de todas (\textit{i.e.} a que contém mais nós).
 
 \end{enumerate}
@@ -707,6 +722,7 @@ tem três regiões delimitadas, também, pelo mesmo \textit{tag path}
 símbolos de baixa frequência da $TPS$, não seria possível identificar essas
 regiões utilizando o algoritmo proposto.
 
+\pagebreak
 \begin{small}
 \lstset{numbers=left, language=HTML, frame=single, tabsize=2, caption=Código
 HTML, label=lst:html}
@@ -779,7 +795,7 @@ problema definido na Seção \ref{sec:probform}. Quais sejam:
   mantendo a estrutura do documento original.
   
 \end{itemize}
-\pagebreak
+%\pagebreak
 
 \subsection{$tagPathSequenceFilter()$}
 \begin{algorithm}[h]
@@ -1468,6 +1484,8 @@ algoritmo para melhorar seus resultados nas seguintes situações:
   \item páginas onde a região principal tem tamanho inferior ao ruído total:
   identificar a região principal através de outros atributos que não o tamanho.
 \end{itemize}
+Além disto, seria interessante realizar uma quantidade maior de testes, para
+consolidar os resultados já obtidos.
 
 Este trabalho também foi publicado no \textit{JIDM - Journal of Information and
 Data Management} no ano de 2013, como artigo completo \cite{TPS2013}, e os
