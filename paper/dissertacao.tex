@@ -24,7 +24,7 @@ Ruído de Páginas \textit{web} Utilizando \textit{tag paths}}
 
 \numerodemembrosnabanca{5}
 \orientadornabanca{sim}
-\bancaMembroA{Profa. Dra. Carina F. Dorneles}
+%\bancaMembroA{Profa. Dra. Carina F. Dorneles}
 \bancaMembroB{Profa. Dra. Renata Galante}
 \bancaMembroC{Prof. Dr. Renato Fileto}
 \bancaMembroD{Prof. Dr. Ronaldo dos Santos Mello}
@@ -250,7 +250,7 @@ HTML.
 \section{Propostas baseadas no texto}\label{sec:txt}
 Nos trabalhos detalhados nesta seção \cite{Densiometric08,Boilerplate10,CETR10}
 a segmentação das partes de uma página e subsequente identificação da região
-principal, é realizada utilizando o conteúdo textual do documento. O foco
+principal é realizada utilizando o conteúdo textual do documento. O foco
 principal destes trabalhos, entretanto, não é em extração estruturada, mas em
 indexação e \textit{clustering} de páginas. A maioria dos trabalhos existentes
 sobre segmentação e remoção de ruído, que atuam sobre o texto, é direcionada para este
@@ -259,7 +259,7 @@ página.
 
 Em \citeonline{Densiometric08} a página é modelada como uma sequência de
 blocos de texto delimitados por \textit{tags} de abertura e fechamento (chamados de
-\textit{gaps}), os blocos de texto são analisados segundo sua densidade textual
+\textit{gaps}). Os blocos de texto são analisados segundo sua densidade textual
 e os blocos contíguos, com aproximadamente a mesma densidade, são agrupados para
 formar blocos maiores e a região principal da página seria a de maior densidade
 textual. A densidade de texto é calculada segundo a Equação \ref{eq:dt}, onde
@@ -297,9 +297,9 @@ limiar, este tem que ser encontrado por experimentação.
 Nos trabalhos detalhados nesta seção
 \cite{Noisy03,Graph08,Entropy09,SiteOriented11,Entropy12,desc2013,Augusto2013} a
 segmentação, e subsequente identificação da região principal, é realizada
-utilizando a árvore DOM da página, portanto estas técnicas levam em consideração
-a estrutura da página \textit{web} e, consequentemente, podem ser aplicadas no contexto
-de extração estruturada.
+utilizando a árvore DOM da página. Portanto, estas técnicas levam em
+consideração a estrutura da página \textit{web} e, consequentemente, podem ser
+aplicadas no contexto de extração estruturada.
 
 Em \citeonline{Augusto2013} a região principal é identificada através da
 localização das estruturas da árvore DOM que mais se repetem na página com
@@ -357,7 +357,7 @@ necessitar de treinamento, este é realizado de maneira não supervisionada.
 Em \citeonline{Entropy12} é utilizada uma base de dados de termos
 associados a ``papéis semânticos'' para encontrar, na árvore DOM, os nós folha
 que desempenham estes papéis, atribuindo, a cada um, uma medida de ``entropia
-semântica-estrutural'' de acordo como papel desempenhado por aquele nó folha.
+semântica-estrutural'' de acordo com o papel desempenhado por aquele nó folha.
 A entropia dos demais nós é calculada recursivamente, a partir da entropia dos
 nós descendentes. Quanto maior for esta medida de entropia, maior a
 probabilidade de se tratar de uma região de interesse. A entropia é calculada
@@ -455,7 +455,7 @@ são comparadas com relação às seguintes características:
   \item Informação \textit{a priori}: se o algoritmo faz uso, ou necessita, de
   informações pré-definidas (\textit{e.g.} dicionário de \textit{tags}); e
   \item Independência da sintaxe HTML: técnicas que não tratam
-  \textit{tags} HTML de forma específica, são consideradas
+  \textit{tags} HTML de forma específica são consideradas
   independentes.
 \end{itemize}
 
@@ -512,8 +512,8 @@ de submeter a página ao algoritmo de extração.
 
 \chapter{Algoritmo para remoção de ruído}\label{ch:met}
 
-Neste capítulo, é apresentada, primeiro, na Seção \ref{sec:reptps}, a forma de
-representação dos documentos HTML utilizada neste trabalho (TPS). Na Seção
+Neste capítulo, é apresentada, inicialmente, na Seção \ref{sec:reptps}, a forma
+de representação dos documentos HTML utilizada neste trabalho (TPS). Na Seção
 \ref{sec:def}, as definições necessárias para formular o problema.
 Na Seção \ref{sec:probform}, o problema é enunciado a partir das definições e
 das hipóteses levantadas. Na Seção \ref{sec:alg}, são apresentados os algoritmos
@@ -631,9 +631,9 @@ respectivas frequências.
 \label{def:ft}
 Dada uma $TPS$ com alfabeto $\Sigma$ e conjunto de frequências $FS$, os limiares
 de frequência $FT$ são definidos como sendo a sequência ordenada contendo apenas
-as frequências de $FS$. Seja $FT = \{f|\exists{(s,f)} \wedge (s,f) \in FS \wedge
-s \in \Sigma \}$, onde ``s'' é um símbolo do alfabeto $\Sigma$ e ``f'' é sua
-respectiva frequência.
+as frequências distintas de $FS$. Assim, temos que $FT = \{f|\exists{(s,f)}
+\wedge (s,f) \in FS \wedge s \in \Sigma \}$, onde ``s'' é um símbolo do alfabeto
+$\Sigma$ e ``f'' é sua respectiva frequência.
 \end{definition}
 Na TPS exibida na Figura \ref{fig:ex1}, o conjunto de frequências dos
 \textit{tag paths} é $FS=\{(1,1), (2,1), (3,2), (4,4)\}$, neste caso o conjunto
@@ -770,7 +770,7 @@ $publicidade = (6,...,6)$
 \section{Algoritmos}\label{sec:alg}
 
 Nesta seção, são apresentados os algoritmos desenvolvidos para tratar o
-problema definido na Seção \ref{sec:probform}. Quais sejam:
+problema definido na Seção \ref{sec:probform}. Eles são os seguintes:
 
 \begin{itemize}
   \item{\textbf{$tagPathSequenceFilter()$}} é o algoritmo
@@ -820,13 +820,13 @@ Linha $2$, converte o código HTML em uma árvore DOM; \textit{convertToSeq()}, na
 Linha $3$, converte a árvore DOM em uma TPS; o procedimento $searchRegion()$, na Linha
 $4$, procura recursivamente pela maior região da TPS que possui um alfabeto
 único e, finalmente; $pruneDOMTree()$, na Linha $5$, retira da árvore DOM (poda)
-todos os nós que não estão na TPS resultante, preservando a estrutura do
+todos os nós que não fazem parte da TPS resultante, preservando a estrutura do
 documento retornado na Linha $6$.
 
 Em seguida são detalhados os algoritmos $convertToSeq()$, \\$searchRegion()$,
 $filterAlphabet()$ e $pruneDOMTree()$. O algoritmo $parseHTML()$, que
 consistiria em gerar a árvore DOM a partir do código HTML, não faz parte do
-escopo deste trabalho e, portanto, não será discutido aqui.
+escopo deste trabalho e, portanto, não é discutido aqui.
 \vspace{5cm}
 \pagebreak
 
@@ -873,12 +873,12 @@ o procedimento é invocado recursivamente na Linha $9$ para cara filho de $node$.
 
 Este é o algoritmo central, já que é responsável por encontrar a região
 principal e, para facilitar seu entendimento, foi incluída uma ilustração do seu
-funcionamento (a Figura \ref{fig:alg}). A Figura \ref{fig:alg} apresenta uma
-ilustração da execução do algoritmo na qual foi omitido o procedimento de
+funcionamento (a Figura \ref{fig:alg}). Ela apresenta uma
+ilustração da execução do algoritmo excluindo o procedimento de
 filtragem dos símbolos com baixas frequências para maior clareza, pois a
 intenção é passar a idéia principal. Na Figura \ref{fig:alg} estão representadas
 as várias iterações feitas em cima da sequência até o ponto em que a região
-principal é localizada; em cada iteração o cursor percorre as posições da
+principal é localizada. Em cada iteração, o cursor percorre as posições da
 sequência e verifica, em cada posição, se não há intersecção entre os alfabetos
 das subsequências ``a'' e ``b'' e, neste caso, inicia uma nova iteração em cima
 da maior subsequência resultante, até que esta não possa mais ser subdividida,
@@ -954,17 +954,17 @@ apresentada para a listagem do algoritmo.
 
 O procedimento $searchRegion()$ no Algoritmo \ref{alg:searchreg} calcula o
 alfabeto da TPS e as frequências correspondentes de cada símbolo nas Linhas $4$
-a $11$; na Linha $12$, os limiares de frequência, como especificado Definição
+a $11$; na Linha $12$, os limiares de frequência, como especificado na Definição
 \ref{def:ft}, são calculados; nas Linhas $14$ a $38$ é realizada a busca por uma posição na
 sequência onde é possível dividi-la (\textit{i.e.} onde existe uma região); na Linha
 $15$ os limiares de frequência são iterados; na Linha $16$ o alfabeto da TPS, da
-Definição \ref{def:alpha}, é filtrado, como descrito na Seção
-\ref{sec:probform}; na Linha $22$ a TPS é iterada; na Linha $25$ o alfabeto da
+Definição \ref{def:alpha}, é filtrado, como descrito na Subseção
+\ref{subsec:filter}; na Linha $22$ a TPS é iterada; na Linha $25$ o alfabeto da
 região é calculado e; nas Linhas $27$ a $35$ é verificado se existe uma
 intersecção entre os alfabetos das duas partes da TPS (uma intersecção vazia
 indica que uma possível região foi encontrada, como na Definição
 \ref{def:region}). A região encontrada só é considerada válida se for ao menos
-20\% maior que o restante da sequência, caso contrário o filtro de frequência é
+20\% maior que o restante da sequência. Caso contrário, o filtro de frequência é
 iterado e a busca prossegue.
 Este percentual é, na verdade, um parâmetro com o propósito de evitar relatar
 uma região sob condições ambíguas (nos experimentos foi utilizado o valor de
@@ -972,7 +972,7 @@ uma região sob condições ambíguas (nos experimentos foi utilizado o valor de
 encontrada, chamando o procedimento $searchRegion()$ recursivamente na Linha
 $45$.
 
-\subsection{$filterAlphabet()$}
+\subsection{$filterAlphabet()$}\label{subsec:filter}
 
 \begin{algorithm}[H]
 \caption{Filtra símbolos de baixa frequência no alfabeto}
