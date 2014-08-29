@@ -513,6 +513,11 @@ de submeter a página ao algoritmo de extração.
 
 \chapter{Algoritmo para remoção de ruído}\label{ch:met}
 
+O objetivo geral do algoritmo proposto neste trabalho é localizar a região
+principal de uma página \textit{web} com conteúdo estruturado, eliminando o
+restante da página (considerado ruído) e, consequentemente, elevar a precisão
+da extração dos dados.
+
 Neste capítulo, é apresentada, inicialmente, na Seção \ref{sec:reptps}, a forma
 de representação dos documentos HTML utilizada neste trabalho (TPS). Na Seção
 \ref{sec:def}, as definições necessárias para formular o problema.
@@ -587,21 +592,25 @@ $body$ até a célula da tabela $td_4$ é $TP_4=``body/table/tr/td"$.
 
 \begin{definition}[\textbf{Sequência de \textit{tag paths}}].
 \label{def:tps} 
-Uma sequência de \textit{tag paths} (\abreviatura{TPS}{Tag Path Sequence}TPS)
-de uma árvore DOM com ``n'' nós é definida como sendo a sequência ordenada
+Uma sequência de \textit{tag paths} (\abreviatura{TPS}{Tag Path Sequence}TPS) de
+uma árvore DOM com ``n'' nós é definida como sendo a sequência ordenada
 $TPS[1..n] = (TP_1,TP_2,TP_3, ...,TP_{n-1},TP_n)$ onde dois \textit{tag paths}
 $TP_i$ e $TP_j$, com $i\neq{}j$, são considerados iguais apenas se seus caminhos
 e suas definições de estilo são iguais, caso contrário eles são considerados
 diferentes.
 \end{definition}
 \textbf{Exemplo.} Na Figura \ref{fig:ex1} é mostrada a $TPS$ de um dado trecho
-de código HTML, onde cada $TP$ recebe um código, produzindo $TPS = (1,2,3,4,4,3,4,4)$.
+de código HTML, onde cada $TP$ recebe um código, produzindo $TPS =
+(1,2,3,4,4,3,4,4)$.
 Na sequência de \textit{tag paths} os \textit{tag paths} não são representados
 pelas suas \textit{strings}, mas sim por códigos (ou símbolos), com objetivo de
 facilitar sua manipulação, onde \textit{tag paths} iguais recebem o mesmo
 código. Esta definição é similar à utilizada em \citeonline{SuffixTree12}, onde
 cada \textit{tag path} é representado na sequência por um símbolo, exceto que
 neste trabalho foram incorporadas as definições de estilo das \textit{tags}.
+Como as definições CSS são utilizadas para diferenciar e caracterizar as
+diversas regiões de uma página, é muito importante levar em consideração essas
+definições na momento de segmentar a página.
 
 \begin{definition}[\textbf{Alfabeto da TPS}].
 \label{def:alpha} Seja $\Sigma$ o conjunto contendo todos os símbolos de uma
@@ -670,6 +679,8 @@ página. A página \textit{web}, que é submetida ao algoritmo, é representada como
 uma sequência de \textit{tag paths}.
 O algoritmo proposto é formulado a partir de duas hipóteses:
 
+\pagebreak
+
 \begin{enumerate}
   \item\label{ass:1} diferentes regiões de uma página \textit{web} são descritas por
   diferentes \textit{tag paths};
@@ -724,8 +735,8 @@ tem três regiões delimitadas, também, pelo mesmo \textit{tag path}
 símbolos de baixa frequência da $TPS$, não seria possível identificar essas
 regiões utilizando o algoritmo proposto.
 
-\pagebreak
-\begin{small}
+%\pagebreak
+%\begin{small}
 \lstset{numbers=left, language=HTML, frame=single, tabsize=2, caption=Código
 HTML, label=lst:html}
 \begin{lstlisting}
@@ -749,7 +760,7 @@ HTML, label=lst:html}
 	<br> <!-- rodapé -->
 </body>
 \end{lstlisting}
-\end{small}
+%\end{small}
 
 A TPS, do código HTML apresentado na Listagem \ref{lst:html}, é 
 $TPS=(1,2,3,4,...,4,3,5,...,5,3,6,...,6,2)$.
@@ -805,7 +816,7 @@ problema definido na Seção \ref{sec:probform}. Eles são os seguintes:
 
 \begin{figure}[H]
   \centering
-    \includegraphics[scale=0.35]{fluxograma.png}
+    \includegraphics[scale=0.24]{fluxograma.png}
   \caption{Visão de alto nível da interação entre os algoritmos.}
   \label{fig:flow}
 \end{figure}
@@ -889,7 +900,7 @@ atribuído a ele na Linha $5$, como mostrado na Definição \ref{def:tps}; na Linha
 $7$, o código do \textit{tag path} é concatenado ao final da sequência e, finalmente,
 o procedimento é invocado recursivamente na Linha $9$ para cara filho de $node$.
 
-\pagebreak
+%\pagebreak
 
 \subsection{Algoritmo de $searchRegion()$}
 
@@ -907,12 +918,16 @@ da maior subsequência resultante, até que esta não possa mais ser subdividida,
 situação em que a região principal foi localizada. Uma descrição detalhada é
 apresentada para a listagem do algoritmo.
 
-\begin{figure}[H]
+
+\begin{figure}[h]
   \centering
-    \includegraphics[scale=0.45]{alg-pb-pt.jpg}
+    \includegraphics[scale=0.450]{alg-pb-pt.jpg}
   \caption{Ilustração da execução do algoritmo.}
   \label{fig:alg}
 \end{figure}
+
+\vspace{5cm}
+\pagebreak
 
 \begin{algorithm}[H]
 \begin{tiny}
@@ -1022,8 +1037,8 @@ Nas Linhas $3$ to $7$ apenas os símbolos com frequência maior ou igual a
 $threshold$ são inseridos no conjunto resultante. O resultado de $filterAlphabet()$ é
 utilizado no Algoritmo \ref{alg:searchreg}, Linha $24$, onde apenas os símbolos
 em $curr\Sigma$ são considerados durante a busca pela região principal.
-%\vspace{3.3cm}
-%\pagebreak
+\vspace{3.3cm}
+\pagebreak
 
 \subsection{Algoritmo de $pruneDOMTree()$}
 
@@ -1228,7 +1243,7 @@ redução de $-52,67\%$;
 removido $100\%$.
 \end{itemize}
 \end{itemize}
-\pagebreak
+%\pagebreak
 
 Neste resultado observa-se uma melhora na extração dos registros, assim como uma
 redução considerável do tamanho da árvore DOM que precisou ser processada. Um
@@ -1240,13 +1255,14 @@ região principal detectada pelo algoritmo proposto.
 
 \begin{figure}[H]
   \centering
-    \includegraphics[scale=0.32]{example2-gs-pt.jpg}
+    \includegraphics[scale=0.34]{example2-gs-pt.jpg}
   \caption{Um página de resultados do $site$ YouTube com sua região principal
   delimitada.}
   \label{fig:ex2}
 \end{figure}
-\vspace{5cm}
-\pagebreak
+
+%\vspace{5cm}
+%\pagebreak
 
 \begin{figure}[H]
   \centering
@@ -1276,6 +1292,29 @@ respectivamente, exibindo o total geral de registros extraídos e o total de
 registros de interesse (\textit{target}) extraídos para ambas abordagens. A
 última coluna mostra o percentual de ruído removido, calculado conforme a Equação
 \ref{eq:noise}.
+ 
+Como se pode observar na Tabela \ref{table:results}, o total da coluna
+``Conteúdo principal'' indica que o algoritmo funcionou em 82,35\% dos casos e
+removeu, com este conjunto de teste, uma média de 88,86\% de todo o ruído
+presente nos dados, como mostra a média da coluna ``Ruído rem.''.
+
+A média de 50,18\% de redução no tamanho da árvore DOM é um resultado
+interessante. Primeiro, por que significa que praticamente metade da árvore DOM
+é ruído, na média. Segundo, por que este valor ficou bem próximo do valor
+relatado, de forma independente, em \citeonline{Volume05} como sendo o tamanho
+do ``\textit{template}'' das páginas (em torno de 50\%).
+
+Uma situação que chama a atenção na Tabela \ref{table:results} é o resultado
+obtido para a página do $site$ ``\textit{Build}'' (\#10). Sem filtrar o ruído, o
+MDR retornou um total de $117$ registros, incluindo os $12$ registros de interesse.
+Após aplicar o filtro de ruído, um total de $69$ registros são retornados,
+nenhum deles de interesse, todos ruído. Então, após a filtragem, se a árvore
+retornada fosse, na realidade, o seu complemento, o resultado seria de $48$
+registros no total ($117-69=48$), incluindo os $12$ registros de interesse, o
+que seria um bom resultado já que significa uma remoção de 65,71\% do ruído. O
+que se pode deduzir disto é que, a segmentação da página ocorreu corretamente,
+apenas a identificação da região principal falhou, já que neste caso, era
+relativamente pequena.
 
 \begin{table}[H]
 \caption{Resultados}
@@ -1348,35 +1387,14 @@ p{2mm} p{2mm} |r}
 \end{tabular}
 \end{tiny}
 \end{table}
- 
-Como se pode observar na Tabela \ref{table:results}, o total da coluna
-``Conteúdo principal'' indica que o algoritmo funcionou em 82,35\% dos casos e
-removeu, com este conjunto de teste, uma média de 88,86\% de todo o ruído
-presente nos dados, como mostra a média da coluna ``Ruído rem.''.
-
-A média de 50,18\% de redução no tamanho da árvore DOM é um resultado
-interessante. Primeiro, por que significa que praticamente metade da árvore DOM
-é ruído, na média. Segundo, por que este valor ficou bem próximo do valor
-relatado, de forma independente, em \citeonline{Volume05} como sendo o tamanho
-do ``\textit{template}'' das páginas (em torno de 50\%).
-
-Uma situação que chama a atenção na Tabela \ref{table:results} é o resultado
-obtido para a página do $site$ ``\textit{Build}'' (\#10). Sem filtrar o ruído, o
-MDR retornou um total de $117$ registros, incluindo os $12$ registros de interesse.
-Após aplicar o filtro de ruído, um total de $69$ registros são retornados,
-nenhum deles de interesse, todos ruído. Então, após a filtragem, se a árvore
-retornada fosse, na realidade, o seu complemento, o resultado seria de $48$
-registros no total ($117-69=48$), incluindo os $12$ registros de interesse, o
-que seria um bom resultado já que significa uma remoção de 65,71\% do ruído. O
-que se pode deduzir disto é que, a segmentação da página ocorreu corretamente,
-apenas a identificação da região principal falhou, já que neste caso, era
-relativamente pequena.
 
 Como consequência da remoção de ruído, podemos observar um aumento considerável
 na precisão média da extração, como relatado na Tabela \ref{table:prec}. A
 redução no \textit{recall} corresponde às situações onde o filtro falhou, as
 quais são discutidas e tratadas na Seção \ref{sec:disc}, e, apesar desta redução, as
 medidas F e G apresentaram melhora significativa.
+\vspace{2cm}
+\pagebreak
 
 \begin{table}[H]
 \centering
@@ -1442,39 +1460,16 @@ em outros oito \textit{sites}, ou seja, em 17,65\% dos casos), quando a região
 principal é menor que as demais, uma abordagem semântica também pode ser
 utilizada para validar se a região encontrada, de fato, possui conteúdo de
 interesse e, se não possuir deve ser descartada e a árvore complementar
-(\textit{i.e.} inverter a poda) deve ser retornada em seu lugar. O algoritmo
-principal ficaria assim:
-
-\begin{algorithm}[H]
-\caption{Filtra o ruído de uma página \textit{web}}
-\label{alg:tpsfilter2}
-\textbf{Input:} $inputFile$ - um arquivo HTML \\
-\textbf{Output:} árvore DOM de $inputFile$ podada
-\begin{algorithmic}[1]
-\Procedure{tagPathSequenceFilter}{$inputFile$}
-\State $DOMTree \leftarrow parseHTML(inputFile)$
-\State $convertToSeq(DOMTree.body,$`` ''$,TPS)$
-\State $backupTPS \leftarrow TPS$
-\State $searchRegion(TPS)$
-
-\If {$TPS$ not $content$}
-\State $TPS = backupTPS - TPS$   
-\EndIf
-
-\State $pruneDOMTree(DOMTree.body,TPS)$
-\State return $DOMTree$
-\EndProcedure
-\end{algorithmic}
-\end{algorithm}
-
-Algoritmo \ref{alg:tpsfilter2} é igual ao Algoritmo \ref{alg:tpsfilter}, exceto
-pela Linha $6$ onde é verificado se o conteúdo principal está presente na região
-e, caso não esteja, a sequência complementar é utilizada (Linha $7$), garantindo
-a presença do conteúdo principal.
-
+(\textit{i.e.} inverter a poda) deve ser retornada em seu lugar.
+Neste caso não é necessária nenhuma alteração no algoritmos apresentados, apenas
+no Algoritmo \ref{alg:tpsfilter} entre as Linhas 4 e 5 (depois de encontrar a
+região, mas antes de podar a árvore DOM), bastaria verificar
+se a região resultante é, de fato, a região principal e, caso contrário,
+realizar a poda da árvore DOM com o complemento da sequência, garantindo assim a
+presença da região principal na árvore DOM resultante.
 Técnicas como a apresentada em \citeonline{Adaptive07}, que classifica uma
 sequência de blocos como sendo conteúdo ou não, pode ser utilizada para
-implementar a Linha $6$ do algoritmo \ref{alg:tpsfilter2}.
+implementar esta verificação.
 
 \chapter{Conclusões e Trabalhos Futuros}\label{ch:conclusion}
 
