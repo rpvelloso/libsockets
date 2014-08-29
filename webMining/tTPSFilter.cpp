@@ -222,7 +222,7 @@ map<long int, tTPSRegion> tTPSFilter::tagPathSequenceFilter(tNode *n, bool css) 
 		_regions[0].tps = originalTPS;
 	}
 	// select structured regions
-	float angCoeffThreshold=0.3;
+	float angCoeffThreshold=0.2;
 
 	for (auto i=_regions.begin();i!=_regions.end();i++) {
 		tLinearCoeff lc;
@@ -244,9 +244,6 @@ map<long int, tTPSRegion> tTPSFilter::tagPathSequenceFilter(tNode *n, bool css) 
 }
 
 void tTPSFilter::DRDE(tNode *n, bool css, float st) {
-	cerr << "entrou" << endl;
-
-	vector<tNode *> originalNodeSequence;
 	vector<unsigned int> recpos;
 	vector<wstring> m;
 	map<long int, tTPSRegion> structured;
@@ -254,14 +251,13 @@ void tTPSFilter::DRDE(tNode *n, bool css, float st) {
 	_regions.clear();
 
 	structured=tagPathSequenceFilter(n,css); // locate main content regions
-	originalNodeSequence = nodeSequence;
 
 	for (auto i=structured.begin();i!=structured.end();i++) {
-		auto firstNode = originalNodeSequence.begin()+(*i).first;
+		auto firstNode = nodeSequence.begin()+(*i).first;
 		auto lastNode = firstNode + (*i).second.len;
 
-		nodeSequence.assign(firstNode,lastNode);
 		_regions[(*i).first].tps = tagPathSequence.substr((*i).first,(*i).second.len);
+		_regions[(*i).first].nodeSeq.assign(firstNode,lastNode);
 		m.clear();
 		recpos.clear();
 
@@ -272,6 +268,18 @@ void tTPSFilter::DRDE(tNode *n, bool css, float st) {
 
 		// identify the start position of each record
 		recpos = locateRecords(_regions[(*i).first].tps,st);
+
+		// consider only leaf nodes when searching record boundary & performing field alignment
+		/*for (size_t k=0,j=0;j<_regions[(*i).first].nodeSeq.size();j++,k++) {
+			if (_regions[(*i).first].nodeSeq[j]->nodes.size() || _regions[(*i).first].nodeSeq[j]->text=="") {
+				_regions[(*i).first].nodeSeq.erase(_regions[(*i).first].nodeSeq.begin()+k);
+				_regions[(*i).first].tps.erase(k,1);
+				for (size_t w=0;w<recpos.size();w++) {
+					if (recpos[w]>k) recpos[w]--;
+				}
+				k--;
+			}
+		}*/
 
 		// create a sequence for each record found
 		int prev=-1;
@@ -285,14 +293,12 @@ void tTPSFilter::DRDE(tNode *n, bool css, float st) {
 		if (prev != -1)
 			m.push_back(_regions[(*i).first].tps.substr(prev,_regions[(*i).first].tps.size()-prev+1));
 
-
 		// align the records (one alternative to 'center star' algorithm is ClustalW)
 		centerStar(m);
 
 		// and extracts them
 		if (m.size()) onDataRecordFound(m,recpos,&_regions[(*i).first]);
 	}
-	nodeSequence = originalNodeSequence;
 
 	regions.clear();
 	for (auto i=_regions.begin();i!=_regions.end();i++) {
@@ -358,7 +364,7 @@ vector<unsigned int> tTPSFilter::locateRecords(wstring s, float st) {
 	// find the beginning of each record, using the tag path code found before
 	for (size_t i=0;i<s.size();i++) {
 		if (s[i] == rootTag) {
-			cerr << "root: " << i << " " << nodeSequence[i]->tagName << " : " << nodeSequence[i]->text << endl;
+			//cerr << "root: " << i << " " << nodeSequence[i]->tagName << " : " << nodeSequence[i]->text << endl;
 			recpos.push_back(i);
 		}
 	}
@@ -394,10 +400,11 @@ void tTPSFilter::onDataRecordFound(vector<wstring> &m, vector<unsigned int> &rec
 		rec.clear();
 		for (int j=0,k=0;j<cols;j++) {
 			if (m[i][j] != 0) {
-				rec.push_back(nodeSequence[recpos[i]+k]);
+				rec.push_back(reg->nodeSeq[recpos[i]+k]);
 				k++;
 			} else rec.push_back(NULL);
 		}
 		reg->records.push_back(rec);
 	}
+	cleanRegion(reg->records);
 }

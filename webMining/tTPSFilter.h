@@ -31,6 +31,7 @@
 struct tTPSRegion {
 	long int len,pos;
 	wstring tps;
+	vector<tNode *> nodeSeq;
 	tLinearCoeff lc;
 	vector<vector<tNode *> > records;
 };

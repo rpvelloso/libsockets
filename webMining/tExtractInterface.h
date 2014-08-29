@@ -19,6 +19,8 @@ public:
 
 	virtual vector<tNode *> getRecord(size_t, size_t) = 0;
 	virtual size_t getRegionCount() = 0;
+
+	void cleanRegion(vector<vector<tNode *> > &);
 };
 
 #endif /* TEXTRACTINTERFACE_H_ */
