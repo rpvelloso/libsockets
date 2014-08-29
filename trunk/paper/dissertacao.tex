@@ -113,7 +113,7 @@ bons resultados na fase de extração sem efetuar a limpeza da página, removendo o
 ruído indesejado. Em \citeonline{Noisy03}, é mencionado que apesar da
 importância desta tarefa, existem relativamente poucos trabalhos nesta área e,
 de acordo com \citeonline{Editorial04}, o ruído existente nas páginas pode
-prejudicar consideravelmente a mineração de dados na \textit{web}.
+prejudicar consideravelmente a extração de dados na \textit{web}.
 
  \begin{figure}[H]
   \centering
@@ -570,8 +570,8 @@ Cada nó desta árvore representa um ``objeto'' do documento HTML. A especificação
 de referência é mantida pelo consórcio $W3C$ \cite{w3c} que é o órgão
 encarregado de manter os padrões e especificações da \textit{web}.
 \end{definition}
-Na Figura \ref{fig:ex1} um pequeno trecho de código HTML é utilizado para
-ilustrar como uma árvore DOM é construída a partir do código.
+\textbf{Exemplo.} Na Figura \ref{fig:ex1} um pequeno trecho de código HTML é
+utilizado para ilustrar como uma árvore DOM é construída a partir do código.
 
 \begin{definition}[\textbf{\textit{tag paths}}].
 \label{def:tp} 
@@ -582,8 +582,8 @@ posição/ordem, em profundidade, do nó $``n_i"$ na árvore, então é dito que
 $TP_i$ é a $string$ descrevendo o caminho, a partir da raiz da árvore DOM, até o
 nó $``n_i"$.
 \end{definition}
-Na Figura \ref{fig:ex1}, o caminho absoluto $TP_4$ do nó $body$ até a célula da
-tabela $td_4$ é $TP_4=``body/table/tr/td"$.
+\textbf{Exemplo.} Na Figura \ref{fig:ex1}, o caminho absoluto $TP_4$ do nó
+$body$ até a célula da tabela $td_4$ é $TP_4=``body/table/tr/td"$.
 
 \begin{definition}[\textbf{Sequência de \textit{tag paths}}].
 \label{def:tps} 
@@ -594,14 +594,14 @@ $TP_i$ e $TP_j$, com $i\neq{}j$, são considerados iguais apenas se seus caminhos
 e suas definições de estilo são iguais, caso contrário eles são considerados
 diferentes.
 \end{definition}
+\textbf{Exemplo.} Na Figura \ref{fig:ex1} é mostrada a $TPS$ de um dado trecho
+de código HTML, onde cada $TP$ recebe um código, produzindo $TPS = (1,2,3,4,4,3,4,4)$.
 Na sequência de \textit{tag paths} os \textit{tag paths} não são representados
 pelas suas \textit{strings}, mas sim por códigos (ou símbolos), com objetivo de
 facilitar sua manipulação, onde \textit{tag paths} iguais recebem o mesmo
 código. Esta definição é similar à utilizada em \citeonline{SuffixTree12}, onde
 cada \textit{tag path} é representado na sequência por um símbolo, exceto que
-neste trabalho foram incorporadas as definições de estilo das \textit{tags}. Na
-Figura \ref{fig:ex1} é mostrada a $TPS$ de um dado trecho de código HTML, onde
-cada $TP$ recebe um código, produzindo $TPS = (1,2,3,4,4,3,4,4)$.
+neste trabalho foram incorporadas as definições de estilo das \textit{tags}.
 
 \begin{definition}[\textbf{Alfabeto da TPS}].
 \label{def:alpha} Seja $\Sigma$ o conjunto contendo todos os símbolos de uma
@@ -609,9 +609,10 @@ dada sequência $TPS$ de tamanho ``n'', $\Sigma$ é dito o alfabeto de $TPS$
 definido como $\Sigma = \{\alpha | TPS[i]=\alpha \wedge 1 \leq i \leq n\}$, onde
 $\alpha$ é um símbolo do alfabeto.
 \end{definition}
-Informalmente falando, o alfabeto contém todos os símbolos distintos de uma
-determinada sequência. Na Figura \ref{fig:ex1}, a $TPS$ é formada apenas pelos
+\textbf{Exemplo.} Na Figura \ref{fig:ex1}, a $TPS$ é formada apenas pelos
 símbolos ``1'',``2'', ``3'' e ``4'', então seu alfabeto é $\Sigma=\{1,2,3,4\}$.
+Informalmente falando, o alfabeto contém todos os símbolos distintos de uma
+determinada sequência. 
 
 \begin{definition}[\textbf{Conjunto de frequências de $tag$ $paths$}].
 \label{def:tpfs} Seja $(s,f)$ um par ordenado onde ``s'' é um símbolo de um
@@ -622,8 +623,8 @@ $FS =
 \{(s_1,f_{s1}),(s_2,f_{s2}),(s_3,f_{s3}),\ldots,(s_{n-1},f_{sn-1}),(s_n,f_{sn})\}$,
 onde ``n" é o tamanho do alfabeto da TPS.
 \end{definition}
-Na Figura \ref{fig:ex1}, o símbolo ``1'' ocorre uma vez na sequência, o símbolo
-``2'' ocorre uma vez também, o símbolo ``3'' duas vezes e o símbolo ``4'' quatro
+\textbf{Exemplo.} Na Figura \ref{fig:ex1}, o símbolo ``1'' ocorre uma vez na
+sequência, o símbolo ``2'' ocorre uma vez também, o símbolo ``3'' duas vezes e o símbolo ``4'' quatro
 vezes, então para esta sequência $FS = \{(1,1), (2,1), (3,2), (4,4)\}$. O
 conjunto $FS$ é o mapeamento de todos os símbolos de uma sequência para suas
 respectivas frequências.
@@ -636,8 +637,8 @@ as frequências distintas de $FS$. Assim, temos que $FT = \{f|\exists{(s,f)}
 \wedge (s,f) \in FS \wedge s \in \Sigma \}$, onde ``s'' é um símbolo do alfabeto
 $\Sigma$ e ``f'' é sua respectiva frequência.
 \end{definition}
-Na TPS exibida na Figura \ref{fig:ex1}, o conjunto de frequências dos
-\textit{tag paths} é $FS=\{(1,1), (2,1), (3,2), (4,4)\}$, neste caso o conjunto
+\textbf{Exemplo.} Na TPS exibida na Figura \ref{fig:ex1}, o conjunto de
+frequências dos \textit{tag paths} é $FS=\{(1,1), (2,1), (3,2), (4,4)\}$. Neste caso, o conjunto
 dos limiares de frequência é igual a $FT=\{1,2,4\}$, pois os símbolos ``1'' e
 ``2'' tem frequência igual a \textbf{1}, o símbolo ``3'' tem frequência igual a
 \textit{2} e o símbolo ``4'' tem frequência igual a \textit{4}. O conjunto $FT$
@@ -651,8 +652,8 @@ Seja uma TPS a concatenação de duas outras sequências $TPS=TPS_a . TPS_b$, então
 é dito que $TPS_a$ e $TPS_b$ são regiões de $TPS$, $sse$ $\Sigma_a \cap \Sigma_b
 = \emptyset$.
 \end{definition}
-Na Figura \ref{fig:ex1} a TPS pode ser dividida em duas subsequências
-$TPS_a=TPS[1..2]=(1,2)$ e $TPS_b=TPS[3..8]=(3,4,4,3,4,4)$, com alfabetos
+\textbf{Exemplo.} Na Figura \ref{fig:ex1} a TPS pode ser dividida em duas
+subsequências $TPS_a=TPS[1..2]=(1,2)$ e $TPS_b=TPS[3..8]=(3,4,4,3,4,4)$, com alfabetos
 $\Sigma_a=\{1,2\}$ e $\Sigma_b=\{3,4\}$, então $TPS_a$ a $TPS_b$ são regiões
 distintas de $TPS$, pois a intersecção de seus respectivos alfabetos é vazia. 
 %$\Sigma_a \cap
@@ -754,8 +755,8 @@ A TPS, do código HTML apresentado na Listagem \ref{lst:html}, é
 $TPS=(1,2,3,4,...,4,3,5,...,5,3,6,...,6,2)$.
 Como os símbolos $2$ e $3$ ocorrem ao longo de toda a sequência, os alfabetos
 das regiões de menus, publicidade e da região principal, sempre terão uma
-intersecção. Porém, considerando agora apenas os símbolos com frequência maior
-que $3$, durante o processo de segmentação é possível encontrar
+intersecção. Porém, considerando agora, para fins ilustrativos, apenas os
+símbolos com frequência maior que $3$, durante o processo de segmentação é possível encontrar
 as regiões com alfabetos distintos (sem intersecções) e dividir a $TPS$ da
 seguinte maneira:
  
@@ -766,6 +767,11 @@ $menus = (4,...,4)$
 $principal = (5,...,5)$
 
 $publicidade = (6,...,6)$
+
+Neste exemplo, estipulamos uma determinada frequência apenas para ilustrar qual
+o objetivo deste procedimento. Entretanto, no algoritmo $searchRegion()$, a
+filtragem, de fato, é realizada iterativamente. Cada frequência é ``testada''
+até que seja possível localizar um ponto para dividir a sequência.
 
 
 \section{Algoritmos}\label{sec:alg}
@@ -791,9 +797,9 @@ problema definido na Seção \ref{sec:probform}. Eles são os seguintes:
   símbolos de menor frequência, tornando o algoritmo de busca mais robusto e resistente ao ruído;
   %\vspace{-8mm}
   
-  \item{\textbf{$pruneDOMTree()$}} poda a árvore DOM original,
-  deixando apenas o conteúdo da região principal encontrado com $searchRegion$,
-  mantendo a estrutura do documento original.
+  \item{\textbf{$pruneDOMTree()$}} poda a árvore DOM original, deixando apenas o
+  conteúdo da região principal encontrado com $searchRegion$, mantendo a
+  estrutura do documento original.
   
 \end{itemize}
 
@@ -971,8 +977,8 @@ O procedimento $searchRegion()$ no Algoritmo \ref{alg:searchreg} calcula o
 alfabeto da TPS e as frequências correspondentes de cada símbolo nas Linhas $4$
 a $11$; na Linha $12$, os limiares de frequência, como especificado na Definição
 \ref{def:ft}, são calculados; nas Linhas $14$ a $38$ é realizada a busca por uma posição na
-sequência onde é possível dividi-la (\textit{i.e.} onde existe uma região); na Linha
-$15$ os limiares de frequência são iterados; na Linha $16$ o alfabeto da TPS, da
+sequência onde é possível dividi-la (\textit{i.e.} onde existe uma região); na
+Linha $15$ os limiares de frequência são iterados; na Linha $16$ o alfabeto da TPS, da
 Definição \ref{def:alpha}, é filtrado, como descrito na Subseção
 \ref{subsec:filter}; na Linha $22$ a TPS é iterada; na Linha $25$ o alfabeto da
 região é calculado e; nas Linhas $27$ a $35$ é verificado se existe uma
@@ -1022,7 +1028,7 @@ em $curr\Sigma$ são considerados durante a busca pela região principal.
 \subsection{Algoritmo de $pruneDOMTree()$}
 
 \begin{algorithm}[H]
-\caption{Poda da árvore DOM nós que não pertencem à sequência}
+\caption{Poda da árvore DOM (nós que não pertencem à sequência)}
 \label{alg:prune}
 \textbf{Input:} $node$ - um nó da árvore DOM, inicialmente a raiz \\
 \textbf{Input:} $sequence$ - a TPS que deve permanecer na árvore DOM \\
@@ -1042,15 +1048,16 @@ em $curr\Sigma$ são considerados durante a busca pela região principal.
 \end{algorithmic}
 \end{algorithm}
 
-O procedimento $pruneDOMTree()$ no Algoritmo \ref{alg:prune}, percorre a árvore
-DOM, em profundidade, removendo os nós que não pertencem a $sequence$. Na Linha
+O procedimento $pruneDOMTree()$ no Algoritmo \ref{alg:prune} percorre a árvore
+DOM em profundidade removendo os nós que não pertencem a $sequence$. Na Linha
 $3$ a árvore DOM é percorrida; nas Linhas $7$ a $9$ é decidido se o nó $node$
 deve ser removido ou não.
 
-Um nó é removido da árvore, apenas se ele não está em $sequence$ \textbf{e} não
-tem nenhum filho. Desta forma é possível manter a estrutura da árvore
-remanescente intacta, evitando afetar, negativamente, a etapa subsequente de
-extração estruturada.
+Um nó é removido da árvore apenas se ele não está em $sequence$ \textbf{e} não
+tem nenhum filho. Ao evitar a exclusão de nós internos da árvore que ainda
+possuem filhos, mesmo quando estes nós internos não pertencem à sequência, é
+possível manter a estrutura da árvore remanescente intacta, evitando afetar,
+negativamente, a etapa subsequente de extração estruturada.
 
 \section{Complexidade do Algoritmo}\label{sec:compl}
 
@@ -1118,15 +1125,15 @@ domínios, de empresas/instituições que são referência em seus segmentos de
 atuação. O conjunto de dados foi previamente salvo em disco para acesso
 \textit{offline}.
 
-Para medir a eficácia do algoritmo foram utilizadas as medidas de praxe em
-\textit{data mining}: precisão (\textit{precision}), revocação (\textit{recall})
-e \textit{F-measure}. A medida \textit{F-measure} é importante para evidenciar
-que, mesmo em situações com diminuição de \textit{recall}, ainda assim a
-qualidade total da extração apresenta ganho, devido aumento maior na
+Para medir a eficácia do algoritmo foram utilizadas as medidas padrão de
+avaliação de qualidade em \textit{IR}: precisão (\textit{precision}), revocação
+(\textit{recall}) e \textit{F-measure}. A medida \textit{F-measure} é importante
+para evidenciar que, mesmo em situações com diminuição de \textit{recall}, ainda
+assim a qualidade total da extração apresenta ganho, devido aumento maior na
 precisão.
 
-Além das medidas de praxe, os experimentos foram avaliados, também, quanto ao
-percentual de ruído removido, pois o algoritmo proposto pode ser combinado em
+Além das medidas padrão, os experimentos foram avaliados, também, quanto
+ao percentual de ruído removido, pois o algoritmo proposto pode ser combinado em
 série com outros algoritmos de extração, servindo como etapa de otimização, pois
 evitaria o processamento do ruído. Essas métricas são particularmente relevantes
 em situações em que o algoritmo de extração possua complexidade quadrática ou
@@ -1141,10 +1148,10 @@ detalhadas na Seção \ref{sec:clar}.
 \begin{equation}\label{eq:noise}
 NoiseRemoved=1-\frac{\#Rec_{totalTPS}-\#Rec_{targetTPS}}{\#Rec_{total}-\#Rec_{target}}
 \end{equation}
-Onde $\#Rec_{total}$ e $\#Rec_{target}$ são o total de registros e o total de
+$\#Rec_{total}$ e $\#Rec_{target}$ são o total de registros e o total de
 registros de interesse, respectivamente, da página original, e
 $\#Rec_{totalTPS}$ e $\#Rec_{targetTPS}$ são o total de registros e o total de
-registro de interesse, respectivamente, da página \textit{web} filtrada.
+registros de interesse, respectivamente, da página \textit{web} filtrada.
 
 
 \section{Metodologia de avaliação dos resultados}\label{sec:met}
@@ -1187,36 +1194,38 @@ Para primeira etapa foi escolhido o MDR para realizar a extração, pois esta
 técnica possui diversas implementações disponíveis, vários trabalhos publicados
 a respeito, funciona em uma única página e os resultados da extração são
 razoáveis para avaliar a técnica proposta neste trabalho. Outras técnicas
-poderiam ser utilizadas, se estivessem disponíveis, e desde que não necessitem
-de várias páginas HTML como entrada (\textit{e.g.} $RoadRunner$ \cite{RRunner01}).
+poderiam ser utilizadas, se estivessem disponíveis, e não necessitem
+de várias páginas HTML como entrada (\textit{e.g.} $RoadRunner$
+\cite{RRunner01}).
 
 
 \section{Exemplificação dos Experimentos}\label{sec:clar}
 
-Os resultados da extração obtidos utilizando apenas o MDR, foram considerados
-como \textit{baseline} a ser comparado com os resultados obtidos através do uso
-combinado da técnica proposta com o MDR, como ilustrado na Figura
-\ref{fig:method}. A seguir um dos experimentos realizado é detalhado para
+%Os resultados da extração obtidos utilizando apenas o MDR, foram considerados
+%como \textit{baseline} a ser comparado com os resultados obtidos através do uso
+%combinado da técnica proposta com o MDR, como ilustrado na Figura
+%\ref{fig:method}. 
+A seguir um dos experimentos realizado é detalhado para
 exemplificar como os resultados estão compilados na Tabela \ref{table:results}.
    
 Quando ambas abordagens (MDR e filtragem TPS + MDR) são aplicadas a uma página
-de busca com 20 resultados do \textit{web site} ``YouTube'' (\#38), os seguintes
+de busca com 20 resultados do \textit{web site} ``YouTube'' (\#51), os seguintes
 resultados são obtidos:
 
 \begin{itemize}
 \item{}página \textit{web} não filtrada (\textit{i.e.} página original)
 \begin{itemize}
 \item{}árvore DOM processada: $1424$ nós;
-\item{}resultados do MDR: $82$ registros no total ($62$ ruído/$20$ alvo);
+\item{}resultados do MDR: $82$ registros no total ($62$ ruído/$20$ alvo).
 \end{itemize}
 
 \item{}página \textit{web} filtrada (\textit{i.e.} página após aplicação do filtro da
 TPS)
 \begin{itemize}
 \item{}árvore DOM processada: $674$ nós, tamanho $47,33\%$ da página original,
-redução de $-52,67\%$
+redução de $-52,67\%$;
 \item{}resultados do MDR: $20$ registros no total ($0$ ruído/$20$ alvo), ruído
-removido $100\%$
+removido $100\%$.
 \end{itemize}
 \end{itemize}
 \pagebreak
@@ -1260,7 +1269,7 @@ removido, neste caso.
 
 Na Tabela \ref{table:results}, são apresentados, nas três primeiras colunas, o
 tamanho da árvore DOM processada pelo MDR (\textit{i.e.} original) e a redução obtida
-após remoção do ruído (\textit{i.e.} podado). A coluna ``Região principal''
+após a remoção do ruído (\textit{i.e.} podado). A coluna ``Região principal''
 indica se o processo de remoção de ruído preservou a região principal ou não. As próximas
 quatro colunas são os resultados obtidos com o MDR sem e com remoção de ruído
 respectivamente, exibindo o total geral de registros extraídos e o total de
@@ -1400,8 +1409,10 @@ durante o processo de filtragem.
   com pouca diferença entre as regiões. Neste caso, utilizando a técnica
   proposta, não resta muito a fazer, pois simplesmente não há informação
   suficiente para uma diferenciação entre as regiões da página, já que todas se
-  parecem. Não são perdidos registros de interesse, mas a quantidade total de
-  ruído removido é baixa;
+  parecem. Não são perdidos registros de interesse, pois como a página inteira
+  se parece (\textit{i.e.} toda sua TPS é composta pelos mesmo símbolos), não
+  será possível segmentar a sequência. Entretanto, a quantidade total de ruído
+  removido é baixa;
   \item{\textbf{páginas com \textit{templates} muito heterogêneos}}. São páginas
   onde o conteúdo principal é subdividido em mais de uma região. Neste caso, a
   região principal acaba por ser dividida várias vezes durante o processo de
@@ -1445,9 +1456,11 @@ principal ficaria assim:
 \State $convertToSeq(DOMTree.body,$`` ''$,TPS)$
 \State $backupTPS \leftarrow TPS$
 \State $searchRegion(TPS)$
+
 \If {$TPS$ not $content$}
 \State $TPS = backupTPS - TPS$   
 \EndIf
+
 \State $pruneDOMTree(DOMTree.body,TPS)$
 \State return $DOMTree$
 \EndProcedure
@@ -1482,7 +1495,7 @@ está espalhado em diversas regiões diferentes), o conteúdo principal poderia,
 talvez, ser detectado através do uso de uma técnica semântica (\textit{e.g.}
 \citeonline{Adaptive07}).
 
-O algoritmo mostrou excelente performance, pois apresentou resultados
+O algoritmo mostrou excelente desempenho, pois apresentou resultados
 satisfatórios para a maioria dos \textit{sites} comerciais nos quais foi testado. Ele
 também supera as limitações (necessidade de treinamento, dependência de \textit{tags}
 HTML, anotações manuais, entre outras) de trabalhos anteriores na área de
@@ -1500,7 +1513,8 @@ algoritmo para melhorar seus resultados nas seguintes situações:
   identificar a região principal através de outros atributos que não o tamanho.
 \end{itemize}
 Além disto, seria interessante realizar uma quantidade maior de testes, para
-consolidar os resultados já obtidos.
+consolidar os resultados já obtidos. Inclusive utilizando técnicas diversas de
+extração estruturada.
 
 Este trabalho também foi publicado no \textit{JIDM - Journal of Information and
 Data Management} no ano de 2013, como artigo completo \cite{TPS2013}, e os
