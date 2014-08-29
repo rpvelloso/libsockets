@@ -189,6 +189,7 @@ int main(int argc, char *argv[])
 
 	if (!dbg) {
 		fclose(stderr);
+		cerr.rdbuf(NULL);
 	}
 
 	if (pattern != "") {

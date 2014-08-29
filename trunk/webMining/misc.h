@@ -152,7 +152,37 @@ struct tLinearCoeff {
 };
 
 template <class T>
+void trimSequence(T &s) {
+	float m=0;
+	float mul=1;
+
+	for (size_t i=0;i<s.size();i++)
+		m+=s[i];
+
+	m/=(float)(s.size());
+
+	if (s[0] < m) mul=-1;
+	for (size_t i=0;i<s.size();i++) {
+		if (mul*(s[i]-m) < 0) {
+			s.erase(0,i);
+			break;
+		}
+	}
+
+	if (s[s.size()-1] < m) mul=-1;
+	else mul=1;
+
+	for (size_t i=s.size();i<=0;i--) {
+		if (mul*(s[i]-m) < 0) {
+			s.erase(i);
+			break;
+		}
+	}
+}
+
+template <class T>
 tLinearCoeff linearRegression(T s) {
+	trimSequence(s);
 	float delta,x,y,xy,x2,sx=0,sy=0,sxy=0,sx2=0,n=s.size();
 	tLinearCoeff lc;
 

@@ -397,8 +397,10 @@ void tMDR::onDataRecordFound(tDataRegion dr) {
 			records.push_back(rec);
 	}
 
-	if (records.size())
+	if (records.size()) {
+		cleanRegion(records);
 		dataRegions.push_back(records);
+	}
 }
 
 size_t tMDR::getRegionCount() {
