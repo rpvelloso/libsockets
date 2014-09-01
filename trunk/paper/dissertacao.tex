@@ -931,8 +931,9 @@ apresentada para a listagem do algoritmo.
 \vspace{5cm}
 \pagebreak
 
+\vspace{-0.3cm}
 \begin{algorithm}[H]
-\begin{tiny}
+\begin{footnotesize}
 \caption{Busca regiões da TPS com alfabetos diferentes}
 \label{alg:searchreg}
 \textbf{Entrada:} $tagPathSequence$ - a $TPS$ de uma determinada página \textit{web} \\
@@ -987,7 +988,7 @@ apresentada para a listagem do algoritmo.
 \EndIf
 \EndProcedure
 \end{algorithmic}
-\end{tiny}
+\end{footnotesize}
 \end{algorithm}
 
 O procedimento $searchRegion()$ no Algoritmo \ref{alg:searchreg} calcula o
@@ -1039,8 +1040,8 @@ Nas Linhas $3$ to $7$ apenas os símbolos com frequência maior ou igual a
 $threshold$ são inseridos no conjunto resultante. O resultado de $filterAlphabet()$ é
 utilizado no Algoritmo \ref{alg:searchreg}, Linha $24$, onde apenas os símbolos
 em $curr\Sigma$ são considerados durante a busca pela região principal.
-\vspace{3.3cm}
-\pagebreak
+%\vspace{3.3cm}
+%\pagebreak
 
 \subsection{Algoritmo de $pruneDOMTree()$}
 
