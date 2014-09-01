@@ -305,7 +305,9 @@ aplicadas no contexto de extração estruturada.
 Em \citeonline{Augusto2013} a região principal é identificada através da
 localização das estruturas da árvore DOM que mais se repetem na página com
 auxílio de uma base de conhecimento previamente existente
-e, também, de regras heurísticas vinculadas à \textit{tags} HTML.
+e, também, de regras heurísticas vinculadas à \textit{tags} HTML. A proposta
+deste trabalho, além de identificar a região principal, também realiza a
+extração dos registro.
 
 Em \citeonline{Noisy03} é construída uma árvore de estilos (com base nas
 definições CSS) para um determinado
@@ -460,7 +462,7 @@ são comparadas com relação às seguintes características:
   independentes.
 \end{itemize}
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \begin{tiny}
 \caption{Comparativo entre técnicas de segmentação de página}
@@ -1081,13 +1083,17 @@ utilizada a notação padrão encontrada na literatura de análise assintótica, onde
 $T(.)$ representa a recorrência, $\Theta(.)$ representa o limite justo
 (superior e inferior) e $O(.)$ representa o limite superior não justo.
 
-Com relação à complexidade do algoritmo é suficiente analisar apenas o
-procedimento $searchRegion()$, pois é este procedimento que concentra o
-processamento principal do algoritmo. Observando as Linhas $14$ e $22$ do
-procedimento $searchRegion()$, pode-se ver que o laço de repetição da Linha $14$
-itera os limiares de frequência até encontrar uma região e na Linha $22$ a TPS,
-filtrada em uma determina frequência, é iterada, também, até encontrar uma
-região e, se encontrada, a região é processada recursivamente.
+A complexidade analisada refere-se à Linha 29 (cálculo da intersecção dos alfabetos)
+do procedimento $searchRegion()$, pois esta operação de intersecção é a que
+possui maior custo computacional associada ao tamanho da entrada do algoritmo.
+Portanto, é suficiente analisar apenas este procedimento. Na análise
+de complexidade foi considerado que a operação de intersecção é realizada em cada
+posição da sequência. Na prática, entretanto, esta operação é realizada apenas
+quando ocorre uma mudança no alfabetos. Observando as Linhas
+$14$ e $22$ do procedimento $searchRegion()$, pode-se ver que o laço de
+repetição da Linha $14$ itera os limiares de frequência até encontrar uma região
+e na Linha $22$ a TPS, filtrada em uma determina frequência, é iterada, também,
+até encontrar uma região e, se encontrada, a região é processada recursivamente.
 
 No pior caso, quando a intersecção dos alfabetos é vazia apenas na última
 posição da TPS, a complexidade é, no máximo, $O(n^2 f)$, onde $n$ é o tamanho da TPS e $f$
