@@ -47,6 +47,9 @@
 %\RequirePackage{amsmath, amssymb, amsfonts, amsthm}
 %\RequirePackage{fix-cm}
 %\renewcommand{\normalsize}{\fontsize{10.5pt}{12.5pt}\selectfont}
+%---------------------------------------------------------------------------
+\newlength{\espacosumario}
+\setlength{\espacosumario}{3.3em}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Substituicao e criacao de comandos relacionados ao ABNTex
@@ -129,6 +132,18 @@
   \vspace{21pt}%
   \par%
 }
+
+\renewcommand{\@makecaption}[2]{%
+  \vskip\abovecaptionskip
+  \sbox\@tempboxa{#1 -- #2}%
+  \ifdim \wd\@tempboxa >\hsize
+    #1 -- #2\par
+  \else
+    \global \@minipagefalse
+    \hb@xt@\hsize{\hfil\box\@tempboxa\hfil}%
+  \fi
+  \vskip\belowcaptionskip}
+
 
 %---------------------------------------------------------------------------
 % Formatação de seções
@@ -262,12 +277,13 @@
   \fi}
 
 \renewcommand*\l@chapter[2]{
-    \@dottedchaptocline{1}{0pt}{1.2em}
+    \@dottedchaptocline{1}{0pt}{\espacosumario}%{1.2em}
 	{\normalsize\ABNTtocchapterfont{#1}}
 	{#2}}
+	
 
 \renewcommand*\l@section[2]{
-    \@dottedtocline{1}{0pt}{2em}
+    \@dottedtocline{1}{0pt}{\espacosumario}%{2em}
 	{\normalsize\ABNTsectionfont
 	 \ifthenelse{\boolean{ABNTcapchap}}%
 	    {\MakeUppercase{#1}}%
@@ -275,22 +291,22 @@
 	{#2}}
 
 \renewcommand*\l@subsection[2]{
-    \@dottedtocline{1}{0pt}{2.8em}
+    \@dottedtocline{1}{0pt}{\espacosumario}%{2.8em}
 	{\normalsize\ABNTsectionfont\bfseries{#1}}
 	{#2}}
 
 \renewcommand*\l@subsubsection[2]{
-    \@dottedtocline{1}{0pt}{3.6em}
+    \@dottedtocline{1}{0pt}{\espacosumario}
 	{\normalsize\ABNTsectionfont{#1}}
 	{#2}}
 
 \renewcommand*\l@paragraph[2]{
-    \@dottedtocline{1}{0pt}{4.4em}
+    \@dottedtocline{1}{0pt}{\espacosumario}
 	{\normalsize\ABNTsectionfont\itshape{#1}}
 	{#2}}
 
 \renewcommand*\l@subparagraph[2]{
-    \@dottedtocline{1}{0pt}{5.2em}
+    \@dottedtocline{1}{0pt}{\espacosumario}
 	{\normalsize\ABNTsectionfont\itshape{#1}}
 	{#2}}
 
@@ -351,8 +367,49 @@
 %---------------------------------------------------------------------------
 % Apêndices e Anexos - Pós-Textuais
 \addto\captionsbrazil{
+\renewcommand{\bibname}{REFERÊNCIAS}
+}
+\addto\captionsbrazil{
 \renewcommand\refname{REFERÊNCIAS}
 }
+
+\renewenvironment{thebibliography}[1]%
+  {% replacing \chapter*{\ABNTbibliographyname\@mkboth...}
+   \raggedright
+   \if@openright\cleardoublepage\else\clearpage\fi%
+   \thispagestyle{\chaptertitlepagestyle}%
+   \global\@topnum\z@%
+   \@afterindentfalse%
+   \@mkboth{\ABNTbibliographyname}{\ABNTbibliographyname}% end \chapter*{\ABNTbibliographyname...}
+   \ifthenelse{\boolean{ABNTincludeintoc}}%
+      {\ABNTaddcontentsline{toc}{chapter}{\hspace{\espacosumario}\ABNTbibliographyname}}%
+      {}%
+    \if@twocolumn%
+      \@topnewpage[\@makeschapterhead{\ABNTbibliographyname}]%
+    \else%
+      \@makeschapterhead{\ABNTbibliographyname}%
+      \@afterheading%
+    \fi%
+   \list{\@biblabel{\@arabic\c@enumiv}}%
+        {\settowidth\labelwidth{\@biblabel{#1}}%
+         \leftmargin\labelwidth%
+         \advance\leftmargin\labelsep%
+         \@openbib@code%
+         \usecounter{enumiv}%
+         \let\p@enumiv\@empty%
+         \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+   \sloppy%
+   \espaco{simples}
+   \clubpenalty4000%
+   \@clubpenalty \clubpenalty%
+   \widowpenalty4000%
+   \sfcode`\.\@m%
+  }% end of \begin{thebibliography}
+  {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+   \endlist%
+  }% end of \end{thebibliography}
+
 
 \renewcommand{\annexname}{ANEXO}
 \renewcommand{\appendixname}{AP\^ENDICE} % for completeness ;-)
@@ -394,16 +451,16 @@
          \ifthenelse{\boolean{ABNTAnApName}}{
            \ifthenelse{\equal{#1}{}}
               {\ABNTaddcontentsline{toc}{chapter}%
-                  {\MakeUppercase{\anapchaptername{}} \thechapter}}
+                  {\hspace{\espacosumario}\MakeUppercase{\anapchaptername{}} \thechapter}}
               {\ABNTaddcontentsline{toc}{chapter}%
-                  {\MakeUppercase{\anapchaptername{}} \thechapter{} \ABNTtravessao{} #1}}
+                  {\hspace{\espacosumario}\MakeUppercase{\anapchaptername{}} \thechapter{} \ABNTtravessao{} #1}}
          }
          {
           \ABNTaddcontentsline{toc}{chapter}%
-                   {\protect\numberline{\thechapter}#1}
+                   {\hspace{\espacosumario}\protect\numberline{\thechapter}#1}
          }  
        \else
-         \ABNTaddcontentsline{toc}{chapter}{#1}
+         \ABNTaddcontentsline{toc}{chapter}{\hspace{\espacosumario}#1}
        \fi
        \par
       }
@@ -607,7 +664,7 @@
     \@restonecolfalse\newpage
 \fi
 \thispagestyle{empty} 	% Define o estilo desta página como vazio
-%\setcounter{page}\z@	% Reseta o contador de páginas. Parece não ser necessário aqui
+\setcounter{page}\z@	% Reseta o contador de páginas. Parece não ser necessário aqui
 \begin{center}
     \begin{espacosimples}
 	\ABNTifnotempty{\ABNTinstituicaodata}%
@@ -682,7 +739,7 @@
 	{%
 	\UFSCifnotempty{\subtitulodata}%
 	    {%
-	    \tituloformat{\ABNTtitulodata}:\ \tituloformat{\subtitulodata}\par
+	    \tituloformat{\ABNTtitulodata}:\\ \tituloformat{\subtitulodata}\par
 	    }%
 	    {%
 	    \tituloformat{\ABNTtitulodata}\par
@@ -769,6 +826,9 @@
     \end{center}
 \end{espacosimples}
 
+
+ {\setlength{\parindent}{0cm} \bfseries Banca Examinadora:\par}  
+
 \ABNTifnotempty{\ABNTorientadordata}
     {
     \ifthenelse{\equal{\orientadorbancadata}{nao}}
@@ -782,6 +842,8 @@
 	\end{espacosimples}
 	}{}
     }
+      
+    
 \ABNTifnotempty{\ABNTcoorientadordata}
     {
     \ifthenelse{\equal{\coorientadorbancadata}{nao}}
@@ -796,32 +858,23 @@
 	}{}
     }
 
-{\setlength{\parindent}{0cm} \bfseries Banca Examinadora:\par}
 
-\ABNTifnotempty{\bancanameA}
-    {
-    \begin{espacosimples}
-	\vspace{0.9em}
-	\begin{center}
-	{\rule{\ABNTsignwidth}{1pt}\par
-	 \bancaformat \bancanameA \\ \bancadataA\par}
-	\end{center}
-    \end{espacosimples}
-    }
 
-\ABNTifnotempty{\ABNTorientadordata}
-    {
-    \ifthenelse{\equal{\orientadorbancadata}{sim}}
-	{
-	\begin{espacosimples}
-	    \vspace{0.5em}
-	    \begin{center}
-	    {\rule{\ABNTsignwidth}{1pt}\par
-	     \bancaformat \ABNTorientadorname \\ \ABNTorientadordata\par}
-	    \end{center}
-	\end{espacosimples}
-	}{}
-    }
+
+
+% \ABNTifnotempty{\ABNTorientadordata}
+%     {
+%     \ifthenelse{\equal{\orientadorbancadata}{sim}}
+% 	{
+% 	\begin{espacosimples}
+% 	    \vspace{0.5em}
+% 	    \begin{center}
+% 	    {\rule{\ABNTsignwidth}{1pt}\par
+% 	     \bancaformat \ABNTorientadorname \\ \ABNTorientadordata\par}
+% 	    \end{center}
+% 	\end{espacosimples}
+% 	}{}
+%     }
 \ABNTifnotempty{\ABNTcoorientadordata}
     {
     \ifthenelse{\equal{\coorientadorbancadata}{sim}}
@@ -835,7 +888,20 @@
 	\end{espacosimples}
 	}{}
     }
-
+    
+\ifnum \nrobanca < 4
+    {
+ \ABNTifnotempty{\bancanameA}
+    {
+    \begin{espacosimples}
+	\vspace{0.9em}
+	\begin{center}
+	{\rule{\ABNTsignwidth}{1pt}\par
+	 \bancaformat \bancanameA \\ \bancadataA\par}
+	\end{center}
+    \end{espacosimples}
+    }   
+    
 \ABNTifnotempty{\bancanameB}
     {
     \begin{espacosimples}
@@ -846,22 +912,47 @@
 	\end{center}
     \end{espacosimples}
     }
+    
+ \ABNTifnotempty{\bancanameC}
+    {
+    \begin{espacosimples}
+	\vspace{0.5em}
+	\begin{center}
+	{\rule{\ABNTsignwidth}{1pt}\par
+	 \bancaformat \bancanameC \\ \bancadataC\par}
+	\end{center}
+    \end{espacosimples}
+    }   
+    }
 \vfill
 % Cria uma nova página de assinaturas
-\ifnum \nrobanca > 4
+%\ifnum \nrobanca > 4
+\else
     {
     \newpage
-    \if@openright\cleardoublepage\else\clearpage\fi%
-    \if@twocolumn
-	\@restonecoltrue\onecolumn
-    \else
-	\@restonecolfalse\newpage
-    \fi
-	\thispagestyle{empty}%
-    \vfill
-    %{\setlength{\parindent}{0cm} \bfseries Banca Examinadora (continua\c{c}\~ao):\par}
-    \mbox{}
-    \vspace{0.4em}
+   
+    \ABNTifnotempty{\bancanameA}
+    {
+    \begin{espacosimples}
+	\vspace{0.9em}
+	\begin{center}
+	{\rule{\ABNTsignwidth}{1pt}\par
+	 \bancaformat \bancanameA \\ \bancadataA\par}
+	\end{center}
+    \end{espacosimples}
+    }   
+    
+    \ABNTifnotempty{\bancanameB}
+    {
+    \begin{espacosimples}
+	\vspace{0.5em}
+	\begin{center}
+	{\rule{\ABNTsignwidth}{1pt}\par
+	 \bancaformat \bancanameB \\ \bancadataB\par}
+	\end{center}
+    \end{espacosimples}
+    }
+    
     \ABNTifnotempty{\bancanameC}
 	{
 	\begin{espacosimples}
@@ -914,7 +1005,7 @@
 	}
     \vfill
     }
-\fi
+%\fi
 %\if@restonecol\twocolumn \else \newpage \fi
 }% end of \aprovacao
 
@@ -941,7 +1032,8 @@
 	{\dedicatoriaformat\dedicatoriadata}\par
     \end{textorecuadopretextual}
     }
-\vfill
+    \vspace{1cm}
+%\vfill
 \mbox{}
 }% end of \dedicatoria
 
@@ -961,13 +1053,13 @@
 \fi
 \thispagestyle{empty} 	% Define o estilo desta página como vazio
 \ABNTifnotempty{\agradecimentodata}%
-    {%
+    {   
     \begin{center}
 	\tituloformat{\agradecimentoname}
     \end{center}
-    \vspace{2.5cm}
+    \vspace{.2cm}
     \begin{espacosimples}
-	\agradecimentoformat\agradecimentodata
+	\agradecimentodata
     \end{espacosimples}
     }
 }% end of \agradecimento
@@ -993,15 +1085,18 @@
     {%
     \begin{textorecuadopretextual}
 	{\epigrafeformat\epigrafedata}\par
+	{\epigrafeautorformat\epigrafeautordata}\par
     \end{textorecuadopretextual}
-    \ABNTifnotempty{\epigrafeautordata}%
-	{%
-	\begin{textorecuadopretextual}
-	    {\epigrafeautorformat\epigrafeautordata}\par
-	\end{textorecuadopretextual}
-	}
+%     \ABNTifnotempty{\epigrafeautordata}%
+% 	{%
+% 	\begin{textorecuadopretextual}
+% 	    {\epigrafeautorformat\epigrafeautordata}\par
+% 	\end{textorecuadopretextual}
+% 	}
     }
-\vfill\vfill
+     \vspace{1cm}
+   
+%\vfill\vfill
 \mbox{}
 }% end of \epigrafe
 
@@ -1017,6 +1112,9 @@
    \begin{espacosimples}\setlength{\parindent}{0cm}%
   }%
   {\end{espacosimples}
+   \vspace{.2cm}
+
+  
    \ABNTifnotempty{\palavrasChavedata}
 	{\par\setlength{\parindent}{0cm}{\bfseries Palavras-chave:} \palavrasChavedata}
    \newpage}%resumo
@@ -1045,6 +1143,8 @@
    \begin{espacosimples}\setlength{\parindent}{0cm}%
   }%
   {\end{espacosimples}
+ \vspace{.2cm}
+  
    \ABNTifnotempty{\keywordsdata}
 	{\par\setlength{\parindent}{0cm}{\bfseries Keywords:} \keywordsdata}
    \newpage}%abstract

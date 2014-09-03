@@ -322,9 +322,9 @@ FUNCTION {bbl.semicolon} { "; "}
 FUNCTION {bbl.same.field} {"\underline{\ \ \ \ \ \ \ \ }"}
 FUNCTION {bbl.techrep} { "Rel. Tec." }
 FUNCTION {bbl.url.accessdate}
-  {iso.abbreviation { "Cited "} {"Acessado em "} if$}
+  {iso.abbreviation { "Cited "} {"Acesso em: "} if$}
 FUNCTION {bbl.url.available}
-{ iso.abbreviation {"Available from Internet: "} {"\ "} if$}
+{ iso.abbreviation {"Available from Internet: "} {"Dispon{\'\i}vel em: "} if$}
 FUNCTION {bbl.void} {""}
 FUNCTION {bbl.volume} { iso.abbreviation {"vol."} {"v."} if$ }
 
