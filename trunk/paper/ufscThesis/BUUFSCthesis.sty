@@ -25,14 +25,14 @@
 \usepackage[ansinew]{inputenc}	% tipo de caracteres usados no documento
 \usepackage[normalem]{ulem}	% provê sublinhados para textos (\ul)
 
-\usepackage{subfig}		% permite ter subfiguras
+\usepackage{subfigure}		% permite ter subfiguras
 \usepackage{indentfirst}	% indenta a primeira linha dos paragrafos
 \usepackage{remreset}		% reinicia contadores
-%\usepackage{url}
+\usepackage{url}
 
 %---------------------------------------------------------------------------
 % Pacote de bibliografia no padrão ABNT
-\usepackage[alf,abnt-and-type=e, abnt-year-extra-label=yes,abnt-url-package=html]{abntcite} % 
+\usepackage[alf,abnt-and-type=e,abnt-year-extra-label=yes,abnt-emphasize=bf,abnt-url-package=html]{abntcite} % 
 
 %originalmente era este
 %\usepackage[alf,abnt-and-type=e, abnt-etal-cite=1, abnt-etal-list=0, abnt-year-extra-label=yes,abnt-url-package=url]{abntcite} % 
@@ -41,7 +41,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                                                         
 % Variáveis identificadoras do trabalho
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                                                         
-
+% 
 %---------------------------------------------------------------------------
 % Instituicao
 \renewcommand{\ABNTinstituicaodata}{Universidade Federal de Santa Catarina}
@@ -53,8 +53,7 @@
 
 %---------------------------------------------------------------------------
 % Departamento
-\providecommand{\UFSCdepartamentodata}{Departamento de Inform\'atica e
-Estat\'istica}
+\providecommand{\UFSCdepartamentodata}{Departamento de Engenharia Mec\^anica}
 \providecommand{\UFSCdepartamentogenerodata}{o}
 \newcommand{\departamento}[2][o]%
     {\renewcommand{\UFSCdepartamentodata}{#2}\renewcommand{\UFSCdepartamentogenerodata}{#1}}
@@ -63,15 +62,14 @@ Estat\'istica}
 
 %---------------------------------------------------------------------------
 % Curso
-\providecommand{\UFSCcursodata}{Programa de P\'os-Gradua\c{c}\~ao em Ciência da
-Computa\c{c}\~ao - PPGCC}
+\providecommand{\UFSCcursodata}{Programa de P\'os-Gradua\c{c}\~ao em Engenharia Mec\^anica}
 \providecommand{\UFSCcursogenerodata}{o}
 \newcommand{\curso}[2][o]%
     {\renewcommand{\UFSCcursodata}{#2}\renewcommand{\UFSCcursogenerodata}{#1}}
 
 %---------------------------------------------------------------------------
 % Tipo do documento
-\providecommand{\UFSCdocumentodata}{Dissertação}
+\providecommand{\UFSCdocumentodata}{Tese}
 \providecommand{\UFSCdocumentogenerodata}{a}
 \newcommand{\documento}[2][a]%
     {\renewcommand{\UFSCdocumentodata}{#2} \renewcommand{\UFSCdocumentogenerodata}{#1} \detgenerodoc{#2}}
@@ -85,12 +83,12 @@ Computa\c{c}\~ao - PPGCC}
 
 %---------------------------------------------------------------------------
 % Autor
-\renewcommand{\ABNTautordata}{Roberto Panerai Velloso}
+\renewcommand{\ABNTautordata}{Roberto Simoni, Carlos R. Rocha}
 \renewcommand{\autorformat}{\mdseries}
 
 %---------------------------------------------------------------------------
 % Grau pretendido
-\providecommand{\graudata}{Mestre em Ci\^encia da Computa\c{c}\~ao}
+\providecommand{\graudata}{Doutor em Engenharia Mec\^anica}
 \newcommand{\grau}[1]{\renewcommand{\graudata}{#1}}
 
 %---------------------------------------------------------------------------
@@ -147,7 +145,7 @@ Computa\c{c}\~ao - PPGCC}
 
 \providecommand{\bancanameA}{}
 \providecommand{\bancadataA}{}
-\newcommand{\bancaMembroA}[2][Presidente]%
+\newcommand{\bancaMembroA}[2][]% se for incluir Presidente colocar [aqui]
     {\renewcommand{\bancanameA}{#2}%
      \renewcommand{\bancadataA}{#1}}
 
@@ -223,14 +221,13 @@ Computa\c{c}\~ao - PPGCC}
 % Agradecimentos
 \providecommand{\agradecimentodata}{}
 \newcommand{\agradecimento}[1]{\renewcommand{\agradecimentodata}{#1}}
-\newcommand{\agradecimentoformat}{}
 \newcommand{\agradecimentoname}{Agradecimentos}
 
 % Epigrafe
 \providecommand{\epigrafedata}{}
 \providecommand{\epigrafeautordata}{}
 \newcommand{\epigrafe}[2]{\renewcommand{\epigrafedata}{#1}\renewcommand{\epigrafeautordata}{#2}}
-\newcommand{\epigrafeformat}{\itshape}
+\newcommand{\epigrafeformat}{}%{\itshape}
 \newcommand{\epigrafeautorformat}{\hfill}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%                                                         
@@ -256,8 +253,8 @@ Computa\c{c}\~ao - PPGCC}
 % Ficha catalografica
 \newcommand{\conteudofichacatalografica}{
 \begin{center}
-Catalogação na fonte elaborada pela biblioteca da\\
-Universidade Federal de Santa Catarina
+Ficha de identificação da obra elaborada pelo autor
+através do \\Programa de Geração Automática da Biblioteca Universitária da UFSC.
 \end{center}
 \frame{
     \begin{minipage}{\textwidth}
@@ -265,15 +262,15 @@ Universidade Federal de Santa Catarina
 	    {\small
 	    \vspace{5em}
 	    \parindent1.5cm
-	    A ficha catalográfica é confeccionada pela Biblioteca Central.\\
-	     
-	    Tamanho: 7cm x 12 cm\\
-
-	    Fonte: Times New Roman 9,5\\
+	    A ficha de identificação é elaborada pelo próprio autor\\
 	    
+                                      
+                      
+	    
+	      
 	    Maiores informações em:
 
-	    http://www.bu.ufsc.br/design/Catalogacao.html
+	    http://portalbu.ufsc.br/ficha
 	    \vspace{4em}}
 	\end{espacosimples}
     \end{minipage}
@@ -284,7 +281,7 @@ Universidade Federal de Santa Catarina
 %-------------------------------------------------------------------------------
 % Faz a impressão de todos os elementos pré textuais menos o sumário
 \newcommand{\pretextuais}{
-\capa  
+%\capa  
 \folhaderosto
 \folhaaprovacao
 \paginadedicatoria

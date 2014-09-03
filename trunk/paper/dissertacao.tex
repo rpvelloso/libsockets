@@ -1,4 +1,5 @@
 \documentclass{ufscThesis}
+
 \usepackage{graphicx}
 \usepackage[labelsep=endash]{caption}
 \usepackage{algorithmicx}
@@ -14,20 +15,21 @@
 \titulo{Algoritmo não Supervisionado para Segmentação e Remoção de
 Ruído de Páginas \textit{web} Utilizando \textit{tag paths}}
 \autor{Roberto Panerai Velloso}
-\data{01}{março}{2014}
-\orientador[Orientadora]{Profa. Dra. Carina F. Dorneles}
+\data{03}{setembro}{2014}
+\orientador[Orientadora]{Profa. Dra. Carina \\Friedrich Dorneles}
 \coordenador{Prof. Dr. Ronaldo dos Santos Mello}
 
-
+\documento{Dissertação}
+\grau{Mestre em Ciência da Computação}
 \departamento{Departamento de Informática e Estatística}
 \curso{Programa de Pós-Graduação em Ciência da Computação}
 
-\numerodemembrosnabanca{5}
+\numerodemembrosnabanca{4}
 \orientadornabanca{sim}
-%\bancaMembroA{Profa. Dra. Carina F. Dorneles}
-\bancaMembroB{Profa. Dra. Renata Galante}
-\bancaMembroC{Prof. Dr. Renato Fileto}
-\bancaMembroD{Prof. Dr. Ronaldo dos Santos Mello}
+\bancaMembroA{Profa. Dra. Carina Friedrich Dorneles\\Universidade Federal de Santa Catarina}
+\bancaMembroB{Profa. Dra. Renata Galante\\Universidade Federal do Rio Grande do Sul}
+\bancaMembroC{Prof. Dr. Renato Fileto\\Universidade Federal de Santa Catarina}
+\bancaMembroD{Prof. Dr. Ronaldo dos Santos Mello\\Universidade Federal de Santa Catarina}
 
 \dedicatoria{À minha família.}
 
@@ -35,7 +37,7 @@ Ruído de Páginas \textit{web} Utilizando \textit{tag paths}}
 professores do curso, em especial pela orientação que recebi para realização e
 publicação deste trabalho.}
 
-\epigrafe{ Está instaurada a dúvida.\\
+\epigrafe{Está instaurada a dúvida.\\
 A metódica dúvida epistemológica.\\
 Neste mundo a terra não está no centro\\
 nenhum saber é saber completo.\\
@@ -85,11 +87,13 @@ precision of the extraction step by removing irrelevant results.
 
 \keywords{noise removal. page segmentation. structured extraction. web mining}
 
+\sloppy
+
 \begin{document}
+
 \rowcolors{2}{gray!25}{white}
 
-
-\capa  
+\capa
 \folhaderosto[comficha]
 \folhaaprovacao
 \paginadedicatoria
@@ -103,9 +107,8 @@ precision of the extraction step by removing irrelevant results.
 \listadeabreviaturas
 %\listadesimbolos
 \sumario
-\sloppy
+
 \chapter{Introdução}
-%\section{Contextualização do problema}
 
 Um passo fundamental da extração de dados estruturados da \textit{web}, é a fase
 de limpeza que deve ocorrer antes da extração da informação. Não se pode esperar
@@ -117,7 +120,7 @@ prejudicar consideravelmente a extração de dados na \textit{web}.
 
  \begin{figure}[H]
   \centering
-    \includegraphics[scale=0.22]{exemploruido.jpg}
+    \includegraphics[scale=0.22]{img/exemploruido.jpg}
   \caption{Exemplo de uma página de comércio eletrônico com os registros e
   ruído identificados.}
   \label{fig:exr}
@@ -204,30 +207,6 @@ da formulação do problema e das hipóteses; no Capítulo \ref{ch:results} o método
 avaliação dos resultados é detalhado e também são apresentados os resultados
 obtidos e as limitações do algoritmo proposto e, finalmente; no Capítulo
 \ref{ch:conclusion} uma breve conclusão e sugestões de trabalhos futuros.
-
-%\section{Objetivos}\label{ch:obj}
-
-%O objetivo desta pesquisa é contribuir para área de extração estruturada de
-%dados da \textit{web}, propondo uma nova técnica para segmentação e remoção de ruído
-% de páginas que possibilite incrementar a precisão dos métodos atuais, com o mínimo
-%de intervenção manual e o máximo de independência com relação a aspectos da
-%linguagem HTML e ao domínio da informação.
-
-%\section{Contribuições}\label{ch:contr}
-
-%A contribuição desta pesquisa é uma nova técnica de segmentação e remoção de
-%ruído de páginas \textit{web} com as seguintes características:
-%\begin{itemize}
-%\item{Técnica completamente automática}: não é necessário treinamento nem
-%intervenção humana;
-%\item{Independente de domínio}: é necessário apenas que a página contenha
-%conteúdo estruturado, não importando a que domínio a informação pertence;
-%\item{Independente da sintaxe HTML}: não são utilizadas regras associadas a
-%\textit{tags} HTML;
-%\item{Necessita de apenas uma página}: não requer várias páginas do mesmo
-% $site$ para funcionar, o que é um grande vantagem, como discutido em
-%\citeonline{Editorial04}.
-%\end{itemize}
 
 \chapter{Trabalhos relacionados}\label{ch:rev}
 
@@ -567,7 +546,7 @@ convertido para representação de \textit{tag paths}.
 
 \begin{figure}[h]
   \centering
-     \includegraphics[scale=0.51]{example1-pt.jpg}
+     \includegraphics[scale=0.51]{img/example1-pt.jpg}
   \caption{Exemplo de uma sequência de \textit{tag paths} construída a partir do código HTML.}
   \label{fig:ex1}
 \end{figure}
@@ -836,7 +815,7 @@ problema definido na Seção \ref{sec:probform}. Eles são os seguintes:
 
 \begin{figure}[H]
   \centering
-    \includegraphics[scale=0.24]{fluxograma.png}
+    \includegraphics[scale=0.24]{img/fluxograma.png}
   \caption{Visão de alto nível da interação entre os algoritmos.}
   \label{fig:flow}
 \end{figure}
@@ -941,7 +920,7 @@ apresentada para a listagem do algoritmo.
 
 \begin{figure}[h]
   \centering
-    \includegraphics[scale=0.450]{alg-pb-pt.jpg}
+    \includegraphics[scale=0.450]{img/alg-pb-pt.jpg}
   \caption{Ilustração da execução do algoritmo.}
   \label{fig:alg}
 \end{figure}
@@ -1207,7 +1186,7 @@ Figura \ref{fig:method}.
 
 \begin{figure}[H]
   \centering
-    \includegraphics[scale=0.19]{metodo.jpg}
+    \includegraphics[scale=0.19]{img/metodo.jpg}
   \caption{Método de avaliação adotado.}
   \label{fig:method}
 \end{figure}
@@ -1283,7 +1262,7 @@ região principal detectada pelo algoritmo proposto.
 
 \begin{figure}[H]
   \centering
-    \includegraphics[scale=0.34]{example2-gs-pt.jpg}
+    \includegraphics[scale=0.34]{img/example2-gs-pt.jpg}
   \caption{Um página de resultados do $site$ YouTube com sua região principal
   delimitada.}
   \label{fig:ex2}
@@ -1294,7 +1273,7 @@ região principal detectada pelo algoritmo proposto.
 
 \begin{figure}[H]
   \centering
-    \includegraphics[scale=0.28]{tps-pt.jpg}
+    \includegraphics[scale=0.28]{img/tps-pt.jpg}
   \caption{Gráfico da TPS ``código TP vs posição'' de uma página do $site$
   YouTube com a região principal que foi detectada pelo algoritmo.}
   \label{fig:tps}
