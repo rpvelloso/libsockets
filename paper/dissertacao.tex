@@ -193,14 +193,6 @@ vídeos, buscas, comércio eletrônico de vários segmentos, notícias, periódicos
 científicos, bancos, entre outros. O resultado obtido foi uma média de 88,86\%
 de ruído removido das páginas do conjunto de teste.
 
-O algoritmo MDR realiza a tarefa de extração de registros percorrendo a árvore
-DOM em largura e realizando comparações entre as subárvores adjacentes,
-verificando o quão semelhantes são. Ao encontrar ramificações que atendem ao
-limiar de semelhança estipulado, os nós das subárvores são alinhados e os
-registros extraídos. O algoritmo foi elaborado com base na seguinte observação:
-``os registros existentes em um documento HTML são contíguos/adjacentes e estão
-debaixo do mesmo nó pai''.
-
 Esta dissertação está organizada da seguinte maneira: %no Capítulo
 % \ref{ch:obj} são apresentados os objetivos da pesquisa; no Capítulo
 % \ref{ch:contr} são enunciadas as principais contribuições do trabalho;
@@ -247,6 +239,8 @@ DOM e as que utilizam informação visual
 (o documento renderizado). O presente trabalho não utiliza nenhuma destas
 representações, embora necessite da árvore DOM para gerar a TPS do documento
 HTML.
+Nesta capítulo apresentamos, também, uma breve descrição do MDR, a técnica de
+extração utilizada neste trabalho como \textit{baseline}.
 
 \section{Propostas baseadas no texto}\label{sec:txt}
 Nos trabalhos detalhados nesta seção \cite{Densiometric08,Boilerplate10,CETR10}
@@ -512,6 +506,30 @@ posteriormente à identificação dos registros. Ao realizar a remoção do ruído
 apenas após a extração dos registros, perde-se a oportunidade de otimizar o
 processo de extração, onde seria possível identificar e eliminar o ruído antes
 de submeter a página ao algoritmo de extração.
+
+\section{MDR}
+
+O algoritmo MDR realiza a tarefa de extração de registros percorrendo a árvore
+DOM em largura e realizando comparações entre as subárvores adjacentes,
+verificando o quão semelhantes são. Ao encontrar ramificações que atendem ao
+limiar de semelhança estipulado, os nós das subárvores são alinhados
+(utilizando \textit{partial tree alignment} \cite{PTA05}) e os
+registros são, então, extraídos.
+O algoritmo foi elaborado com base na seguinte observação:
+``os registros existentes em um documento HTML são contíguos/adjacentes e estão
+debaixo do mesmo nó pai''.
+
+Os motivos pelos quais foi escolhida esta técnica, e não outras mais recentes ou
+com melhores resultados, são os seguintes:
+\begin{itemize}
+  \item a existência de grande quantidade de documentação e artigos publicados, o que
+possibilita implementação independente e validação dos resultados;
+\item a disponibilidade de implementações funcionais, de terceiros;
+  \item o alto impacto das publicações originais, que são referenciadas até
+  o presente momento;
+  \item o fato de que apesar da idade do trabalho, este permanece relevante,
+  funcional e apresenta resultados satisfatórios.
+\end{itemize}
 
 \chapter{Algoritmo para remoção de ruído}\label{ch:met}
 
@@ -1181,11 +1199,11 @@ registros de interesse, respectivamente, da página \textit{web} filtrada.
 O principal objetivo do algoritmo proposto é eliminar ruídos em páginas
 \textit{web}, a fim de evitar que algoritmos que precisem processar estas
 páginas possam trabalhar apenas com conteúdo útil. Assim, para testar a efetiva
-eliminação de ruídos, foi utilizado o algoritmo MDR \cite{MDR03} é uma conhecida
-técnica de extração estruturada. O resultado da extração pura (apenas MDR) será
-considerado como \textit{baseline} para comparação com o resultado da extração
-combinada com a técnica proposta de remoção de ruído, como ilustrado na Figura
-\ref{fig:method}.
+eliminação de ruídos, foi utilizado o algoritmo MDR \cite{MDR03}, que é uma
+conhecida técnica de extração estruturada. O resultado da extração pura (apenas
+MDR) será considerado como \textit{baseline} para comparação com o resultado da
+extração combinada com a técnica proposta de remoção de ruído, como ilustrado na
+Figura \ref{fig:method}.
 
 \begin{figure}[H]
   \centering
@@ -1209,7 +1227,11 @@ A avaliação dos resultados é constituída das seguintes etapas:
   documentando os resultados da mesma maneira;
 
   \item comparação de ambos os resultados e medição do aumento/redução da
-  precisão (remoção de ruído).
+  precisão (remoção de ruído);
+  
+  \item verificação da hipótese nula $H_0$, que seria: \textit{``a utilização do
+  algoritmo de eliminação de ruído não implica em aumento na qualidade da
+  extração''}. E da hipótese alternativa $H_1$, que é a negação de $H_0$.
 \end{itemize}
 
 Para primeira etapa foi escolhido o MDR para realizar a extração, pois esta
@@ -1219,7 +1241,6 @@ razoáveis para avaliar a técnica proposta neste trabalho. Outras técnicas
 poderiam ser utilizadas, se estivessem disponíveis, e não necessitem
 de várias páginas HTML como entrada (\textit{e.g.} $RoadRunner$
 \cite{RRunner01}).
-
 
 \section{Exemplificação dos Experimentos}\label{sec:clar}
 
@@ -1396,10 +1417,11 @@ p{2mm} p{2mm} |r}
 \end{table}
 
 Como consequência da remoção de ruído, podemos observar um aumento considerável
-na precisão média da extração, como relatado na Tabela \ref{table:prec}. A
-redução no \textit{recall} corresponde às situações onde o filtro falhou, as
-quais são discutidas e tratadas na Seção \ref{sec:disc}, e, apesar desta redução, as
-medidas F e G apresentaram melhora significativa.
+na precisão média da extração, como relatado na Tabela \ref{table:prec}.
+A redução no \textit{recall} corresponde às situações onde o filtro falhou, as
+quais são discutidas e tratadas na Seção \ref{sec:disc}, e, apesar desta
+redução, a medida F apresenta melhora significativa, o que significa que a
+hipótese nula $H_0$ foi refutada pelos resultados obtidos.
 \vspace{2cm}
 \pagebreak
 
