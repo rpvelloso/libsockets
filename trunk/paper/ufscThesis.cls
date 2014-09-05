@@ -796,7 +796,8 @@
     \autorformat\ABNTautordata
     \end{center}
     }
-\vfill %\vspace{42pt}
+\vfill 
+%\vspace{5cm}
 \begin{center}
     \begin{espacosimples}
     \ABNTifnotempty{\ABNTtitulodata}%
@@ -1005,7 +1006,7 @@
 	}
     \vfill
     }
-%\fi
+\fi
 %\if@restonecol\twocolumn \else \newpage \fi
 }% end of \aprovacao
 
