@@ -838,7 +838,7 @@
 	    \vspace{0.5em}
 	    \begin{center}
 	    {\rule{\ABNTsignwidth}{1pt}\par
-	     \bancaformat \ABNTorientadorname \\ \ABNTinstituicaodata \\ \ABNTorientadordata\par}
+	     \bancaformat \ABNTorientadorname \\ \ABNTorientadordata \\ \ABNTinstituicaodata \par}
 	    \end{center}
 	\end{espacosimples}
 	}{}
