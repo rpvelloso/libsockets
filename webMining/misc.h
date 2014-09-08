@@ -152,9 +152,10 @@ struct tLinearCoeff {
 };
 
 template <class T>
-void trimSequence(T &s) {
+size_t trimSequence(T &s) {
 	float m=0;
 	float mul=1;
+	size_t ret=0;
 
 	for (size_t i=0;i<s.size();i++)
 		m+=s[i];
@@ -165,6 +166,7 @@ void trimSequence(T &s) {
 	for (size_t i=0;i<s.size();i++) {
 		if (mul*(s[i]-m) < 0) {
 			s.erase(0,i);
+			ret = i;
 			break;
 		}
 	}
@@ -178,6 +180,7 @@ void trimSequence(T &s) {
 			break;
 		}
 	}
+	return ret;
 }
 
 template <class T>
