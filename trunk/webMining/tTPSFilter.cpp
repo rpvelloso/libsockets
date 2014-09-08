@@ -323,12 +323,16 @@ vector<unsigned int> tTPSFilter::locateRecords(wstring s, float st) {
 	 *
 	 * the difference is weighted with the inverse TPC value, the lower, the better
 	*/
+
+	auto z=s;
+	size_t off = trimSequence(z);
+
 	cerr << "diff: " << endl;
-	for (size_t i=1;i<s.size();i++) {
-		d[i-1]=(s[i]-s[i-1])*s[i-1];
+	for (size_t i=1;i<z.size();i++) {
+		d[i-1]=(z[i]-z[i-1])*z[i-1];
 		if (d[i-1] < 0) {
-			cerr << d[i-1]*s[i] << " ";
-			diffMap[d[i-1]].push_back(i);
+			cerr << d[i-1]*z[i] << " ";
+			diffMap[d[i-1]].push_back(i+off);
 		} else cerr << 0 << " ";
 	}
 	cerr << endl;
