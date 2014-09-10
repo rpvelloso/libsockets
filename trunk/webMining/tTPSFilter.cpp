@@ -181,7 +181,7 @@ map<long int, tTPSRegion> tTPSFilter::tagPathSequenceFilter(tNode *n, bool css) 
 	originalTPS = tagPathSequence;
 	originalNodeSequence = nodeSequence;
 	originalTPSsize = originalTPS.size();
-	sizeThreshold = (originalTPSsize*10)/100; // 10% page size
+	sizeThreshold = (originalTPSsize*15)/100; // % page size
 
 	seqQueue.push(make_pair(originalTPS,0)); // insert first sequence in queue for processing
 
@@ -283,15 +283,19 @@ void tTPSFilter::DRDE(tNode *n, bool css, float st) {
 
 		// create a sequence for each record found
 		int prev=-1;
+		size_t max_size=0;
 		for (size_t j=0;j<recpos.size();j++) {
 			if (prev==-1) prev=recpos[j];
 			else {
 				m.push_back(_regions[(*i).first].tps.substr(prev,recpos[j]-prev+1));
+				max_size = max(recpos[j]-prev+1,max_size);
 				prev = recpos[j];
 			}
 		}
-		if (prev != -1)
-			m.push_back(_regions[(*i).first].tps.substr(prev,_regions[(*i).first].tps.size()-prev+1));
+		if (prev != -1) {
+			if (max_size == 0) max_size = recpos.size();
+			m.push_back(_regions[(*i).first].tps.substr(prev,/*_regions[(*i).first].tps.size()-prev+1*/max_size));
+		}
 
 		// align the records (one alternative to 'center star' algorithm is ClustalW)
 		centerStar(m);
@@ -326,11 +330,21 @@ vector<unsigned int> tTPSFilter::locateRecords(wstring s, float st) {
 
 	cerr << "diff: " << endl;
 	for (size_t i=1;i<s.size();i++) {
-		d[i-1]=(s[i]-s[i-1])*s[i-1];
+		d[i-1]=(s[i]-s[i-1]);//*s[i-1];
 		if (d[i-1] < 0) {
 			cerr << d[i-1]*s[i] << " ";
-			diffMap[d[i-1]].push_back(i);
+			//diffMap[d[i-1]].push_back(i);
 		} else cerr << 0 << " ";
+	}
+
+	for (size_t i=1;i<d.size();i++) {
+		if (sign(d[i-1])==sign(sign(d[i]))) {
+			if (sign(d[i])>0)
+				d[i] += d[i-1];
+			else
+				d[i] -= d[i-1];
+		} else if (d[i] >= 0)
+			diffMap[d[i-1]].push_back(i);
 	}
 	cerr << endl;
 
