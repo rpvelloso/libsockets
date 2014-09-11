@@ -181,7 +181,7 @@ map<long int, tTPSRegion> tTPSFilter::tagPathSequenceFilter(tNode *n, bool css) 
 	originalTPS = tagPathSequence;
 	originalNodeSequence = nodeSequence;
 	originalTPSsize = originalTPS.size();
-	sizeThreshold = (originalTPSsize*15)/100; // % page size
+	sizeThreshold = (originalTPSsize*10)/100; // % page size
 
 	seqQueue.push(make_pair(originalTPS,0)); // insert first sequence in queue for processing
 
@@ -283,7 +283,7 @@ void tTPSFilter::DRDE(tNode *n, bool css, float st) {
 
 		// create a sequence for each record found
 		int prev=-1;
-		size_t max_size=0;
+		unsigned int max_size=0;
 		for (size_t j=0;j<recpos.size();j++) {
 			if (prev==-1) prev=recpos[j];
 			else {
