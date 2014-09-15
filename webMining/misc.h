@@ -187,7 +187,7 @@ size_t trimSequence(T &s) {
 
 template <class T>
 tLinearCoeff linearRegression(T s) {
-	//trimSequence(s);
+	trimSequence(s);
 	float delta,x,y,xy,x2,sx=0,sy=0,sxy=0,sx2=0,n=s.size();
 	tLinearCoeff lc;
 
