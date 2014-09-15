@@ -222,7 +222,7 @@ map<long int, tTPSRegion> tTPSFilter::tagPathSequenceFilter(tNode *n, bool css) 
 		_regions[0].tps = originalTPS;
 	}
 	// select structured regions
-	float angCoeffThreshold=0.2;
+	float angCoeffThreshold=0.1;
 
 	for (auto i=_regions.begin();i!=_regions.end();i++) {
 		tLinearCoeff lc;
@@ -329,12 +329,16 @@ vector<unsigned int> tTPSFilter::locateRecords(wstring s, float st) {
 	*/
 
 	cerr << "diff: " << endl;
-	for (size_t i=1;i<s.size();i++) {
-		d[i-1]=(s[i]-s[i-1]);//*s[i-1];
-		if (d[i-1] < 0) {
+
+	auto z=s;
+	auto off=trimSequence(z);
+
+	for (size_t i=1;i<z.size();i++) {
+		d[i-1]=(z[i]-z[i-1])*z[i-1];
+		/*if (d[i-1] < 0) {
 			cerr << d[i-1]*s[i] << " ";
-			//diffMap[d[i-1]].push_back(i);
-		} else cerr << 0 << " ";
+			diffMap[d[i-1]].push_back(i);
+		} else cerr << 0 << " ";*/
 	}
 
 	for (size_t i=1;i<d.size();i++) {
@@ -343,8 +347,10 @@ vector<unsigned int> tTPSFilter::locateRecords(wstring s, float st) {
 				d[i] += d[i-1];
 			else
 				d[i] -= d[i-1];
-		} else if (d[i] >= 0)
-			diffMap[d[i-1]].push_back(i);
+		} else if (d[i] >= 0) {
+			cerr << d[i-1] << " ";
+			diffMap[d[i-1]].push_back(i+off);
+		} else cerr << 0 << " ";
 	}
 	cerr << endl;
 
