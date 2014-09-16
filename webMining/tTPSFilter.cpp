@@ -287,8 +287,8 @@ void tTPSFilter::DRDE(tNode *n, bool css, float st) {
 		for (size_t j=0;j<recpos.size();j++) {
 			if (prev==-1) prev=recpos[j];
 			else {
-				m.push_back(_regions[(*i).first].tps.substr(prev,recpos[j]-prev+1));
-				max_size = max(recpos[j]-prev+1,max_size);
+				m.push_back(_regions[(*i).first].tps.substr(prev,recpos[j]-prev));
+				max_size = max(recpos[j]-prev,max_size);
 				prev = recpos[j];
 			}
 		}
@@ -328,10 +328,11 @@ vector<unsigned int> tTPSFilter::locateRecords(wstring s, float st) {
 	 * the difference is weighted with the inverse TPC value, the lower, the better
 	*/
 
-	cerr << "diff: " << endl;
 
 	auto z=s;
 	auto off=trimSequence(z);
+
+	cerr << off << " diff: " << endl;
 
 	for (size_t i=1;i<z.size();i++) {
 		d[i-1]=(z[i]-z[i-1])*z[i-1];
@@ -348,9 +349,9 @@ vector<unsigned int> tTPSFilter::locateRecords(wstring s, float st) {
 			else
 				d[i] -= d[i-1];
 		} else if (d[i] >= 0) {
-			cerr << d[i-1] << " ";
 			diffMap[d[i-1]].push_back(i+off);
-		} else cerr << 0 << " ";
+		}
+		cerr << (d[i-1]<0?d[i-1]:0) << " ";
 	}
 	cerr << endl;
 

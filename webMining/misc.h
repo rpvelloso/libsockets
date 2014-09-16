@@ -165,7 +165,7 @@ size_t trimSequence(T &s) {
 	m/=(float)(s.size());
 
 	if (s[0] < m) mul=-1;
-	for (size_t i=0;i<s.size();i++) {
+	for (auto i=0;i<s.size();i++) {
 		if (mul*(s[i]-m) < 0) {
 			s.erase(0,i);
 			ret = i;
@@ -176,7 +176,7 @@ size_t trimSequence(T &s) {
 	if (s[s.size()-1] < m) mul=-1;
 	else mul=1;
 
-	for (size_t i=s.size();i<=0;i--) {
+	for (auto i=s.size()-1;i>0;i--) {
 		if (mul*(s[i]-m) < 0) {
 			s.erase(i);
 			break;
