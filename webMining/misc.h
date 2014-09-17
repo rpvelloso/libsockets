@@ -57,7 +57,7 @@ string to_string(T val) {
 #define SPACE T(1,'\0')
 
 template <class T>
-unsigned int edit_distance( T &s1,  T &s2, bool align, vector<unsigned int> *spaces) {
+unsigned int edit_distance(T &s1, T &s2, bool align, vector<unsigned int> *spaces) {
 	const size_t len1 = s1.size(), len2 = s2.size();
 	vector<vector<unsigned int> > d(len1 + 1, vector<unsigned int>(len2 + 1));
 
