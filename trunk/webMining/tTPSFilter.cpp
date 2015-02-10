@@ -181,7 +181,7 @@ map<long int, tTPSRegion> tTPSFilter::tagPathSequenceFilter(tNode *n, bool css) 
 	originalTPS = tagPathSequence;
 	originalNodeSequence = nodeSequence;
 	originalTPSsize = originalTPS.size();
-	sizeThreshold = (originalTPSsize*10)/100; // % page size
+	sizeThreshold = (originalTPSsize*5)/100; // % page size
 
 	seqQueue.push(make_pair(originalTPS,0)); // insert first sequence in queue for processing
 
@@ -382,6 +382,29 @@ vector<unsigned int> tTPSFilter::locateRecords(wstring s, float st) {
 			rootTag = (*i).first;
 		}
 	}
+
+	/* TESTE */
+	TPMap.clear();
+	float _max_score=0;
+	for (size_t i=0;i<=s.size();i++) {
+		TPMap[s[i]]++;
+	}
+	rootTag=0;
+	for (auto i=TPMap.begin();i!=TPMap.end();i++) {
+		if ((*i).first <= 0) continue;
+		if ((*i).second < (s.size()*0.01)) continue;
+		float _score = (((float)((*i).second)) / ((float)((*i).first)));
+		cerr << "*** SCORE " << (*i).first << " / " << (*i).second << " = " << _score << endl;
+		if ( _score >= _max_score) {
+			if ((rootTag > (*i).first) || (!rootTag)) {
+				tagCount = (*i).second;
+				rootTag = (*i).first;
+				_max_score = _score;
+			}
+		}
+	}
+	cerr << "*** FINAL " << rootTag << " / " << tagCount << " = " << _max_score << endl;
+	/* fim TESTE */
 
 	// find the beginning of each record, using the tag path code found before
 	for (size_t i=0;i<s.size();i++) {
