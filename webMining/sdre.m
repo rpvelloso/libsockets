@@ -153,7 +153,7 @@ signal = load('Debug/x');
 
 figure; plot(signal);
 
-p = symfil(signal,8);
+p = symfil(signal,2);
 
 sig(1:length(signal))=0;
 for i=1:length(p)
