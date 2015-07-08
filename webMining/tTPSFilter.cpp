@@ -64,6 +64,32 @@ bool tTPSFilter::prune(tNode *n) {
 	return false;
 }
 
+map<int,int> tTPSFilter::symbolFrequency(wstring s, set<int> &alphabet) {
+	map<int, int> symbolCount;
+
+	// compute symbol frequency
+	for (size_t i=0;i<s.size();i++) {
+		if (s[i] != 0) {
+			if (alphabet.find(s[i]) == alphabet.end()) {
+				symbolCount[s[i]]=0;
+				alphabet.insert(s[i]);
+			}
+			symbolCount[s[i]]++;
+		}
+	}
+	return symbolCount;
+}
+
+map<int,int> tTPSFilter::frequencyThresholds(map<int,int> symbolCount) {
+	map<int,int> thresholds;
+
+	// create sorted list of frequency thresholds
+	for (auto i=symbolCount.begin();i!=symbolCount.end();i++)
+		thresholds[(*i).second] = (*i).first;
+
+	return thresholds;
+}
+
 long int tTPSFilter::searchRegion(wstring s) {
 	set<int> alphabet,filteredAlphabet,regionAlphabet,intersect;
 	map<int,int> currentSymbolCount,symbolCount,thresholds;
@@ -71,18 +97,8 @@ long int tTPSFilter::searchRegion(wstring s) {
 	size_t border=0;
 
 
-	// compute symbol frequency
-	for (size_t i=0;i<s.size();i++) {
-		if (alphabet.find(s[i]) == alphabet.end()) {
-			symbolCount[s[i]]=0;
-			alphabet.insert(s[i]);
-		}
-		symbolCount[s[i]]++;
-	}
-
-	// create sorted list of frequency thresholds
-	for (auto i=symbolCount.begin();i!=symbolCount.end();i++)
-		thresholds[(*i).second] = (*i).first;
+	symbolCount = symbolFrequency(s,alphabet);
+	thresholds = frequencyThresholds(symbolCount);
 	auto threshold = thresholds.begin();
 
 	while (!regionFound && (threshold != thresholds.end())) {
@@ -243,6 +259,84 @@ map<long int, tTPSRegion> tTPSFilter::tagPathSequenceFilter(tNode *n, bool css) 
 	return structured;
 }
 
+map<long int, tTPSRegion> tTPSFilter::tagPathSequenceFilter2(tNode *n, bool css) {
+	set<int> alphabet;
+	wstring s;
+	float angCoeffThreshold=0.1;
+	map<long int,tTPSRegion> structured;
+	long int lastRegionIdx = -1;
+
+	buildTagPath("",n,false,css,false);
+	s = tagPathSequence;
+	auto symbolCount = symbolFrequency(s,alphabet);
+	auto thresholds = frequencyThresholds(symbolCount);
+	auto threshold = (*(++thresholds.begin())).first;
+
+	for (size_t i=0;i<s.size();i++) {
+		if (symbolCount[s[i]] <= threshold) s[i]=0;
+	}
+
+	cout << "threshold " << threshold << endl;
+
+	bool regionOpen=false;
+	int regionStart=0;
+	int regionEnd=0;
+
+	for (size_t i=0;i<s.size();i++) {
+		if (!regionOpen) {
+			 if (s[i] != 0) {
+				regionOpen = true;
+				regionEnd = i;
+				regionStart = i;
+			}
+		} else {
+			if (s[i] == 0) {
+				tTPSRegion reg;
+
+				regionOpen = false;
+				regionEnd = i-1;
+				reg.pos = regionStart;
+				reg.len = regionEnd - regionStart + 1;
+				if (reg.len > 3) {
+					reg.tps = tagPathSequence.substr(reg.pos,reg.len);
+
+					if (lastRegionIdx != -1) {
+						set<int> palpha,alpha,intersect;
+
+						symbolFrequency(_regions[lastRegionIdx].tps,palpha);
+						symbolFrequency(reg.tps,alpha);
+
+						set_intersection(palpha.begin(),palpha.end(),alpha.begin(),alpha.end(),inserter(intersect,intersect.begin()));
+
+						if (!intersect.empty()) {
+							_regions[lastRegionIdx].len = regionEnd - _regions[lastRegionIdx].pos + 1;
+							_regions[lastRegionIdx].tps = tagPathSequence.substr(_regions[lastRegionIdx].pos,_regions[lastRegionIdx].len);
+							cout << "merge " << _regions[lastRegionIdx].pos << " " << _regions[lastRegionIdx].len << endl;
+							continue;
+						}
+
+					}
+					_regions[regionStart] = reg;
+					lastRegionIdx = regionStart;
+				}
+			}
+		}
+	}
+
+	for (auto i=_regions.begin();i!=_regions.end();i++) {
+		//auto firstNode = nodeSequence.begin()+(*i).first;
+		//auto lastNode = firstNode + (*i).second.len;
+
+		(*i).second.lc = linearRegression((*i).second.tps);
+		//_regions[(*i).first].nodeSeq.assign(firstNode,lastNode);
+
+		if (abs((*i).second.lc.a) < angCoeffThreshold)
+			structured.insert(*i);
+	}
+
+	return structured;
+}
+
 void tTPSFilter::DRDE(tNode *n, bool css, float st) {
 	vector<unsigned int> recpos;
 	vector<wstring> m;
@@ -250,7 +344,7 @@ void tTPSFilter::DRDE(tNode *n, bool css, float st) {
 
 	_regions.clear();
 
-	structured=tagPathSequenceFilter(n,css); // locate main content regions
+	structured=tagPathSequenceFilter2(n,css); // locate main content regions
 
 	for (auto i=structured.begin();i!=structured.end();i++) {
 		auto firstNode = nodeSequence.begin()+(*i).first;
@@ -309,6 +403,43 @@ void tTPSFilter::DRDE(tNode *n, bool css, float st) {
 		(*i).second.pos = (*i).first;
 		regions.push_back((*i).second);
 	}
+}
+
+vector<unsigned int> tTPSFilter::locateRecords2(wstring s, float st) {
+	float signal[s.size()];
+	float avg = mean(s);
+	set<float> candidates;
+	vector<unsigned int> recpos;
+
+
+	for (size_t i=0;i<s.size();i++) {
+		signal[i] = s[i] - avg;
+		if (signal[i] < 0) candidates.insert(signal[i]);
+	}
+
+	while (candidates.size()) {
+		float value = *(candidates.begin());
+		float stddev=0,avgsize=0;
+		candidates.erase(value);
+
+		for (size_t i=0;i<s.size();i++) {
+			if (signal[i] == value) {
+				recpos[recpos.size()] = i;
+			}
+		}
+		for (size_t i=0;i<recpos.size();i++) {
+			avgsize += recpos[i];
+		}
+		avgsize /= (float)(recpos.size());
+
+		for (size_t i=0;i<recpos.size();i++) {
+			float diff = recpos[i]-avgsize;
+			stddev += (diff*diff);
+		}
+		stddev = sqrt(stddev);
+	}
+
+	return recpos;
 }
 
 vector<unsigned int> tTPSFilter::locateRecords(wstring s, float st) {

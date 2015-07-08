@@ -44,6 +44,7 @@ public:
 
     void buildTagPath(string, tNode *, bool, bool, bool);
 	map<long int, tTPSRegion> tagPathSequenceFilter(tNode *, bool);
+	map<long int, tTPSRegion> tagPathSequenceFilter2(tNode *, bool);
 	void DRDE(tNode *, bool, float);
 	const wstring& getTagPathSequence(int = -1);
 	tTPSRegion *getRegion(size_t);
@@ -53,6 +54,9 @@ protected:
 	long int searchRegion(wstring);
 	bool prune(tNode *);
 	vector<unsigned int> locateRecords(wstring, float);
+	vector<unsigned int> locateRecords2(wstring, float);
+	map<int,int> symbolFrequency(wstring, set<int> &);
+	map<int,int> frequencyThresholds(map<int,int>);
 
 	virtual void onDataRecordFound(vector<wstring> &, vector<unsigned int> &, tTPSRegion *);
 

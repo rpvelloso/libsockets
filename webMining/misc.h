@@ -54,6 +54,17 @@ string to_string(T val) {
 	return ss.str();
 }
 
+template<typename T>
+float mean(T s) {
+
+	float total=0;
+
+	for (int i=0;i<s.size();i++) {
+		total += s[i];
+	}
+	return total/(float)s.size();
+}
+
 #define SPACE T(1,'\0')
 
 template <class T>
