@@ -371,10 +371,9 @@ void tTPSFilter::DRDE(tNode *n, bool css, float st) {
 
 		// consider only leaf nodes when searching record boundary & performing field alignment
 		auto j = _regions[(*i).first].nodeSeq.begin();
-		auto ne = _regions[(*i).first].nodeSeq.end();
 		auto t=_regions[(*i).first].tps.begin();
 		size_t k=0;
-		while (j!=ne) {
+		while (k < _regions[(*i).first].tps.size()) {
 			bool erase = ((*j)->nodes.size() || (*j)->text == "");
 			for (size_t w=0;w<recpos.size();w++) {
 				if (recpos[w] == k) {
@@ -386,11 +385,8 @@ void tTPSFilter::DRDE(tNode *n, bool css, float st) {
 			if (erase) {
 				j = _regions[(*i).first].nodeSeq.erase(j);
 				t = _regions[(*i).first].tps.erase(t);
-				for (size_t w=0,z=1;w<recpos.size();w++) {
-					if (recpos[w] > k) {
-						recpos[w]--;//=z;
-						z++;
-					}
+				for (size_t w=0;w<recpos.size();w++) {
+					if (recpos[w] > k) recpos[w]--;
 				}
 			} else {
 				j++;
