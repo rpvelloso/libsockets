@@ -132,10 +132,10 @@ function q = reencode(s)
 	pos = 1; n=1;
 	while pos<=length(s)
 		if find(setCodes==s(pos))
-			n=n+1;
 			c{s(pos)}=n;
 			setCodes = setdiff(setCodes,s(pos));
 			q(pos)=n;
+			n=n+1;
 		else
 			q(pos)=c{s(pos)};
 		end

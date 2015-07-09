@@ -57,6 +57,7 @@ protected:
 	vector<unsigned int> locateRecords2(wstring, float);
 	map<int,int> symbolFrequency(wstring, set<int> &);
 	map<int,int> frequencyThresholds(map<int,int>);
+	double estimatePeriod(vector<float>);
 
 	virtual void onDataRecordFound(vector<wstring> &, vector<unsigned int> &, tTPSRegion *);
 

@@ -22,6 +22,7 @@
 #include <set>
 #include "tTPSFilter.h"
 #include "misc.h"
+#include "hsfft.h"
 
 tTPSFilter::tTPSFilter() : count(0),pathCount(0) {
 }
@@ -265,9 +266,12 @@ map<long int, tTPSRegion> tTPSFilter::tagPathSequenceFilter2(tNode *n, bool css)
 	float angCoeffThreshold=0.1;
 	map<long int,tTPSRegion> structured;
 	long int lastRegionIdx = -1;
+	long int sizeThreshold;
 
 	buildTagPath("",n,false,css,false);
 	s = tagPathSequence;
+	sizeThreshold = (s.size()*5)/100; // % page size
+
 	auto symbolCount = symbolFrequency(s,alphabet);
 	auto thresholds = frequencyThresholds(symbolCount);
 	auto threshold = (*(++thresholds.begin())).first;
@@ -276,7 +280,7 @@ map<long int, tTPSRegion> tTPSFilter::tagPathSequenceFilter2(tNode *n, bool css)
 		if (symbolCount[s[i]] <= threshold) s[i]=0;
 	}
 
-	cout << "threshold " << threshold << endl;
+	//cout << "threshold " << threshold << endl;
 
 	bool regionOpen=false;
 	int regionStart=0;
@@ -297,7 +301,7 @@ map<long int, tTPSRegion> tTPSFilter::tagPathSequenceFilter2(tNode *n, bool css)
 				regionEnd = i-1;
 				reg.pos = regionStart;
 				reg.len = regionEnd - regionStart + 1;
-				if (reg.len > 3) {
+				if (reg.len > sizeThreshold) {
 					reg.tps = tagPathSequence.substr(reg.pos,reg.len);
 
 					if (lastRegionIdx != -1) {
@@ -311,7 +315,7 @@ map<long int, tTPSRegion> tTPSFilter::tagPathSequenceFilter2(tNode *n, bool css)
 						if (!intersect.empty()) {
 							_regions[lastRegionIdx].len = regionEnd - _regions[lastRegionIdx].pos + 1;
 							_regions[lastRegionIdx].tps = tagPathSequence.substr(_regions[lastRegionIdx].pos,_regions[lastRegionIdx].len);
-							cout << "merge " << _regions[lastRegionIdx].pos << " " << _regions[lastRegionIdx].len << endl;
+							//cout << "merge " << _regions[lastRegionIdx].pos << " " << _regions[lastRegionIdx].len << endl;
 							continue;
 						}
 
@@ -328,6 +332,7 @@ map<long int, tTPSRegion> tTPSFilter::tagPathSequenceFilter2(tNode *n, bool css)
 		//auto lastNode = firstNode + (*i).second.len;
 
 		(*i).second.lc = linearRegression((*i).second.tps);
+		//cout << (*i).second.lc.e << endl;
 		//_regions[(*i).first].nodeSeq.assign(firstNode,lastNode);
 
 		if (abs((*i).second.lc.a) < angCoeffThreshold)
@@ -361,7 +366,8 @@ void tTPSFilter::DRDE(tNode *n, bool css, float st) {
 		cerr << endl;
 
 		// identify the start position of each record
-		recpos = locateRecords(_regions[(*i).first].tps,st);
+		recpos = locateRecords2(_regions[(*i).first].tps,st);
+		//recpos = locateRecords(_regions[(*i).first].tps,st);
 
 		// consider only leaf nodes when searching record boundary & performing field alignment
 		/*for (size_t k=0,j=0;j<_regions[(*i).first].nodeSeq.size();j++,k++) {
@@ -406,40 +412,83 @@ void tTPSFilter::DRDE(tNode *n, bool css, float st) {
 }
 
 vector<unsigned int> tTPSFilter::locateRecords2(wstring s, float st) {
-	float signal[s.size()];
-	float avg = mean(s);
+	vector<float> signal(s.size());
+	float avg;
 	set<float> candidates;
-	vector<unsigned int> recpos;
+	vector<unsigned int> recpos,ret;
+	set<int> alphabet;
+	map<int,int> reencode;
+	double estPeriod;
+	double maxCode=0,maxScore=0;
 
+	// reencode signal
+	symbolFrequency(s,alphabet);
+	for (size_t i=0,j=0;i<s.size();i++) {
+		if (alphabet.find(s[i])!=alphabet.end()) {
+			alphabet.erase(s[i]);
+			j++;
+			reencode[s[i]]=j;
+		}
+		signal[i]=reencode[s[i]];
+	}
+	avg = mean(signal);
 
+	// remove DC
 	for (size_t i=0;i<s.size();i++) {
-		signal[i] = s[i] - avg;
+		signal[i] = signal[i] - avg;
 		if (signal[i] < 0) candidates.insert(signal[i]);
+		if (abs(signal[i]) > maxCode) maxCode = abs(signal[i]);
 	}
 
-	while (candidates.size()) {
-		float value = *(candidates.begin());
-		float stddev=0,avgsize=0;
-		candidates.erase(value);
+	estPeriod = estimatePeriod(signal);
+
+	//cout << endl;
+
+	auto value = candidates.begin();
+	while (value != candidates.end()) {
+		double stddev,avgsize;
+
+		recpos.clear();
+		stddev=0;
+		avgsize=0;
 
 		for (size_t i=0;i<s.size();i++) {
-			if (signal[i] == value) {
-				recpos[recpos.size()] = i;
+			if (signal[i] == *value) {
+				recpos.push_back(i);
 			}
 		}
-		for (size_t i=0;i<recpos.size();i++) {
-			avgsize += recpos[i];
-		}
-		avgsize /= (float)(recpos.size());
 
-		for (size_t i=0;i<recpos.size();i++) {
-			float diff = recpos[i]-avgsize;
-			stddev += (diff*diff);
+		if (recpos.size() > 1) {
+			for (size_t i=1;i<recpos.size();i++) {
+				avgsize += (recpos[i] - recpos[i-1]);
+			}
+			avgsize /= (float)(recpos.size()-1);
+
+			for (size_t i=1;i<recpos.size();i++) {
+				float diff = (float)(recpos[i] - recpos[i-1])-avgsize;
+				stddev += (diff*diff);
+			}
+			stddev = sqrt(stddev/max((float)(recpos.size()-2),(float)1));
+
+			double regionCoverage = min(avgsize*(double)recpos.size()/(double)signal.size(), (double)1);
+			double recCountRatio =
+					min( (double)recpos.size() ,(double)signal.size()/avgsize) /
+					max( (double)recpos.size() ,(double)signal.size()/avgsize);
+			if (stddev>1) avgsize /= stddev;
+			double recSizeRatio = min( avgsize, estPeriod )/max( avgsize, estPeriod );
+			double tpcRatio = (double)abs(*value)/maxCode;
+
+			double score = regionCoverage*recCountRatio*recSizeRatio*tpcRatio;
+			if (score > maxScore) {
+				maxScore = score;
+				ret = recpos;
+			}
+			//printf("value=%.2f, cov=%.2f, #=%.2f, size=%.2f, t=%.2f, s=%.4f - %.2f\n",*value,regionCoverage,recCountRatio,recSizeRatio,tpcRatio,score,estPeriod);
 		}
-		stddev = sqrt(stddev);
+		value++;
 	}
 
-	return recpos;
+	return ret.size()?ret:recpos;
 }
 
 vector<unsigned int> tTPSFilter::locateRecords(wstring s, float st) {
@@ -564,6 +613,43 @@ vector<tNode*> tTPSFilter::getRecord(size_t dr, size_t rec) {
 			return regions[dr].records[rec];
 	}
 	return vector<tNode *>(0);
+}
+
+double tTPSFilter::estimatePeriod(vector<float> signal) {
+	size_t N = signal.size();
+	double peak,maxPeak=0;
+	size_t peakFreq=1;
+
+	fft_object obj = fft_init(N,1); // Initialize FFT object obj . N - FFT Length. 1 - Forward FFT and -1 for Inverse FFT
+
+	fft_data* inp = (fft_data*) malloc (sizeof(fft_data) * N);
+	fft_data* oup = (fft_data*) malloc (sizeof(fft_data) * N);
+
+	for (size_t i = 0; i < N; i++) {
+		inp[i].re = signal[i];
+		inp[i].im = 0;
+
+		inp[i].re *= (1.0-(((double)i-0.5*(double)(N-1))
+					/(0.5*(double)(N+1)))
+					*(((double)i-0.5*(double)(N-1))
+					/(0.5*(double)(N+1))));
+	}
+
+	fft_exec(obj,inp,oup);
+
+	for (size_t i = 1; i < (N/2)-1; i++) {
+		peak = sqrt((oup[i].re*oup[i].re) + (oup[i].im*oup[i].im));
+		if (peak > maxPeak) {
+			maxPeak = peak;
+			peakFreq = i;
+		}
+	}
+
+	free(inp);
+	free(oup);
+	free_fft(obj);
+
+	return ((double)N/(double)peakFreq);
 }
 
 void tTPSFilter::onDataRecordFound(vector<wstring> &m, vector<unsigned int> &recpos, tTPSRegion *reg) {
