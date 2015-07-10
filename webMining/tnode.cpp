@@ -206,45 +206,40 @@ void tNode::printNode(int lvl, int verbose) {
 	}
 }
 
-string tNode::toString(int lvl, int verbose) {
-	string nstr="";
+string tNode::toString() {
+	string str;
 
-	for (int j=1;j<lvl;j++) nstr.append(" ");
 	switch (this->type) {
 		case 0:
-			nstr.append("<"); break;
+			str.append("<"); break;
 		case 1:
-			nstr.append("</"); break;
+			str.append("</"); break;
 		case 2:
 			break;
 		case 3:
-			nstr.append("<!--"); break;
+			str.append("<!--"); break;
 		default: break;
 	}
 
 	if (this->type != -1) {
-		if (this->type < 2) nstr.append(this->tagName);
-		if (this->text.size() > 0) {
-			nstr.append(" "+(verbose?this->text:this->text.substr(0,MAX_TXT_SIZE)));
-			if (!verbose && (this->text.size() > MAX_TXT_SIZE)) nstr.append(" ...");
-		}
-		if (this->type == 3) nstr.append("--");
-		if (this->type != 2) {
-			if (!verbose) nstr.append(" ("+to_string(this->depth)+", "+to_string(this->size)+")");
-			nstr.append(">");
-		}
-		nstr.append(CRLF);
+		if (this->type < 2) str.append(this->tagName + " ");
+		if (this->text.size() > 0)
+			str.append(this->text);
+		if (this->type == 3) str.append("--");
+		if (this->type != 2) str.append(">");
 	}
 
-	for (auto i = this->nodes.begin();i!=this->nodes.end();i++) nstr.append((*i)->toString(lvl+1,verbose));
+	for (auto i = this->nodes.begin();i!=this->nodes.end();i++) str.append((*i)->toString());
 
 	// close current tag
 	if ((this->type != -1) && (singleTags.find(this->tagName) == singleTags.end())) {
-		if (this->type != 2) for (int j=1;j<lvl;j++) nstr.append(" ");
-		if (this->type == 3) nstr.append("-->" CRLF);
+		if (this->type == 3) str.append("-->");
 		else if (this->type != 2) {
-			nstr.append("</"+this->tagName+">"+CRLF);
+			str.append("</");
+			str.append(this->tagName);
+			str.append(">");
 		}
 	}
-	return nstr;
+
+	return str;
 }

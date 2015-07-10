@@ -85,6 +85,20 @@ static int lua_api_DRDExtract(lua_State *L) {
 	return 0;
 }
 
+static int lua_api_SRDExtract(lua_State *L) {
+	int nargs = lua_gettop(L);
+
+	if (nargs == 1) {
+		if (lua_islightuserdata(L,-1)) {
+			tDOM *dom = (tDOM *)lua_touserdata(L,-1);
+			if (checkDOM(L,dom)) {
+				dom->tpsf.SRDE(dom->getBody(),true);
+			}
+		}
+	}
+	return 0;
+}
+
 static int lua_api_MDRExtract(lua_State *L) {
 	int nargs = lua_gettop(L);
 
@@ -108,7 +122,7 @@ static int lua_api_getRegionCount(lua_State *L) {
 		string methodstr = lua_tostring(L,-1);
 		tExtractInterface *method;
 
-		if (methodstr == "drde")
+		if ((methodstr == "drde") || (methodstr == "srde"))
 			method = &(dom->tpsf);
 		else
 			method = &(dom->mdr);
@@ -126,7 +140,7 @@ static int lua_api_getDataRegion(lua_State *L) {
 			tDOM *dom = (tDOM *)lua_touserdata(L,-3);
 			string methodstr = lua_tostring(L,-2);
 
-			if (checkDOM(L,dom) && ((methodstr == "mdr") || (methodstr == "drde"))) {
+			if (checkDOM(L,dom) && ((methodstr == "mdr") || (methodstr == "drde") || (methodstr == "srde"))) {
 				int dtr_no = lua_tonumber(L,-1);
 				int rec_no=0;
 				vector<tNode *> rec;
@@ -142,7 +156,7 @@ static int lua_api_getDataRegion(lua_State *L) {
 				lua_createtable(L,0,0);
 
 				// tps data of this data region
-				if (methodstr == "drde") {
+				if ((methodstr == "drde") || (methodstr == "srde")) {
 					tpsreg = dom->tpsf.getRegion(dtr_no);
 					if (tpsreg && tpsreg->tps.size()) {
 						lua_pushstring(L,"tps");
@@ -184,11 +198,12 @@ static int lua_api_getDataRegion(lua_State *L) {
 						lua_pushnumber(L,i+1);
 						if (rec[i]) {
 							if ((rec[i]->getTagName() == "img") || (rec[i]->getTagName() == "a"))
-								lua_pushstring(L,rec[i]->toString(4,true).c_str());
+								lua_pushstring(L,rec[i]->toString().c_str());
 							else if (rec[i]->getType() == 2)
 								lua_pushstring(L,rec[i]->getText().c_str());
 							else
-								lua_pushlightuserdata(L,rec[i]);
+								lua_pushstring(L,rec[i]->toString().c_str());
+								//lua_pushlightuserdata(L,rec[i]);
 						} else
 							lua_pushlightuserdata(L,rec[i]);
 						lua_settable(L,-3);
@@ -202,22 +217,6 @@ static int lua_api_getDataRegion(lua_State *L) {
 				lua_pushnumber(L,rec_no-1);
 				lua_settable(L,-3);
 
-				return 1;
-			}
-		}
-	}
-	return 0;
-}
-
-static int lua_api_fieldToString(lua_State *L) {
-	int nargs = lua_gettop(L);
-
-	if (nargs == 1) {
-		if (lua_islightuserdata(L,-1)) {
-			tNode *n = (tNode *)lua_touserdata(L,-1);
-
-			if (n) {
-				lua_pushstring(L,n->toString(4,true).c_str());
 				return 1;
 			}
 		}
@@ -243,6 +242,37 @@ static int lua_api_DOMTPS(lua_State *L) {
 				}
 				return 1;
 			}
+		}
+	}
+	return 0;
+}
+
+static int lua_api_printDOM(lua_State *L) {
+	int nargs = lua_gettop(L);
+
+	if (nargs == 2) {
+		if (lua_islightuserdata(L,-2) && lua_isboolean(L,-1)) {
+			tDOM *dom = (tDOM *)lua_touserdata(L,-2);
+			bool verbose = lua_toboolean(L,-1);
+
+			if (checkDOM(L,dom)) {
+				dom->setVerbose(verbose);
+				dom->printDOM();
+			}
+		}
+	}
+	return 0;
+}
+
+static int lua_api_nodeToString(lua_State *L) {
+	int nargs = lua_gettop(L);
+
+	if (nargs == 1) {
+		if (lua_islightuserdata(L,-1)) {
+			tNode *node = (tNode *)lua_touserdata(L,-1);
+
+			lua_pushstring(L,node->toString().c_str());
+			return 1;
 		}
 	}
 	return 0;
@@ -278,11 +308,13 @@ tlua::tlua(const char *inp) {
 		LUA_SET_GLOBAL_CFUNC(L,"loadDOMTree",lua_api_loadDOMTree);
 		LUA_SET_GLOBAL_CFUNC(L,"unloadDOMTree",lua_api_unloadDOMTree);
 		LUA_SET_GLOBAL_CFUNC(L,"DRDExtract",lua_api_DRDExtract);
+		LUA_SET_GLOBAL_CFUNC(L,"SRDExtract",lua_api_SRDExtract);
 		LUA_SET_GLOBAL_CFUNC(L,"MDRExtract",lua_api_MDRExtract);
 		LUA_SET_GLOBAL_CFUNC(L,"getDataRegion",lua_api_getDataRegion);
 		LUA_SET_GLOBAL_CFUNC(L,"getRegionCount",lua_api_getRegionCount);
-		LUA_SET_GLOBAL_CFUNC(L,"fieldToString",lua_api_fieldToString);
 		LUA_SET_GLOBAL_CFUNC(L,"DOMTPS",lua_api_DOMTPS);
+		LUA_SET_GLOBAL_CFUNC(L,"printDOM",lua_api_printDOM);
+		LUA_SET_GLOBAL_CFUNC(L,"nodeToString",lua_api_nodeToString);
 		s = lua_pcall(L, 0, LUA_MULTRET, 0);
 	} else {
 		cout << "Lua error: " << lua_tostring(L, -1) << endl;

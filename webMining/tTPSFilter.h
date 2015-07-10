@@ -34,6 +34,7 @@ struct tTPSRegion {
 	vector<tNode *> nodeSeq;
 	tLinearCoeff lc;
 	vector<vector<tNode *> > records;
+	double stddev;
 };
 
 
@@ -44,8 +45,9 @@ public:
 
     void buildTagPath(string, tNode *, bool, bool, bool);
 	map<long int, tTPSRegion> tagPathSequenceFilter(tNode *, bool);
-	map<long int, tTPSRegion> tagPathSequenceFilter2(tNode *, bool);
+	map<long int, tTPSRegion> SRDEFilter(tNode *, bool);
 	void DRDE(tNode *, bool, float);
+	void SRDE(tNode *, bool);
 	const wstring& getTagPathSequence(int = -1);
 	tTPSRegion *getRegion(size_t);
 	virtual size_t getRegionCount();
@@ -53,8 +55,8 @@ public:
 protected:
 	long int searchRegion(wstring);
 	bool prune(tNode *);
-	vector<unsigned int> locateRecords(wstring, float);
-	vector<unsigned int> locateRecords2(wstring, float);
+	vector<unsigned int> locateRecords(wstring, double);
+	vector<unsigned int> SRDElocateRecords(wstring, double &);
 	map<int,int> symbolFrequency(wstring, set<int> &);
 	map<int,int> frequencyThresholds(map<int,int>);
 	double estimatePeriod(vector<float>);

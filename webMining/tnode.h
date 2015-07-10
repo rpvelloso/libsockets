@@ -53,7 +53,7 @@ public:
 	list<tNode *> &getNodes();
 	string getAttribute(string);
 	void printNode(int, int);
-	string toString(int, int);
+	string toString();
 protected:
 	void align(tNode *, tNode *);
 	list<tNode *> nodes;
