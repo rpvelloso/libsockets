@@ -1,6 +1,6 @@
 CRLF = "\n"
---gnuplot = "C:\\Progra~2\\gnuplot\\bin\\gnuplot.exe"
-gnuplot = "gnuplot"
+gnuplot = "C:\\Progra~2\\gnuplot\\bin\\gnuplot.exe"
+--gnuplot = "gnuplot"
 
 term = {}
 term["png"] = ".png"
@@ -8,13 +8,14 @@ term["postscript"]=".ps"
 term["default"]="png"
 
 displayResults = function(dom,method,dir,filename) 
-	local j=0
-	local regions = getRegionCount(dom,method)
-	local outp = io.open(dir..filename,"w")
-	
-	if method=="drde" then
+  local j=0
+  local regions = getRegionCount(dom,method)
+  local outp = io.open(dir..filename,"w")
+  
+  if method=="srde" then
     local tps = DOMTPS(dom)
     if #tps then
+      outp:write("<style>table {border-collapse: collapse;} table, td, th {border: 1px solid black;}</style>")
       outp:write("<img src='",filename,".tps",term[term["default"]],"' /><br />",CRLF)
       outp:write("<textarea>",CRLF)
       outp:write(tps[1])
@@ -23,31 +24,32 @@ displayResults = function(dom,method,dir,filename)
       end
       outp:write("</textarea><br />")
     end
-	end
-	for i=1,regions do
-		local dr = getDataRegion(dom,method,i-1)
-    outp:write("<table border=1><tr><th> region ",i,"</th><th> rows ",dr.rows,"</th><th> cols ",dr.cols,"</th></tr></table>",CRLF)
-		
-		if (dr.rows > 0) and (dr["records"]) then 
-  		outp:write("<table border=1>",CRLF)
-  		for r=1,dr.rows do
-  			outp:write("<tr>")
-  			for c=1,dr.cols do
-  				if type(dr.records[r][c])=="string" then
-  					outp:write("<td>",dr.records[r][c],"</td>")
-  				else
-  					outp:write("<td></td>")
-  				end
-  			end
-  			outp:write("</tr>",CRLF)
-  			j = j + 1
-  		end
-  		outp:write("</table><br />",CRLF)
-		end
-		
+  end
+  for i=1,regions do
+    local dr = getDataRegion(dom,method,i-1)
+    outp:write("<table border=0><tr><th> region ",i,"</th><th> rows ",dr.rows,"</th><th> cols ",dr.cols,"</th></tr></table>",CRLF)
+    
+    if (dr.rows > 0) and (dr["records"]) then 
+      outp:write("<table border=0>",CRLF)
+      print(dr.rows)
+      for r=1,dr.rows do
+        outp:write("<tr>")
+        for c=1,dr.cols do
+          if type(dr.records[r][c])=="string" then
+            outp:write("<td>",dr.records[r][c],"</td>")
+          else
+            outp:write("<td>[",type(dr.records[r][c]),"]</td>")
+          end
+        end
+        outp:write("</tr>",CRLF)
+        j = j + 1
+      end
+      outp:write("</table><br />",CRLF)
+    end
+    
     if dr["tps"] then
-      outp:write("<img src='",filename,".region",i,term[term["default"]],"' /><br />",CRLF) 
-      outp:write(dr.pos,",",#dr.tps,": ",dr["a"],"*x + ",dr["b"],". error = ",dr["e"],"<br />",CRLF)
+      outp:write("<img src='",filename,".region",i,term[term["default"]],"' /><br />",CRLF)
+      outp:write("offset: ",dr.pos,", size: ",#dr.tps,", angle: ",math.atan(math.abs(dr["a"]))*180/math.pi,"<br />",CRLF)
       local t = dr.tps
       if #t then
         outp:write("<textarea>",CRLF)
@@ -60,14 +62,14 @@ displayResults = function(dom,method,dir,filename)
     end
     
     outp:write(CRLF)
-	end
-	outp:write(regions," regions, ",j," records.",CRLF)
+  end
+  outp:write(regions," regions, ",j," records.",CRLF)
   outp:write("<hr/><br/>",CRLF)
   outp:close()
 end
 
 plotSequences = function(dom,output,filename)
-  local method = "drde"
+  local method = "srde"
   local regions = getRegionCount(dom,method)
   local tps = DOMTPS(dom)
 
@@ -107,26 +109,63 @@ processTestBed = function(dir)
   local t, popen = {}, io.popen
   
 
+  for filename in popen('ls -a "'..dir..'"'):lines() do
+    --if filename=="dailymotion" then
+    local d, fn, ext = filename:match("(.-)([^\\/]-%.?([^%.\\/]*))$")
+    local output = dir.."/srde/"
+
+    if (fn~="extract_input.pl") and (fn~="srde") and (fn~="drde") and (fn:sub(1,1)~='.') then
+      print("Loading DOM tree: ",filename)
+      local dom = loadDOMTree(dir.."/"..filename.."/index.html")
+      
+      --print("Extracting records.")
+      local start = os.clock()
+      SRDExtract(dom)
+      print("elapsed time: ",os.clock() - start)
+      
+      --print("Outputting results.")
+      displayResults(dom,"srde",output,fn..".html")
+      
+      --print("Plotting graphs.")
+      plotSequences(dom,"file",output..fn..".html")
+    end
+    --end
+  end
+end
+
+processTestBed2 = function(dir)
+  local t, popen = {}, io.popen
+  
+
   for filename in popen('ls -a "'..dir..'"/*.htm*'):lines() do
     local d, fn, ext = filename:match("(.-)([^\\/]-%.?([^%.\\/]*))$")
-    local output = d.."drde/"..fn
+    local output = d.."srde/"..fn
     
     print("Loading DOM tree: ",filename)
     local dom = loadDOMTree(filename)
     
-    print("Extracting records.")
-    DRDExtract(dom,0.70)
+    --print("Extracting records.")
+    local start = os.clock()
+    SRDExtract(dom)
+    print("elapsed time: ",os.clock() - start)
     
-    print("Outputting results.")
-    displayResults(dom,"drde",d.."drde/",fn)
+    --print("Outputting results.")
+    displayResults(dom,"srde",d.."srde/",fn)
     
-    print("Plotting graphs.")
+    --print("Plotting graphs.")
     plotSequences(dom,"file",output)
   end
 end
 
-processTestBed("testbed")
-processTestBed("testbed2")
-processTestBed("testbed3")
-processTestBed("testbed4")
+--processTestBed2("tmp")
+--exit()
+
+processTestBed2("testbed")
+exit()
+processTestBed("testbed5/yamada")
+processTestBed("testbed5/trieschnigg2")
+processTestBed("testbed5/trieschnigg1")
+processTestBed2("testbed2")
+processTestBed2("testbed3")
+processTestBed2("testbed4")
 exit()
