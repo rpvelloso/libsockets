@@ -20,6 +20,7 @@
 #include <queue>
 #include <iostream>
 #include <set>
+#include <functional>
 #include "tTPSFilter.h"
 #include "misc.h"
 #include "hsfft.h"
@@ -341,10 +342,12 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 	vector<wstring> m;
 	map<long int, tTPSRegion> structured;
 	double period;
+	wstring saveCSSTPS = tagPathSequence;
 
 	_regions.clear();
 
 	structured=SRDEFilter(n,css); // segment page and detects structured regions
+	buildTagPath("",n,false,false,false); // rebuild TPS without css to increase periodicity
 
 	for (auto i=structured.begin();i!=structured.end();i++) {
 		auto firstNode = nodeSequence.begin()+(*i).first;
@@ -418,12 +421,13 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 	ckmeansInput.push_back(0);
 	for (auto i=_regions.begin();i!=_regions.end();i++) {
 		(*i).second.pos = (*i).first;
+		//(*i).second.tps = saveCSSTPS.substr((*i).second.pos,(*i).second.len);
 		regions.push_back((*i).second);
 		ckmeansInput.push_back((*i).second.stddev);
 	}
 
 	ClusterResult result;
-    result = kmeans_1d_dp(ckmeansInput,1,2);
+    result = kmeans_1d_dp(ckmeansInput,2,2);
 
     cout << endl;
     cout << "|" << result.centers.size() << "| ";
@@ -432,6 +436,10 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
     	regions[j++].content = (((*i) == 2) || (result.centers.size() < 3));
     	cout << (*i) << " ";
     }
+
+    sort(regions.begin(),regions.end(),[](const tTPSRegion &a, const tTPSRegion &b) {
+    		return (a.stddev > b.stddev);
+    });
 }
 
 void tTPSFilter::DRDE(tNode *n, bool css, float st) {

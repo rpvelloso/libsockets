@@ -16,7 +16,7 @@ displayResults = function(dom,method,dir,filename)
     local tps = DOMTPS(dom)
     if #tps then
       outp:write("<style>table {border-collapse: collapse;} table, td, th {border: 1px solid black;}</style>")
-      outp:write("<img src='",filename,".tps",term[term["default"]],"' /><br />",CRLF)
+      outp:write("<font face=courier><img src='",filename,".tps",term[term["default"]],"' /><br />",CRLF)
       outp:write("<textarea>",CRLF)
       outp:write(tps[1])
       for k=2,#tps do
@@ -27,6 +27,9 @@ displayResults = function(dom,method,dir,filename)
   end
   for i=1,regions do
     local dr = getDataRegion(dom,method,i-1)
+    if dr["content"] then
+      outp:write("<font color=red><b>*** Content detected ***</b></font><br>\n")
+    end
     outp:write("<table border=0><tr><th> region ",i,"</th><th> rows ",dr.rows,"</th><th> cols ",dr.cols,"</th></tr></table>",CRLF)
     
     if (dr.rows > 0) and (dr["records"]) then 
@@ -48,11 +51,9 @@ displayResults = function(dom,method,dir,filename)
     end
     
     if dr["tps"] then
-      if dr["content"] then
-        outp:write("<font color=red><b>*** Content detected ***</b></font><br>\n")
-      end
       outp:write("<img src='",filename,".region",i,term[term["default"]],"' /><br />",CRLF)
-      outp:write("offset: ",dr.pos,", size: ",#dr.tps,", angle: ",math.atan(math.abs(dr["a"]))*180/math.pi,", dev: ",dr["d"],"<br />",CRLF)
+      outp:write(string.format("offset: %d, size: %d, angle: %.2f, dev: %.2f<br/>\n",dr.pos,#dr.tps,math.atan(math.abs(dr["a"]))*180/math.pi,dr["d"]))
+      --"offset: ",dr.pos,", size: ",#dr.tps,", angle: ",math.atan(math.abs(dr["a"]))*180/math.pi,", dev: ",dr["d"],"<br />",CRLF)
       local t = dr.tps
       if #t then
         outp:write("<textarea>",CRLF)
@@ -67,7 +68,7 @@ displayResults = function(dom,method,dir,filename)
     outp:write(CRLF)
   end
   outp:write(regions," regions, ",j," records.",CRLF)
-  outp:write("<hr/><br/>",CRLF)
+  outp:write("</font><hr/><br/>",CRLF)
   outp:close()
 end
 
