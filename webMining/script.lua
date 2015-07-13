@@ -48,8 +48,11 @@ displayResults = function(dom,method,dir,filename)
     end
     
     if dr["tps"] then
+      if dr["content"] then
+        outp:write("<font color=red><b>*** Content detected ***</b></font><br>\n")
+      end
       outp:write("<img src='",filename,".region",i,term[term["default"]],"' /><br />",CRLF)
-      outp:write("offset: ",dr.pos,", size: ",#dr.tps,", angle: ",math.atan(math.abs(dr["a"]))*180/math.pi,"<br />",CRLF)
+      outp:write("offset: ",dr.pos,", size: ",#dr.tps,", angle: ",math.atan(math.abs(dr["a"]))*180/math.pi,", dev: ",dr["d"],"<br />",CRLF)
       local t = dr.tps
       if #t then
         outp:write("<textarea>",CRLF)

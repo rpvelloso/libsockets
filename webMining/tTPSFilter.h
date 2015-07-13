@@ -35,6 +35,7 @@ struct tTPSRegion {
 	tLinearCoeff lc;
 	vector<vector<tNode *> > records;
 	double stddev;
+	bool content;
 };
 
 
@@ -56,7 +57,7 @@ protected:
 	long int searchRegion(wstring);
 	bool prune(tNode *);
 	vector<unsigned int> locateRecords(wstring, double);
-	vector<unsigned int> SRDElocateRecords(wstring, double &);
+	vector<unsigned int> SRDElocateRecords(tTPSRegion &, double &);
 	map<int,int> symbolFrequency(wstring, set<int> &);
 	map<int,int> frequencyThresholds(map<int,int>);
 	double estimatePeriod(vector<float>);

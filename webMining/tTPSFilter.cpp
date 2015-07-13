@@ -23,6 +23,7 @@
 #include "tTPSFilter.h"
 #include "misc.h"
 #include "hsfft.h"
+#include "Ckmeans.1d.dp.h"
 
 tTPSFilter::tTPSFilter() : count(0),pathCount(0) {
 }
@@ -360,7 +361,7 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 		cerr << endl;
 
 		// identify the start position of each record
-		recpos = SRDElocateRecords(_regions[(*i).first].tps,period);
+		recpos = SRDElocateRecords(_regions[(*i).first],period);
 
 		// consider only leaf nodes when performing field alignment
 		auto j = _regions[(*i).first].nodeSeq.begin();
@@ -412,10 +413,25 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 	}
 
 	regions.clear();
+	vector<double> ckmeansInput;
+
+	ckmeansInput.push_back(0);
 	for (auto i=_regions.begin();i!=_regions.end();i++) {
 		(*i).second.pos = (*i).first;
 		regions.push_back((*i).second);
+		ckmeansInput.push_back((*i).second.stddev);
 	}
+
+	ClusterResult result;
+    result = kmeans_1d_dp(ckmeansInput,1,2);
+
+    cout << endl;
+    cout << "|" << result.centers.size() << "| ";
+    size_t j=0;
+    for (auto i=++(result.cluster.begin());i!=result.cluster.end();i++) {
+    	regions[j++].content = (((*i) == 2) || (result.centers.size() < 3));
+    	cout << (*i) << " ";
+    }
 }
 
 void tTPSFilter::DRDE(tNode *n, bool css, float st) {
@@ -500,7 +516,8 @@ void tTPSFilter::DRDE(tNode *n, bool css, float st) {
 	}
 }
 
-vector<unsigned int> tTPSFilter::SRDElocateRecords(wstring s, double &period) {
+vector<unsigned int> tTPSFilter::SRDElocateRecords(tTPSRegion &region, double &period) {
+	wstring s = region.tps;
 	vector<float> signal(s.size());
 	float avg;
 	set<float> candidates;
@@ -522,12 +539,15 @@ vector<unsigned int> tTPSFilter::SRDElocateRecords(wstring s, double &period) {
 	}
 	avg = mean(signal);
 
-	// remove DC
+	// remove DC & compute signals stddev
+	region.stddev = 0;
 	for (size_t i=0;i<s.size();i++) {
 		signal[i] = signal[i] - avg;
+		region.stddev += signal[i]*signal[i];
 		if (signal[i] < 0) candidates.insert(signal[i]);
 		if (abs(signal[i]) > maxCode) maxCode = abs(signal[i]);
 	}
+	region.stddev = sqrt(region.stddev/max((double)1,(double)(s.size()-2)));
 
 	estPeriod = estimatePeriod(signal);
 
@@ -563,7 +583,7 @@ vector<unsigned int> tTPSFilter::SRDElocateRecords(wstring s, double &period) {
 			double recCountRatio =
 					min( (double)recpos.size() ,(double)signal.size()/avgsize) /
 					max( (double)recpos.size() ,(double)signal.size()/avgsize);
-			if (stddev>1) avgsize /= stddev;
+			if (stddev>1) avgsize /= stddev; // SNR
 			double recSizeRatio = min( avgsize, estPeriod )/max( avgsize, estPeriod );
 			double tpcRatio = (double)abs(*value)/maxCode;
 

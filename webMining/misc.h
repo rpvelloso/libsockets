@@ -199,7 +199,7 @@ size_t trimSequence(T &s) {
 template <class T>
 tLinearCoeff linearRegression(T s) {
 	//trimSequence(s);
-	float delta,x,y,xy,x2,sx=0,sy=0,sxy=0,sx2=0,n=s.size();
+	double delta,x,y,xy,x2,sx=0,sy=0,sxy=0,sx2=0,n=s.size();
 	tLinearCoeff lc;
 
 	for (long int i=0;i<n;i++) {
@@ -215,12 +215,12 @@ tLinearCoeff linearRegression(T s) {
 	}
 
 	delta = (n*sx2)-(sx*sx);
-	lc.a = (float)((float)((n*sxy)-(sy*sx))/(float)delta);
-	lc.b = (float)((float)((sx2*sy)-(sx*sxy))/(float)delta);
+	lc.a = (double)((double)((n*sxy)-(sy*sx))/(double)delta);
+	lc.b = (double)((double)((sx2*sy)-(sx*sxy))/(double)delta);
 
 
 	for (long int i=0;i<n;i++) {
-		float ee;
+		double ee;
 		ee = abs(s[i] - (lc.a*i + lc.b));
 		lc.e += ee*ee;
 	}
