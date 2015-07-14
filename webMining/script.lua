@@ -1,5 +1,5 @@
 CRLF = "\n"
-gnuplot = "/Progra~1/gnuplot/bin/gnuplot.exe"
+gnuplot = "/Progra~2/gnuplot/bin/gnuplot.exe"
 --gnuplot = "gnuplot"
 
 term = {}
@@ -124,7 +124,7 @@ processTestBed = function(dir)
       --print("Extracting records.")
       local start = os.clock()
       SRDExtract(dom)
-      print("elapsed time: ",os.clock() - start)
+      print("elapsed time: ",string.format("%.2f",os.clock() - start))
       
       --print("Outputting results.")
       displayResults(dom,"srde",output,fn..".html")
@@ -150,7 +150,7 @@ processTestBed2 = function(dir)
     --print("Extracting records.")
     local start = os.clock()
     SRDExtract(dom)
-    print("elapsed time: ",os.clock() - start)
+    print("elapsed time: ",string.format("%.2f",os.clock() - start))
     
     --print("Outputting results.")
     displayResults(dom,"srde",d.."srde/",fn)
@@ -163,9 +163,11 @@ end
 --processTestBed2("tmp")
 --exit()
 
-processTestBed("../datasets/trieschnigg1/trieschnigg1")
-processTestBed("../datasets/trieschnigg2/trieschnigg2")
+processTestBed2("../datasets/tpsf")
+processTestBed2("../datasets/zhao1")
 processTestBed("../datasets/yamada/yamada")
+processTestBed("../datasets/trieschnigg2/trieschnigg2")
+processTestBed("../datasets/trieschnigg1/trieschnigg1")
 exit()
 processTestBed("testbed5/yamada")
 processTestBed("testbed5/trieschnigg2")
