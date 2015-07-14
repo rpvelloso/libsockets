@@ -420,7 +420,6 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 	ckmeansInput.push_back(0);
 	for (auto i=_regions.begin();i!=_regions.end();i++) {
 		(*i).second.pos = (*i).first;
-		//(*i).second.tps = saveCSSTPS.substr((*i).second.pos,(*i).second.len);
 		regions.push_back((*i).second);
 		ckmeansInput.push_back((*i).second.stddev);
 	}
