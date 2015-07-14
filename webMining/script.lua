@@ -28,7 +28,7 @@ displayResults = function(dom,method,dir,filename)
   for i=1,regions do
     local dr = getDataRegion(dom,method,i-1)
     if dr["content"] then
-      outp:write("<font color=red><b>*** Content detected ***</b></font><br>\n")
+      outp:write("<font color=red><b>*** Content detected ***</b></font><br>",CRLF)
     end
     outp:write("<table border=0><tr><th> region ",i,"</th><th> rows ",dr.rows,"</th><th> cols ",dr.cols,"</th></tr></table>",CRLF)
     
@@ -52,8 +52,7 @@ displayResults = function(dom,method,dir,filename)
     
     if dr["tps"] then
       outp:write("<img src='",filename,".region",i,term[term["default"]],"' /><br />",CRLF)
-      outp:write(string.format("offset: %d, size: %d, angle: %.2f, dev: %.2f<br/>\n",dr.pos,#dr.tps,math.atan(math.abs(dr["a"]))*180/math.pi,dr["d"]))
-      --"offset: ",dr.pos,", size: ",#dr.tps,", angle: ",math.atan(math.abs(dr["a"]))*180/math.pi,", dev: ",dr["d"],"<br />",CRLF)
+      outp:write(string.format("offset: %d, size: %d, angle: %.2f, dev: %.2f<br/>",dr.pos,#dr.tps,math.atan(math.abs(dr["a"]))*180/math.pi,dr["d"]),CRLF)
       local t = dr.tps
       if #t then
         outp:write("<textarea>",CRLF)
@@ -61,7 +60,7 @@ displayResults = function(dom,method,dir,filename)
         for k=2,#t do
           outp:write(",",t[k])
         end
-        outp:write("</textarea><br />")
+        outp:write("</textarea><br />",CRLF)
       end
     end
     
