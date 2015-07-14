@@ -17,12 +17,6 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*TODO:
- * adaptar TPSF para devolver varias regioes
- * score TPSF por coeficiente angular regressao linear
- * detectRecord ponderar os pontos da diferença com a frequencia dos simbolos
-*/
-
 #include <string.h>
 #include <string>
 #include <iostream>

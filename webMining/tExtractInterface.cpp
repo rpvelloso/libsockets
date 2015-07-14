@@ -8,12 +8,9 @@
 #include "tExtractInterface.h"
 
 tExtractInterface::tExtractInterface() {
-	// TODO Auto-generated constructor stub
-
 }
 
 tExtractInterface::~tExtractInterface() {
-	// TODO Auto-generated destructor stub
 }
 
 #define LEAF(n) ((n->getNodes().size()==0) && (n->getText()!=""))
