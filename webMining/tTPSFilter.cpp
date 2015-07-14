@@ -342,7 +342,6 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 	vector<wstring> m;
 	map<long int, tTPSRegion> structured;
 	double period;
-	wstring saveCSSTPS = tagPathSequence;
 
 	_regions.clear();
 

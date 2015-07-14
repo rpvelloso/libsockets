@@ -1,5 +1,5 @@
 CRLF = "\n"
-gnuplot = "C:\\Progra~2\\gnuplot\\bin\\gnuplot.exe"
+gnuplot = "/Progra~1/gnuplot/bin/gnuplot.exe"
 --gnuplot = "gnuplot"
 
 term = {}
@@ -164,7 +164,9 @@ end
 --processTestBed2("tmp")
 --exit()
 
-processTestBed2("testbed")
+processTestBed("../datasets/trieschnigg1/trieschnigg1")
+processTestBed("../datasets/trieschnigg2/trieschnigg2")
+processTestBed("../datasets/yamada/yamada")
 exit()
 processTestBed("testbed5/yamada")
 processTestBed("testbed5/trieschnigg2")
