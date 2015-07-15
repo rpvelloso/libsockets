@@ -24,7 +24,7 @@
 #include "tTPSFilter.h"
 #include "misc.h"
 #include "hsfft.h"
-#include "Ckmeans.1d.dp.h"
+//#include "Ckmeans.1d.dp.h"
 
 tTPSFilter::tTPSFilter() : count(0),pathCount(0) {
 }
@@ -279,8 +279,8 @@ map<long int, tTPSRegion> tTPSFilter::SRDEFilter(tNode *n, bool css) {
 	auto threshold = (*thresholds.begin()).first;
 
 	auto t = thresholds.begin();
-	for (size_t i=0;i<thresholds.size()*.2;i++,t++)
-		threshold = (*t).first;
+	while ((*t).first < tagPathSequence.size()*.0005) t++;
+	threshold = (*t).first;
 
 	for (size_t i=0;i<s.size();i++) {
 		if (symbolCount[s[i]] <= threshold) s[i]=0;
@@ -432,13 +432,9 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 	ClusterResult result;
     result = kmeans_1d_dp(ckmeansInput,2,2);
 
-    cout << endl;
-    cout << "|" << result.centers.size() << "| ";
     size_t j=0;
-    for (auto i=++(result.cluster.begin());i!=result.cluster.end();i++) {
-    	regions[j++].content = (((*i) == 2) || (result.centers.size() < 3));
-    	cout << (*i) << " ";
-    }
+    for (auto i=++(result.cluster.begin());i!=result.cluster.end();i++)
+    	regions[j++].content = (((*i) == 2) || (result.nClusters < 2));
 
     sort(regions.begin(),regions.end(),[](const tTPSRegion &a, const tTPSRegion &b) {
     		return (a.stddev > b.stddev);
@@ -736,7 +732,7 @@ vector<tNode*> tTPSFilter::getRecord(size_t dr, size_t rec) {
 }
 
 double tTPSFilter::estimatePeriod(vector<float> signal) {
-	size_t N = signal.size();
+	size_t N = (signal.size() + (signal.size()%2));
 	double peak,maxPeak=0;
 	size_t peakFreq=1;
 
@@ -745,7 +741,7 @@ double tTPSFilter::estimatePeriod(vector<float> signal) {
 	fft_data* inp = (fft_data*) malloc (sizeof(fft_data) * N);
 	fft_data* oup = (fft_data*) malloc (sizeof(fft_data) * N);
 
-	for (size_t i = 0; i < N; i++) {
+	for (size_t i = 0; i < signal.size(); i++) {
 		inp[i].re = signal[i];
 		inp[i].im = 0;
 
@@ -753,6 +749,11 @@ double tTPSFilter::estimatePeriod(vector<float> signal) {
 					/(0.5*(double)(N+1)))
 					*(((double)i-0.5*(double)(N-1))
 					/(0.5*(double)(N+1))));
+	}
+
+	if (signal.size() != N) { // repeat last sample when signal size is odd
+		inp[N-1].re = signal[N-2];
+		inp[N-1].im = 0;
 	}
 
 	fft_exec(obj,inp,oup);

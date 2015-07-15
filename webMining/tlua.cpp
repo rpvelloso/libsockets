@@ -202,16 +202,10 @@ static int lua_api_getDataRegion(lua_State *L) {
 					lua_createtable(L,rec.size(),0);
 					for (size_t i=0;i<rec.size();i++) {
 						lua_pushnumber(L,i+1);
-						if (rec[i]) {
-							if ((rec[i]->getTagName() == "img") || (rec[i]->getTagName() == "a"))
-								lua_pushstring(L,rec[i]->toString().c_str());
-							else if (rec[i]->getType() == 2)
-								lua_pushstring(L,rec[i]->getText().c_str());
-							else
-								lua_pushstring(L,rec[i]->toString().c_str());
-								//lua_pushlightuserdata(L,rec[i]);
-						} else
-							lua_pushlightuserdata(L,rec[i]);
+						if (rec[i])
+							lua_pushstring(L,rec[i]->toString().c_str());
+						else
+							lua_pushstring(L,"");
 						lua_settable(L,-3);
 					}
 					lua_settable(L,-3);

@@ -23,6 +23,7 @@
 #include <map>
 #include <sstream>
 #include <cmath>
+#include "Ckmeans.1d.dp.h"
 
 #define lowerCase(s) std::transform(s.begin(), s.end(), s.begin(), (int(*)(int))std::tolower)
 
@@ -112,23 +113,56 @@ unsigned int edit_distance(T &s1, T &s2, bool align, vector<unsigned int> *space
 }
 
 template <class T>
+void normalizeSequences(vector<T> &M) {
+	vector<double> ckmeansInput;
+
+    ckmeansInput.push_back(0);
+	for (size_t i=0;i<M.size();i++) {
+		ckmeansInput.push_back(M[i].size());
+	}
+
+	ClusterResult result;
+    result = kmeans_1d_dp(ckmeansInput,2,2);
+
+    if (result.nClusters == 2) {
+    	size_t maxSize=0;
+
+    	if (result.size[1] > result.size[2]) {
+			for (size_t i=0;i<M.size();i++) {
+				if (result.cluster[i+1] == 1) {
+					if (M[i].size() > maxSize)
+						maxSize = M[i].size();
+				}
+			}
+
+			for (size_t i=0;i<M.size();i++) {
+				if (M[i].size() > maxSize)
+					M[i] = M[i].substr(1,maxSize);
+			}
+    	}
+    }
+}
+
+template <class T>
 void centerStar(vector<T> &M) {
-	int len = M.size();
+	normalizeSequences(M);
+
+	size_t len = M.size();
 	vector<vector<unsigned int> > d(len,vector<unsigned int>(len));
 	//unsigned int d[len][len];
-	unsigned int minscore=0xffffffff,center;
+	size_t minscore=0xffffffff,center;
 
 	// find the center string
-	unsigned int score;
-	for (int i=0;i<len;i++) {
+	size_t score;
+	for (size_t i=0;i<len;i++) {
 		d[i][i]=0;
 		score = 0;
-		for (int j=i+1;j<len;j++) {
+		for (size_t j=i+1;j<len;j++) {
 			d[i][j] = edit_distance(M[i],M[j],false,NULL);
 			d[j][i] = d[i][j];
 			score += d[i][j];
 		}
-		for (int j=0;j<=i;j++) score += d[i][j];
+		for (size_t j=0;j<=i;j++) score += d[i][j];
 		if (score < minscore) {
 			minscore = score;
 			center = i;
