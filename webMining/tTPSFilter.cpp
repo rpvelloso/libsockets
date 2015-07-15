@@ -370,7 +370,7 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 		auto t=_regions[(*i).first].tps.begin();
 		size_t k=0;
 		while (k < _regions[(*i).first].tps.size()) {
-			bool erase = ((*j)->tagName!="img" && (*j)->tagName != "#text" && (*j)->tagName!="a");
+			bool erase = (!IMG((*j)) && !TEXT((*j)) && !LINK((*j)));
 			for (size_t w=0;w<recpos.size();w++) {
 				if (recpos[w] == k) {
 					erase=false;

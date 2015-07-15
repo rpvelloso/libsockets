@@ -12,6 +12,11 @@
 #include <deque>
 #include "tnode.h"
 
+#define LEAF(n) ((n->getNodes().size()==0) && (n->getText()!=""))
+#define IMG(n) (n->getTagName() == "img")
+#define LINK(n) (n->getTagName() == "a")
+#define TEXT(n) (n->getTagName() == "#text")
+
 class tExtractInterface {
 public:
 	tExtractInterface();

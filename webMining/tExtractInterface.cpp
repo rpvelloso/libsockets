@@ -13,10 +13,6 @@ tExtractInterface::tExtractInterface() {
 tExtractInterface::~tExtractInterface() {
 }
 
-#define LEAF(n) ((n->getNodes().size()==0) && (n->getText()!=""))
-#define IMG(n) (n->getTagName() == "img")
-#define LINK(n) (n->getTagName() == "a")
-
 void tExtractInterface::cleanRegion(vector<vector<tNode *> > &recs) {
 	if (!(recs.size())) return;
 	if (!(recs[0].size())) return;
@@ -28,9 +24,9 @@ void tExtractInterface::cleanRegion(vector<vector<tNode *> > &recs) {
 	for (size_t i=0;i<recs.size();i++) {
 		for (size_t j=0;j<recs[i].size();j++) {
 			if (recs[i][j] && (
-					LEAF(recs[i][j]) //||
-					//IMG(recs[i][j]) ||
-					//LINK(recs[i][j])
+					TEXT(recs[i][j]) ||
+					IMG(recs[i][j]) ||
+					LINK(recs[i][j])
 
 			)) field[j]=true;
 		}
