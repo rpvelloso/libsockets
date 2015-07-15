@@ -187,12 +187,26 @@ void tTPSFilter::buildTagPath(string s, tNode *n, bool print, bool css, bool fp)
 		buildTagPath(s,*i,print,css,fp);
 }
 
+map<long int, tTPSRegion> tTPSFilter::detectStructure(map<long int, tTPSRegion> &r) {
+	float angCoeffThreshold=0.17633; // 10 degrees
+	map<long int,tTPSRegion> structured;
+
+	for (auto i=r.begin();i!=r.end();i++) {
+		(*i).second.lc = linearRegression((*i).second.tps);
+
+		cerr << "size: " << (*i).second.len << " ang.coeff.: " << (*i).second.lc.a << endl;
+
+		if (abs((*i).second.lc.a) < angCoeffThreshold)
+			structured.insert(*i);
+	}
+	return structured;
+}
+
 map<long int, tTPSRegion> tTPSFilter::tagPathSequenceFilter(tNode *n, bool css) {
 	wstring originalTPS;
 	vector<tNode *> originalNodeSequence;
 	queue<pair<wstring,long int>> seqQueue;
 	vector<long int> start;
-	map<long int,tTPSRegion> structured;
 	int originalTPSsize;
 	long int sizeThreshold;
 
@@ -240,33 +254,21 @@ map<long int, tTPSRegion> tTPSFilter::tagPathSequenceFilter(tNode *n, bool css) 
 		_regions[0].len=originalTPSsize;
 		_regions[0].tps = originalTPS;
 	}
-	// select structured regions
-	float angCoeffThreshold=0.1;
 
+	buildTagPath("",n,false,false,false); // rebuild TPS without css to increase periodicity
 	for (auto i=_regions.begin();i!=_regions.end();i++) {
-		tLinearCoeff lc;
-		lc = linearRegression((*i).second.tps);
-		(*i).second.lc.a = lc.a;
-		(*i).second.lc.b = lc.b;
-		(*i).second.lc.e = lc.e;
-
-		cerr << "size: " << (*i).second.len << " ang.coeff.: " << (*i).second.lc.a << endl;
-
-		if (abs((*i).second.lc.a) < angCoeffThreshold)
-			structured.insert(*i);
+		(*i).second.tps = tagPathSequence.substr((*i).second.pos,(*i).second.len);
 	}
 
 	tagPathSequence = originalTPS;
 	nodeSequence = originalNodeSequence;
 
-	return structured;
+	return detectStructure(_regions);
 }
 
 map<long int, tTPSRegion> tTPSFilter::SRDEFilter(tNode *n, bool css) {
 	set<int> alphabet;
 	wstring s;
-	float angCoeffThreshold=0.1; // aprox. 6 degress
-	map<long int,tTPSRegion> structured;
 	long int lastRegionIdx = -1;
 	long int sizeThreshold;
 
@@ -276,24 +278,19 @@ map<long int, tTPSRegion> tTPSFilter::SRDEFilter(tNode *n, bool css) {
 
 	auto symbolCount = symbolFrequency(s,alphabet);
 	auto thresholds = frequencyThresholds(symbolCount);
-	auto threshold = (*thresholds.begin()).first;
+	auto threshold = (*++thresholds.begin()).first;
 
-	auto t = thresholds.begin();
-	while ((*t).first < tagPathSequence.size()*.0005) t++;
-	threshold = (*t).first;
-
-	for (size_t i=0;i<s.size();i++) {
+	for (size_t i=0;i<s.size();i++)
 		if (symbolCount[s[i]] <= threshold) s[i]=0;
-	}
 
-	bool regionOpen=false;
+	bool regionOpened=false;
 	int regionStart=0;
 	int regionEnd=0;
 
 	for (size_t i=0;i<s.size();i++) {
-		if (!regionOpen) {
+		if (!regionOpened) {
 			 if (s[i] != 0) {
-				regionOpen = true;
+				regionOpened = true;
 				regionEnd = i;
 				regionStart = i;
 			}
@@ -301,7 +298,7 @@ map<long int, tTPSRegion> tTPSFilter::SRDEFilter(tNode *n, bool css) {
 			if (s[i] == 0) {
 				tTPSRegion reg;
 
-				regionOpen = false;
+				regionOpened = false;
 				regionEnd = i-1;
 				reg.pos = regionStart;
 				reg.len = regionEnd - regionStart + 1;
@@ -334,13 +331,9 @@ map<long int, tTPSRegion> tTPSFilter::SRDEFilter(tNode *n, bool css) {
 	buildTagPath("",n,false,false,false); // rebuild TPS without css to increase periodicity
 	for (auto i=_regions.begin();i!=_regions.end();i++) {
 		(*i).second.tps = tagPathSequence.substr((*i).second.pos,(*i).second.len);
-		(*i).second.lc = linearRegression((*i).second.tps);
-
-		if (abs((*i).second.lc.a) < angCoeffThreshold)
-			structured.insert(*i);
 	}
 
-	return structured;
+	return detectStructure(_regions);
 }
 
 void tTPSFilter::SRDE(tNode *n, bool css) {
@@ -352,6 +345,7 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 	_regions.clear();
 
 	structured=SRDEFilter(n,css); // segment page and detects structured regions
+	//structured = tagPathSequenceFilter(n,css);
 
 	for (auto i=structured.begin();i!=structured.end();i++) {
 		auto firstNode = nodeSequence.begin()+(*i).first;
@@ -546,7 +540,7 @@ vector<unsigned int> tTPSFilter::SRDElocateRecords(tTPSRegion &region, double &p
 	}
 	avg = mean(signal);
 
-	// remove DC & compute signals stddev
+	// remove DC & compute signal's std.dev.
 	region.stddev = 0;
 	for (size_t i=0;i<s.size();i++) {
 		signal[i] = signal[i] - avg;
@@ -557,8 +551,7 @@ vector<unsigned int> tTPSFilter::SRDElocateRecords(tTPSRegion &region, double &p
 	region.stddev = sqrt(region.stddev/max((double)1,(double)(s.size()-2)));
 
 	estPeriod = estimatePeriod(signal);
-
-	//cout << endl;
+	cout << endl;
 
 	auto value = candidates.begin();
 	while (value != candidates.end()) {
@@ -569,9 +562,8 @@ vector<unsigned int> tTPSFilter::SRDElocateRecords(tTPSRegion &region, double &p
 		avgsize=0;
 
 		for (size_t i=0;i<s.size();i++) {
-			if (signal[i] == *value) {
+			if (signal[i] == *value)
 				recpos.push_back(i);
-			}
 		}
 
 		if (recpos.size() > 1) {
@@ -592,14 +584,16 @@ vector<unsigned int> tTPSFilter::SRDElocateRecords(tTPSRegion &region, double &p
 					max( (double)recpos.size() ,(double)signal.size()/avgsize);
 			if (stddev>1) avgsize /= stddev; // SNR
 			double recSizeRatio = min( avgsize, estPeriod )/max( avgsize, estPeriod );
-			double tpcRatio = (double)abs(*value)/maxCode;
+			recSizeRatio *= recSizeRatio;
+			double tpcRatio = (double)abs(*value)/maxCode; // DNR
 
-			double score = regionCoverage*recCountRatio*recSizeRatio*tpcRatio;
+			//double score = regionCoverage + recCountRatio + recSizeRatio + tpcRatio;
+			double score = regionCoverage * recCountRatio * recSizeRatio * tpcRatio;
 			if (score > maxScore) {
 				maxScore = score;
 				ret = recpos;
 			}
-			//printf("value=%.2f, cov=%.2f, #=%.2f, size=%.2f, t=%.2f, s=%.4f - %.2f\n",*value,regionCoverage,recCountRatio,recSizeRatio,tpcRatio,score,estPeriod);
+			printf("value=%.2f, cov=%.2f, #=%.2f, size=%.2f, t=%.2f, s=%.4f - %.2f\n",*value,regionCoverage,recCountRatio,recSizeRatio,tpcRatio,score,estPeriod);
 		}
 		value++;
 	}
@@ -758,7 +752,7 @@ double tTPSFilter::estimatePeriod(vector<float> signal) {
 
 	fft_exec(obj,inp,oup);
 
-	for (size_t i = 1; i < (N/2)-1; i++) {
+	for (size_t i = 1; i < (N/4)-1; i++) {
 		peak = sqrt((oup[i].re*oup[i].re) + (oup[i].im*oup[i].im));
 		if (peak > maxPeak) {
 			maxPeak = peak;
