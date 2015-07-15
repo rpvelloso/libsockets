@@ -276,7 +276,11 @@ map<long int, tTPSRegion> tTPSFilter::SRDEFilter(tNode *n, bool css) {
 
 	auto symbolCount = symbolFrequency(s,alphabet);
 	auto thresholds = frequencyThresholds(symbolCount);
-	auto threshold = (*(++thresholds.begin())).first;
+	auto threshold = (*thresholds.begin()).first;
+
+	auto t = thresholds.begin();
+	for (size_t i=0;i<thresholds.size()*.2;i++,t++)
+		threshold = (*t).first;
 
 	for (size_t i=0;i<s.size();i++) {
 		if (symbolCount[s[i]] <= threshold) s[i]=0;
@@ -327,7 +331,9 @@ map<long int, tTPSRegion> tTPSFilter::SRDEFilter(tNode *n, bool css) {
 		}
 	}
 
+	buildTagPath("",n,false,false,false); // rebuild TPS without css to increase periodicity
 	for (auto i=_regions.begin();i!=_regions.end();i++) {
+		(*i).second.tps = tagPathSequence.substr((*i).second.pos,(*i).second.len);
 		(*i).second.lc = linearRegression((*i).second.tps);
 
 		if (abs((*i).second.lc.a) < angCoeffThreshold)
@@ -346,7 +352,6 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 	_regions.clear();
 
 	structured=SRDEFilter(n,css); // segment page and detects structured regions
-	buildTagPath("",n,false,false,false); // rebuild TPS without css to increase periodicity
 
 	for (auto i=structured.begin();i!=structured.end();i++) {
 		auto firstNode = nodeSequence.begin()+(*i).first;

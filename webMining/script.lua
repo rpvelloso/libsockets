@@ -1,5 +1,5 @@
 CRLF = "\n"
-gnuplot = "/Progra~2/gnuplot/bin/gnuplot.exe"
+gnuplot = "/Progra~1/gnuplot/bin/gnuplot.exe"
 --gnuplot = "gnuplot"
 
 term = {}
@@ -160,12 +160,13 @@ processTestBed2 = function(dir)
   end
 end
 
---processTestBed2("tmp")
---exit()
-
 processTestBed2("../datasets/tpsf")
+exit()
+processTestBed2("../datasets/wien")
 processTestBed2("../datasets/zhao1")
-processTestBed("../datasets/yamada/yamada")
-processTestBed("../datasets/trieschnigg2/trieschnigg2")
-processTestBed("../datasets/trieschnigg1/trieschnigg1")
+processTestBed2("../datasets/zhao2")
+processTestBed2("../datasets/zhao3")
+processTestBed2("../datasets/yamada")
+processTestBed("../datasets/trieschnigg1")
+processTestBed("../datasets/trieschnigg2")
 exit()
