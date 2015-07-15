@@ -1,5 +1,5 @@
 CRLF = "\n"
-gnuplot = "/Progra~1/gnuplot/bin/gnuplot.exe"
+gnuplot = "/Progra~2/gnuplot/bin/gnuplot.exe"
 --gnuplot = "gnuplot"
 
 term = {}
@@ -118,13 +118,13 @@ processTestBed = function(dir)
     local output = dir.."/srde/"
 
     if (fn~="extract_input.pl") and (fn~="srde") and (fn~="drde") and (fn:sub(1,1)~='.') then
-      print("Loading DOM tree: ",filename)
+      print(string.format("Loading DOM tree: %s",filename),CRLF)
       local dom = loadDOMTree(dir.."/"..filename.."/index.html")
       
       --print("Extracting records.")
       local start = os.clock()
       SRDExtract(dom)
-      print("elapsed time: ",string.format("%.2f",os.clock() - start))
+      print(string.format("elapsed time: %.2f",os.clock() - start),CRLF)
       
       --print("Outputting results.")
       displayResults(dom,"srde",output,fn..".html")
@@ -144,13 +144,13 @@ processTestBed2 = function(dir)
     local d, fn, ext = filename:match("(.-)([^\\/]-%.?([^%.\\/]*))$")
     local output = d.."srde/"..fn
     
-    print("Loading DOM tree: ",filename)
+    print(string.format("Loading DOM tree: %s",filename),CRLF)
     local dom = loadDOMTree(filename)
     
     --print("Extracting records.")
     local start = os.clock()
     SRDExtract(dom)
-    print("elapsed time: ",string.format("%.2f",os.clock() - start))
+    print(string.format("elapsed time: %.2f",os.clock() - start),CRLF)
     
     --print("Outputting results.")
     displayResults(dom,"srde",d.."srde/",fn)
@@ -161,7 +161,6 @@ processTestBed2 = function(dir)
 end
 
 processTestBed2("../datasets/tpsf")
-exit()
 processTestBed2("../datasets/wien")
 processTestBed2("../datasets/zhao1")
 processTestBed2("../datasets/zhao2")
