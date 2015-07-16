@@ -23,6 +23,7 @@ function a = linearReg(sig)
 end
 
 function p = symfil(sig,f)
+	p{1}=[1 length(sig)];
 	[a,b] = hist(sig,unique(sig));
 	
 	c = find(a<=f);
@@ -116,7 +117,7 @@ function v=score(p,d,s,f)
 				rsizeRatio = (min([m f])/max([m f]));
 			end
 			tpcRatio = abs(value)/max(abs(s));
-			scr = regionCoverage*rcountRatio*rsizeRatio*tpcRatio;
+			scr = (regionCoverage+rcountRatio+rsizeRatio+tpcRatio)/4;
 			if scr > maxScore
 				maxScore = scr;
 				v=value;
@@ -141,6 +142,7 @@ function q = reencode(s)
 		end
 		pos = pos+1;
 	end
+	q = s;
 end
 
 %signal = load('~/Downloads/tps/Amazon.html.tps')';
@@ -149,7 +151,8 @@ end
 %signal = load('~/Downloads/tps/magazineOutlet.html.tps')';
 %signal = load('~/Downloads/tps/yahoo.html.tps')';
 %signal = load('~/Downloads/tps/chapters.html.tps')';
-signal = load('Debug/x');
+%signal = load('Debug/x');
+signal=[1,2,3,4,5,6,4,5,6,5,7,8,9,10,11,12,13,11,14,11,14,11,14,11,14,11,14,11,15,11,14,10,11,12,13,11,12,13,11,12,13,11,12,13,11,12,13,11,15,16,17,18,16,17,19,20,21,22,16,17,23,24,25,26,27,28,29,30,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,46,47,48,45,48,49,50,48,49,50,40,41,51,40,41,51,41,52,53,54,55,56,51,54,51,40,41,51,41,52,53,54,55,56,51,54,51,40,41,51,41,52,53,54,55,56,51,54,51,40,41,51,41,52,53,54,55,56,51,54,51,40,41,51,41,52,53,54,55,56,51,54,51,40,41,51,41,52,53,54,55,56,51,54,51,40,41,51,41,52,53,54,55,56,51,54,51,40,41,51,41,52,53,54,55,56,51,54,51,40,41,51,41,52,53,54,55,56,51,54,51,40,41,51,41,52,53,54,55,56,51,54,51,40,41,51,40,41,51,52,53,51,52,53,16,17,18,17,18,17,18,17,18,17,18,17,18,17,18,17,18,17,18,57,58,59,60,61,62,63,62,63];
 
 figure; plot(signal);
 
@@ -171,7 +174,7 @@ for i=1:length(p)
 
 		size = length(r{i});
 		Sdiv2 = ceil(size/4);
-		pos = find( ffts{i}(2:Sdiv2-1)==max(ffts{i}(2:Sdiv2-1)) );
+		pos = find( ffts{i}(3:Sdiv2-1)==max(ffts{i}(3:Sdiv2-1)) );
 		if length(pos > 1)
 			pos=pos(1);
 			plotPeriod=1;

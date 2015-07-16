@@ -34,8 +34,8 @@ struct tTPSRegion {
 	vector<tNode *> nodeSeq;
 	tLinearCoeff lc;
 	vector<vector<tNode *> > records;
-	double stddev;
-	bool content;
+	double stddev=0;
+	bool content=false;
 };
 
 

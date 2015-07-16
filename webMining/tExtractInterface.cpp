@@ -32,7 +32,7 @@ void tExtractInterface::cleanRegion(vector<vector<tNode *> > &recs) {
 		}
 	}
 
-	size_t k=0;
+	int k=0;
 	for (size_t j=0;j<recs[0].size();j++,k++) {
 		if (!field[j]) {
 			for (size_t i=0;i<recs.size();i++) {

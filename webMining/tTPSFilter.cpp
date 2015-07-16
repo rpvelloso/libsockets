@@ -189,6 +189,7 @@ void tTPSFilter::buildTagPath(string s, tNode *n, bool print, bool css, bool fp)
 
 map<long int, tTPSRegion> tTPSFilter::detectStructure(map<long int, tTPSRegion> &r) {
 	float angCoeffThreshold=0.17633; // 10 degrees
+	//long int sizeThreshold = (tagPathSequence.size()*3)/100; // % page size
 	map<long int,tTPSRegion> structured;
 
 	for (auto i=r.begin();i!=r.end();i++) {
@@ -269,19 +270,20 @@ map<long int, tTPSRegion> tTPSFilter::tagPathSequenceFilter(tNode *n, bool css) 
 map<long int, tTPSRegion> tTPSFilter::SRDEFilter(tNode *n, bool css) {
 	set<int> alphabet;
 	wstring s;
-	long int lastRegionIdx = -1;
-	long int sizeThreshold;
+	long int lastRegPos = -1;
 
 	buildTagPath("",n,false,css,false);
 	s = tagPathSequence;
-	sizeThreshold = (s.size()*3)/100; // % page size
 
 	auto symbolCount = symbolFrequency(s,alphabet);
 	auto thresholds = frequencyThresholds(symbolCount);
-	auto threshold = (*++thresholds.begin()).first;
+	auto threshold = thresholds.begin();
+	threshold++;
+	threshold++;
+	threshold++;
 
 	for (size_t i=0;i<s.size();i++)
-		if (symbolCount[s[i]] <= threshold) s[i]=0;
+		if (symbolCount[s[i]] <= (*threshold).first) s[i]=0;
 
 	bool regionOpened=false;
 	int regionStart=0;
@@ -291,47 +293,56 @@ map<long int, tTPSRegion> tTPSFilter::SRDEFilter(tNode *n, bool css) {
 		if (!regionOpened) {
 			 if (s[i] != 0) {
 				regionOpened = true;
-				regionEnd = i;
 				regionStart = i;
 			}
 		} else {
-			if (s[i] == 0) {
+			if ((s[i] == 0) || (i == s.size()-1)) {
 				tTPSRegion reg;
 
 				regionOpened = false;
 				regionEnd = i-1;
+				if (i == s.size()-1) regionEnd++;
 				reg.pos = regionStart;
 				reg.len = regionEnd - regionStart + 1;
-				if (reg.len > sizeThreshold) {
+				if (reg.len > 3) {
 					reg.tps = tagPathSequence.substr(reg.pos,reg.len);
 
-					if (lastRegionIdx != -1) {
+					if (lastRegPos != -1) {
 						set<int> palpha,alpha,intersect;
 
-						symbolFrequency(_regions[lastRegionIdx].tps,palpha);
+						symbolFrequency(_regions[lastRegPos].tps,palpha);
 						symbolFrequency(reg.tps,alpha);
 
 						set_intersection(palpha.begin(),palpha.end(),alpha.begin(),alpha.end(),inserter(intersect,intersect.begin()));
 
 						if (!intersect.empty()) {
-							_regions[lastRegionIdx].len = regionEnd - _regions[lastRegionIdx].pos + 1;
-							_regions[lastRegionIdx].tps = tagPathSequence.substr(_regions[lastRegionIdx].pos,_regions[lastRegionIdx].len);
-							//cout << "merge " << _regions[lastRegionIdx].pos << " " << _regions[lastRegionIdx].len << endl;
+							_regions[lastRegPos].len = regionEnd - _regions[lastRegPos].pos + 1;
+							_regions[lastRegPos].tps = tagPathSequence.substr(_regions[lastRegPos].pos,_regions[lastRegPos].len);
+							//cout << "merge " << _regions[lastRegPos].pos << " " << _regions[lastRegPos].len << endl;
 							continue;
 						}
-
 					}
 					_regions[regionStart] = reg;
-					lastRegionIdx = regionStart;
+					lastRegPos = regionStart;
+					//cout << "new   " << _regions[lastRegPos].pos << " " << _regions[lastRegPos].len << endl;
 				}
 			}
 		}
 	}
 
-	buildTagPath("",n,false,false,false); // rebuild TPS without css to increase periodicity
+	if (_regions.size() == 0) {
+		_regions[0].content = true;
+		_regions[0].len = tagPathSequence.size();
+		_regions[0].pos = 0;
+		_regions[0].nodeSeq = nodeSequence;
+		_regions[0].tps = tagPathSequence;
+	}
+	/*
+	buildTagPath("",n,false,false,false); // rebuild TPS without CSS to increase periodicity
 	for (auto i=_regions.begin();i!=_regions.end();i++) {
 		(*i).second.tps = tagPathSequence.substr((*i).second.pos,(*i).second.len);
 	}
+	*/
 
 	return detectStructure(_regions);
 }
@@ -351,7 +362,6 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 		auto firstNode = nodeSequence.begin()+(*i).first;
 		auto lastNode = firstNode + (*i).second.len;
 
-		_regions[(*i).first].tps = tagPathSequence.substr((*i).first,(*i).second.len);
 		_regions[(*i).first].nodeSeq.assign(firstNode,lastNode);
 		m.clear();
 		recpos.clear();
@@ -413,22 +423,31 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 		if (m.size()) onDataRecordFound(m,recpos,&_regions[(*i).first]);
 	}
 
-	regions.clear();
-	vector<double> ckmeansInput;
+	if (structured.size()) {
+		vector<double> ckmeansInput;
+		ClusterResult result;
 
-	ckmeansInput.push_back(0);
+		ckmeansInput.push_back(0);
+		for (auto i=structured.begin();i!=structured.end();i++) {
+			ckmeansInput.push_back(_regions[(*i).first].stddev);
+		}
+		result = kmeans_1d_dp(ckmeansInput,2,2);
+
+		auto j=structured.begin();
+		for (auto i=++(result.cluster.begin());i!=result.cluster.end();i++,j++) {
+			_regions[(*j).first].content = (((*i) == 2) || (result.nClusters < 2));
+
+			// restore the original region's tps
+			_regions[(*j).first].tps = tagPathSequence.substr((*j).first,(*j).second.len);
+		}
+	}
+
+	regions.clear();
+
 	for (auto i=_regions.begin();i!=_regions.end();i++) {
 		(*i).second.pos = (*i).first;
 		regions.push_back((*i).second);
-		ckmeansInput.push_back((*i).second.stddev);
 	}
-
-	ClusterResult result;
-    result = kmeans_1d_dp(ckmeansInput,2,2);
-
-    size_t j=0;
-    for (auto i=++(result.cluster.begin());i!=result.cluster.end();i++)
-    	regions[j++].content = (((*i) == 2) || (result.nClusters < 2));
 
     sort(regions.begin(),regions.end(),[](const tTPSRegion &a, const tTPSRegion &b) {
     		return (a.stddev > b.stddev);
@@ -536,7 +555,8 @@ vector<unsigned int> tTPSFilter::SRDElocateRecords(tTPSRegion &region, double &p
 			j++;
 			reencode[s[i]]=j;
 		}
-		signal[i]=reencode[s[i]];
+		//signal[i]=reencode[s[i]];
+		signal[i]=s[i];
 	}
 	avg = mean(signal);
 
@@ -578,17 +598,16 @@ vector<unsigned int> tTPSFilter::SRDElocateRecords(tTPSRegion &region, double &p
 			}
 			stddev = sqrt(stddev/max((float)(recpos.size()-2),(float)1));
 
-			double regionCoverage = min(avgsize*(double)recpos.size()/(double)signal.size(), (double)1);
+			double regionCoverage = min(estPeriod*(double)recpos.size()/(double)signal.size(), (double)1);
 			double recCountRatio =
-					min( (double)recpos.size() ,(double)signal.size()/avgsize) /
-					max( (double)recpos.size() ,(double)signal.size()/avgsize);
+					min( (double)recpos.size() ,(double)signal.size()/estPeriod) /
+					max( (double)recpos.size() ,(double)signal.size()/estPeriod);
 			if (stddev>1) avgsize /= stddev; // SNR
 			double recSizeRatio = min( avgsize, estPeriod )/max( avgsize, estPeriod );
-			recSizeRatio *= recSizeRatio;
 			double tpcRatio = (double)abs(*value)/maxCode; // DNR
 
-			//double score = regionCoverage + recCountRatio + recSizeRatio + tpcRatio;
-			double score = regionCoverage * recCountRatio * recSizeRatio * tpcRatio;
+			double score = (regionCoverage + recCountRatio + recSizeRatio + tpcRatio)/(double)4;
+			//double score = regionCoverage * recCountRatio * recSizeRatio * tpcRatio;
 			if (score > maxScore) {
 				maxScore = score;
 				ret = recpos;
@@ -752,7 +771,7 @@ double tTPSFilter::estimatePeriod(vector<float> signal) {
 
 	fft_exec(obj,inp,oup);
 
-	for (size_t i = 1; i < (N/4)-1; i++) {
+	for (size_t i = 2; i < (N/4)-1; i++) {
 		peak = sqrt((oup[i].re*oup[i].re) + (oup[i].im*oup[i].im));
 		if (peak > maxPeak) {
 			maxPeak = peak;

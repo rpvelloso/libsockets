@@ -93,6 +93,8 @@ static int lua_api_SRDExtract(lua_State *L) {
 			tDOM *dom = (tDOM *)lua_touserdata(L,-1);
 			if (checkDOM(L,dom)) {
 				dom->tpsf.SRDE(dom->getBody(),true);
+				/*if (dom->tpsf.getRegionCount() == 0)
+					dom->tpsf.SRDE(dom->getBody(),false);*/
 			}
 		}
 	}
@@ -205,7 +207,7 @@ static int lua_api_getDataRegion(lua_State *L) {
 						if (rec[i])
 							lua_pushstring(L,rec[i]->toString().c_str());
 						else
-							lua_pushstring(L,"");
+							lua_pushstring(L,"[filler]");
 						lua_settable(L,-3);
 					}
 					lua_settable(L,-3);
