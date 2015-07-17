@@ -48,8 +48,8 @@ static string itags[] = {
 		"colgroup","p","option"};
 set<string> itemTags(itags,itags+15);
 
-static string stags[] = {"img","br","meta","param","area","link","doctype"}; // tags without subtree
-set<string> singleTags(stags,stags+7);
+static string stags[] = {"hr","img","br","meta","param","area","link","doctype"}; // tags without subtree
+set<string> singleTags(stags,stags+8);
 
 static string igtags[] = {"script","noscript","head","doctype"};
 set<string> ignoreTags(igtags,igtags+4);

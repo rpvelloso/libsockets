@@ -1,5 +1,5 @@
 CRLF = "\n"
-gnuplot = "/Progra~2/gnuplot/bin/gnuplot.exe"
+gnuplot = "/Progra~1/gnuplot/bin/gnuplot.exe"
 --gnuplot = "gnuplot"
 
 term = {}
@@ -160,6 +160,9 @@ processTestBed2 = function(dir)
   end
 end
 
+--local d = loadDOMTree("../datasets/zhao1/education_lsu_computer.htm")
+--printDOM(d,true)
+--exit()
 --processTestBed2("../datasets/tpsf")
 --processTestBed2("../datasets/wien")
 processTestBed2("../datasets/zhao1")

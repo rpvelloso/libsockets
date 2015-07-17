@@ -606,7 +606,7 @@ vector<unsigned int> tTPSFilter::SRDElocateRecords(tTPSRegion &region, double &p
 			double recSizeRatio = min( avgsize, estPeriod )/max( avgsize, estPeriod );
 			double tpcRatio = (double)abs(*value)/maxCode; // DNR
 
-			double score = (regionCoverage + recCountRatio + recSizeRatio + tpcRatio)/(double)4;
+			double score = (/*regionCoverage + */ recCountRatio + recSizeRatio + tpcRatio)/(double)3;
 			//double score = regionCoverage * recCountRatio * recSizeRatio * tpcRatio;
 			if (score > maxScore) {
 				maxScore = score;
