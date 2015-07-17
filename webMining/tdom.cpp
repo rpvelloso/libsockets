@@ -45,7 +45,7 @@ set<string> listTags(ltags,ltags+13);
 static string itags[] = {
 		"tr","th","td","li","dt","dd","frame",
 		"noframes","tbody","tfoot","thead","col",
-		"colgroup","p","option"};
+		"colgroup","option","p"};
 set<string> itemTags(itags,itags+15);
 
 static string stags[] = {"hr","img","br","meta","param","area","link","doctype"}; // tags without subtree
@@ -143,8 +143,9 @@ void tDOM::addNode(int tp, string tx) {
 
 				current->addNode(n);
 
-				if (singleTags.find(n->tagName) == singleTags.end())
+				if (singleTags.find(n->tagName) == singleTags.end()) {
 					if (n->text[n->text.size()-1] != '/') current = n;
+				}
 
 				if (n->text[n->text.size()-1] == '/') n->text.erase(n->text.size()-1,1);
 
@@ -296,6 +297,7 @@ int tDOM::scan(istream &htmlInput) {
 
 		if (state == 4) {
 			trim(tagName);
+			lowerCase(tagName);
 			trim(text);
 			trim(comment);
 			if (text != "") addNode(2, text);
@@ -309,6 +311,7 @@ int tDOM::scan(istream &htmlInput) {
 	}
 
 	trim(tagName);
+	lowerCase(tagName);
 	trim(text);
 	trim(comment);
 	if (text != "") addNode(2, text);

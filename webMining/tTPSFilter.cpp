@@ -150,9 +150,10 @@ long int tTPSFilter::searchRegion(wstring s) {
 	return border;
 }
 
+#define STYLEATTR_COUNT 8
 void tTPSFilter::buildTagPath(string s, tNode *n, bool print, bool css, bool fp) {
-	auto i = n->nodes.begin();
-	string tagStyle,tagClass;
+	string styleAttr[STYLEATTR_COUNT] = {"style", "class", "bgcolor", "width", "height", "align", "valign", "halign"};
+	string tagStyle = "";
 
 	if (s == "") {
 		pathCount = 0;
@@ -161,11 +162,18 @@ void tTPSFilter::buildTagPath(string s, tNode *n, bool print, bool css, bool fp)
 		nodeSequence.clear();
 	}
 
-	tagStyle = n->getAttribute("style");
-	tagClass = n->getAttribute("class");
-	if (tagStyle != "") tagStyle = " " + tagStyle;
-	if (tagClass != "") tagClass = " " + tagClass;
-	if (css) s = s + "/" + n->getTagName() + tagClass + tagStyle;
+	for (size_t i=0,j=0;i<STYLEATTR_COUNT;i++) {
+		string attr = n->getAttribute(styleAttr[i]);
+
+		if (attr != "") {
+			if (j)
+				tagStyle = tagStyle + " " + attr;
+			else
+				tagStyle = " " + attr;
+			j++;
+		}
+	}
+	if (css && (tagStyle != "")) s = s + "/" + n->getTagName() + tagStyle;
 	else s = s + "/" + n->getTagName();
 
 	if (tagPathMap.find(s) == tagPathMap.end()) {
@@ -183,7 +191,7 @@ void tTPSFilter::buildTagPath(string s, tNode *n, bool print, bool css, bool fp)
 
 	if (!(n->nodes.size())) return;
 
-	for (;i!=n->nodes.end();i++)
+	for (auto i = n->nodes.begin();i!=n->nodes.end();i++)
 		buildTagPath(s,*i,print,css,fp);
 }
 
@@ -280,7 +288,7 @@ map<long int, tTPSRegion> tTPSFilter::SRDEFilter(tNode *n, bool css) {
 	auto threshold = thresholds.begin();
 	threshold++;
 	threshold++;
-	threshold++;
+	//threshold++;
 
 	for (size_t i=0;i<s.size();i++)
 		if (symbolCount[s[i]] <= (*threshold).first) s[i]=0;
