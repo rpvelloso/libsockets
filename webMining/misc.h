@@ -60,7 +60,7 @@ float mean(T s) {
 
 	float total=0;
 
-	for (int i=0;i<s.size();i++) {
+	for (size_t i=0;i<s.size();i++) {
 		total += s[i];
 	}
 	return total/(float)s.size();
@@ -210,7 +210,7 @@ size_t trimSequence(T &s) {
 	m/=(float)(s.size());
 
 	if (s[0] < m) mul=-1;
-	for (auto i=0;i<s.size();i++) {
+	for (size_t i=0;i<s.size();i++) {
 		if (mul*(s[i]-m) < 0) {
 			s.erase(0,i);
 			ret = i;

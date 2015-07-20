@@ -39,8 +39,8 @@
 static string ltags[] = {
 		"table","tbody","tfoot","thead","tr",
 		"ul","ol","dl","frameset","colgroup",
-		"dir","menu","select"};
-set<string> listTags(ltags,ltags+13);
+		"dir","menu","select","p"};
+set<string> listTags(ltags,ltags+14);
 
 static string itags[] = {
 		"tr","th","td","li","dt","dd","frame",

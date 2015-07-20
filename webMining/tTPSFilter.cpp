@@ -345,12 +345,12 @@ map<long int, tTPSRegion> tTPSFilter::SRDEFilter(tNode *n, bool css) {
 		_regions[0].nodeSeq = nodeSequence;
 		_regions[0].tps = tagPathSequence;
 	}
-	/*
+/*
 	buildTagPath("",n,false,false,false); // rebuild TPS without CSS to increase periodicity
 	for (auto i=_regions.begin();i!=_regions.end();i++) {
 		(*i).second.tps = tagPathSequence.substr((*i).second.pos,(*i).second.len);
 	}
-	*/
+*/
 
 	return detectStructure(_regions);
 }
@@ -414,9 +414,11 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 		for (size_t j=0;j<recpos.size();j++) {
 			if (prev==-1) prev=recpos[j];
 			else {
-				m.push_back(_regions[(*i).first].tps.substr(prev,recpos[j]-prev));
-				max_size = max(recpos[j]-prev,max_size);
-				prev = recpos[j];
+				if ((recpos[j]-prev) > 0) {
+					m.push_back(_regions[(*i).first].tps.substr(prev,recpos[j]-prev));
+					max_size = max(recpos[j]-prev,max_size);
+					prev = recpos[j];
+				}
 			}
 		}
 		if (prev != -1) {
@@ -606,15 +608,16 @@ vector<unsigned int> tTPSFilter::SRDElocateRecords(tTPSRegion &region, double &p
 			}
 			stddev = sqrt(stddev/max((float)(recpos.size()-2),(float)1));
 
-			double regionCoverage = min(estPeriod*(double)recpos.size()/(double)signal.size(), (double)1);
+			double regionCoverage = min(avgsize*(double)recpos.size()/(double)signal.size(), (double)1);
 			double recCountRatio =
 					min( (double)recpos.size() ,(double)signal.size()/estPeriod) /
 					max( (double)recpos.size() ,(double)signal.size()/estPeriod);
 			if (stddev>1) avgsize /= stddev; // SNR
 			double recSizeRatio = min( avgsize, estPeriod )/max( avgsize, estPeriod );
+			recSizeRatio = sqrt(recSizeRatio);
 			double tpcRatio = (double)abs(*value)/maxCode; // DNR
 
-			double score = (/*regionCoverage + */ recCountRatio + recSizeRatio + tpcRatio)/(double)3;
+			double score = (regionCoverage + recCountRatio + recSizeRatio + tpcRatio)/(double)4;
 			//double score = regionCoverage * recCountRatio * recSizeRatio * tpcRatio;
 			if (score > maxScore) {
 				maxScore = score;
@@ -779,7 +782,7 @@ double tTPSFilter::estimatePeriod(vector<float> signal) {
 
 	fft_exec(obj,inp,oup);
 
-	for (size_t i = 2; i < (N/4)-1; i++) {
+	for (size_t i = 4; i < (N/4)-1; i++) {
 		peak = sqrt((oup[i].re*oup[i].re) + (oup[i].im*oup[i].im));
 		if (peak > maxPeak) {
 			maxPeak = peak;
@@ -799,8 +802,11 @@ void tTPSFilter::onDataRecordFound(vector<wstring> &m, vector<unsigned int> &rec
 
 	int rows=m.size(),cols=m[0].size();
 	vector<tNode *> rec;
+	bool keepRec;
 
 	for (int i=0;i<rows;i++) {
+		keepRec = false;
+
 		rec.clear();
 		cerr << endl;
 		for (int j=0,k=0;j<cols;j++) {
@@ -809,9 +815,10 @@ void tTPSFilter::onDataRecordFound(vector<wstring> &m, vector<unsigned int> &rec
 				cerr << reg->nodeSeq[recpos[i]+k]->tagName << "[" <<
 						reg->nodeSeq[recpos[i]+k]->text << "];";
 				k++;
+				if (j>0) keepRec=true;
 			} else rec.push_back(NULL);
 		}
-		reg->records.push_back(rec);
+		if (keepRec) reg->records.push_back(rec);
 	}
 	cleanRegion(reg->records);
 	cerr << endl;

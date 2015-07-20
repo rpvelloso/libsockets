@@ -1,6 +1,6 @@
 CRLF = "\n"
-gnuplot = "/Progra~2/gnuplot/bin/gnuplot.exe"
---gnuplot = "gnuplot"
+--gnuplot = "/Progra~2/gnuplot/bin/gnuplot.exe"
+gnuplot = "/usr/bin/gnuplot"
 
 term = {}
 term["png"] = ".png"
@@ -30,10 +30,10 @@ displayResults = function(dom,method,dir,filename)
     if dr["content"] then
       outp:write("<font color=red><b>*** Content detected ***</b></font><br>",CRLF)
     end
-    outp:write("<table border=0><tr><th> region ",i,"</th><th> rows ",dr.rows,"</th><th> cols ",dr.cols,"</th></tr></table>",CRLF)
+    outp:write("<table><tr><th> region ",i,"</th><th> rows ",dr.rows,"</th><th> cols ",dr.cols,"</th></tr></table>",CRLF)
     
     if (dr.rows > 0) and (dr["records"]) then 
-      outp:write("<table border=0>",CRLF)
+      outp:write("<table>",CRLF)
       print(dr.rows)
       for r=1,dr.rows do
         outp:write("<tr>")
@@ -163,12 +163,12 @@ end
 --local d = loadDOMTree("../datasets/zhao1/medical_prevention_cancer.htm")
 --printDOM(d,true)
 --exit()
-processTestBed2("../datasets/tpsf")
-processTestBed2("../datasets/wien")
+--processTestBed2("../datasets/tpsf")
+--processTestBed2("../datasets/wien")
 processTestBed2("../datasets/zhao1")
-processTestBed2("../datasets/zhao2")
+--processTestBed2("../datasets/zhao2")
 processTestBed2("../datasets/zhao3")
-processTestBed2("../datasets/yamada")
-processTestBed("../datasets/trieschnigg1")
-processTestBed("../datasets/trieschnigg2")
+--processTestBed2("../datasets/yamada")
+--processTestBed("../datasets/trieschnigg1")
+--processTestBed("../datasets/trieschnigg2")
 exit()
