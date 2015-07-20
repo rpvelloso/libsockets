@@ -219,19 +219,35 @@ int tDOM::scan(istream &htmlInput) {
 
 	// filter out scripts and comments
 	c = htmlInput.get();
+	bool commentOpen=false,scriptOpen=false;
 	while (!htmlInput.eof()) {
 		tagName = tagName + c;
-		if (hasEnding(tagName,"<!--")) {
-			filteredHtmlInput.write(tagName.c_str(),tagName.size()-4);
-			tagName = "";
-		} else if (hasEnding(tagName,"<script")) {
-			filteredHtmlInput.write(tagName.c_str(),tagName.size()-7);
-			tagName = "";
-		} else if (
-			hasEnding(tagName,"</script>") ||
-			hasEnding(tagName,"-->")) {
+		if (!commentOpen && !scriptOpen) {
+			if (hasEnding(tagName,"<!--")) {
+				commentOpen=true;
+				filteredHtmlInput.write(tagName.c_str(),tagName.size()-4);
+				tagName = "";
+			} else if (hasEnding(tagName,"<script")) {
+				scriptOpen=true;
+				filteredHtmlInput.write(tagName.c_str(),tagName.size()-7);
+				tagName = "";
+			} else if (
+				hasEnding(tagName,"</script>") ||
+				hasEnding(tagName,"-->")) {
 
-			tagName = "";
+				tagName = "";
+			}
+		} else {
+			if (c == '>') {
+				if (commentOpen && hasEnding(tagName,"-->")) {
+					commentOpen = false;
+					tagName = "";
+				}
+				if (scriptOpen && hasEnding(tagName,"</script>")) {
+					scriptOpen = false;
+					tagName = "";
+				}
+			}
 		}
 		c=htmlInput.get();
 	}

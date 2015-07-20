@@ -197,7 +197,7 @@ void tTPSFilter::buildTagPath(string s, tNode *n, bool print, bool css, bool fp)
 
 map<long int, tTPSRegion> tTPSFilter::detectStructure(map<long int, tTPSRegion> &r) {
 	float angCoeffThreshold=0.17633; // 10 degrees
-	//long int sizeThreshold = (tagPathSequence.size()*3)/100; // % page size
+	long int sizeThreshold = (tagPathSequence.size()*3)/100; // % page size
 	map<long int,tTPSRegion> structured;
 
 	for (auto i=r.begin();i!=r.end();i++) {
@@ -205,7 +205,10 @@ map<long int, tTPSRegion> tTPSFilter::detectStructure(map<long int, tTPSRegion> 
 
 		cerr << "size: " << (*i).second.len << " ang.coeff.: " << (*i).second.lc.a << endl;
 
-		if (abs((*i).second.lc.a) < angCoeffThreshold)
+		if (
+			(abs((*i).second.lc.a) < angCoeffThreshold) && // test for structure
+			((*i).second.len >= sizeThreshold) // test for size
+			)
 			structured.insert(*i);
 	}
 	return structured;
@@ -432,6 +435,12 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 		// and extracts them
 		if (m.size()) onDataRecordFound(m,recpos,&_regions[(*i).first]);
 	}
+
+	// remove regions with only a single record
+	/*for (auto i=structured.begin();i!=structured.end();) {
+		if ((*i).second.records.size() <= 1) structured.erase(i++);
+		else ++i;
+	}*/
 
 	if (structured.size()) {
 		vector<double> ckmeansInput;
