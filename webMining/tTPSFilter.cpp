@@ -437,28 +437,40 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 	}
 
 	// remove regions with only a single record
-	/*for (auto i=structured.begin();i!=structured.end();) {
-		if ((*i).second.records.size() <= 1) structured.erase(i++);
-		else ++i;
-	}*/
+	for (auto i=structured.begin();i!=structured.end();) {
+		if (_regions[(*i).first].records.size() < 2) structured.erase(i++);
+		else {
+			auto stddev = _regions[(*i).first].stddev;
+			auto recCount = _regions[(*i).first].records.size();
+			auto recSize = _regions[(*i).first].records[0].size();
+
+			_regions[(*i).first].score = (double)recCount * (double)recSize * stddev;
+			++i;
+		}
+	}
 
 	if (structured.size()) {
-		vector<double> ckmeansInput;
-		ClusterResult result;
+		vector<double> ckmeansScoreInput;
+		ClusterResult scoreResult;
 
-		ckmeansInput.push_back(0);
+		ckmeansScoreInput.push_back(0);
 		for (auto i=structured.begin();i!=structured.end();i++) {
-			ckmeansInput.push_back(_regions[(*i).first].stddev);
+			ckmeansScoreInput.push_back(_regions[(*i).first].score);
 		}
-		result = kmeans_1d_dp(ckmeansInput,2,2);
+		scoreResult = kmeans_1d_dp(ckmeansScoreInput,2,2);
 
-		auto j=structured.begin();
-		for (auto i=++(result.cluster.begin());i!=result.cluster.end();i++,j++) {
-			_regions[(*j).first].content = (((*i) == 2) || (result.nClusters < 2));
+		auto j=++(scoreResult.cluster.begin());
+		for (auto i=structured.begin();i!=structured.end();i++,j++) {
+			_regions[(*i).first].content = (((*j) == 2) || (scoreResult.nClusters < 2));
 
 			// restore the original region's tps
-			_regions[(*j).first].tps = tagPathSequence.substr((*j).first,(*j).second.len);
+			_regions[(*i).first].tps = tagPathSequence.substr((*i).first,(*i).second.len);
 		}
+	}
+
+	for (auto i = _regions.begin();i!=_regions.end();) {
+		if ((*i).second.records.size() < 2) _regions.erase(i++);
+		else ++i;
 	}
 
 	regions.clear();
@@ -469,7 +481,7 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 	}
 
     sort(regions.begin(),regions.end(),[](const tTPSRegion &a, const tTPSRegion &b) {
-    		return (a.stddev > b.stddev);
+    		return (a.score > b.score);
     });
 }
 

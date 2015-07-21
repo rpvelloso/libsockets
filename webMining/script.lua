@@ -1,6 +1,6 @@
 CRLF = "\n"
---gnuplot = "/Progra~2/gnuplot/bin/gnuplot.exe"
-gnuplot = "/usr/bin/gnuplot"
+gnuplot = "/Progra~2/gnuplot/bin/gnuplot.exe"
+--gnuplot = "/usr/bin/gnuplot"
 
 term = {}
 term["png"] = ".png"
@@ -52,7 +52,7 @@ displayResults = function(dom,method,dir,filename)
     
     if dr["tps"] then
       outp:write("<img src='",filename,".region",i,term[term["default"]],"' /><br />",CRLF)
-      outp:write(string.format("offset: %d, size: %d, angle: %.2f, dev: %.2f<br/>",dr.pos,#dr.tps,math.atan(math.abs(dr["a"]))*180/math.pi,dr["d"]),CRLF)
+      outp:write(string.format("offset: %d, size: %d, angle: %.2f, score: %.2f<br/>",dr.pos,#dr.tps,math.atan(math.abs(dr["a"]))*180/math.pi,dr["score"]),CRLF)
       local t = dr.tps
       if #t then
         outp:write("<textarea>",CRLF)
@@ -166,9 +166,9 @@ end
 --processTestBed2("../datasets/tpsf")
 --processTestBed2("../datasets/wien")
 processTestBed2("../datasets/zhao1")
---processTestBed2("../datasets/zhao2")
+processTestBed2("../datasets/zhao2")
 processTestBed2("../datasets/zhao3")
---processTestBed2("../datasets/yamada")
---processTestBed("../datasets/trieschnigg1")
---processTestBed("../datasets/trieschnigg2")
+processTestBed2("../datasets/yamada")
+processTestBed("../datasets/trieschnigg1")
+processTestBed("../datasets/trieschnigg2")
 exit()
