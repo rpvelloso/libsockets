@@ -872,37 +872,64 @@ vector<unsigned int> tTPSFilter::LZLocateRecords(tTPSRegion& region, double& per
 
 		wstring patt = seq.substr(prior.first,prior.second);
 
-		patternCount[seq[prior.first]]++;
-		patternSize[seq[prior.first]]+=prior.second;
+		patternCount[prior.first]++;
+		patternSize[prior.first]+=prior.second;
+		pattern[prior.first]=seq.substr(prior.first,1);
 
-		if (pattern[seq[prior.first]].size() == 0) pattern[seq[prior.first]] = patt;
+		/*patternCount[seq[prior.first]]++;
+		patternSize[seq[prior.first]]+=prior.second;
+		pattern[seq[prior.first]]=seq.substr(prior.first,1);*/
+
+		/*if (pattern[seq[prior.first]].size() == 0) pattern[seq[prior.first]] = patt;
 		else {
 			if (
-					( (patt.size() < pattern[seq[prior.first]].size()) && (pattern[seq[prior.first]].size() > 2) )
-					|| ((pattern[seq[prior.first]].size() < 3) && (patt.size() > pattern[seq[prior.first]].size()))
+					( (patt.size() < pattern[seq[prior.first]].size()) && (pattern[seq[prior.first]].size() > 1) )
+					|| ((pattern[seq[prior.first]].size() < 2) && (patt.size() > pattern[seq[prior.first]].size()))
 				)
 				pattern[seq[prior.first]]=patt;
-		}
+		}*/
 
 		i+=prior.second-1;
 	}
 
 	size_t coverage=0;
+	double stddev,avgsize,mindev=INFINITY;
 
-	cout << "code;count;len;prefix;rcount" << endl;
+	cout << "code;count;len;prefix;rcount;dev" << endl;
+
 	for (auto i = patternCount.begin();i!=patternCount.end(); i++) {
+		vector<size_t> recpos = searchPrefix(seq,pattern[(*i).first]);
+
+		avgsize=0;
+		for (size_t i=1;i<recpos.size();i++) {
+			avgsize += (recpos[i] - recpos[i-1]);
+		}
+		avgsize /= (float)(recpos.size()-1);
+
+		stddev = 0;
+		for (size_t i=1;i<recpos.size();i++) {
+			float diff = (float)(recpos[i] - recpos[i-1])-avgsize;
+			stddev += (diff*diff);
+		}
+		stddev = sqrt(stddev/max((float)(recpos.size()-2),(float)1));
+
+		/*if (patternSize[(*i).first] > coverage) {
+			ret = recpos;
+			coverage = patternSize[(*i).first];
+		}*/
+
+		if ((stddev < mindev) && (patternSize[(*i).first] > seq.size()*.10)) {
+			mindev = stddev;
+			ret = recpos;
+		}
+
 		cout << (*i).first << ";" << (*i).second << ";" << patternSize[(*i).first] << ";";
+
 		for (size_t j=0;j<pattern[(*i).first].size();j++)
 			cout << pattern[(*i).first][j] << " ";
 
-		vector<size_t> recpos = searchPrefix(seq,pattern[(*i).first]);
-		if (patternSize[(*i).first] > coverage) {
-			ret = recpos;
-			coverage = patternSize[(*i).first];
-		}
+		cout << ";" << recpos.size() << ";" << stddev << ";";
 
-
-		cout << ";" << recpos.size() << ";";
 		for (size_t j=0;j<recpos.size();j++) {
 			cout << recpos[j] << " ";
 		}
