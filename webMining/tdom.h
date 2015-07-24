@@ -47,7 +47,6 @@ public:
 	void setRoot(tNode *);
 	tNode *findNext(tNode *, string);
     void setVerbose(int);
-	//void LZExtraction();
 
 	tMDR mdr;
 	tTPSFilter tpsf;

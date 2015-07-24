@@ -342,6 +342,7 @@ map<long int, tTPSRegion> tTPSFilter::SRDEFilter(tNode *n, bool css) {
 	}
 
 	if (_regions.size() == 0) {
+		//_regions.clear();
 		_regions[0].content = true;
 		_regions[0].len = tagPathSequence.size();
 		_regions[0].pos = 0;
@@ -383,7 +384,8 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 		cerr << endl;
 
 		// identify the start position of each record
-		recpos = SRDElocateRecords(_regions[(*i).first],period);
+		//recpos = SRDELocateRecords(_regions[(*i).first],period);
+		recpos = LZLocateRecords(_regions[(*i).first],period);
 
 		// consider only leaf nodes when performing field alignment
 		auto j = _regions[(*i).first].nodeSeq.begin();
@@ -567,7 +569,7 @@ void tTPSFilter::DRDE(tNode *n, bool css, float st) {
 	}
 }
 
-vector<unsigned int> tTPSFilter::SRDElocateRecords(tTPSRegion &region, double &period) {
+vector<unsigned int> tTPSFilter::SRDELocateRecords(tTPSRegion &region, double &period) {
 	wstring s = region.tps;
 	vector<float> signal(s.size());
 	float avg;
@@ -816,6 +818,98 @@ double tTPSFilter::estimatePeriod(vector<float> signal) {
 	free_fft(obj);
 
 	return ((double)N/(double)peakFreq);
+}
+
+pair<size_t,size_t> searchLongestPrefix(const wstring &prefix, const wstring &suffix) {
+	pair<size_t,size_t> ret;
+
+	for (size_t i=min(suffix.size(),prefix.size());i>0;i--) {
+		ret.first = prefix.find(suffix.substr(0,i));
+		if (ret.first != wstring::npos) {
+			ret.second = i;
+			break;
+		}
+	}
+
+	if (ret.first == wstring::npos) {
+		ret.first = prefix.size();
+		ret.second = 1;
+	}
+
+	return ret;
+}
+
+vector<size_t> searchPrefix(wstring &s, wstring &prefix) {
+	size_t pos=0;
+	vector<size_t> ret;
+
+	while ((pos=s.find(prefix,pos)) != wstring::npos) {
+		ret.push_back(pos);
+		pos += prefix.size();
+	}
+
+	return ret;
+}
+
+
+vector<unsigned int> tTPSFilter::LZLocateRecords(tTPSRegion& region, double& period) {
+	wstring seq = region.tps;
+	map<size_t,size_t> patternCount, patternSize;
+	map<size_t,wstring> pattern;
+	vector<unsigned int> ret;
+
+	size_t n = seq.size();
+
+	for (size_t i=1;i<seq.size()-1;i++) {
+		wstring prefix = seq.substr(0,i);
+		wstring suffix = seq.substr(i,n-i);
+		pair<size_t,size_t> prior = searchLongestPrefix(prefix,suffix);
+
+		cout << "[" << prior.first << ", " << prior.second << "]" << " = ";
+		for (size_t j=0;j<prior.second;j++)
+			cout << seq[prior.first+j] << " ";
+		cout << endl;
+
+		wstring patt = seq.substr(prior.first,prior.second);
+
+		patternCount[seq[prior.first]]++;
+		patternSize[seq[prior.first]]+=prior.second;
+
+		if (pattern[seq[prior.first]].size() == 0) pattern[seq[prior.first]] = patt;
+		else {
+			if (
+					( (patt.size() < pattern[seq[prior.first]].size()) && (pattern[seq[prior.first]].size() > 2) )
+					|| ((pattern[seq[prior.first]].size() < 3) && (patt.size() > pattern[seq[prior.first]].size()))
+				)
+				pattern[seq[prior.first]]=patt;
+		}
+
+		i+=prior.second-1;
+	}
+
+	size_t coverage=0;
+
+	cout << "code;count;len;prefix;rcount" << endl;
+	for (auto i = patternCount.begin();i!=patternCount.end(); i++) {
+		cout << (*i).first << ";" << (*i).second << ";" << patternSize[(*i).first] << ";";
+		for (size_t j=0;j<pattern[(*i).first].size();j++)
+			cout << pattern[(*i).first][j] << " ";
+
+		vector<size_t> recpos = searchPrefix(seq,pattern[(*i).first]);
+		if (patternSize[(*i).first] > coverage) {
+			ret = recpos;
+			coverage = patternSize[(*i).first];
+		}
+
+
+		cout << ";" << recpos.size() << ";";
+		for (size_t j=0;j<recpos.size();j++) {
+			cout << recpos[j] << " ";
+		}
+		cout << endl;
+	}
+
+	return ret;
 }
 
 void tTPSFilter::onDataRecordFound(vector<wstring> &m, vector<unsigned int> &recpos, tTPSRegion *reg) {
