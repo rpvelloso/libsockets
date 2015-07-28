@@ -85,7 +85,9 @@ plotSequences = function(dom,output,filename)
   end
 
   f:write("set output \"",filename,".tps",term[term["default"]],"\"",CRLF)
-  f:write("plot '-' with lines title 'Full TPS'",CRLF)
+  f:write("set autoscale fix",CRLF)
+  f:write("set style line 1 lc rgb \'#0060ad\' lt 1 lw 1 pt 7 ps 0.5",CRLF)
+  f:write("plot '-' with linespoints ls 1 title 'Full TPS'",CRLF)
   for i=1,#tps do
         f:write(i-1,"\t",tps[i],CRLF)
   end
@@ -95,7 +97,9 @@ plotSequences = function(dom,output,filename)
     local dr = getDataRegion(dom,method,i-1)
     if dr["tps"] then
       f:write("set output \"",filename,".region",i,term[term["default"]],"\"",CRLF)
-      f:write("plot ",dr.a,"*x+",dr.b," with lines title 'Linear regression','-' with lines title 'Region ",i,"' lc rgb \"black\" ",CRLF)
+      f:write("set autoscale fix",CRLF)
+      f:write("set style line 1 lc rgb \'#0060ad\' lt 1 lw 1 pt 7 ps 0.5",CRLF)
+      f:write("plot ",dr.a,"*x+",dr.b," with lines title 'Linear regression','-' with linespoints ls 1 title \'Region ",i,"\'",CRLF)
       for j=1,#dr.tps do
         f:write(j-1,"\t",dr.tps[j],CRLF)
       end

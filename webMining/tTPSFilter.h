@@ -62,7 +62,7 @@ protected:
 	vector<unsigned int> LZLocateRecords(tTPSRegion &, double &);
 	map<int,int> symbolFrequency(wstring, set<int> &);
 	map<int,int> frequencyThresholds(map<int,int>);
-	double estimatePeriod(vector<float>);
+	double estimatePeriod(vector<double>);
 	map<long int, tTPSRegion> detectStructure(map<long int, tTPSRegion> &);
 
 	virtual void onDataRecordFound(vector<wstring> &, vector<unsigned int> &, tTPSRegion *);

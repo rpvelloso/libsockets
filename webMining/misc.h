@@ -29,6 +29,12 @@
 
 #define CRLF "\n"
 
+extern vector<double> _fft(vector<double>, int);
+extern vector<double> autoCorrelation(vector<double>);
+
+#define fft(X) _fft(X,1)
+#define ifft(X) _fft(X,-1)
+
 string &trim(string &);
 string stringTok(string &, string);
 

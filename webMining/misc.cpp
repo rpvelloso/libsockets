@@ -18,6 +18,8 @@
  */
 
 #include <string>
+#include <vector>
+#include "hsfft.h"
 
 using namespace std;
 
@@ -39,4 +41,48 @@ string stringTok(string &s, string d) {
 	while ((d.find(s[i++])!=string::npos) && (i<s.size()));
 	s.erase(0,--i);
 	return tok;
+}
+
+// returns power spectrum of signal
+vector<double> _fft(vector<double> signal, int dir) {
+	size_t N = (signal.size() + (signal.size()%2));
+	vector<double> ret;
+
+	fft_object obj = fft_init(N,dir); // Initialize FFT object obj . N - FFT Length. 1 - Forward FFT and -1 for Inverse FFT
+
+	fft_data* inp = (fft_data*) malloc (sizeof(fft_data) * N);
+	fft_data* oup = (fft_data*) malloc (sizeof(fft_data) * N);
+
+	for (size_t i=0;i<N;i++) {
+		inp[i].re = signal[i];
+		inp[i].im = 0;
+	}
+
+	if (signal.size() != N) { // repeat last sample when signal size is odd
+		inp[N-1].re = signal[N-2];
+		inp[N-1].im = 0;
+	}
+
+	fft_exec(obj,inp,oup);
+
+	for (size_t i=0;i<N;i++) {
+		ret.push_back((oup[i].re*oup[i].re) + (oup[i].im*oup[i].im));
+	}
+
+	free(inp);
+	free(oup);
+	free_fft(obj);
+
+	return ret;
+}
+
+vector<double> autoCorrelation(vector<double> signal) {
+	size_t N = (signal.size() + (signal.size()%2));
+
+	if (signal.size() != N) { // repeat last sample when signal size is odd
+		signal.resize(N);
+		signal[N-1]=signal[N-2];
+	}
+	signal.resize(2*N);
+	return _fft(_fft(signal,1),-1);
 }

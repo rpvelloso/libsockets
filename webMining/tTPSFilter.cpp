@@ -21,6 +21,7 @@
 #include <iostream>
 #include <set>
 #include <functional>
+#include <map>
 #include "tTPSFilter.h"
 #include "misc.h"
 #include "hsfft.h"
@@ -384,8 +385,8 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 		cerr << endl;
 
 		// identify the start position of each record
-		//recpos = SRDELocateRecords(_regions[(*i).first],period);
-		recpos = LZLocateRecords(_regions[(*i).first],period);
+		recpos = SRDELocateRecords(_regions[(*i).first],period);
+		//recpos = LZLocateRecords(_regions[(*i).first],period);
 
 		// consider only leaf nodes when performing field alignment
 		auto j = _regions[(*i).first].nodeSeq.begin();
@@ -571,7 +572,7 @@ void tTPSFilter::DRDE(tNode *n, bool css, float st) {
 
 vector<unsigned int> tTPSFilter::SRDELocateRecords(tTPSRegion &region, double &period) {
 	wstring s = region.tps;
-	vector<float> signal(s.size());
+	vector<double> signal(s.size());
 	float avg;
 	set<float> candidates;
 	vector<unsigned int> recpos,ret;
@@ -614,9 +615,11 @@ vector<unsigned int> tTPSFilter::SRDELocateRecords(tTPSRegion &region, double &p
 		stddev=0;
 		avgsize=0;
 
-		for (size_t i=0;i<s.size();i++) {
-			if (signal[i] == *value)
+		for (size_t i=0,j=estPeriod;i<s.size();i++,j++) {
+			if ((signal[i] == *value)) {// && (j>estPeriod*.8)) {
 				recpos.push_back(i);
+				j=0;
+			}
 		}
 
 		if (recpos.size() > 1) {
@@ -778,46 +781,69 @@ vector<tNode*> tTPSFilter::getRecord(size_t dr, size_t rec) {
 	return vector<tNode *>(0);
 }
 
-double tTPSFilter::estimatePeriod(vector<float> signal) {
+/*double tTPSFilter::estimatePeriod(vector<double> signal) {
 	size_t N = (signal.size() + (signal.size()%2));
-	double peak,maxPeak=0;
+	double maxPeak=-INFINITY;
 	size_t peakFreq=1;
 
-	fft_object obj = fft_init(N,1); // Initialize FFT object obj . N - FFT Length. 1 - Forward FFT and -1 for Inverse FFT
+	if (signal.size() != N) { // repeat last sample when signal size is odd
+		signal.resize(N);
+		signal[N-1] = signal[N-2];
+	}
 
-	fft_data* inp = (fft_data*) malloc (sizeof(fft_data) * N);
-	fft_data* oup = (fft_data*) malloc (sizeof(fft_data) * N);
-
-	for (size_t i = 0; i < signal.size(); i++) {
-		inp[i].re = signal[i];
-		inp[i].im = 0;
-
-		inp[i].re *= (1.0-(((double)i-0.5*(double)(N-1))
+	for (size_t i = 0; i < N; i++) { // apply 'welch' window to signal
+		signal[i] *= (1.0-(((double)i-0.5*(double)(N-1))
 					/(0.5*(double)(N+1)))
 					*(((double)i-0.5*(double)(N-1))
 					/(0.5*(double)(N+1))));
 	}
 
-	if (signal.size() != N) { // repeat last sample when signal size is odd
-		inp[N-1].re = signal[N-2];
-		inp[N-1].im = 0;
-	}
 
-	fft_exec(obj,inp,oup);
+	auto spectrum = fft(signal);
 
 	for (size_t i = 4; i < (N/4)-1; i++) {
-		peak = sqrt((oup[i].re*oup[i].re) + (oup[i].im*oup[i].im));
-		if (peak > maxPeak) {
-			maxPeak = peak;
+		if (spectrum[i] > maxPeak) {
+			maxPeak = spectrum[i];
 			peakFreq = i;
 		}
 	}
 
-	free(inp);
-	free(oup);
-	free_fft(obj);
-
 	return ((double)N/(double)peakFreq);
+}*/
+
+double tTPSFilter::estimatePeriod(vector<double> signal) {
+	size_t N = (signal.size() + (signal.size()%2));
+	double maxPeak=-INFINITY;
+
+	if (signal.size() != N) { // repeat last sample when signal size is odd
+		signal.resize(N);
+		signal[N-1]=signal[N-2];
+	}
+
+	auto spectrum = fft(signal);
+	auto xcorr = autoCorrelation(signal);
+
+	multimap<double, size_t> candidatePeriods;
+	for (size_t i=0;i<N;i++) {
+		candidatePeriods.insert(make_pair(xcorr[i],i));
+	}
+
+	double period = (double)N/(double)(*(candidatePeriods.begin())).second;
+	size_t j=0;
+	for (auto i = candidatePeriods.rbegin(); i != candidatePeriods.rend(); i++) {
+		if ( ((*i).second > 4) && ((*i).second < N-2) ) {
+			size_t f = (double)N/(double)(*i).second;
+			auto peak = spectrum[f];
+			if (peak > maxPeak) {
+				maxPeak = peak;
+				period = (*i).second;
+			}
+			j++;
+			if (j == 15) break;
+		}
+	}
+
+	return period;
 }
 
 pair<size_t,size_t> searchLongestPrefix(const wstring &prefix, const wstring &suffix) {
@@ -892,7 +918,6 @@ vector<unsigned int> tTPSFilter::LZLocateRecords(tTPSRegion& region, double& per
 		i+=prior.second-1;
 	}
 
-	size_t coverage=0;
 	double stddev,avgsize,mindev=INFINITY;
 
 	cout << "code;count;len;prefix;rcount;dev" << endl;
@@ -912,11 +937,6 @@ vector<unsigned int> tTPSFilter::LZLocateRecords(tTPSRegion& region, double& per
 			stddev += (diff*diff);
 		}
 		stddev = sqrt(stddev/max((float)(recpos.size()-2),(float)1));
-
-		/*if (patternSize[(*i).first] > coverage) {
-			ret = recpos;
-			coverage = patternSize[(*i).first];
-		}*/
 
 		if ((stddev < mindev) && (patternSize[(*i).first] > seq.size()*.10)) {
 			mindev = stddev;
