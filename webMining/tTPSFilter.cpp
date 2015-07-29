@@ -290,9 +290,11 @@ map<long int, tTPSRegion> tTPSFilter::SRDEFilter(tNode *n, bool css) {
 	auto symbolCount = symbolFrequency(s,alphabet);
 	auto thresholds = frequencyThresholds(symbolCount);
 	auto threshold = thresholds.begin();
-	threshold++;
-	threshold++;
-	//threshold++;
+
+	while (((double)(*threshold).first / (double)(*thresholds.rbegin()).first) < 0.05)
+		threshold++;
+
+	cerr << "threshold: " << (*threshold).first << " / " << (*(thresholds.rbegin())).first << endl;
 
 	for (size_t i=0;i<s.size();i++)
 		if (symbolCount[s[i]] <= (*threshold).first) s[i]=0;
@@ -350,12 +352,11 @@ map<long int, tTPSRegion> tTPSFilter::SRDEFilter(tNode *n, bool css) {
 		_regions[0].nodeSeq = nodeSequence;
 		_regions[0].tps = tagPathSequence;
 	}
-/*
-	buildTagPath("",n,false,false,false); // rebuild TPS without CSS to increase periodicity
+
+	/*buildTagPath("",n,false,false,false); // rebuild TPS without CSS to increase periodicity
 	for (auto i=_regions.begin();i!=_regions.end();i++) {
 		(*i).second.tps = tagPathSequence.substr((*i).second.pos,(*i).second.len);
-	}
-*/
+	}*/
 
 	return detectStructure(_regions);
 }
@@ -447,7 +448,10 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 			auto recCount = _regions[(*i).first].records.size();
 			auto recSize = _regions[(*i).first].records[0].size();
 
-			_regions[(*i).first].score = (double)recCount * (double)recSize * stddev;
+			_regions[(*i).first].score =
+					sqrt((min((double)recCount,(double)recSize) /
+					max((double)recCount,(double)recSize))) * stddev;
+					//(double)recCount * (double)recSize * stddev;
 			++i;
 		}
 	}
@@ -607,18 +611,25 @@ vector<unsigned int> tTPSFilter::SRDELocateRecords(tTPSRegion &region, double &p
 	estPeriod = estimatePeriod(signal);
 	cout << endl;
 
-	auto value = candidates.begin();
-	while (value != candidates.end()) {
+	for (auto value = candidates.begin(); value != candidates.end(); value ++ ) {
 		double stddev,avgsize;
 
 		recpos.clear();
 		stddev=0;
 		avgsize=0;
 
-		for (size_t i=0,j=estPeriod;i<s.size();i++,j++) {
-			if ((signal[i] == *value)) {// && (j>estPeriod*.8)) {
-				recpos.push_back(i);
-				j=0;
+		wstring prefix;
+
+		for (size_t i=0;i<s.size();i++) {
+			if ((signal[i] == *value)) {
+				if (prefix.empty()) {
+					recpos.push_back(i);
+					prefix = s.substr(i,3);
+				} else {
+					if (s.substr(i,3) == prefix) {
+						recpos.push_back(i);
+					}
+				}
 			}
 		}
 
@@ -651,7 +662,6 @@ vector<unsigned int> tTPSFilter::SRDELocateRecords(tTPSRegion &region, double &p
 			}
 			printf("value=%.2f, cov=%.2f, #=%.2f, size=%.2f, t=%.2f, s=%.4f - %.2f\n",*value,regionCoverage,recCountRatio,recSizeRatio,tpcRatio,score,estPeriod);
 		}
-		value++;
 	}
 
 	return ret.size()?ret:recpos;

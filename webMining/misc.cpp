@@ -66,7 +66,10 @@ vector<double> _fft(vector<double> signal, int dir) {
 	fft_exec(obj,inp,oup);
 
 	for (size_t i=0;i<N;i++) {
-		ret.push_back((oup[i].re*oup[i].re) + (oup[i].im*oup[i].im));
+		if (dir >= 0)
+			ret.push_back((oup[i].re*oup[i].re) + (oup[i].im*oup[i].im));
+		else
+			ret.push_back(oup[i].re);
 	}
 
 	free(inp);
@@ -80,9 +83,8 @@ vector<double> autoCorrelation(vector<double> signal) {
 	size_t N = (signal.size() + (signal.size()%2));
 
 	if (signal.size() != N) { // repeat last sample when signal size is odd
-		signal.resize(N);
-		signal[N-1]=signal[N-2];
+		signal.push_back(signal[N-1]);
 	}
-	signal.resize(2*N);
+	signal.resize(2*N); // zero pad
 	return _fft(_fft(signal,1),-1);
 }
