@@ -269,4 +269,55 @@ tLinearCoeff linearRegression(T s) {
 	return lc;
 }
 
+template <class T>
+void align(vector<T> &ss) {
+	size_t maxSize=0;
+
+	for (size_t i=0;i<ss.size();i++) {
+			if (ss[i].size() > maxSize) maxSize = ss[i].size();
+	}
+	for (size_t i=0;i<ss.size();i++) {
+		ss[i].resize(maxSize); // pad strings to the same size;
+	}
+
+	vector<typename T::value_type> profile;
+
+	for (size_t j=0;j<maxSize;j++) {
+		map<typename T::value_type,size_t> freq;
+		size_t maxFreq=0;
+		typename T::value_type symbol = ss[0][j];
+
+		for (size_t i=0;i<ss.size();i++) {
+			if (ss[i][j] != (typename T::value_type)0) {
+				freq[ss[i][j]]++;
+				if (freq[ss[i][j]] > maxFreq) {
+					maxFreq = freq[ss[i][j]];
+					symbol = ss[i][j];
+				}
+			}
+		}
+		profile.push_back(symbol);
+	}
+
+	for (size_t i=0;i<ss.size();i++) {
+		for (size_t j=0;j<maxSize;j++) {
+			if (ss[i][j] != profile[j]) {
+				auto pos = ss[i].find_first_of(profile[j],j+1);
+				if (pos != string::npos) {
+					typename T::value_type c = ss[i][j];
+					ss[i][j] = ss[i][pos];
+					ss[i][pos] = c;
+				} else {
+					pos = ss[i].find_first_of((typename T::value_type)0,j+1);
+					if (pos != string::npos) {
+						ss[i][pos] = ss[i][j];
+						ss[i][j] = (typename T::value_type)0;
+					}
+				}
+			}
+		}
+	}
+}
+
+
 #endif /* MISC_H_ */
