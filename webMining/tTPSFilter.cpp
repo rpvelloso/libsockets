@@ -268,10 +268,10 @@ map<long int, tTPSRegion> tTPSFilter::tagPathSequenceFilter(tNode *n, bool css) 
 		_regions[0].tps = originalTPS;
 	}
 
-	buildTagPath("",n,false,false,false); // rebuild TPS without css to increase periodicity
+	/*buildTagPath("",n,false,false,false); // rebuild TPS without css to increase periodicity
 	for (auto i=_regions.begin();i!=_regions.end();i++) {
 		(*i).second.tps = tagPathSequence.substr((*i).second.pos,(*i).second.len);
-	}
+	}*/
 
 	tagPathSequence = originalTPS;
 	nodeSequence = originalNodeSequence;
@@ -283,6 +283,7 @@ map<long int, tTPSRegion> tTPSFilter::SRDEFilter(tNode *n, bool css) {
 	set<int> alphabet;
 	wstring s;
 	long int lastRegPos = -1;
+	map<long int, tTPSRegion> ret;
 
 	buildTagPath("",n,false,css,false);
 	s = tagPathSequence;
@@ -291,74 +292,76 @@ map<long int, tTPSRegion> tTPSFilter::SRDEFilter(tNode *n, bool css) {
 	auto thresholds = frequencyThresholds(symbolCount);
 	auto threshold = thresholds.begin();
 
-	while (((double)(*threshold).first / (double)(*thresholds.rbegin()).first) < 0.05)
+	do {
 		threshold++;
 
-	cerr << "threshold: " << (*threshold).first << " / " << (*(thresholds.rbegin())).first << endl;
+		cerr << "threshold: " << (*threshold).first << " / " << (*(thresholds.rbegin())).first << endl;
 
-	for (size_t i=0;i<s.size();i++)
-		if (symbolCount[s[i]] <= (*threshold).first) s[i]=0;
+		for (size_t i=0;i<s.size();i++)
+			if (symbolCount[s[i]] <= (*threshold).first) s[i]=0;
 
-	bool regionOpened=false;
-	int regionStart=0;
-	int regionEnd=0;
+		bool regionOpened=false;
+		int regionStart=0;
+		int regionEnd=0;
 
-	for (size_t i=0;i<s.size();i++) {
-		if (!regionOpened) {
-			 if (s[i] != 0) {
-				regionOpened = true;
-				regionStart = i;
-			}
-		} else {
-			if ((s[i] == 0) || (i == s.size()-1)) {
-				tTPSRegion reg;
+		for (size_t i=0;i<s.size();i++) {
+			if (!regionOpened) {
+				 if (s[i] != 0) {
+					regionOpened = true;
+					regionStart = i;
+				}
+			} else {
+				if ((s[i] == 0) || (i == s.size()-1)) {
+					tTPSRegion reg;
 
-				regionOpened = false;
-				regionEnd = i-1;
-				if (i == s.size()-1) regionEnd++;
-				reg.pos = regionStart;
-				reg.len = regionEnd - regionStart + 1;
-				if (reg.len > 3) {
-					reg.tps = tagPathSequence.substr(reg.pos,reg.len);
+					regionOpened = false;
+					regionEnd = i-1;
+					if (i == s.size()-1) regionEnd++;
+					reg.pos = regionStart;
+					reg.len = regionEnd - regionStart + 1;
+					if (reg.len > 3) {
+						reg.tps = tagPathSequence.substr(reg.pos,reg.len);
 
-					if (lastRegPos != -1) {
-						set<int> palpha,alpha,intersect;
+						if (lastRegPos != -1) {
+							set<int> palpha,alpha,intersect;
 
-						symbolFrequency(_regions[lastRegPos].tps,palpha);
-						symbolFrequency(reg.tps,alpha);
+							symbolFrequency(_regions[lastRegPos].tps,palpha);
+							symbolFrequency(reg.tps,alpha);
 
-						set_intersection(palpha.begin(),palpha.end(),alpha.begin(),alpha.end(),inserter(intersect,intersect.begin()));
+							set_intersection(palpha.begin(),palpha.end(),alpha.begin(),alpha.end(),inserter(intersect,intersect.begin()));
 
-						if (!intersect.empty()) {
-							_regions[lastRegPos].len = regionEnd - _regions[lastRegPos].pos + 1;
-							_regions[lastRegPos].tps = tagPathSequence.substr(_regions[lastRegPos].pos,_regions[lastRegPos].len);
-							//cout << "merge " << _regions[lastRegPos].pos << " " << _regions[lastRegPos].len << endl;
-							continue;
+							if (!intersect.empty()) {
+								_regions[lastRegPos].len = regionEnd - _regions[lastRegPos].pos + 1;
+								_regions[lastRegPos].tps = tagPathSequence.substr(_regions[lastRegPos].pos,_regions[lastRegPos].len);
+								//cout << "merge " << _regions[lastRegPos].pos << " " << _regions[lastRegPos].len << endl;
+								continue;
+							}
 						}
+						_regions[regionStart] = reg;
+						lastRegPos = regionStart;
+						//cout << "new   " << _regions[lastRegPos].pos << " " << _regions[lastRegPos].len << endl;
 					}
-					_regions[regionStart] = reg;
-					lastRegPos = regionStart;
-					//cout << "new   " << _regions[lastRegPos].pos << " " << _regions[lastRegPos].len << endl;
 				}
 			}
 		}
-	}
 
-	if (_regions.size() == 0) {
-		//_regions.clear();
-		_regions[0].content = true;
-		_regions[0].len = tagPathSequence.size();
-		_regions[0].pos = 0;
-		_regions[0].nodeSeq = nodeSequence;
-		_regions[0].tps = tagPathSequence;
-	}
+		if (_regions.size() == 0) {
+			//_regions.clear();
+			_regions[0].content = true;
+			_regions[0].len = tagPathSequence.size();
+			_regions[0].pos = 0;
+			_regions[0].nodeSeq = nodeSequence;
+			_regions[0].tps = tagPathSequence;
+		}
 
-	/*buildTagPath("",n,false,false,false); // rebuild TPS without CSS to increase periodicity
-	for (auto i=_regions.begin();i!=_regions.end();i++) {
-		(*i).second.tps = tagPathSequence.substr((*i).second.pos,(*i).second.len);
-	}*/
+		/*buildTagPath("",n,false,false,false); // rebuild TPS without CSS to increase periodicity
+		for (auto i=_regions.begin();i!=_regions.end();i++) {
+			(*i).second.tps = tagPathSequence.substr((*i).second.pos,(*i).second.len);
+		}*/
+		ret=detectStructure(_regions);
+	} while ((ret.size()==0) && (threshold != thresholds.end()));
 
-	return detectStructure(_regions);
+	return ret;
 }
 
 void tTPSFilter::SRDE(tNode *n, bool css) {
@@ -618,19 +621,9 @@ vector<unsigned int> tTPSFilter::SRDELocateRecords(tTPSRegion &region, double &p
 		stddev=0;
 		avgsize=0;
 
-		wstring prefix;
-
 		for (size_t i=0;i<s.size();i++) {
-			if ((signal[i] == *value)) {
-				if (prefix.empty()) {
-					recpos.push_back(i);
-					prefix = s.substr(i,3);
-				} else {
-					if (s.substr(i,3) == prefix) {
-						recpos.push_back(i);
-					}
-				}
-			}
+			if ((signal[i] == *value))
+				recpos.push_back(i);
 		}
 
 		if (recpos.size() > 1) {
@@ -841,7 +834,7 @@ double tTPSFilter::estimatePeriod(vector<double> signal) {
 	double period = (double)N/(double)(*(candidatePeriods.begin())).second;
 	size_t j=0;
 	for (auto i = candidatePeriods.rbegin(); i != candidatePeriods.rend(); i++) {
-		if ( ((*i).second > 4) && ((*i).second < N-2) ) {
+		if ( ((*i).second > 1) && ((*i).second < N) ) {
 			size_t f = (double)N/(double)(*i).second;
 			auto peak = spectrum[f];
 			if (peak > maxPeak) {
