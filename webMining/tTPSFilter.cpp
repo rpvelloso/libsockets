@@ -438,7 +438,7 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 
 		// align the records (one alternative to 'center star' algorithm is ClustalW)
 		align(m);
-		centerStar(m);
+		//centerStar(m);
 
 		// and extracts them
 		if (m.size()) onDataRecordFound(m,recpos,&_regions[(*i).first]);

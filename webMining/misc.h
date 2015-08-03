@@ -273,6 +273,8 @@ template <class T>
 void align(vector<T> &ss) {
 	size_t maxSize=0;
 
+	normalizeSequences(ss);
+
 	for (size_t i=0;i<ss.size();i++) {
 			if (ss[i].size() > maxSize) maxSize = ss[i].size();
 	}
