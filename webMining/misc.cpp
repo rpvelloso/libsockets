@@ -20,6 +20,7 @@
 #include <string>
 #include <vector>
 #include "hsfft.h"
+#include "Ckmeans.1d.dp.h"
 
 using namespace std;
 

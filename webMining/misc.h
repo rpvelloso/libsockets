@@ -75,7 +75,7 @@ float mean(T s) {
 #define SPACE T(1,'\0')
 
 template <class T>
-unsigned int edit_distance(T &s1, T &s2, bool align, vector<unsigned int> *spaces) {
+size_t edit_distance(T &s1, T &s2, bool align, vector<unsigned int> *spaces) {
 	const size_t len1 = s1.size(), len2 = s2.size();
 	vector<vector<unsigned int> > d(len1 + 1, vector<unsigned int>(len2 + 1));
 
@@ -150,7 +150,9 @@ void normalizeSequences(vector<T> &M) {
 }
 
 template <class T>
-void centerStar(vector<T> &M) {
+double centerStar(vector<T> &M) {
+	size_t ret=0;
+
 	normalizeSequences(M);
 
 	size_t len = M.size();
@@ -180,7 +182,7 @@ void centerStar(vector<T> &M) {
 		if (i!=center) {
 			vector<unsigned int> spaces;
 
-			edit_distance(M[center],M[i],true,&spaces);
+			ret += edit_distance(M[center],M[i],true,&spaces);
 			if (spaces.size()) {
 				for (size_t j=i;j>0;j--) {
 					if ((j-1)!=center) {
@@ -198,6 +200,7 @@ void centerStar(vector<T> &M) {
 			cerr << M[i][j] << ";";
 		cerr << endl;
 	}
+	return ((double)M[0].size()*(double)M.size() / (double) max(ret,(size_t)1));
 }
 
 struct tLinearCoeff {
@@ -269,6 +272,9 @@ tLinearCoeff linearRegression(T s) {
 	return lc;
 }
 
+/*todo: testar alinhamento com swap e com offset.
+Arrumar a sequencia de nodos que não está sendo atualizada junto com a sequencia de tags*/
+
 template <class T>
 void align(vector<T> &ss) {
 	size_t maxSize=0;
@@ -283,6 +289,8 @@ void align(vector<T> &ss) {
 	}
 
 	vector<typename T::value_type> profile;
+	set<typename T::value_type> symbols;
+	symbols.insert((typename T::value_type)0);
 
 	for (size_t j=0;j<maxSize;j++) {
 		map<typename T::value_type,size_t> freq;
@@ -290,15 +298,16 @@ void align(vector<T> &ss) {
 		typename T::value_type symbol = ss[0][j];
 
 		for (size_t i=0;i<ss.size();i++) {
-			if (ss[i][j] != (typename T::value_type)0) {
+			//if (ss[i][j] != (typename T::value_type)0) {
 				freq[ss[i][j]]++;
-				if (freq[ss[i][j]] > maxFreq) {
-					maxFreq = freq[ss[i][j]];
+				if ((symbols.find(freq[ss[i][j]]) == symbols.end()) && (freq[ss[i][j]] > maxFreq)) {
 					symbol = ss[i][j];
 				}
-			}
+				maxFreq = freq[symbol];
+			//}
 		}
 		profile.push_back(symbol);
+		symbols.insert(symbol);
 	}
 
 	for (size_t i=0;i<ss.size();i++) {
@@ -320,6 +329,5 @@ void align(vector<T> &ss) {
 		}
 	}
 }
-
 
 #endif /* MISC_H_ */

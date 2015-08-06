@@ -437,8 +437,8 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 		}
 
 		// align the records (one alternative to 'center star' algorithm is ClustalW)
-		align(m);
-		//centerStar(m);
+		//align(m);
+		_regions[(*i).first].score = centerStar(m);
 
 		// and extracts them
 		if (m.size()) onDataRecordFound(m,recpos,&_regions[(*i).first]);
@@ -453,8 +453,8 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 			auto recSize = _regions[(*i).first].records[0].size();
 
 			_regions[(*i).first].score =
-					sqrt((min((double)recCount,(double)recSize) /
-					max((double)recCount,(double)recSize))) * stddev;
+					((min((double)recCount,(double)recSize) /
+					max((double)recCount,(double)recSize)));// * stddev;
 					//(double)recCount * (double)recSize * stddev;
 			++i;
 		}
@@ -477,6 +477,19 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 			// restore the original region's tps
 			_regions[(*i).first].tps = tagPathSequence.substr((*i).first,(*i).second.len);
 		}
+
+		// -----
+
+		ckmeansScoreInput.clear();
+		ckmeansScoreInput.push_back(0);
+		for (auto i=structured.begin();i!=structured.end();i++) {
+			ckmeansScoreInput.push_back(_regions[(*i).first].stddev);
+		}
+		scoreResult = kmeans_1d_dp(ckmeansScoreInput,2,2);
+
+		j=++(scoreResult.cluster.begin());
+		for (auto i=structured.begin();i!=structured.end();i++,j++)
+			_regions[(*i).first].content |= (((*j) == 2) || (scoreResult.nClusters < 2));
 	}
 
 	for (auto i = _regions.begin();i!=_regions.end();) {
@@ -639,13 +652,13 @@ vector<unsigned int> tTPSFilter::SRDELocateRecords(tTPSRegion &region, double &p
 			}
 			stddev = sqrt(stddev/max((float)(recpos.size()-2),(float)1));
 
-			double regionCoverage = min(avgsize*(double)recpos.size()/(double)signal.size(), (double)1);
+			double regionCoverage = 1;//min(avgsize*(double)recpos.size()/(double)signal.size(), (double)1);
 			double recCountRatio =
 					min( (double)recpos.size() ,(double)signal.size()/estPeriod) /
 					max( (double)recpos.size() ,(double)signal.size()/estPeriod);
-			if (stddev>1) avgsize /= stddev; // SNR
+			//if (stddev>1) avgsize /= stddev; // SNR
 			double recSizeRatio = min( avgsize, estPeriod )/max( avgsize, estPeriod );
-			recSizeRatio = sqrt(recSizeRatio);
+			//recSizeRatio = sqrt(recSizeRatio);
 			double tpcRatio = (double)abs(*value)/maxCode; // DNR
 
 			double score = (regionCoverage + recCountRatio + recSizeRatio + tpcRatio)/(double)4;
@@ -815,6 +828,8 @@ vector<tNode*> tTPSFilter::getRecord(size_t dr, size_t rec) {
 	return ((double)N/(double)peakFreq);
 }*/
 
+#define NUM_PEAKS 20
+
 double tTPSFilter::estimatePeriod(vector<double> signal) {
 	size_t N = (signal.size() + (signal.size()%2));
 	double maxPeak=-INFINITY;
@@ -843,7 +858,7 @@ double tTPSFilter::estimatePeriod(vector<double> signal) {
 				period = (*i).second;
 			}
 			j++;
-			if (j == 15) break;
+			if (j == NUM_PEAKS) break;
 		}
 	}
 
