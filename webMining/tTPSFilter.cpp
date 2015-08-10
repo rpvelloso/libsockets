@@ -438,12 +438,14 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 			m.push_back(_regions[(*i).first].tps.substr(prev,max_size));
 		}
 
-		// align the records (one alternative to 'center star' algorithm is ClustalW)
-		//align(m);
-		_regions[(*i).first].score = centerStar(m);
+		if (m.size()) {
+			// align the records (one alternative to 'center star' algorithm is ClustalW)
+			//align(m);
+			_regions[(*i).first].score = centerStar(m);
 
-		// and extracts them
-		if (m.size()) onDataRecordFound(m,recpos,&_regions[(*i).first]);
+			// and extracts them
+			onDataRecordFound(m,recpos,&_regions[(*i).first]);
+		}
 	}
 
 	// remove regions with only a single record
