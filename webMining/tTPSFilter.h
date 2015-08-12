@@ -57,15 +57,15 @@ public:
 protected:
 	long int searchRegion(wstring);
 	bool prune(tNode *);
-	vector<unsigned int> locateRecords(wstring, double);
-	vector<unsigned int> SRDELocateRecords(tTPSRegion &, double &);
-	vector<unsigned int> LZLocateRecords(tTPSRegion &, double &);
+	vector<size_t> locateRecords(wstring, double);
+	vector<size_t> SRDELocateRecords(tTPSRegion &, double &);
+	vector<size_t> LZLocateRecords(tTPSRegion &, double &);
 	map<int,int> symbolFrequency(wstring, set<int> &);
 	map<int,int> frequencyThresholds(map<int,int>);
 	double estimatePeriod(vector<double>);
 	map<long int, tTPSRegion> detectStructure(map<long int, tTPSRegion> &);
 
-	virtual void onDataRecordFound(vector<wstring> &, vector<unsigned int> &, tTPSRegion *);
+	virtual void onDataRecordFound(vector<wstring> &, vector<size_t> &, tTPSRegion *);
 
 	map<string, int> tagPathMap;
 	wstring tagPathSequence;

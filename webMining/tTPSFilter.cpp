@@ -367,7 +367,7 @@ map<long int, tTPSRegion> tTPSFilter::SRDEFilter(tNode *n, bool css) {
 }
 
 void tTPSFilter::SRDE(tNode *n, bool css) {
-	vector<unsigned int> recpos;
+	vector<size_t> recpos;
 	vector<wstring> m;
 	map<long int, tTPSRegion> structured;
 	double period;
@@ -422,7 +422,7 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 
 		// create a sequence for each record found
 		int prev=-1;
-		unsigned int max_size=0;
+		size_t max_size=0;
 		for (size_t j=0;j<recpos.size();j++) {
 			if (prev==-1) prev=recpos[j];
 			else {
@@ -514,7 +514,7 @@ void tTPSFilter::SRDE(tNode *n, bool css) {
 }
 
 void tTPSFilter::DRDE(tNode *n, bool css, float st) {
-	vector<unsigned int> recpos;
+	vector<size_t> recpos;
 	vector<wstring> m;
 	map<long int, tTPSRegion> structured;
 
@@ -567,7 +567,7 @@ void tTPSFilter::DRDE(tNode *n, bool css, float st) {
 
 		// create a sequence for each record found
 		int prev=-1;
-		unsigned int max_size=0;
+		size_t max_size=0;
 		for (size_t j=0;j<recpos.size();j++) {
 			if (prev==-1) prev=recpos[j];
 			else {
@@ -595,12 +595,12 @@ void tTPSFilter::DRDE(tNode *n, bool css, float st) {
 	}
 }
 
-vector<unsigned int> tTPSFilter::SRDELocateRecords(tTPSRegion &region, double &period) {
+vector<size_t> tTPSFilter::SRDELocateRecords(tTPSRegion &region, double &period) {
 	wstring s = region.tps;
 	vector<double> signal(s.size());
 	float avg;
 	set<float> candidates;
-	vector<unsigned int> recpos,ret;
+	vector<size_t> recpos,ret;
 	set<int> alphabet;
 	map<int,int> reencode;
 	double estPeriod,estFreq;
@@ -682,11 +682,11 @@ vector<unsigned int> tTPSFilter::SRDELocateRecords(tTPSRegion &region, double &p
 	return ret.size()?ret:recpos;
 }
 
-vector<unsigned int> tTPSFilter::locateRecords(wstring s, double st) {
+vector<size_t> tTPSFilter::locateRecords(wstring s, double st) {
 	vector<int> d(s.size()-1);
 	map<int, vector<int> > diffMap;
 	map<int, int> TPMap;
-	vector<unsigned int> recpos;
+	vector<size_t> recpos;
 	int rootTag;
 	int tagCount=0;
 	int gap=0;
@@ -905,11 +905,11 @@ vector<size_t> searchPrefix(wstring &s, wstring &prefix) {
 }
 
 
-vector<unsigned int> tTPSFilter::LZLocateRecords(tTPSRegion& region, double& period) {
+vector<size_t> tTPSFilter::LZLocateRecords(tTPSRegion& region, double& period) {
 	wstring seq = region.tps;
 	map<size_t,size_t> patternCount, patternSize;
 	map<size_t,wstring> pattern;
-	vector<unsigned int> ret;
+	vector<size_t> ret;
 
 	size_t n = seq.size();
 
@@ -986,7 +986,7 @@ vector<unsigned int> tTPSFilter::LZLocateRecords(tTPSRegion& region, double& per
 	return ret;
 }
 
-void tTPSFilter::onDataRecordFound(vector<wstring> &m, vector<unsigned int> &recpos, tTPSRegion *reg) {
+void tTPSFilter::onDataRecordFound(vector<wstring> &m, vector<size_t> &recpos, tTPSRegion *reg) {
 	if ((m.size() == 0) || (recpos.size() == 0)) return;// -1;
 
 	int rows=m.size(),cols=m[0].size();
