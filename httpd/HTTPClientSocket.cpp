@@ -201,7 +201,7 @@ void HTTPClientSocket::onCGIEnd() {
 			sendBufferedData("Connection: " + connection + CRLF);
 		} else if (L.substr(0,5) != "HTTP/") {
 			sendBufferedData(httpVersion + " 200 OK" + CRLF);
-			sendBufferedData("Connection: " + connection + CRLF);
+			sendBufferedData("Connection: " + connection + CRLF + CRLF);
 			CGIOutput.seekg(0);
 		} else sendBufferedData(l);
 	} else {

@@ -34,7 +34,7 @@ static int lua_cgi_print(lua_State *L) {
 	if (!client) return 0;
 
 	for (int i=1;i<=nargs;i++) {
-		int len=lua_objlen(L,i);
+		int len=luaL_len(L,i);
 		char *buf=NULL;
 
 		if (lua_isstring(L,i) || lua_isnumber(L,i))
