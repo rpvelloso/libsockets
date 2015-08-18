@@ -60,17 +60,24 @@ void LuaControlThread::onStart() {};
 
 void LuaControlThread::onStop() {};
 
+extern "C" {
+LUALIB_API int (luaopen_lsqlite3)(lua_State *);
+}
+
 void LuaControlThread::execute() {
 	size_t i=-1,j=ENV_VAR_COUNT+1;
 	lua_State *L = luaL_newstate();
+
 
 	luaL_openlibs(L);
 
 	int s = luaL_loadfile(L, client->scriptFileName.c_str());
 
+	luaopen_lsqlite3(L);
+
 	if (!s) {
 		LUA_SET_GLOBAL_LUDATA(L,"CLIENT_SOCKET",client);
-		LUA_SET_GLOBAL_CFUNC(L,"print",lua_cgi_print);
+		LUA_SET_GLOBAL_CFUNC(L,"cgiprint",lua_cgi_print);
 
 		if (client->query[0] == '?') client->query.erase(0,1); // remove char '?'
 		while ((i=client->query.find('&',++i))!=string::npos) j++;
