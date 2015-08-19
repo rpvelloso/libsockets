@@ -73,9 +73,9 @@ void LuaControlThread::execute() {
 
 	int s = luaL_loadfile(L, client->scriptFileName.c_str());
 
-	luaopen_lsqlite3(L);
-
 	if (!s) {
+		luaopen_lsqlite3(L);
+		lua_setglobal(L,"sqlite3");
 		LUA_SET_GLOBAL_LUDATA(L,"CLIENT_SOCKET",client);
 		LUA_SET_GLOBAL_CFUNC(L,"cgiprint",lua_cgi_print);
 
