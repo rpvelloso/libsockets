@@ -190,7 +190,7 @@ identificada, durante o levantamento bibliográfico, nenhuma abordagem
 semelhante para o problema de extração de registros.
 
 A técnica é composta das seguintes etapas:
-\begin{enumerate}[a)] 
+\begin{enumerate}[a)]
   \item limpeza do código HTML e construção da árvore DOM;
   \item construção da sequência de \textit{tag paths}; 
   \item contorno da sequência, derivada e segmentação; 
@@ -701,17 +701,28 @@ abordagens.
  
 \chapter{Proposta}\label{ch:prop}
 
-*** falar do framework que foi construido para extração
+A seguir é apresentada uma proposta, para abordagem do problema de extração
+estruturada, composta das etapas de: limpeza do código HTML e construção da
+árvore DOM (Seção \ref{sec:dom}); construção da sequência de \textit{tag paths}
+(Seção \ref{sec:tps}); contorno da sequência, derivada e segmentação (Seção
+\ref{sec:contour}); filtragem das regiões (Seção \ref{sec:filter}) e;
+identificação e alinhamento dos registros (Seção \ref{sec:align}).
 
-\section{Limpeza do código HTML e construção da árvore DOM}
+A proposta tem como requisitos ser geral, eficiente e não
+supervisionada para que possa ser aplicada em larga em escala. Para garantir a
+generalidade da abordagem evitou-se a utilização de regras heurísticas
+vinculadas ao HTML e qualquer suposição mais específica a respeito do
+conteúdo e do \textit{template} dos documentos.
+
+\section{Limpeza do código HTML e construção da árvore DOM}\label{sec:dom}
 Para realizar a limpeza e correção de HTML mal formado, foi utilizada a
 ferramenta \textit{tidy}\cite{libtidy}. A biblioteca \textit{libtidy} foi
-integrada ao sistema de extração. O HTML é convertido para XHTML e a árvore DOM
-é construída a partir daí.
+integrada ao sistema de extração. O HTML é corrigido e convertido para XHTML e a
+árvore DOM é construída a partir daí.
 A ferramenta \textit{tidy} é utilizada em praticamente todos os trabalhos que
 necessitam manipular documentos HTML e é endossada pelo W3C\cite{tidyw3c}.
 
-\section{Construção da sequência de \textit{tag paths} (TPS)}
+\section{Construção da sequência de \textit{tag paths} (TPS)}\label{sec:tps}
 A sequência de \textit{tag paths} é gerada a partir da árvore DOM construída na
 etapa anterior. A árvore DOM é percorrida em profundidade e para cada caminho
 encontrado da raiz da árvore até cada um de seus nós é atribuído um código,
@@ -719,8 +730,7 @@ conforme ilustrado na Figura \ref{fig:ex1}. A sequência tem as seguintes
 propriedades: o tamanho da sequência é igual ao número de nós na árvore DOM;
 caminhos iguais recebem códigos iguais e; os códigos são atribuídos
 incrementalmente.
-O Algoritmo \ref{alg:tree2seq} \texttt{convertToSeq()} detalha como é construída
-a sequência.
+O Algoritmo \ref{alg:tree2seq} detalha a construção da sequência.
 
 \begin{figure}[h]
   \centering
@@ -729,7 +739,7 @@ a sequência.
   \label{fig:ex1}
 \end{figure}
 
-\begin{algorithm}[h]
+\begin{algorithm}[H]
 \caption{Converte árvore DOM para de sequência de \textit{tag paths}}
 \label{alg:tree2seq}
 \textbf{Input:} $node$ - um nó da árvore DOM, inicialmente a raiz da árvore \\
@@ -748,14 +758,14 @@ concat(tps,tagPathMap[tp].code);$
 \end{algorithmic}
 \end{algorithm}
 
-\section{Contorno da sequência, derivada e segmentação}
+\section{Contorno da sequência, derivada e segmentação}\label{sec:contour}
 Após a construção da sequência de \textit{tag paths} é realizado o cálculo do
 contorno da sequência, conforme Algoritmo \ref{alg:contour}. Como os códigos dos
 \textit{tag paths} (os símbolos) são \textbf{incrementais} a sequência sempre
 avança para um novo patamar cada vez que um novo caminho é encontrado e nas
 regiões com registros a sequência oscila, pois os registros possuem estruturas
 semelhantes e, portanto, compartilham os mesmos símbolos, ou seja, os símbolos
-se repetem nas regiões estruturadas do documento, conforme ilustrado em
+se repetem nas regiões estruturadas do documento, conforme ilustra a Figura
 \ref{fig:contour}.
 O motivo pelo qual o contorno é calculado é que nas regiões estruturadas ele é
 plano, pois essas regiões oscilam em torno de um mesmo patamar. E sendo plano
@@ -763,8 +773,8 @@ nessas regiões sua derivada, nestes intervalos, deve ser igual a zero. Então,
 calculando a derivada do contorno, encontramos as regiões que supostamente
 contém conteúdo estruturado, conforme ilustrado na Figura \ref{fig:deriv}.
 Um vez identificadas, as regiões são analisadas com relação ao seus conjuntos de
-símbolos (ou alfabeto). Caso as regiões compartilhem parte do alfabeto com
-regiões adjacentes, estas são combinadas para formar uma única região, conforme
+códigos (ou símbolos do alfabeto). Caso as regiões compartilhem parte do
+alfabeto com regiões adjacentes, estas são combinadas para formar uma única região, conforme
 Algoritmo \ref{alg:merge}.
 
 \begin{algorithm}[h]
@@ -807,7 +817,7 @@ Algoritmo \ref{alg:merge}.
 \textbf{Input:} $regs$ - regiões em ordem ascendente de posição na TPS\\
 \textbf{Output:} $mergedRegs$ regiões combinadas
 \begin{algorithmic}[1]
-\Function{merge}{regions}
+\Function{merge}{regs}
 \State $mergedRegs[1] \leftarrow regs[1]$ 
 \State $j \leftarrow 1$ 
 \State $n \leftarrow length(regs)$
@@ -822,30 +832,31 @@ Algoritmo \ref{alg:merge}.
 \EndIf 
 \EndFor 
 \State 
-\Return $mergedRegions$ 
+\Return $mergedRegs$ 
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
 
-\section{Filtragem das regiões}
+\section{Filtragem das regiões}\label{sec:filter}
 Uma vez que a sequência foi segmentada em regiões, este conjunto de regiões é
 filtrado de duas maneiras.
 
 Primeiro é calculada a regressão linear de cada região e analisado seu
 coeficiente angular. Se a inclinação for maior que um determinado limiar a
-região é descartada por não possuir conteúdo estruturado. Mesmo após a
-segmentação da sequência utilizando a derivada do contorno, ainda é possível que
-algumas regiões identificadas não possuam conteúdo estruturado. O coeficiente
-angular da regressão linear é uma boa medida para identificar conteúdo
-estruturado, pois essas regiões são cíclicas (ou estáveis na terminologia
-utilizada em processamento de sinais) e, portanto, sua regressão linear será uma
-reta com coeficiente angular próximo de zero.
+região é descartada por não possuir conteúdo estruturado. Este procedimento é
+adotado, pois mesmo após a segmentação da sequência utilizando a derivada do
+contorno, ainda é possível que algumas regiões identificadas não possuam
+conteúdo estruturado. O coeficiente angular da regressão linear é uma boa medida
+para identificar conteúdo estruturado, pois essas regiões são cíclicas (ou
+estáveis na terminologia utilizada em processamento de sinais) e, portanto, sua
+regressão linear será uma reta com coeficiente angular próximo de zero como
+exemplificado na Figura \ref{fig:fft}.
 
 O segundo filtro é para identificar se a região, apesar de ter conteúdo
-estruturado, não se trata de "ruído" (menus, ads, rodapé, etc). Para identificar
-estas regiões é calculado um score para cada uma das regiões a partir da sua
-posição na sequência (que é correlacionada com sua posição na tela - SUPOSIÇÃO)
-e do seu tamanho em relação ao documento como um todo. As regiões são
+estruturado, não se trata de "ruído" (menus, propagandas, rodapé, etc). Para
+identificar estas regiões é calculado um score para cada uma delas a partir da
+sua posição na sequência (que é correlacionada com sua posição na tela -
+SUPOSIÇÃO) e do seu tamanho em relação ao documento como um todo. As regiões são
 "clusterizadas" em dois \textit{clusters} utilizando o algoritmo proposto em
 \cite{1dkmeans2011} que é uma versão do algoritmo \textit{kmeans} para uma
 dimensão (1D) que garante solução ótima. O \textit{cluster} com maior centro é
@@ -854,27 +865,49 @@ descartadas. Supõe-se que exista ao menos uma região de dados.
 
 *** colocar algoritmo
 
-\section{Identificação e alinhamento dos registros}
+\section{Identificação e alinhamento dos registros}\label{sec:align}
 Após filtragem das regiões é calculado o espectro de potência e a autocorrelação
 para cada uma delas. Essas informações são utilizadas para encontrar o período
 de cada região. Como as regiões estruturadas são cíclicas, o período de cada uma
 dessas regiões corresponde ao tamanho dos registros que ela contém, conforme
-ilustrado em \ref{}.
+ilustrado em \ref{fig:fft}.
 
-Cada ponto da autocorrelação corresponde a um deslocamento da sequência em
-relação à ela mesma. Os pontos com maior correlação são possíveis períodos, pois
-significam que a sequência tem uma correlação maior com ela mesma deslocada.
-Assim, os picos da autocorrelação são ordenados do maior para o menor e o
-período é convertido para frequência para verificação contra o espectro de
-frequência. O período da autocorrelação que corresponder ao maior pico no
-espectro de frequência é adotado como sendo o valor provável do tamanho dos
-registros.
+Cada ponto da curva de autocorrelação corresponde a um deslocamento da sequência
+em relação à ela mesma. Os pontos com maior correlação são possíveis períodos,
+pois significam que a sequência tem uma correlação maior com ela mesma deslocada
+até aquele ponto, e.g., se existe uma autocorrelação siginificativa com
+deslocamento igual $15$, pode siginificar que os registros tem um tamanho médio
+de $15$ nós e uma quantidade aproximada de $n/15$ (ou frequência), onde $n$ é o
+tamanho total da região.
+Desta forma, os picos da autocorrelação são ordenados do maior para o menor
+e seus períodos são convertidos para frequência para verificação contra o
+espectro de frequência. O período da autocorrelação que possuir correspondência
+com o maior pico no espectro de frequência é adotado como sendo o valor
+provável do tamanho e quantidade dos registros.
 
-Após a apuração do valor mais provável do tamanho dos registros, os símbolos da
-região são analisados para encontrar qual deles melhor divide a sequência em
-registros. O \textit{score} de cada símbolo é calculado a partir do período e
-percentual total da região coberto por aquele símbolo, em relação à estimativa,
-caso seja selecionado. Conforme ilustrado em \ref{}.
+Após a apuração dos valores mais prováveis de tamanho e quantidade dos
+registros, os símbolos da região são analisados para encontrar qual deles melhor
+divide a sequência em registros. O \textit{score} de cada símbolo é calculado a
+partir da estimativa de tamanho e quantidade de registros e, também, do
+percentual total da região coberta por aquele símbolo, caso ele seja
+selecionado, como demostrado nas Equações \ref{eq:scoreSize},
+\ref{eq:scoreCount} e \ref{eq:scoreCoverage} e \ref{eq:scoreTotal} e na Figura
+\ref{fig:fft}.
+
+\begin{small}
+\begin{equation}\label{eq:scoreSize}
+score_{tamanho} = \frac{mín(tamanhoMédio, períodoEstimado)}{máx(tamanhoMédio, períodoEstimado)}
+\end{equation}
+\begin{equation}\label{eq:scoreCount}
+score_{quantidade} = \frac{min(quantidade, frequênciaEstimada)}{max(quantidade, frequênciaEstimada)}
+\end{equation}
+\begin{equation}\label{eq:scoreCoverage}
+score_{cobertura}=\frac{posiçãoÚltimoRegistro - posiçãoPrimeiroRegistro}{tamanhoTotalRegião}
+\end{equation}
+\begin{equation}\label{eq:scoreTotal}
+score_{total}=\frac{score_{tamanho}+score_{quantidade}+score_{cobertura}}{3}
+\end{equation}
+\end{small}
 
 Após a identificação dos registros, a sequência é dividida e as subsequências
 são alinhadas com um algoritmo de alinhamento de múltiplas sequências (MSA), o
@@ -892,7 +925,31 @@ tempo polinomial, ainda dá garantias de erro máximo.
   \label{fig:fft}
 \end{figure}
 
-*** colocar algoritmo 
+\begin{verbatim}
+locateRecords(reg)
+	\Sigma = alphabet(reg)
+	estPeriod = estimatePeriod(reg)
+	estCount = length(reg) / period
+	candidates = sort(\Sigma)
+	score = -Inf
+	while candidates not empty
+	  pos = locate candidate positions in reg
+	  count = length(pos) 
+	  compute avg size = sum(diff(pos))
+	  compute score(size, count, coverage, total)
+	  if total > score
+	    score = total
+	    if size, count & coverage > 0.75
+	    	break
+	    end
+	  end
+	end
+	return pos
+end
+
+\end{verbatim}
+
+*** colocar algoritmo (falta estimate period) 
 
 % (identificar tamanho aproximado dos registros, investigar outras técnicas para
 % detecção de periodicidade em sinais, inclusive lempel-ziv)
