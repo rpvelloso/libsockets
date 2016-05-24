@@ -374,10 +374,10 @@ Uma desvantagem desta abordagem é que são necessários ao menos dois registros em
 uma mesma página para que o padrão seja passível de identificação.
 
 \subsection{Mining Data Records in Web Pages}
-Esta pesquisa propõe uma técnica de extração de registros chamada
-MDR\cite{MDR03} (\textit{mining data records}). A abordagem consiste em
-localizar as regiões do documento que contém subestruturas semelhantes. A árvore
-DOM do documento HTML é percorrida no sentido da raiz para as folhas
+Esta pesquisa propõe uma técnica de extração de registros chamada MDR
+\cite{MDR03} (\textit{mining data records}). A abordagem consiste em localizar
+as regiões do documento que contém subestruturas semelhantes. A árvore DOM do
+documento HTML é percorrida no sentido da raiz para as folhas
 (\textit{top-down}) e, a cada nó, as subárvores vizinhas são comparadas,
 utilizando uma medida de distância para árvores (\textit{tree edit distance}).
 Caso as estruturas sejam suficientemente semelhantes (de acordo com um limiar de
@@ -391,7 +391,7 @@ conjuntos de regras heurísticas.
 Apesar da técnica não ser recente ainda tem grande relevância, pois é uma das
 poucas pesquisas com implementação publicamente disponível e ainda são
 encontrados trabalhos recentes que a utilizam como \textit{baseline}
-(\textit{e.g.}, incluir citações). Na publicação original os resultados obtidos
+(\textit{e.g.}, \cite{autorm2015}). Na publicação original os resultados obtidos
 foram 99,8\% de \textit{recall} e 100\% de precisão, porém em diversas pesquisas
 subsequentes que utilizaram esta técnica como \textit{baseline} em outros
 \textit{datasets} os resultados obtidos foram inferiores e, em alguns casos,
@@ -504,12 +504,11 @@ da linguagem HTML) e; (2) das práticas de desenvolvimento (\textit{e.g.}, hoje
 em dia estruturar a página com a \textit{tag} \texttt{<table>} caiu em desuso),
 ambas dependências efêmeras, o que compromete a validade da proposta no longo
 prazo.
-Outra questão controversa (incluir citações de trabalhos) é o custo
-computacional envolvido na ``renderização'' da página quando se considera a
-aplicação em larga escala. Quanto aos resultados apresentados na publicação, o
-processamento de 140 páginas, pelo algoritmo VIPS, foi submetido a julgamento
-humano com a seguinte conclusão: 86 páginas segmentadas perfeitamente, 50
-satisfatoriamente e 4 falhas.
+Outra questão controversa é o custo computacional envolvido na ``renderização''
+da página quando se considera a aplicação em larga escala. Quanto aos resultados
+apresentados na publicação, o processamento de 140 páginas, pelo algoritmo VIPS,
+foi submetido a julgamento humano com a seguinte conclusão: 86 páginas
+segmentadas perfeitamente, 50 satisfatoriamente e 4 falhas.
 
 \subsection{ViPER Augmenting Automatic Information Extraction with Visual Perceptions}
 Esta pesquisa propõe uma técnica chamada ViPER \cite{viper05} para extração de
@@ -565,6 +564,32 @@ portanto, necessitam de revisão. Os resultados obtidos foram 97.2\% de
 \textit{revision} no segundo \textit{dataset}, ambos resultados
 significativamente superiores aos resultados das técnicas comparadas.
 
+\subsection{AutoRM: An effective approach for automatic Web data record mining}
+Esta pesquisa propõe uma técnica chamada AutoRM (Automatic data Record Mining)
+\cite{autorm2015}. O algoritmo proposto é baseado no DEPTA \cite{depta05}, que
+utiliza a \textit{tree edit distance} para encontrar as regiões e os registros.
+A diferença é que aqui o alinhamento das árvores é modificado para priorizar o
+alinhamento dos nós folha da árvore DOM.
+Para eliminar eventual ``ruído'' contido em uma região e melhorar a
+identificação dos registros, o algoritmo utiliza o conceito de ``nós
+separadores'', que são os nós que não possuem nenhum conteúdo, independente da
+\textit{tag} (\textit{e.g.}, \texttt{<br>}).
+Para identificar os registros dentro de uma região o algoritmo utiliza a mesma
+medida de semelhança entre árvores e ``clusteriza'' (com \textit{clustering}
+aglomerativo \cite{cluster2009}) as subárvores da região de acordo com a
+semelhança entre seus nós folha. O processo de identificação dos registros
+necessita encontrar qual o nó (ou nós, pois os registros podem ser formados por
+mais de uma subárvore) é a raiz de cada registro. Este processo, da forma como
+foi colocado na publicação, aparenta ser realizado por busca exaustiva,
+avaliando cada conjunto possível de nós raiz, selecionando o melhor candidato de
+acordo com a similaridade entre os possíveis registros e a área total da página
+ocupada por eles.
+Da maneira como foi colocado, a identificação dos registros aparenta ter
+complexidade exponencial. A proposta foi comparado ao DEPTA \cite{depta05}, ViDE
+\cite{vide10}, G-STM \cite{gstm2010} e CTVS \cite{cvts2012}, apresentando
+resultado ligeiramente superior aos demais: 99.1\% de \textit{recall} e 99.8\%
+de precisão.
+
 \section{Extração a partir de múltiplas páginas}\label{sec:site}
 As abordagens de extração a partir de múltiplas páginas utilizam uma amostra de
 um determinado \textit{site} para deduzir o seu \textit{template} e, a partir
@@ -584,8 +609,8 @@ conhecida, de forma geral, como ``\textit{wrapper induction}''. Uma vez
 encontrada a expressão regular esta é aplicada às demais páginas, criadas a
 partir do mesmo \textit{template}, para extração dos dados. Esta pesquisa,
 apresar de não ser recente, ainda é relevante e ainda é utilizada como
-\textit{baseline} em novos trabalhos (incluir referências) devido sua
-implementação estar publicamente disponível. A publicação não apresenta
+\textit{baseline} em novos trabalhos (\textit{e.g.}, \cite{wadar2015}) devido
+sua implementação estar publicamente disponível. A publicação não apresenta
 resultados em termos de \textit{recall} e precisão, apenas demonstra que a
 técnica funcionou em 8 de 10 \textit{sites} contidos no \textit{dataset} de
 testes.
