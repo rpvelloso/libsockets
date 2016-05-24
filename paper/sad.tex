@@ -69,9 +69,6 @@
 
 \chapter{Introdução}
 
-\textcolor{red}{Par.1.: descrever o contexto no qual o trabalho está inserido. O
-contexto do teu trabalho merece 2 ou 3  parágrafos. }\\
-
 A extração de dados estruturados da web vem sendo estudada já há algum tempo em
 função de sua importância, que se deve à grande quantidade de informação
 estruturada disponível para extração que, de outra forma, não poderia ser
@@ -97,11 +94,6 @@ detrimento do \textit{recall} se necessário, pois uma baixa precisão resultaria
 em uma enorme quantidade de ``ruído'' sendo extraído e integrado à base relacional
 comprometendo, assim, sua utilização.
 
-\textcolor{red}{ Par.2: descrever, dentro do contexto, o problema a ser
-solucionado pelo trabalho. Pensar "qual o problema que estás resolvendo com a
-tua tese" e escrever sobre isso. É uma tese de doutorado, portanto, pense em
-algo que possa ser quebrado em 2 ou 3 sub-problemas - 2 ou 3 parágrafos }
-
 Apesar de bastante estudada, a extração de dados estruturados ainda é um
 problema em aberto. Diversas formulações foram sugeridas para o problema e foram
 propostas várias abordagens para cada formulação.
@@ -125,10 +117,6 @@ maneira relacional para, por exemplo, contextualizar consultas por palavras
 chaves utilizando as relações, construir bases de dados para determinados
 domínios (e.g., comparação de preços de produtos), realizar meta-pesquisa, entre
 outros.
-
-\textcolor{red}{Par.3: como o problema tem sido resolvido na comunidade?
-Descrever um pouco das soluções que leste na bibliografia - um resumão do
-restante do artigo. Dois ou três parágrafos}
 
 As propostas existentes abordam várias formas do problema de extração
 estruturada. De acordo com o levantamento realizado, foram identificadas três
@@ -841,16 +829,16 @@ região, conforme Algoritmo \ref{alg:merge}.
 Uma vez que a sequência foi segmentada em regiões, este conjunto de regiões é
 submetido a dois filtros.
 
-No primeiro filtro é calculada a regressão linear de cada região e analisado seu
-coeficiente angular. Se a inclinação for maior que um determinado limiar a
-região é descartada por não possuir conteúdo estruturado. Este procedimento é
-adotado, pois mesmo após a segmentação da sequência utilizando a derivada do
-contorno, ainda é possível que algumas regiões identificadas não possuam
-conteúdo estruturado. O coeficiente angular da regressão linear é uma boa medida
-para identificar conteúdo estruturado, pois essas regiões são cíclicas (ou
-estáveis na terminologia utilizada em processamento de sinais) e, portanto, sua
-regressão linear será uma reta com coeficiente angular próximo de zero como
-exemplificado na Figura \ref{fig:fft}a.
+No primeiro filtro (Algoritmo \ref{alg:struct}) é calculada a regressão linear
+de cada região e analisado seu coeficiente angular. Se a inclinação for maior
+que um determinado limiar a região é descartada por não possuir conteúdo
+estruturado. Este procedimento é adotado, pois mesmo após a segmentação da
+sequência utilizando a derivada do contorno, ainda é possível que algumas
+regiões identificadas não possuam conteúdo estruturado. O coeficiente angular da
+regressão linear é uma boa medida para identificar conteúdo estruturado, pois
+essas regiões são cíclicas (ou estáveis na terminologia utilizada em
+processamento de sinais) e, portanto, sua regressão linear será uma reta com
+coeficiente angular próximo de zero como exemplificado na Figura \ref{fig:fft}a.
 
 O segundo filtro é para identificar se a região, apesar de ter conteúdo
 estruturado, não se trata de ``ruído'' (menus, propagandas, rodapé, etc). Para
@@ -863,16 +851,38 @@ dimensão (1D) que garante solução ótima. O \textit{cluster} com maior centro é
 considerado como conteúdo e as regiões do \textit{cluster} com menor centro são
 descartadas. Supõe-se que exista ao menos uma região de dados.
 
-*** colocar algoritmo
+\begin{algorithm}[h]
+\caption{Identifica regiões estruturadas}
+\label{alg:struct}
+\textbf{Input:} $regs$ - conjunto de regiões\\
+\textbf{Output:} $structuredRegs$ conjunto de regiões estruturadas
+\begin{algorithmic}[1]
+\Function{detectStructure}{regs}
+\State $n \leftarrow length(regs)$
+\State $structuredRegs \leftarrow \emptyset$
+\For {$i \leftarrow 1..n$}
+\State $angularCoef \leftarrow linearRegression(regs[i])$ 
+\If {$angularCoef<10^\circ$}
+\State $structuredRegs \leftarrow structuredRegs \cup regs[i])$
+\EndIf 
+\EndFor 
+\State \Return $structuredRegs$ 
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+*** falta algoritmo com kmeans
 
 \section{Identificação e alinhamento dos registros}\label{sec:align}
 Após a filtragem das regiões é calculado o espectro de potência e a
 autocorrelação para cada uma delas. Ambos os cálculos são realizados de forma
 eficiente em tempo $O(nlogn)$. Essas informações são utilizadas para encontrar
 uma estimativa para o período de cada região.
+
 Como as regiões estruturadas são cíclicas, o período de cada uma dessas regiões
 corresponde ao tamanho dos registros que ela contém, conforme ilustrado na
-Figura \ref{fig:fft}.
+Figura \ref{fig:fft}. O Algoritmo \ref{alg:period} apresenta o cálculo da
+estimativa de tamanho e quantidade de registros, conforme descrito a seguir.
 
 Cada ponto da curva de autocorrelação corresponde a um deslocamento da sequência
 em relação à ela mesma. Os pontos com maior correlação são possíveis períodos,
@@ -890,35 +900,42 @@ quantidade dos registros.
 
 Após a apuração dos valores mais prováveis de tamanho e quantidade dos
 registros, os símbolos da região são analisados para encontrar qual deles melhor
-divide a sequência em registros. O \textit{score} de cada símbolo é calculado a
-partir da estimativa de tamanho e quantidade de registros e, também, do
-percentual total da região coberta por aquele símbolo, caso ele seja
-selecionado, como demostrado nas Equações \ref{eq:scoreSize},
-\ref{eq:scoreCount} e \ref{eq:scoreCoverage} e \ref{eq:scoreTotal} e na Figura
-\ref{fig:fft}.
+divide a sequência em registros (Algoritmo \ref{alg:recs}). Os símbolos são
+analisados do menor para o maior (ordem ascendente), pois os códigos são
+atribuídos incrementalmente, o que significa que quanto menor o código de um
+símbolo, antes ele surgiu na sequência, portanto os símbolos devem ser
+analisados nesta mesma ordem.
+O \textit{score} de cada símbolo é calculado a partir da estimativa de tamanho e
+quantidade de registros e, também, do percentual total da região coberta por
+aquele símbolo, caso ele seja selecionado, como demostrado nas Equações
+\ref{eq:scoreSize}, \ref{eq:scoreCount} e \ref{eq:scoreCoverage} e
+\ref{eq:scoreTotal} e na Figura \ref{fig:fft}.
 
-\begin{small}
+%\begin{small}
 \begin{equation}\label{eq:scoreSize}
-score_{tamanho} = \frac{mín(tamanhoMédio, períodoEstimado)}{máx(tamanhoMédio, períodoEstimado)}
+score_{tamanho} = \frac{min(tamanhoMedio, periodoEstimado)}{max(tamanhoMedio,
+periodoEstimado)}
 \end{equation}
 \begin{equation}\label{eq:scoreCount}
-score_{quantidade} = \frac{mín(quantidade, frequênciaEstimada)}{máx(quantidade, frequênciaEstimada)}
+score_{quantidade} = \frac{min(quantidade, frequenciaEstimada)}{max(quantidade,
+frequenciaEstimada)}
 \end{equation}
 \begin{equation}\label{eq:scoreCoverage}
-score_{cobertura}=\frac{posiçãoÚltimoRegistro - posiçãoPrimeiroRegistro}{tamanhoTotalRegião}
+score_{cobertura}=\frac{posicaoRegistro_n - posicaoRegistro_1}{tamanhoTotalRegiao}
 \end{equation}
 \begin{equation}\label{eq:scoreTotal}
 score_{total}=\frac{score_{tamanho}+score_{quantidade}+score_{cobertura}}{3}
 \end{equation}
-\end{small}
+%\end{small}
 
 Após a identificação dos registros, a sequência é dividida e as subsequências
 são alinhadas com um algoritmo de alinhamento de múltiplas sequências (MSA), o
-\textit{center star}\cite{centerstar1993,centerstar2011book}. O problema de
-alinhamento de múltiplas sequências é NP-hard\cite{msanphard2006}, portanto
-soluções aproximadas com complexidade polinomial precisam ser utilizadas. Este é
-o caso do \textit{center star} que além de fornecer uma solução aproximada em
-tempo polinomial, ainda dá garantias de erro máximo.
+\textit{center star} \cite{centerstar1993,centerstar2011book}. O problema de
+alinhamento de múltiplas sequências foi demonstrado NP-hard
+\cite{msanphard2006}, portanto soluções aproximadas com complexidade polinomial
+precisam ser utilizadas. Este é o caso do \textit{center star} que além de
+fornecer uma solução aproximada em tempo polinomial, ainda dá garantias de erro
+máximo.
 
 \begin{figure}[h]
   \centering
@@ -928,31 +945,71 @@ tempo polinomial, ainda dá garantias de erro máximo.
   \label{fig:fft}
 \end{figure}
 
-\begin{verbatim}
-locateRecords(reg)
-	\Sigma = alphabet(reg)
-	estPeriod = estimatePeriod(reg)
-	estCount = length(reg) / period
-	candidates = sort(\Sigma)
-	score = -Inf
-	while candidates not empty
-	  pos = locate candidate positions in reg
-	  count = length(pos) 
-	  compute avg size = sum(diff(pos))
-	  compute score(size, count, coverage, total)
-	  if total > score
-	    score = total
-	    if size, count & coverage > 0.75
-	    	break
-	    end
-	  end
-	end
-	return pos
-end
+\begin{algorithm}[h]
+\caption{Calcula estimativa do período de uma região}
+\label{alg:period}
+\textbf{Input:} $region$ - região\\
+\textbf{Output:} $period$ período estimado para a região
+\begin{algorithmic}[1]
+\Function{estimatePeriod}{region}
+\State $region \leftarrow region - mean(region)$
+\State $fftRegion \leftarrow FFT(region)$
+\State $powerSpectrum \leftarrow abs(fftRegion)^2$
+\State $xCorr \leftarrow InverseFFT(fftRegion \cdot fftRegion^*)$
+\State $xCorrPeaks \leftarrow sort(xCorr,descending)$
+\State $n \leftarrow length(region)$
+\State $maxPeak \leftarrow -\infty$
+\For {$i \leftarrow 1..15$} \Comment {apenas 15 maiores picos}
+\State $peak \leftarrow powerSpectrum[\frac{n}{xCorrPeaks[i]_{position}}]$
+\If {$ peak>maxPeak$}
+\State $maxPeak \leftarrow peak$
+\State $period = \frac{n}{maxPeak}$
+\EndIf
+\EndFor
+\State \Return $period$ 
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
 
-\end{verbatim}
-
-*** colocar algoritmo (falta estimate period) 
+\begin{algorithm}[h]
+\caption{Localiza registros}
+\label{alg:recs}
+\textbf{Input:} $region$ - região\\
+\textbf{Output:} $recs$ posição de início de cada registro
+\begin{algorithmic}[1]
+\Function{locateRecords}{region}
+\State $\Sigma \leftarrow alphabet(region)$
+\State $n \leftarrow length(region)$
+\State $estimatedPeriod \leftarrow estimatePeriod(reg)$ \Comment{Algoritmo
+\ref{alg:period}} 
+\State $estimatedCount \leftarrow \frac{n}{estimatedPeriod}$
+\State $candidates \leftarrow sort(\Sigma, ascending)$
+\State $score \leftarrow -\infty$
+\While {$candidates \ne \emptyset$}
+\State $symbol \leftarrow candidates.first$
+\State $candidates \leftarrow candidates - symbol$
+\State $cRecs \leftarrow findAll(symbol,region)$
+\State $count \leftarrow length(cRecs)$
+\State $size \leftarrow
+\frac{\sum_{i=2}^{count}{cRecs[i]-cRecs[i-1]}}{count-1}$ \State
+$score_{size} = \frac{min(estimatedPeriod,size)}{max(estimatedPeriod,size)}$
+\State $score_{count} =
+\frac{min(estimatedCount,count)}{max(estimatedCount,count)}$
+\State $score_{coverage} = \frac{cRecs[count]-cRecs[1]}{n}$ 
+\State $score_{total} =
+\frac{score_{size}+score_{count}+score_{coverage}}{3}$
+\If {$score_{total} > score$}
+\State $score \leftarrow score_{total}$
+\State $recs \leftarrow cRecs$
+\If {$score_{size,count,coverage}>0.75$} 
+\State $break$ \Comment{termina se score bom o suficiente}
+\EndIf
+\EndIf
+\EndWhile
+\State \Return $recs$ 
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
 
 % (identificar tamanho aproximado dos registros, investigar outras técnicas para
 % detecção de periodicidade em sinais, inclusive lempel-ziv)
