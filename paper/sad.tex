@@ -865,16 +865,17 @@ essas regiões são cíclicas (ou estáveis na terminologia utilizada em
 processamento de sinais) e, portanto, sua regressão linear será uma reta com
 coeficiente angular próximo de zero como exemplificado na Figura \ref{fig:fft}a.
 
-O segundo filtro é para identificar se a região, apesar de ter conteúdo
-estruturado, não se trata de ``ruído'' (menus, propagandas, rodapé, etc). Para
-identificar estas regiões é calculado um score para cada uma delas a partir da
-sua posição na sequência (que supõe-se ser correlacionada com sua posição na
-tela) e do seu tamanho em relação ao documento como um todo. As regiões são
-``clusterizadas'' em dois \textit{clusters} utilizando o algoritmo proposto em
-\cite{1dkmeans2011} que é uma versão do algoritmo \textit{kmeans} para uma
-dimensão (1D) que garante solução ótima. O \textit{cluster} com maior centro é
-considerado como conteúdo e as regiões do \textit{cluster} com menor centro são
-descartadas. Supõe-se que exista ao menos uma região de dados.
+O segundo filtro (Algoritmo \ref{alg:noise}) serve para identificar se a região,
+apesar de ter conteúdo estruturado, não se trata de ``ruído'' (menus,
+propagandas, rodapé, etc). Para identificar estas regiões é calculado um
+\textit{score} para cada uma delas a partir da sua posição na sequência (que
+supõe-se ser correlacionada com sua posição na tela) e do seu tamanho em relação
+ao documento como um todo. As regiões são ``clusterizadas'' em dois
+\textit{clusters} utilizando o algoritmo proposto em \cite{1dkmeans2011} que é
+uma versão do algoritmo \textit{kmeans} para uma dimensão (1D) que garante
+solução ótima, utilizando programação dinâmica. O \textit{cluster} com maior
+centro é considerado como conteúdo e as regiões do \textit{cluster} com menor
+centro são descartadas. Supõe-se que exista ao menos uma região de dados.
 
 \begin{algorithm}[h]
 \caption{Identifica regiões estruturadas}
@@ -896,7 +897,36 @@ descartadas. Supõe-se que exista ao menos uma região de dados.
 \end{algorithmic}
 \end{algorithm}
 
-*** falta algoritmo com kmeans
+\begin{algorithm}[h]
+\caption{Identifica regiões com ruído}
+\label{alg:noise}
+\textbf{Input:} $regs$ - conjunto de regiões\\
+\textbf{Input:} $tps$ - sequência completa\\
+\textbf{Output:} $contentRegs$ regiões com conteúdo de interesse
+\begin{algorithmic}[1]
+\Function{detectNoise}{regs, tps}
+\State $tpsCenter \leftarrow \frac{tps.start + tps.end}{2}$
+\State $tpsSize \leftarrow length(tps)$
+\State $maxDistance \leftarrow \frac{tpsSize}{2}$
+\State $contentRegs \leftarrow \emptyset$
+\State $n \leftarrow length(regs)$
+\For {$i \leftarrow 1..n$}
+\State $regionCenter \leftarrow \frac{regs[i].start +
+regs[i].end}{2}$
+\State $positionScore \leftarrow 1-\frac{abs(tpsCenter -
+regionCenter)}{maxDistance}$ \State $sizeScore \leftarrow
+\frac{length(regs[i])}{tpsSize}$ \State $score[i] \leftarrow \frac{positionScore+sizeScore}{2}$
+\EndFor
+\State $clusters \leftarrow kmeans1D(regs, score, 2)$ \Comment{força dois clusters}
+\For {$i \leftarrow 1..n$}
+\If {$regs[i] \in clusters[1]$} \Comment {descarta cluster zero}
+\State $contentRegs \leftarrow contentRegs \cup regs[i]$
+\EndIf
+\EndFor
+\State \Return $contentRegs$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
 
 \section{Identificação e alinhamento dos registros}\label{sec:align}
 Após a filtragem das regiões é calculado o espectro de potência e a
