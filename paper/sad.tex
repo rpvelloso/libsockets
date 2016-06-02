@@ -15,7 +15,8 @@
 \newtheorem{definition}{Definição}
 \renewcommand{\lstlistingname}{Listagem}
 
-\titulo{Seminário de Andamento de Doutorado: Extração Estruturada da Web}
+\titulo{Seminário de Andamento de Doutorado: Extração de Dados Estruturados da
+Web}
 \autor{Roberto Panerai Velloso}
 \data{21}{maio}{2016}
 \orientador[Orientadora]{Profa. Dra. Carina Friedrich Dorneles}
@@ -39,7 +40,24 @@
 
 \epigrafe{}{}
 
-\textoResumo{}
+\textoResumo{ 
+Durante o levantamento do estado da arte a respeito do tema
+``extração de dados estruturados da \textit{web}'', foram identificados, entre os
+trabalhos mais relevantes, três  grupos  principais  de  abordagens:
+extração de listas e tabelas; extração a partir de uma única página e extração a
+partir de múltiplas páginas. Esta área, apesar de bastante estudada, ainda
+representa um problema em aberto e também apresenta outras questões ainda não
+totalmente esgotadas como, por exemplo, a utilização de métricas mais adequadas
+e \textit{baseline} e/ou \textit{datasets} padronizados para facilitar a
+comparação entre as diversas propostas.  Em vista dos desafios existentes, esta
+pesquisa apresenta uma proposta, inédita, que aborda o problema de extração a
+partir de uma única página. A abordagem converte a árvore DOM da página
+\textit{web} para uma sequência de \textit{tag paths} e trata esta sequência
+como um ``sinal discreto'' a partir do qual são identificadas as regiões com
+conteúdo estruturado, através da utilização de técnicas de processamento de
+sinais (FFT, autocorrelação, etc). A seguir é realizada a filtragem,
+identificação e alinhamento dos registros das regiões identificadas.
+}
 
 \palavrasChave{}
 
@@ -188,12 +206,6 @@ fundamentação teórica; o Capítulo \ref{ch:trab} apresenta os trabalhos
 relacionados; o Capítulo \ref{ch:persp} apresenta os problemas em aberto, os
 desafios e as perspectivas nesta área de pesquisa e; o Capítulo \ref{ch:prop}
 detalha a abordagem proposta.
-
-\chapter{Background (ou Fundamentação teórica)}
-
-\textcolor{red}{ Descrever, conceitualmente os principais tópicos usados pelos
-trabalhos relacionados. Aqui, deves apresentar os conceitos importantes para que
-o leitor entenda as propostas dos trabalhos relacionados }
 
 \chapter{Trabalhos Relacionados}\label{ch:trab}
 
