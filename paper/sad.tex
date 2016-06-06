@@ -237,7 +237,7 @@ As contribuições desta pesquisa são:
 A condução e o desenvolvimento desta pesquisa segue a metodologia proposta em
 \cite{peffers2007design}, composta de seis etapas:
 
-\begin{itemize}
+\begin{enumerate}
   \item identificação do problema: através de levantamento bibliográfico,
   foi identificado o estado da arte e quais problemas ainda estão em aberto
   nesta área de pesquisa;
@@ -251,7 +251,7 @@ A condução e o desenvolvimento desta pesquisa segue a metodologia proposta em
   \item avaliação: realização de testes mais amplos e completos e comparação com
   outros trabalhos;
   \item comunicação: publicação dos resultados.
-\end{itemize}
+\end{enumerate}
 
 \section{Estrutura do trabalho}
 
@@ -269,11 +269,136 @@ A condução e o desenvolvimento desta pesquisa segue a metodologia proposta em
 
 % *** extração estruturada utilizando NLP: deep dive (??? ver se entra)
 
-Este trabalho está organizado da seguinte forma: o Capítulo \ref{} apresenta a
-fundamentação teórica; o Capítulo \ref{ch:trab} apresenta os trabalhos
+Este trabalho está organizado da seguinte forma: o Capítulo \ref{ch:teoria}
+apresenta a fundamentação teórica; o Capítulo \ref{ch:trab} apresenta os trabalhos
 relacionados; o Capítulo \ref{ch:persp} apresenta os problemas em aberto, os
 desafios e as perspectivas nesta área de pesquisa e; o Capítulo \ref{ch:prop}
 detalha a abordagem proposta.
+
+\chapter{Fundamentação Teórica}\label{ch:teoria}
+Neste capítulo são apresentados alguns conceitos fundamentais para o
+entendimento da abordagem proposta no Capítulo \ref{ch:prop}.
+
+\begin{definition}[\textbf{Árvore DOM}].
+\label{def:domtree}
+A árvore DOM (\textit{Document Object Model}) é uma estrutura hierárquica,
+derivada do código HTML, que representa uma página web.
+Cada nó desta árvore representa um ``objeto'' do documento HTML. A especificação
+de referência é mantida pelo consórcio $W3C$ \cite{w3c} que é o órgão
+encarregado de manter os padrões e especificações da \textit{web}.
+\end{definition}
+\textbf{Exemplo.} Na Figura \ref{fig:ex1} um pequeno trecho de código HTML é
+utilizado para ilustrar como uma árvore DOM é construída a partir do código.
+
+\begin{definition}[\textbf{\textit{tag paths}}].
+\label{def:tp} 
+Um \textit{tag path} (\abreviatura{TP}{Tag Path}TP) é uma $string$ descrevendo
+o caminho absoluto, a partir da raiz da árvore DOM, até um dado nó da árvore. Seja
+``$n_i$'' um determinado nó da árvore DOM, onde ``i'' representa a
+posição/ordem, em profundidade, do nó $``n_i"$ na árvore, então é dito que
+$TP_i$ é a $string$ descrevendo o caminho, a partir da raiz da árvore DOM, até o
+nó $``n_i"$.
+\end{definition}
+\textbf{Exemplo.} Na Figura \ref{fig:ex1}, o caminho absoluto $TP_4$ do nó
+$body$ até a célula da tabela $td_4$ é $TP_4=``body/table/tr/td"$.
+
+\begin{definition}[\textbf{Sequência de \textit{tag paths}}].
+\label{def:tps} 
+Uma sequência de \textit{tag paths} (\abreviatura{TPS}{Tag Path Sequence}TPS) de
+uma árvore DOM com ``n'' nós é definida como sendo a sequência ordenada
+$TPS[1..n] = (TP_1,TP_2,TP_3, ...,TP_{n-1},TP_n)$ onde dois \textit{tag paths}
+$TP_i$ e $TP_j$, com $i\neq{}j$, são considerados iguais apenas se seus caminhos
+e suas definições de estilo são iguais, caso contrário eles são considerados
+diferentes.
+\end{definition}
+\textbf{Exemplo.} Na Figura \ref{fig:ex1} é mostrada a $TPS$ de um dado trecho
+de código HTML, onde cada $TP$ recebe um código, produzindo $TPS =
+(1,2,3,4,4,3,4,4)$.
+Na sequência de \textit{tag paths} os \textit{tag paths} não são representados
+pelas suas \textit{strings}, mas sim por códigos (ou símbolos), com objetivo de
+facilitar sua manipulação, onde \textit{tag paths} iguais recebem o mesmo
+código. Esta definição é similar à utilizada em \citeonline{SuffixTree12}, onde
+cada \textit{tag path} é representado na sequência por um símbolo, exceto que
+neste trabalho foram incorporadas as definições de estilo das \textit{tags}.
+Como as definições CSS são utilizadas para diferenciar e caracterizar as
+diversas regiões de uma página, é muito importante levar em consideração essas
+definições na momento de segmentar a página.
+
+\begin{definition}[\textbf{Alfabeto da TPS}].
+\label{def:alpha} Seja $\Sigma$ o conjunto de todos os símbolos de uma
+sequência $TPS$ de tamanho ``n'', $\Sigma$ é dito o alfabeto de $TPS$
+que é definido como $\Sigma = \{\alpha | \exists{TPS[i]=\alpha} \wedge 1 \leq i
+\leq n\}$, onde $\alpha$ é um símbolo do alfabeto.
+\end{definition}
+\textbf{Exemplo.} Na Figura \ref{fig:ex1}, a $TPS$ é formada apenas pelos
+símbolos ``1'',``2'', ``3'' e ``4'', então seu alfabeto é $\Sigma=\{1,2,3,4\}$.
+Informalmente falando, o alfabeto contém todos os símbolos distintos de uma
+determinada sequência. 
+
+\begin{definition}[\textbf{Fast Fourier Transform}].
+\label{def:fft}
+A FFT (fast Fourier transform) é um algoritmo eficiente (com complexidade de
+tempo $O(nlogn)$) comumente utilizado para o cálculo da DFT (discrete Fourier
+transform) que realiza a decomposição de uma sequência discreta de valores em
+seus componentes de frequência (\textit{i.e.} espectro) e é definida pela
+Equação \ref{eq:dft} onde $X_k$ são os componente de frequência, $x_n$ é a
+sequência, de tamanho $N$, a ser decomposta e ``$i$'' é o número imaginário. A
+operação inversa (\textit{i.e.} transformar $X_k$ de volta para $x_n$) é
+definida pela Equação \ref{eq:idft}.
+\end{definition}
+\begin{equation}\label{eq:dft}
+X_k = \sum_{n \leftarrow 0}^{N-1}{x[n] \cdot e^\frac{-2 \pi i k n}{N}}
+\end{equation}
+
+\begin{equation}\label{eq:idft}
+x_n = \frac{1}{N} \cdot \sum_{n \leftarrow 0}^{N-1}{X[k] \cdot e^\frac{2 \pi i
+k n}{N}}
+\end{equation}
+
+\begin{definition}[\textbf{Autocorrelação}].
+\label{def:xcorr}
+A autocorrelação é a correlação de uma sequência discreta com ela própria
+deslocada nos intervalos de $[1..n-1]$, onde $n$ é o tamanho da sequência. A
+autocorrelação pode ser utilizada, entre outras aplicações, para verificar se
+uma sequência é cíclica, com período ``$p$'', \textit{i.e.}, se ela se parece com
+ela mesma quando deslocada de ``$p$''. A autocorrelação de uma sequência pode
+ser calculada de forma eficiente utilizando-se a FFT, como mostra a Equação
+\ref{eq:xcorr}, onde $X_k$ é a FFT de $x_n$, $X_k^*$ é o conjugado complexo de
+$X_k$ e a autocorrelação $C_{x_n}$ de $x_n$ é igual a transformada inversa
+do produto de $X_k$ com seu conjugado complexo. O produto $(X_k \cdot X_k^*)$ é
+calculado em tempo $O(n)$, $X_k$ é calculado em $O(nlogn)$ assim como a
+transformação inversa, portanto a complexidade de tempo para calculo da
+autocorrelação é $O(nlogn)$.
+\end{definition}
+\begin{equation}\label{eq:xcorr}
+C_{x_n} = IFFT(X_k \cdot X_k^*)
+\end{equation}
+\textbf{Exemplo.} A Figura \ref{fig:fft}b apresenta a autocorrelação da
+sequência da Figura \ref{fig:fft}a. Como a sequência é cíclica, sua
+autocorrelação apresenta picos intervalados pelo período.
+
+\begin{definition}[\textbf{Espectro de potência}]
+\label{def:power}
+O espectro de potência de uma sequência é calculado a partir da sua FFT,
+conforme a Equação \ref{eq:power}, e indica o quanto cada componente de
+frequência contribui na formação da sequência.
+\end{definition}
+\begin{equation}\label{eq:power}
+P_{x_n} = |X_k|
+\end{equation}
+\textbf{Exemplo.} A Figura \ref{fig:fft}c apresenta o espectro de potência da
+sequência da Figura \ref{fig:fft}a. O componente de frequência com maior
+potência coincide, neste caso, com o período da sequência original.  
+
+As Definições \ref{def:fft}, \ref{def:xcorr} e \ref{def:power} foram
+apresentadas neste texto de maneira breve e superficial e sua exposição foi
+direcionada para a aplicação nesta pesquisa, pois o detalhamento completo dessas
+definições e da teoria de processamento de sinais é muito extenso e foge do
+escopo desta pesquisa.
+A área de processamento de sinais tem ampla e variada aplicação científica.
+Informações completas e detalhadas a respeito destas definições e da teoria de
+processamento de sinais discretos podem ser encontradas em
+\cite{oppenheim1989discrete}.
 
 \chapter{Trabalhos Relacionados}\label{ch:trab}
 
