@@ -1,6 +1,8 @@
 \sloppy
 \documentclass{ufscThesis}
 
+
+
 \usepackage{graphicx}
 \usepackage[labelsep=endash]{caption}
 \usepackage{algorithmicx}
@@ -14,6 +16,9 @@
 
 \newtheorem{definition}{Definição}
 \renewcommand{\lstlistingname}{Listagem}
+
+\newcounter{magicrownumbers}
+\newcommand\rownumber{\stepcounter{magicrownumbers}\arabic{magicrownumbers}}
 
 \titulo{Seminário de Andamento de Doutorado: Extração de Dados Estruturados da
 Web}
@@ -67,7 +72,7 @@ identificação e alinhamento dos registros das regiões identificadas.
 
 \begin{document}
 
-%\rowcolors{2}{gray!25}{white}
+\rowcolors{2}{gray!25}{white}
 
 \capa
 \folhaderosto[semficha]
@@ -230,7 +235,7 @@ As contribuições desta pesquisa são:
 \section{Metodologia}
 
 A condução e o desenvolvimento desta pesquisa segue a metodologia proposta em
-\cite{}, composta de seis etapas:
+\cite{peffers2007design}, composta de seis etapas:
 
 \begin{itemize}
   \item identificação do problema: através de levantamento bibliográfico,
@@ -329,25 +334,23 @@ torna um pouco mais complexo, pois é necessário identificar os campos dos
 registos e alinhá-los. E na extração de páginas de tópicos é explorado o
 \textit{template} desse tipo de documento, que apresenta certa regularidade.
 
-\subsection{WebTables: Exploring the Power of Tables on the Web}
-Pesquisa pioneira, desenvolvida no Google, sobre extração de dados estruturados
-\cite{relationalWeb2008, webtables2008}. Apenas tabelas declaradas com a
-\textit{tag} \texttt{<table>} são consideradas. As tabelas sem conteúdo
-relacional são filtradas utilizando um classificador treinado com exemplos
-anotados por usuários, resultando num total de 154 milhões (1.1\% do total) de
-tabelas relacionais extraídas do índice do motor de busca do Google. Essas
-tabelas são utilizadas na construção de um banco de dados com estatísticas de
-atributos (ACSDb -  \textit{attribute correlation statistics database},
-disponível em \cite{acsdb}) que é utilizado para \textit{ranking} das tabelas,
-\textit{schema auto-complete} e encontrar sinônimos de atributos. Além desta
-contribuição os autores também apresentam uma abordagem para indexar e pesquisar
-resultados relacionais a partir de palavras-chave utilizando um índice
-distribuído próprio para conteúdo relacional. Em \cite{2015webtables}, são
-apresentadas várias aplicações e melhoramentos atuais desenvolvidos em cima da
-pesquisa original.
+Em \cite{relationalWeb2008, webtables2008}, pesquisa pioneira, desenvolvida no
+Google, são extraídas apenas tabelas declaradas com a \textit{tag}
+\texttt{<table>}. As tabelas sem conteúdo relacional são
+filtradas utilizando um classificador treinado com exemplos anotados por
+usuários, resultando num total de $154$ milhões (1.1\% do total) de tabelas
+relacionais extraídas do índice do motor de busca do Google. Essas tabelas são
+utilizadas na construção de um banco de dados com estatísticas de atributos
+(ACSDb -  \textit{attribute correlation statistics database}, disponível em
+\cite{acsdb}) que é utilizado para \textit{ranking} das tabelas, \textit{schema
+auto-complete} e encontrar sinônimos de atributos. Além desta contribuição os
+autores também apresentam uma abordagem para indexar e pesquisar resultados
+relacionais a partir de palavras-chave utilizando um índice distribuído próprio
+para conteúdo relacional. Em \cite{2015webtables}, são apresentadas várias
+aplicações, melhoramentos e desdobramentos atuais desenvolvidos em cima da
+pesquisa incial.
 
-\subsection{Harvesting Relational Tables from Lists on the Web}
-Pesquisa desenvolvida em conjunto com o Google \cite{listExtract2009}. O
+Em \cite{listExtract2009}, pesquisa desenvolvida em conjunto com o Google, o
 objetivo da abordagem é extrair tabelas relacionais a partir de listas contidas
 em documentos HTML, de forma não supervisionada, com objetivo de aplicação em
 larga escala. A entrada do algoritmo é uma lista, onde cada linha é uma
@@ -372,26 +375,24 @@ identificação da entidade e o \textit{schema matching} (\textit{i.e.} atribuir
 nomes às colunas da tabela).
 O resultado obtido pelo algoritmo é de 0.63 \textit{f-measure}.
 
-\subsection{Understanding Tables on the Web}
-Pesquisa desenvolvida no centro de pesquisas da Microsoft na Asia
-\cite{tablesMS2012}. Tem como objetivo ``entender'' tabelas extraídas da web.
+Em \cite{tablesMS2012}, pesquisa desenvolvida no centro de pesquisas da
+Microsoft na Asia, o objetivo é ``entender'' tabelas extraídas da web.
 A abordagem proposta utiliza uma base de dados de conceitos, entidades e
 atributos (\textit{Probase} \cite{probase2012}, disponível em \cite{probase}),
 construída a partir de milhões de documentos indexados da \textit{web}. A
-\textit{Probase} é uma taxonomia utilizada para identificar a
-qual entidade uma tabela se refere e quais atributos ela contém. O foco da
-pesquisa é na identificação da entidade e seus atributos e não na estruturação
-dos dados, pois as tabelas extraídas já são formatadas utilizando a \textit{tag}
+\textit{Probase} é uma taxonomia utilizada para identificar a qual entidade uma
+tabela se refere e quais atributos ela contém. O foco da pesquisa é na
+identificação da entidade e seus atributos e não na estruturação dos dados, pois
+as tabelas extraídas já são formatadas utilizando a \textit{tag}
 \texttt{<table>}. As tabelas identificadas com sucesso são inseridas na
 \textit{Probase}, realimentando a taxonomia com objetivo de melhorar seu
 desempenho. O algoritmo assume que apenas uma entidade é representada por
 tabela, o que não se verifica em alguns casos. O resultado obtido pelo algoritmo
 é de 87.3\% de tabelas identificadas corretamente.
 
-\subsection{TEGRA: Table Extraction by Global Record Alignment}
-Pesquisa desenvolvida no centro de pesquisa da Microsoft \cite{tegra2015}. Tem o
-mesmo objetivo da abordagem proposta em \cite{listExtract2009} (extrair tabelas
-relacionais a partir de listas, sem supervisão) e a utiliza como
+Em \cite{tegra2015}, pesquisa desenvolvida no centro de pesquisa da Microsoft, o
+objetivo é o mesmo da abordagem proposta em \cite{listExtract2009} (extrair
+tabelas relacionais a partir de listas, sem supervisão) que é utilizada como
 \textit{baseline} para comparação. A contribuição deste trabalho com relação ao
 original é que, no lugar de utilizar um modelo de linguagem natural para dividir
 as linhas em campos, é adotada uma estratégia de otimização global para
@@ -415,16 +416,15 @@ mesmo algoritmo.
 O resultado obtido pelo algoritmo, na versão não supervisionada, é de 0.97
 \textit{f-measure}.
 
-\subsection{Automatic Extraction of Top-k Lists from the Web}
-Pesquisa desenvolvida no centro de pesquisas da Microsoft \cite{topklists2013}.
-O objetivo da abordagem é a extração de informação estruturada de páginas com um
-\textit{layout} pré-determinado, especificamente documentos que apresentem
-conteúdo do tipo ``\textit{top-k list}'' (\textit{e.g.}, \textit{rankings} do
-tipo melhores 10 filmes de 2015, maiores 20 empresas em faturamento, etc.). A
-partir do título da página, utilizando um classificador CRF treinado com
-milhares de exemplos, é determinado se a página possui o \textit{layout}
-esperado ou não e, caso possua, o tamanho da lista é determinado e o conteúdo do
-documento é contextualizado utilizando a taxonomia
+Em \cite{topklists2013}, pesquisa desenvolvida no centro de pesquisas da
+Microsoft, o objetivo da abordagem é a extração de informação estruturada de
+páginas com um \textit{layout} pré-determinado, especificamente documentos que
+apresentem conteúdo do tipo ``\textit{top-k list}'' (\textit{e.g.},
+\textit{rankings} do tipo melhores 10 filmes de 2015, maiores 20 empresas em
+faturamento, etc.). A partir do título da página, utilizando um classificador
+CRF treinado com milhares de exemplos, é determinado se a página possui o
+\textit{layout} esperado ou não e, caso possua, o tamanho da lista é determinado
+e o conteúdo do documento é contextualizado utilizando a taxonomia
 \textit{Probase}\cite{probase2012} (mesma utilizada em \cite{tablesMS2012}). Com
 a informação do tamanho da lista (que é obtida a partir do título da página) os
 nós do documento HTML são ``clusterizados'' de acordo com a frequência dos seus
@@ -448,13 +448,12 @@ da tabulação dos dados.
 Uma desvantagem desta abordagem é que são necessários ao menos dois registros em
 uma mesma página para que o padrão seja passível de identificação.
 
-\subsection{Mining Data Records in Web Pages}
-Esta pesquisa propõe uma técnica de extração de registros chamada MDR
-\cite{MDR03} (\textit{mining data records}). A abordagem consiste em localizar
-as regiões do documento que contém subestruturas semelhantes. A árvore DOM do
-documento HTML é percorrida no sentido da raiz para as folhas
-(\textit{top-down}) e, a cada nó, as subárvores vizinhas são comparadas,
-utilizando uma medida de distância para árvores (\textit{tree edit distance}).
+Em \cite{MDR03} é proposta uma técnica de extração de registros chamada MDR
+(\textit{mining data records}). A abordagem consiste em localizar as regiões do
+documento que contém subestruturas semelhantes. A árvore DOM do documento HTML é
+percorrida no sentido da raiz para as folhas (\textit{top-down}) e, a cada nó,
+as subárvores vizinhas são comparadas, utilizando uma medida de distância para
+árvores (\textit{tree edit distance}).
 Caso as estruturas sejam suficientemente semelhantes (de acordo com um limiar de
 semelhança previamente estipulado) a região é identificada e os registros
 contidos nela são alinhados com um algoritmo de alinhamento de árvores
@@ -472,25 +471,23 @@ subsequentes que utilizaram esta técnica como \textit{baseline} em outros
 \textit{datasets} os resultados obtidos foram inferiores e, em alguns casos,
 ficaram muito aquém dos valores originalmente reportados.
 
-\subsection{Web Data Extraction Based on Partial Tree Alignment}
-Esta pesquisa propõe uma técnica de extração de registros chamada
-DEPTA\cite{depta05}. A técnica é, na verdade, um melhoramento do algoritmo
-MDR\cite{MDR03}. Nesta proposta é utilizado um navegador \textit{web} para
-corrigir o HTML mal formado e obter informações visuais e de \textit{layout}, a
-partir da renderização da página, que são utilizadas para melhorar as etapa de
-extração dos registros e alinhamento dos campos. No algoritmo de alinhamento dos
-campos foram feitas pequenas modificação para evitar que campos opcionais
-(campos que não aparecem em todos os registros) comprometam o alinhamento do
-restante do registro. Os resultados obtidos foram 98.18\% \textit{recall}
-99.68\% precisão. No mesmo \textit{dataset} MDR obteve \textit{recall} 86.64\% e
-97.10\% precisão.
+Em \cite{depta05} é proposta uma técnica de extração de registros chamada DEPTA
+(\textit{Data Extraction based Partial Tree Alignment}). A técnica é, na
+verdade, um melhoramento do algoritmo MDR\cite{MDR03}. Nesta proposta é
+utilizado um navegador \textit{web} para corrigir o HTML mal formado e obter
+informações visuais e de \textit{layout}, a partir da renderização da página,
+que são utilizadas para melhorar as etapa de extração dos registros e
+alinhamento dos campos. No algoritmo de alinhamento dos campos foram feitas
+pequenas modificação para evitar que campos opcionais (campos que não aparecem
+em todos os registros) comprometam o alinhamento do restante do registro. Os
+resultados obtidos foram 98.18\% \textit{recall} 99.68\% precisão. No mesmo
+\textit{dataset} MDR obteve \textit{recall} 86.64\% e 97.10\% precisão.
 
-\subsection{NET A System for Extracting Web Data from Flat and Nested Data Records}
-Esta pesquisa propõe uma técnica de extração de registros chamada NET
-(\textit{Nested data extraction using tree matching})\cite{NET05}. O algoritmo
-recebe, como entrada, apenas um página, não necessita de treinamento e não
-utiliza regras heurísticas. A extração é realizada percorrendo-se a árvore DOM
-do documento HTML das folhas para a raiz (\textit{post-order traversal}).
+Em \cite{NET05} é proposta uma técnica de extração de registros chamada NET
+(\textit{Nested data extraction using tree matching}). O algoritmo recebe, como
+entrada, apenas um página, não necessita de treinamento e não utiliza regras
+heurísticas. A extração é realizada percorrendo-se a árvore DOM do documento
+HTML das folhas para a raiz (\textit{post-order traversal}).
 Conforme a árvore é percorrida, de baixo para cima, os nós e suas subárvores
 vizinhas são comparadas, de maneira semelhante como em \cite{MDR03}, com a
 diferença que neste caso as subárvore são colpsadas e transformadas em
@@ -504,9 +501,8 @@ técnica desenvolvida pelos mesmos autores. Os resultados obtidos são 98.99\% de
 \textit{recall} e 98.92\% de precisão para registros não aninhados e 99.63\% de
 \textit{recall} e 100\% de precisão para registros aninhados.
 
-\subsection{Extracting Data Records from the Web Using Tag Path Clustering}
-Esta pesquisa\cite{TPC09} propõe uma técnica para extração de registros a partir
-de uma única página \textit{web} utilizando um algoritmo de \textit{clustering}
+Em \cite{TPC09} é proposta uma técnica para extração de registros a partir de
+uma única página \textit{web} utilizando um algoritmo de \textit{clustering}
 espectral. O documento HTML é convertido para uma representação alternativa:
 uma sequência de \textit{tag paths}. A sequência de \textit{tag paths} é
 construída percorrendo-se a árvore DOM em profundidade, da raiz para as folhas,
@@ -526,24 +522,23 @@ campos e registros. Os resultados obtidos foram \textit{recall} 98.1\% e
 precisão 98.9\% para registros aninhados e \textit{recall} 99.9\% e precisão
 99.4\% para registros não aninhados.
 
-\subsection{Extracting Data Records from Web Using Suffix Tree}
-Esta pesquisa propõe uma técnica para extração de registros chamada STEM
-\cite{SuffixTree12} (Suffix Tree-based data record Extracting Method). O
-algoritmo proposto processa páginas HTML individuais. A árvore DOM é convertida
-para a mesma representação utilizada em \cite{TPC09} (sequência de \textit{tag
-paths}). A partir da sequência é construída sua árvore de sufixos
-\cite{ukkonen1995} que trata-se de uma estrutura de dados que permite realizar
-uma série de processamentos em cima de uma \textit{strings} de forma eficiente,
-entre eles encontrar o número de repetições de uma \textit{substring} e
-localizar as posições em que ocorrem na sequência. Desta forma o algoritmo
-encontra \textit{substrings} da sequência de \textit{tag paths} que ocorrem
-várias vezes e considera que essas \textit{substrings} são registros. São
-definidas regras heurísticas para evitar a extração de \textit{substrings} que
-não são registros, e.g., \textit{substrings} de tamanho unitário, ou muito
-longas, são excluídas e; a quantidade de regiões que uma página pode conter é
-arbitrada. Embora a técnica proposta permita, aparentemente, identificar
-diretamente os registros dentro das regiões, o trabalho não aborda esta questão
-nem o alinhamento de registros. A resistência a ruído também deveria ser melhor
+Em \cite{SuffixTree12} é proposta uma técnica para extração de registros chamada
+STEM (Suffix Tree-based data record Extracting Method). O algoritmo proposto
+processa páginas HTML individuais. A árvore DOM é convertida para a mesma
+representação utilizada em \cite{TPC09} (sequência de \textit{tag paths}). A
+partir da sequência é construída sua árvore de sufixos \cite{ukkonen1995} que
+trata-se de uma estrutura de dados que permite realizar uma série de
+processamentos em cima de uma \textit{strings} de forma eficiente, entre eles
+encontrar o número de repetições de uma \textit{substring} e localizar as
+posições em que ocorrem na sequência. Desta forma o algoritmo encontra
+\textit{substrings} da sequência de \textit{tag paths} que ocorrem várias vezes
+e considera que essas \textit{substrings} são registros. São definidas regras
+heurísticas para evitar a extração de \textit{substrings} que não representam
+registros, e.g., \textit{substrings} de tamanho unitário, ou muito longas, são
+excluídas e; a quantidade de regiões que uma página pode conter é arbitrada.
+Embora a técnica proposta permita, aparentemente, identificar diretamente os
+registros dentro das regiões, o trabalho não aborda esta questão nem o
+alinhamento de registros. A resistência a ruído também deveria ser melhor
 investigada, pois a árvore de sufixo, ao menos como apresentada nesta
 publicação, não tem mecanismos para \textit{matching} aproximado.
 Os resultados obtidos foram 0.96 de \textit{recall} e 0.9698 de precisão. Os
@@ -551,17 +546,16 @@ resultados são comparados com \cite{TPC09,MDR03}, apresentando maior eficácia
 que ambos. Foi utilizado o mesmo \textit{dataset} de \cite{TPC09} para
 realização dos testes.
 
-\subsection{Extracting Content Structure for Web Pages based on Visual Representation}
-Pesquisa desenvolvida no centro de pesquisas da Microsoft. Um dos primeiros
-trabalhos de segmentação de páginas e identificação de conteúdo utilizando
-informações visuais obtidas a partir da ``renderização'' do documento HTML. O
-algoritmo proposto se chama VIPS \cite{vips03} (\textit{VIsion-based Page
+Em \cite{vips03}, pesquisa desenvolvida no centro de pesquisas da Microsoft, é
+proposta uma das primeiras abordagens de segmentação de páginas e identificação
+de conteúdo utilizando informações visuais obtidas a partir da ``renderização''
+do documento HTML. O algoritmo proposto se chama VIPS (\textit{VIsion-based Page
 Segmentation}). A abordagem se limita a apenas a segmentar a página em blocos
 visuais semanticamente coerentes, não há preocupação quanto a identificação e
 alinhamento de registros. O algoritmo utiliza as informações de formatação (cor,
 texto, tamanho e \textit{tag}) dos nós da árvore DOM para calcular o
 \textit{score} de coerência do nó e para decidir se o mesmo é um bloco visual ou
-uma combinação de blocos que deve, portanto, ser dividido. Numa etapa
+uma combinação de blocos que deve, portanto, ser subdividido. Numa etapa
 subsequente, os blocos encontrados são analisados com relação aos separadores
 visuais (linhas verticais e horizontais que se cruzam no \textit{canvas}), para
 determinar se algum ajuste deve ser realizado nos blocos visuais e/ou
@@ -585,8 +579,7 @@ apresentados na publicação, o processamento de 140 páginas, pelo algoritmo VIPS,
 foi submetido a julgamento humano com a seguinte conclusão: 86 páginas
 segmentadas perfeitamente, 50 satisfatoriamente e 4 falhas.
 
-\subsection{ViPER Augmenting Automatic Information Extraction with Visual Perceptions}
-Esta pesquisa propõe uma técnica chamada ViPER \cite{viper05} para extração de
+Em \cite{viper05} é proposta uma técnica chamada ViPER para extração de
 páginas com múltiplos registros. O algoritmo é uma extensão do MDR \cite{MDR03}.
 Vários melhoramentos foram introduzidos na identificação das regiões que contém
 estruturas repetitivas e na divisão das regiões em registros como o tratamento
@@ -608,15 +601,15 @@ utilizando utilizando o \textit{dataset} dos autores de ViPER, o algoritmo
 obteve resultados ligeiramente superiores ao ViNTs (89.2\% vs 97.6\% de
 \textit{recall} e 93.5\% vs 98.5\% de precisão).
 
-\subsection{ViDE A Vision-Based Approach for Deep Web Data Extraction}
-Esta pesquisa propõe uma técnica chamada ViDE \cite{vide10} para extração de
-registros da \textit{deep web}. A técnica proposta utiliza informação visual
+Em \cite{vide10} é proposta uma técnica chamada ViDE para extração de registros
+da \textit{deep web}. A técnica proposta utiliza informação visual
 (\textit{i.e.}, ``renderiza'' o documento HTML, como em
 \cite{depta05,vips03,viper05}) para identificar os registros a serem extraídos.
 Para obter as informações visuais o algoritmo utiliza, na verdade, a abordagem
 de segmentação de página proposta em \cite{vips03} (\textit{i.e.}, a saída do
-algoritmo VIPS é a entrada do algoritmo ViDE). O algoritmo primeiro localiza a região do
-documento onde os registros estão localizados de acordo com a posição da região.
+algoritmo VIPS é a entrada do algoritmo ViDE). O algoritmo primeiro localiza a
+região do documento onde os registros estão localizados de acordo com a posição
+da região.
 Segundo a pesquisa, a região principal fica localizada no centro da página e
 possui um tamanho grande, em relação ao documento todo. Após a localização da
 região principal do documento é realizada a divisão em registros. O processo de
@@ -639,11 +632,10 @@ portanto, necessitam de revisão. Os resultados obtidos foram 97.2\% de
 \textit{revision} no segundo \textit{dataset}, ambos resultados
 significativamente superiores aos resultados das técnicas comparadas.
 
-\subsection{AutoRM: An effective approach for automatic Web data record mining}
-Esta pesquisa propõe uma técnica chamada AutoRM (Automatic data Record Mining)
-\cite{autorm2015}. O algoritmo proposto é baseado no DEPTA \cite{depta05}, que
+Em \cite{autorm2015} é proposta uma técnica chamada AutoRM (Automatic data
+Record Mining). O algoritmo proposto é baseado no DEPTA \cite{depta05}, que
 utiliza a \textit{tree edit distance} para encontrar as regiões e os registros.
-A diferença é que aqui o alinhamento das árvores é modificado para priorizar o
+A diferença é que aqui o alinhamento das árvores foi modificado para priorizar o
 alinhamento dos nós folha da árvore DOM.
 Para eliminar eventual ``ruído'' contido em uma região e melhorar a
 identificação dos registros, o algoritmo utiliza o conceito de ``nós
@@ -672,9 +664,8 @@ daí, identificar o conteúdo de interesse. Em geral este problema é formulado
 considerando que o \textit{template} da página é uma ``codificação'' dos dados
 originais e as abordagens buscam ``decodificar'' esses dados.
 
-\subsection{RoadRunner Towards Automatic Data Extraction from Large Web Sites}
-Esta pesquisa apresenta um algoritmo para extração de registros, a partir de
-múltiplas páginas, chamado RoadRunner \cite{RRunner01}. Esta técnica considera
+Em \cite{RRunner01} é apresentado um algoritmo para extração de registros, a
+partir de múltiplas páginas, chamado RoadRunner. Esta técnica considera
 que o documento HTML ``codifica'' os dados originais em um \textit{template} e,
 consequentemente, a extração é vista como um processo de ``decodificação''. O
 algoritmo recebe, como entrada, uma coleção de documentos criados a partir do
@@ -690,11 +681,10 @@ resultados em termos de \textit{recall} e precisão, apenas demonstra que a
 técnica funcionou em 8 de 10 \textit{sites} contidos no \textit{dataset} de
 testes.
 
-\subsection{Extracting Structured Data from Web Pages}
-Esta pesquisa propõe uma abordagem chamada ExAlg \cite{exalg2003}. A técnica
-utiliza uma formalização do problema semelhante à utilizada em \cite{RRunner01},
-onde, a partir de uma conjunto de páginas com o mesmo \textit{template}, o
-algoritmo busca deduzir o \textit{template} do \textit{site} e extrair os dados.
+Em \cite{exalg2003} é proposta uma abordagem chamada ExAlg. A técnica utiliza
+uma formalização do problema semelhante à utilizada em \cite{RRunner01}, onde, a
+partir de uma conjunto de páginas com o mesmo \textit{template}, o algoritmo
+busca deduzir o \textit{template} do \textit{site} e extrair os dados.
 O \textit{template} do \textit{site} é visto como uma ``codificação'' dos dados
 e o objetivo do processo de extração é ``decodificar'' esses dados.
 Embora a formulação do problema seja semelhante a \cite{RRunner01} a abordagem é
@@ -709,9 +699,8 @@ próprio contendo páginas com \textit{templates} mais complexos, segundo eles,
 onde o algoritmo extraiu corretamente 74 registros corretos e 12 registros
 parcialmente corretos de um total de 86 registros.
 
-\subsection{FiVaTech Page Level Web Data Extraction from Template Pages}
-Esta pesquisa propõe uma técnica chamada FiVaTech \cite{fivatech2010} para
-extração de registros a partir do processamento de múltiplas páginas com o mesmo
+Em \cite{fivatech2010} é proposta uma técnica chamada FiVaTech para extração de
+registros a partir do processamento de múltiplas páginas com o mesmo
 \textit{template}, de forma semelhante à \cite{RRunner01, exalg2003}. O
 algoritmo proposto pode ser utilizado para extração em páginas que contenham
 múltiplos registros ou que contenham um único registro de detalhe, segundo os
@@ -737,18 +726,101 @@ utilizadas as métricas padrão de \textit{recall} e precisão. Com o
 utilizados nas comparações com DEPTA, ViPER e MSE, são de páginas com múltiplos
 registros e, como a publicação não detalha esse tipo de extração, esses
 resultados são questionáveis.
+ 
+\section{Quadro comparativo}
+ 
+A seguir é apresentado, na Tabela \ref{table:compare}, um quadro comparativo
+entre as abordagens analisadas.
 
-\chapter{Desafios e Perspectivas}\label{ch:persp}
+As colunas \texttt{Tipo}, \texttt{Entrada}, \texttt{Alin.}, \texttt{Rend.},
+\texttt{Heur.}, \texttt{KB}, \texttt{Impl.} indicam, respectivamente: o tipo
+da abordagem, se é extração de listas, tabelas, registros ou regiões; a
+entrada, se é apenas uma única página ou múltiplas páginas; o alinhamento dos
+registros, se é realizado ou não; a renderização da página HTML, se é necessária
+ou não; regras heurísticas, se são empregadas ou não; bases de
+conhecimento, se são utilizadas ou não e; se existe implementação
+publicamente disponível.
+ 
+
+\setcounter{magicrownumbers}{0}
+\begin{table}[h]
+\centering
+\begin{tiny}
+\caption{Comparativo entre abordagens de extração de dados estruturados.}
+\label{table:compare}
+\begin{tabular}
+{p{0.05cm}|p{4cm} p{0.8cm} p{0.5cm} p{0.3cm} p{0.4cm} p{0.4cm} p{0.2cm}
+p{0.4cm}} \hline\hline
+\#
+&Abordagem
+&Tipo
+&Entrada
+& Alin.
+& Rend.
+& Heur.
+& KB
+& Impl.
+\\
+\hline
+\rownumber & \citeonline{webtables2008} & tabela & única & sim & não & sim & sim & não\\
+\rownumber & \citeonline{tablesMS2012} & tabela & única & sim & não & sim & sim & não\\
+\rownumber & \citeonline{listExtract2009} & lista & única & sim & não & sim & sim & não\\
+\rownumber & \citeonline{tegra2015} & lista & única & sim & não & sim & sim & não\\
+\rownumber & \citeonline{topklists2013} & lista & única & sim & não & sim & sim & não\\
+\rownumber & \citeonline{MDR03} & registros & única & sim & não & não & não & sim\\
+\rownumber & \citeonline{depta05} & registros & única & sim & sim & não & não & sim\\
+\rownumber & \citeonline{NET05} & registros & única & sim & não & não & não & não\\
+\rownumber & \citeonline{TPC09} & registros & única & não & não & não & não & não\\
+\rownumber & \citeonline{SuffixTree12} & registros & única & não & não & sim & não & não\\
+\rownumber & \citeonline{vips03} & regiões & única & não & sim & sim & não & sim\\
+\rownumber & \citeonline{viper05} & registros & única & sim & sim & não & não & não\\
+\rownumber & \citeonline{vide10} & registros & única & sim & sim & sim & não & não\\
+\rownumber & \citeonline{autorm2015} & registros & única & não & sim & não & não & não\\
+\rownumber & \citeonline{RRunner01} & registros & múlt. & sim & não & não & não & sim\\
+\rownumber & \citeonline{exalg2003} & registros & múlt. & sim & não & não & não & não\\
+\rownumber & \citeonline{fivatech2010} & registros & múlt. & sim & não & não & não & não\\
+\end{tabular}
+\end{tiny}
+\end{table}
+
+\chapter{Proposta}\label{ch:prop}
+
+A seguir é apresentada uma proposta, para abordagem do problema de extração
+estruturada, composta das etapas de: limpeza do código HTML e construção da
+árvore DOM (Seção \ref{sec:dom}); construção da sequência de \textit{tag paths}
+(Seção \ref{sec:tps}); contorno da sequência, derivada e segmentação (Seção
+\ref{sec:contour}); filtragem das regiões (Seção \ref{sec:filter}) e;
+identificação e alinhamento dos registros (Seção \ref{sec:align}).
+
+A proposta tem como requisitos ser geral, eficiente e não
+supervisionada para que possa ser aplicada em larga em escala. Para garantir a
+generalidade da abordagem evitou-se a utilização de regras heurísticas
+vinculadas ao HTML e qualquer suposição mais específica a respeito do
+conteúdo e do \textit{template} dos documentos.
+
+As premissas em que a abordagem se baseia são as seguintes:
+\begin{description}
+\item[Segmentação:] diferentes
+regiões de uma página HTML são formatadas de maneiras diferentes, justamente
+para que haja distinção entre elas, portanto serão formadas por conjuntos de \textit{tag
+paths} diferentes, caso contrário não haveria diferença visual
+significativa entre as regiões de uma página.
+\item[Registros:] regiões com conteúdo semi-estruturado são compostas por
+conjuntos de registros semelhantes e contíguos, descritos por sequências de
+\textit{tag paths} semelhantes sendo, portanto, regiões cíclicas.
+\end{description} 
+
+\section{Desafios e Perspectivas}\label{ch:persp}
 
 A extração estruturada é composta por diversas etapas: extração, identificação
 do \textit{schema}, integração e consulta. Nesta pesquisa o foco foi dirigido
 para fase de extração, que foi decomposta em: identificação das regiões de
 registros, identificação dos registros e alinhamento dos campos.
 
-Diante do levantamento realizado, chegamos a conclusão de que existem, ainda,
-muitos problemas em aberto nesta área de pesquisa. Até o presente momento não
-existe nenhum consenso, considerando o problema como resolvido, com relação a
-nenhuma das etapas do processo de extração estruturada.
+Diante do levantamento realizado, foi constatado que existem, ainda, muitos
+problemas em aberto nesta área de pesquisa e, até o presente momento, não existe
+nenhum consenso, considerando o problema como resolvido, com relação a nenhuma
+das etapas do processo de extração estruturada.
 
 Os resultados apresentados pelas abordagens existentes são satisfatórios,
 geralmente, apenas nos \textit{datasets} elaborados pelos próprios autores, o
@@ -779,27 +851,6 @@ de implementação, que utilizasse métricas e \textit{datasets} apropriados,
 facilitaria muito o trabalho de disponibilização e comparação das diversas
 abordagens.
  
-\chapter{Proposta}\label{ch:prop}
-
-A seguir é apresentada uma proposta, para abordagem do problema de extração
-estruturada, composta das etapas de: limpeza do código HTML e construção da
-árvore DOM (Seção \ref{sec:dom}); construção da sequência de \textit{tag paths}
-(Seção \ref{sec:tps}); contorno da sequência, derivada e segmentação (Seção
-\ref{sec:contour}); filtragem das regiões (Seção \ref{sec:filter}) e;
-identificação e alinhamento dos registros (Seção \ref{sec:align}).
-
-A proposta tem como requisitos ser geral, eficiente e não
-supervisionada para que possa ser aplicada em larga em escala. Para garantir a
-generalidade da abordagem evitou-se a utilização de regras heurísticas
-vinculadas ao HTML e qualquer suposição mais específica a respeito do
-conteúdo e do \textit{template} dos documentos.
-
-A premissa em que a abordagem se baseia é a seguinte: diferentes regiões de uma
-página HTML são formatadas de maneira diferente, justamente para que haja
-distinção entre elas, portanto serão formadas por conjuntos de \textit{tag
-paths} diferentes, caso contrário não haveria diferença entre as regiões de uma
-página.
-
 \section{Limpeza do código HTML e construção da árvore DOM}\label{sec:dom}
 Para realizar a limpeza e correção de HTML mal formado, foi utilizada a
 ferramenta \textit{tidy} \cite{libtidy}. A biblioteca \textit{libtidy} foi
@@ -844,7 +895,7 @@ concat(tps,tagPathMap[tp].code);$
 \end{algorithmic}
 \end{algorithm}
 
-\section{Contorno da sequência, derivada e segmentação}\label{sec:contour}
+\section{Contorno, derivada e segmentação}\label{sec:contour}
 Após a construção da sequência de \textit{tag paths} é realizado o cálculo do
 contorno da sequência, conforme Algoritmo \ref{alg:contour}. Como os códigos dos
 \textit{tag paths} (os símbolos) são \textbf{incrementais} a sequência sempre
