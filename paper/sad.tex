@@ -86,7 +86,6 @@ identificação e alinhamento dos registros das regiões identificadas.
 \sumario
 
 \chapter{Introdução}
-
 A extração de dados estruturados da web vem sendo estudada já há algum tempo em
 função de sua importância, que se deve à grande quantidade de informação
 estruturada disponível para extração que, de outra forma, não poderia ser
@@ -97,20 +96,29 @@ desafios envolvidos na realização desta tarefa. De acordo com
 as informações são provenientes de diversas fontes e são publicadas de maneira
 desorganizada.
 
-Alguns requisitos fundamentais para abordar este problema, em escala
-\textit{web}, são:
-nível de automação, generalidade e precisão. Em função da quantidade maciça
-de informação estruturada disponível, as propostas de abordagem devem evitar
-qualquer intervenção manual no processo de extração, pois isto inviabilizaria
-sua aplicação em larga escala. Em relação à generalidade da abordagem, as
-informações disponíveis na \textit{web} possuem formatos heterogêneos, mesmo
-quando se considera apenas um domínio de conhecimento, por esta razão, as propostas de
-abordagem, para este problema, devem ser gerais o suficiente para que funcionem
-a contento nos mais diversos \textit{templates} e domínios. Devido à enorme
-quantidade de dados, a precisão do processo de extração deve ser priorizada, em
-detrimento do \textit{recall} se necessário, pois uma baixa precisão resultaria
-em uma enorme quantidade de ``ruído'' sendo extraído e integrado à base relacional
-comprometendo, assim, sua utilização.
+Esta pesquisa apresenta uma proposta de abordagem inédita para o problema de
+estração estruturada. A técnica utiliza uma representação alternativa do
+documento HTML e da árvore DOM, a sequência de \textit{tag paths}, semelhante à
+utilizada em \cite{TPC09, SuffixTree12}. Esta forma de representação pode ser
+vista como um ``sinal discreto'' e, assim, podem
+ser empregadas técnicas tipicamente utilizadas no processamento de sinais
+discretos \cite{oppenheim1989discrete} como: transformada rápida de Fourier (FFT
+- \textit{fast Fourier transform}\cite{fft1965}), autocorrelação e derivada
+discreta.
+Não foi identificada, durante o levantamento bibliográfico, nenhuma abordagem
+semelhante para o problema de extração de dados estruturados.
+
+A técnica é composta das seguintes etapas:
+\begin{enumerate}[a)]
+  \item limpeza do código HTML e construção da árvore DOM;
+  \item construção da sequência de \textit{tag paths}; 
+  \item contorno da sequência, derivada e segmentação; 
+  \item filtragem das regiões; 
+  \item identificação e alinhamento dos registros.
+\end{enumerate}
+
+
+\section{Contexto}
 
 Apesar de bastante estudada, a extração de dados estruturados ainda é um
 problema em aberto. Diversas formulações foram sugeridas para o problema e foram
@@ -119,9 +127,9 @@ propostas várias abordagens para cada formulação.
 Extrair dados estruturados a partir de fontes não estruturadas (ou
 semi-estruturadas) não é uma tarefa trivial. A estrutura dos dados tem que ser
 corretamente identificada, de maneira automática e eficiente, a partir de um
-documento que foi criado para ser utilizado por pessoas e não por máquinas. As
-informações são disponibilizadas de maneira a facilitar a leitura e não para
-serem processada por sistemas computacionais.
+documento que foi criado para ser utilizado por pessoas e não por máquinas,
+\textit{i.e.}, as informações são disponibilizadas de maneira a facilitar a
+leitura e não para serem processada por sistemas computacionais.
 
 Além da estrutura sintática dos dados, para que as informações possam ser
 utilizadas, é necessário identificar a qual entidade os dados se referem e quais
@@ -134,7 +142,7 @@ identificados e os dados integrados, é possível utilizar essas bases de dados de
 maneira relacional para, por exemplo, contextualizar consultas por palavras
 chaves utilizando as relações, construir bases de dados para determinados
 domínios (e.g., comparação de preços de produtos), realizar meta-pesquisa, entre
-outros.
+outras aplicações.
 
 As propostas existentes abordam várias formas do problema de extração
 estruturada. De acordo com o levantamento realizado, foram identificadas três
@@ -163,10 +171,85 @@ estas técnicas necessitam de uma amostra (algumas páginas), de cada
 \textit{site}, que é utilizada para treinamento do algoritmo de dedução do
 \textit{template}.
 
+\section{Identificação do Problema}
+O problema que esta pesquisa busca solucionar é o de extração de dados
+estruturados a partir de fontes semi-estruturadas de forma completamente
+automática e computacionalmente eficiente, para que seja possível utilizar a
+abordagem em larga escala.
+
+Alguns requisitos fundamentais para abordar este problema, em escala
+\textit{web}, são:
+nível de automação, generalidade e precisão. Em função da quantidade maciça
+de informação estruturada disponível, as propostas de abordagem devem evitar
+qualquer intervenção manual no processo de extração, pois isto inviabilizaria
+sua aplicação em larga escala. Em relação à generalidade da abordagem, as
+informações disponíveis na \textit{web} possuem formatos heterogêneos, mesmo
+quando se considera apenas um domínio de conhecimento, por esta razão, as propostas de
+abordagem, para este problema, devem ser gerais o suficiente para que funcionem
+a contento nos mais diversos \textit{templates} e domínios. Devido à enorme
+quantidade de dados, a precisão do processo de extração deve ser priorizada, em
+detrimento do \textit{recall} se necessário, pois uma baixa precisão resultaria
+em uma enorme quantidade de ``ruído'' sendo extraído e integrado à base relacional
+comprometendo, assim, sua utilização.
+
 Apesar da quantidade e da variedade de abordagens existentes, em levantamentos
 recentes \cite{survey2013, survey2014} foi observado que nenhuma das propostas
 existentes resolve completamente o problema. O problema de extração estruturada
 é bastante amplo, de difícil solução e permanece em aberto.
+
+\section{Objetivos}
+O objetivo geral desta pesquisa é desenvolver um método automático (não
+supervisionado) de extração de dados estruturados a partir de informação
+semi-estruturada contida em páginas \textit{web}. 
+
+Os objetivos específicos são:
+\begin{itemize}
+\item desenvolver um método de segmentação de um documento HTML que identifique
+as regiões da página com conteúdo semi-estruturado;
+\item desenvolver um método que identifique quais das regiões semi-estruturadas
+possuem conteúdo e quais possuem ruído (menus, template, anúncios, etc.);
+\item desenvolver um método de estruturação da informação semi-estruturada
+identificada (\textit{e.g.} alinhamento de registros);
+\item desenvolver um \textit{framework} de extração estruturada;
+\item criar \textit{datasets} com ampla cobertura para avaliação de métodos de
+extração;
+\item propor novas métricas para avaliação dos resultados.
+\end{itemize}
+
+\section{Contribuições}
+As contribuições desta pesquisa são:
+\begin{itemize}
+  \item desenvolvimento de um novo método de extração estruturada;
+  \item criação de \textit{datasets} com ampla cobertura para avaliação de
+  métodos de extração estruturada;
+  \item proposição de novas métricas;
+  \item publicação dos resultados da pesquisa em eventos e periódicos;
+  \item desenvolvimento de um \textit{framework} de extração estruturada. 
+\end{itemize}
+
+\section{Metodologia}
+
+A condução e o desenvolvimento desta pesquisa segue a metodologia proposta em
+\cite{}, composta de seis etapas:
+
+\begin{itemize}
+  \item identificação do problema: através de levantamento bibliográfico,
+  foi identificado o estado da arte e quais problemas ainda estão em aberto
+  nesta área de pesquisa;
+  \item definição dos objetivos: a partir das questões identificadas no
+  levantamento bibliográfico, foi definido o objetivo geral da pesquisa;
+  \item desenvolvimento: a abordagem proposta foi desenvolvida a
+  partir dos objetivos específicos, buscando atingir o objetivo geral;
+  \item demonstração: como validação preliminar, da abordagem desenvolvida, são
+  realizadas provas de conceito e, a partir desses resultados, a abordagem é
+  refinada;
+  \item avaliação: realização de testes mais amplos e completos e comparação com
+  outros trabalhos;
+  \item comunicação: publicação dos resultados.
+\end{itemize}
+
+\section{Estrutura do trabalho}
+
 
 % Nenhum abordagem esgota o limite da extração sintática, todas utilizam %algum
 % expediente que compromete a técnica: alta complexidade %computacional, regras
@@ -180,26 +263,6 @@ existentes resolve completamente o problema. O problema de extração estruturada
 % taxonomia.
 
 % *** extração estruturada utilizando NLP: deep dive (??? ver se entra)
-
-Este trabalho apresenta uma proposta de abordagem inédita para a primeira etapa
-do problema, a extração de registros. A técnica utiliza uma representação
-alternativa do documento HTML e da árvore DOM, a sequência de \textit{tag
-paths}, semelhante à utilizada em \cite{TPC09, SuffixTree12}. Esta forma de
-representação pode ser vista como um ``sinal discreto'' e, assim, podem ser
-empregadas técnicas tipicamente utilizadas no processamento de sinais discretos
-como: transformada rápida de Fourier (FFT - \textit{fast Fourier
-transform}\cite{fft1965}), autocorrelação, derivada discreta, entre outras.
-Não foi identificada, durante o levantamento bibliográfico, nenhuma abordagem
-semelhante para o problema de extração de registros.
-
-A técnica é composta das seguintes etapas:
-\begin{enumerate}[a)]
-  \item limpeza do código HTML e construção da árvore DOM;
-  \item construção da sequência de \textit{tag paths}; 
-  \item contorno da sequência, derivada e segmentação; 
-  \item filtragem das regiões; 
-  \item identificação e alinhamento dos registros.
-\end{enumerate}
 
 Este trabalho está organizado da seguinte forma: o Capítulo \ref{} apresenta a
 fundamentação teórica; o Capítulo \ref{ch:trab} apresenta os trabalhos
