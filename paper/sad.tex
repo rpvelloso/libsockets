@@ -1059,7 +1059,7 @@ O Algoritmo \ref{alg:tree2seq} detalha a construção da sequência.
 \Procedure{convertToSeq}{node,tp,tps by ref.}
 \State $tp \leftarrow concat(tp,$``/''$,node.$tag$,node.style)$
 \If {$tp \ni tagPathMap$}
-\State $tagPathMap \leftarrow tagPathMap + \{tp\}$ 
+\State $tagPathMap \leftarrow tagPathMap \cup \{tp\}$ 
 \State $tagPathMap[tp].code \leftarrow tagPathMap.size$ 
 \EndIf 
 \State $tps \leftarrow concat(tps,tagPathMap[tp].code);$
@@ -1220,8 +1220,7 @@ centro são descartadas. Supõe-se que exista ao menos uma região de dados.
 \State $contentRegs \leftarrow \emptyset$
 \State $n \leftarrow length(regs)$
 \For {$i \leftarrow 1..n$}
-\State $regionCenter \leftarrow \frac{regs[i].start +
-regs[i].end}{2}$
+\State $regionCenter \leftarrow \frac{regs[i].start + regs[i].end}{2}$
 \State $positionScore \leftarrow 1-\frac{|tpsCenter - regionCenter|}{maxDistance}$ 
 \State $sizeScore \leftarrow \frac{length(regs[i])}{tpsSize}$ 
 \State $score[i] \leftarrow \frac{positionScore+sizeScore}{2}$
