@@ -777,6 +777,25 @@ portanto, necessitam de revisão. Os resultados obtidos foram 97.2\% de
 \textit{revision} no segundo \textit{dataset}, ambos resultados
 significativamente superiores aos resultados das técnicas comparadas.
 
+Em \cite{clustVX2014} é proposta uma técnica chamada ClustVX (\textit{Clustering
+Visually similar XPaths}), que ``renderiza'' a página \textit{web} utilizando o
+navegador \textit{Mozilla Firefox} para obter as informações visuais de cada nó
+da árvore DOM. A partir da árvore DOM são construídas as \textit{strings} dos
+\textit{tag paths} de cada nó da árvore e essas \textit{strings} são
+``clusterizadas'' de acordo com sua semelhança (incluindo as informações
+visuais).
+Para cada \textit{cluster} resultante é calculado o LCP (\textit{longest common
+prefix}) dos \textit{tag paths}, este prefixo é considerado como o caminho da
+raiz até a região dos registros. Para encontrar os campos dos registros é
+calculado o LCS (\textit{longest common suffix}) dos \textit{tag paths} e o nós
+folha no final destes sufixos são considerados os campos dos registros. A
+\textit{substring} que fica entre o LCP e o LCS dos \textit{tag paths}
+(\textit{i.e.,} a \textit{substring} entre o prefixo e o sufixo dos \textit{tag
+paths}) é considerada como a divisão entre os registros.
+O algoritmo foi comparado ao MDR \cite{MDR03}, ViNTs \cite{vints2005} e FiVaTech
+\cite{fivatech2010} com resultados superiores de 100\% de precisão e 99.5\% de
+\textit{recall}.
+
 Em \cite{autorm2015} é proposta uma técnica chamada AutoRM (Automatic data
 Record Mining). O algoritmo proposto é baseado no DEPTA \cite{depta05}, que
 utiliza a \textit{tree edit distance} para encontrar as regiões e os registros.
@@ -932,6 +951,7 @@ p{0.4cm}} \hline\hline
 \rownumber & \citeonline{vips03} & regiões & única & não & sim & sim & não & sim\\
 \rownumber & \citeonline{viper05} & registros & única & sim & sim & não & não & não\\
 \rownumber & \citeonline{vide10} & registros & única & sim & sim & sim & não & não\\
+\rownumber & \citeonline{clustVX2014} & registros & única & sim & sim & não & não & não\\
 \rownumber & \citeonline{autorm2015} & registros & única & não & sim & não & não & não\\
 \rownumber & \citeonline{RRunner01} & registros & múlt. & sim & não & não & não & sim\\
 \rownumber & \citeonline{exalg2003} & registros & múlt. & sim & não & não & não & não\\
