@@ -34,9 +34,10 @@ Web}
 
 \numerodemembrosnabanca{3}
 \orientadornabanca{nao}
-%\bancaMembroA{Profa. Dra. Carina Friedrich Dorneles\\Universidade Federal de % Santa Catarina}
-\bancaMembroA[Universidade Federal do Rio Grande do Sul]{Profa. Dra. Renata Galante}
-\bancaMembroB[\ABNTinstituicaodata]{Prof. Dr. Renato Fileto}
+% \bancaMembroA{Profa. Dra. Carina Friedrich Dorneles\\Universidade Federal de %
+% Santa Catarina}
+\bancaMembroA[Universidade Federal do Rio Grande do Sul]{Profa. Dra. Renata
+Galante} \bancaMembroB[\ABNTinstituicaodata]{Prof. Dr. Renato Fileto}
 \bancaMembroC[\ABNTinstituicaodata]{Prof. Dr. Ronaldo dos Santos Mello}
 
 \dedicatoria{}
@@ -45,10 +46,9 @@ Web}
 
 \epigrafe{}{}
 
-\textoResumo{ 
-Durante o levantamento do estado da arte a respeito do tema
-``extração de dados estruturados da \textit{web}'', foram identificados, entre os
-trabalhos mais relevantes, três  grupos  principais  de  abordagens:
+\textoResumo{ Durante o levantamento do estado da arte a respeito do tema
+``extração de dados estruturados da \textit{web}'', foram identificados, entre
+os trabalhos mais relevantes, três  grupos  principais  de  abordagens:
 extração de listas e tabelas; extração a partir de uma única página e extração a
 partir de múltiplas páginas. Esta área, apesar de bastante estudada, ainda
 representa um problema em aberto e também apresenta outras questões ainda não
@@ -74,20 +74,16 @@ identificação e alinhamento dos registros das regiões identificadas.
 
 \rowcolors{2}{gray!25}{white}
 
-\capa
-\folhaderosto[semficha]
-%\includepdf[pages={1}]{img/Ficha_Catalografica.pdf}
-%\folhaaprovacao
-%\paginadedicatoria
-%\paginaagradecimento
-%\paginaepigrafe
+\capa \folhaderosto[semficha]
+% \includepdf[pages={1}]{img/Ficha_Catalografica.pdf} \folhaaprovacao
+% \paginadedicatoria \paginaagradecimento \paginaepigrafe
 \paginaresumo
-%\paginaabstract
+% \paginaabstract
 
-\listadefiguras
-%\listadetabelas 
-%\listadeabreviaturas
-%\listadesimbolos
+\listadefiguras 
+\listadetabelas
+% \listadeabreviaturas 
+% \listadesimbolos
 \sumario
 
 \chapter{Introdução}
@@ -101,28 +97,6 @@ desafios envolvidos na realização desta tarefa. De acordo com
 as informações são provenientes de diversas fontes e são publicadas de maneira
 desorganizada.
 
-Esta pesquisa apresenta uma proposta de abordagem inédita para o problema de
-estração estruturada. A técnica utiliza uma representação alternativa do
-documento HTML e da árvore DOM, a sequência de \textit{tag paths}, semelhante à
-utilizada em \cite{TPC09, SuffixTree12}. Esta forma de representação pode ser
-vista como um ``sinal discreto'' e, assim, podem
-ser empregadas técnicas tipicamente utilizadas no processamento de sinais
-discretos \cite{oppenheim1989discrete} como: transformada rápida de Fourier (FFT
-- \textit{fast Fourier transform}\cite{fft1965}), autocorrelação e derivada
-discreta.
-Não foi identificada, durante o levantamento bibliográfico, nenhuma abordagem
-semelhante para o problema de extração de dados estruturados.
-
-A técnica é composta das seguintes etapas:
-\begin{enumerate}[a)]
-  \item limpeza do código HTML e construção da árvore DOM;
-  \item construção da sequência de \textit{tag paths}; 
-  \item contorno da sequência, derivada e segmentação; 
-  \item filtragem das regiões; 
-  \item identificação e alinhamento dos registros.
-\end{enumerate}
-
-
 \section{Contexto}
 
 Apesar de bastante estudada, a extração de dados estruturados ainda é um
@@ -130,7 +104,7 @@ problema em aberto. Diversas formulações foram sugeridas para o problema e foram
 propostas várias abordagens para cada formulação.
 
 Extrair dados estruturados a partir de fontes não estruturadas (ou
-semi-estruturadas) não é uma tarefa trivial. A estrutura dos dados tem que ser
+semiestruturadas) não é uma tarefa trivial. A estrutura dos dados tem que ser
 corretamente identificada, de maneira automática e eficiente, a partir de um
 documento que foi criado para ser utilizado por pessoas e não por máquinas,
 \textit{i.e.}, as informações são disponibilizadas de maneira a facilitar a
@@ -163,8 +137,8 @@ tem por objetivo extrair apenas tabelas formatadas com a \textit{tag}
 Em \cite{MDR03,NET05,TPC09} o problema é formulado como extração de registros a
 partir de uma única página. Estas técnicas procuram por padrões no HTML e/ou
 árvore DOM do documento, onde ao menos dois registros são necessários para que
-um padrão possa ser identificado. Algumas propostas empregam, também, informações
-visuais obtidas através da ``renderização'' da página
+um padrão possa ser identificado. Algumas propostas empregam, também,
+informações visuais obtidas através da ``renderização'' da página
 HTML\cite{vips03,depta05,viper05,vide10} De acordo com \cite{structured2011},
 essa formulação do problema pode ser considerada como uma generalização do
 problema de extração de tabelas.
@@ -178,24 +152,24 @@ estas técnicas necessitam de uma amostra (algumas páginas), de cada
 
 \section{Identificação do Problema}
 O problema que esta pesquisa busca solucionar é o de extração de dados
-estruturados a partir de fontes semi-estruturadas de forma completamente
+estruturados a partir de fontes semiestruturadas de forma completamente
 automática e computacionalmente eficiente, para que seja possível utilizar a
 abordagem em larga escala.
 
 Alguns requisitos fundamentais para abordar este problema, em escala
 \textit{web}, são:
-nível de automação, generalidade e precisão. Em função da quantidade maciça
-de informação estruturada disponível, as propostas de abordagem devem evitar
+nível de automação, generalidade e precisão. Em função da quantidade maciça de
+informação estruturada disponível, as propostas de abordagem devem evitar
 qualquer intervenção manual no processo de extração, pois isto inviabilizaria
 sua aplicação em larga escala. Em relação à generalidade da abordagem, as
 informações disponíveis na \textit{web} possuem formatos heterogêneos, mesmo
-quando se considera apenas um domínio de conhecimento, por esta razão, as propostas de
-abordagem, para este problema, devem ser gerais o suficiente para que funcionem
-a contento nos mais diversos \textit{templates} e domínios. Devido à enorme
-quantidade de dados, a precisão do processo de extração deve ser priorizada, em
-detrimento do \textit{recall} se necessário, pois uma baixa precisão resultaria
-em uma enorme quantidade de ``ruído'' sendo extraído e integrado à base relacional
-comprometendo, assim, sua utilização.
+quando se considera apenas um domínio de conhecimento, por esta razão, as
+propostas de abordagem, para este problema, devem ser gerais o suficiente para
+que funcionem a contento nos mais diversos \textit{templates} e domínios. Devido
+à enorme quantidade de dados, a precisão do processo de extração deve ser
+priorizada, em detrimento do \textit{recall} se necessário, pois uma baixa
+precisão resultaria em uma enorme quantidade de ``ruído'' sendo extraído e
+integrado à base relacional comprometendo, assim, sua utilização.
 
 Apesar da quantidade e da variedade de abordagens existentes, em levantamentos
 recentes \cite{survey2013, survey2014} foi observado que nenhuma das propostas
@@ -205,15 +179,15 @@ existentes resolve completamente o problema. O problema de extração estruturada
 \section{Objetivos}
 O objetivo geral desta pesquisa é desenvolver um método automático (não
 supervisionado) de extração de dados estruturados a partir de informação
-semi-estruturada contida em páginas \textit{web}. 
+semiestruturada contida em páginas \textit{web}.
 
 Os objetivos específicos são:
 \begin{itemize}
 \item desenvolver um método de segmentação de um documento HTML que identifique
-as regiões da página com conteúdo semi-estruturado;
-\item desenvolver um método que identifique quais das regiões semi-estruturadas
+as regiões da página com conteúdo semiestruturado;
+\item desenvolver um método que identifique quais das regiões semiestruturadas
 possuem conteúdo e quais possuem ruído (menus, template, anúncios, etc.);
-\item desenvolver um método de estruturação da informação semi-estruturada
+\item desenvolver um método de estruturação da informação semiestruturada
 identificada (\textit{e.g.} alinhamento de registros);
 \item desenvolver um \textit{framework} de extração estruturada;
 \item criar \textit{datasets} com ampla cobertura para avaliação de métodos de
@@ -253,6 +227,28 @@ A condução e o desenvolvimento desta pesquisa segue a metodologia proposta em
   \item comunicação: publicação dos resultados.
 \end{enumerate}
 
+\section{Abordagem proposta}
+Esta pesquisa apresenta uma proposta de abordagem inédita para o problema de
+estração estruturada. A técnica utiliza uma representação alternativa do
+documento HTML e da árvore DOM, a sequência de \textit{tag paths}, semelhante à
+utilizada em \cite{TPC09, SuffixTree12}. Esta forma de representação pode ser
+vista como um ``sinal discreto'' e, assim, podem
+ser empregadas técnicas tipicamente utilizadas no processamento de sinais
+discretos \cite{oppenheim1989discrete} como: transformada rápida de Fourier (FFT
+- \textit{fast Fourier transform}\cite{fft1965}), autocorrelação e derivada
+discreta.
+Não foi identificada, durante o levantamento bibliográfico, nenhuma abordagem
+semelhante para o problema de extração de dados estruturados.
+
+A técnica é composta das seguintes etapas:
+\begin{enumerate}[a)]
+  \item limpeza do código HTML e construção da árvore DOM;
+  \item construção da sequência de \textit{tag paths}; 
+  \item contorno da sequência, derivada e segmentação; 
+  \item filtragem das regiões; 
+  \item identificação e alinhamento dos registros.
+\end{enumerate}
+
 \section{Estrutura do trabalho}
 
 
@@ -270,14 +266,17 @@ A condução e o desenvolvimento desta pesquisa segue a metodologia proposta em
 % *** extração estruturada utilizando NLP: deep dive (??? ver se entra)
 
 Este trabalho está organizado da seguinte forma: o Capítulo \ref{ch:teoria}
-apresenta a fundamentação teórica; o Capítulo \ref{ch:trab} apresenta os trabalhos
-relacionados; o Capítulo \ref{ch:persp} apresenta os problemas em aberto, os
-desafios e as perspectivas nesta área de pesquisa e; o Capítulo \ref{ch:prop}
-detalha a abordagem proposta.
+apresenta a fundamentação teórica com os conceitos mais importantes para o
+entendimento dos trabalhos relacionados e da abordagem proposta; o Capítulo
+\ref{ch:trab} apresenta os resumos dos trabalhos relacionados ao tema desta
+pesquisa e; o Capítulo \ref{ch:prop} apresenta os problemas em aberto, os
+desafios e as perspectivas nesta área de pesquisa e detalha a abordagem
+proposta.
 
 \chapter{Fundamentação Teórica}\label{ch:teoria}
 Neste capítulo são apresentados alguns conceitos fundamentais para o
-entendimento da abordagem proposta no Capítulo \ref{ch:prop}.
+entendimento dos trabalhos relacionados e da abordagem proposta no Capítulo
+\ref{ch:prop}.
 
 \begin{definition}[\textbf{Árvore DOM}].
 \label{def:domtree}
@@ -290,7 +289,7 @@ encarregado de manter os padrões e especificações da \textit{web}.
 \textbf{Exemplo.} Na Figura \ref{fig:ex1} um pequeno trecho de código HTML é
 utilizado para ilustrar como uma árvore DOM é construída a partir do código.
 
-\begin{definition}[\textbf{\textit{tag paths}}].
+\begin{definition}[\textbf{\textit{tag path}}].
 \label{def:tp} 
 Um \textit{tag path} (\abreviatura{TP}{Tag Path}TP) é uma $string$ descrevendo
 o caminho absoluto, a partir da raiz da árvore DOM, até um dado nó da árvore. Seja
@@ -309,10 +308,11 @@ uma árvore DOM com ``n'' nós é definida como sendo a sequência ordenada
 $TPS[1..n] = (TP_1,TP_2,TP_3, ...,TP_{n-1},TP_n)$ onde dois \textit{tag paths}
 $TP_i$ e $TP_j$, com $i\neq{}j$, são considerados iguais apenas se seus caminhos
 e suas definições de estilo são iguais, caso contrário eles são considerados
-diferentes.
+diferentes. Os caminhos da árvore DOM são percorridos em profundidade e para
+cada caminho é atribuído um código, de maneira incremental.
 \end{definition}
-\textbf{Exemplo.} Na Figura \ref{fig:ex1} é mostrada a $TPS$ de um dado trecho
-de código HTML, onde cada $TP$ recebe um código, produzindo $TPS =
+\textbf{Exemplo.} Na Figura \ref{fig:ex1} é exibida a $TPS$ de um trecho
+de código HTML, onde cada $TP$ recebe um código, incremental, produzindo $TPS =
 (1,2,3,4,4,3,4,4)$.
 Na sequência de \textit{tag paths} os \textit{tag paths} não são representados
 pelas suas \textit{strings}, mas sim por códigos (ou símbolos), com objetivo de
@@ -322,13 +322,13 @@ cada \textit{tag path} é representado na sequência por um símbolo, exceto que
 neste trabalho foram incorporadas as definições de estilo das \textit{tags}.
 Como as definições CSS são utilizadas para diferenciar e caracterizar as
 diversas regiões de uma página, é muito importante levar em consideração essas
-definições na momento de segmentar a página.
+informações na momento de segmentar a página.
 
 \begin{definition}[\textbf{Alfabeto da TPS}].
 \label{def:alpha} Seja $\Sigma$ o conjunto de todos os símbolos de uma
 sequência $TPS$ de tamanho ``n'', $\Sigma$ é dito o alfabeto de $TPS$
-que é definido como $\Sigma = \{\alpha | \exists{TPS[i]=\alpha} \wedge 1 \leq i
-\leq n\}$, onde $\alpha$ é um símbolo do alfabeto.
+que é definido como $\Sigma = \{\forall{\alpha} | \exists{TPS[i]=\alpha} \wedge
+1 \leq i \leq n\}$, onde $\alpha$ é um símbolo do alfabeto.
 \end{definition}
 \textbf{Exemplo.} Na Figura \ref{fig:ex1}, a $TPS$ é formada apenas pelos
 símbolos ``1'',``2'', ``3'' e ``4'', então seu alfabeto é $\Sigma=\{1,2,3,4\}$.
@@ -338,7 +338,7 @@ determinada sequência.
 \begin{definition}[\textbf{Fast Fourier Transform}].
 \label{def:fft}
 A FFT (fast Fourier transform) é um algoritmo eficiente (com complexidade de
-tempo $O(nlogn)$) comumente utilizado para o cálculo da DFT (discrete Fourier
+tempo $O(nlogn)$) para o cálculo da DFT (discrete Fourier
 transform) que realiza a decomposição de uma sequência discreta de valores em
 seus componentes de frequência (\textit{i.e.} espectro) e é definida pela
 Equação \ref{eq:dft} onde $X_k$ são os componente de frequência, $x_n$ é a
@@ -354,6 +354,9 @@ X_k = \sum_{n \leftarrow 0}^{N-1}{x[n] \cdot e^\frac{-2 \pi i k n}{N}}
 x_n = \frac{1}{N} \cdot \sum_{n \leftarrow 0}^{N-1}{X[k] \cdot e^\frac{2 \pi i
 k n}{N}}
 \end{equation}
+\textbf{Motivação.} A FFT é utilizada nas Definições
+\ref{def:xcorr} e \ref{def:power} para calcular a autocorrelação e o espectro de
+potência, respectivamente, de forma eficiente.
 
 \begin{definition}[\textbf{Autocorrelação}].
 \label{def:xcorr}
@@ -371,7 +374,7 @@ transformação inversa, portanto a complexidade de tempo para calculo da
 autocorrelação é $O(nlogn)$.
 \end{definition}
 \begin{equation}\label{eq:xcorr}
-C_{x_n} = IFFT(X_k \cdot X_k^*)
+C_{x_n} = InverseFFT(X_k \cdot X_k^*)
 \end{equation}
 \textbf{Exemplo.} A Figura \ref{fig:fft}b apresenta a autocorrelação da
 sequência da Figura \ref{fig:fft}a. Como a sequência é cíclica, sua
@@ -381,24 +384,41 @@ autocorrelação apresenta picos intervalados pelo período.
 \label{def:power}
 O espectro de potência de uma sequência é calculado a partir da sua FFT,
 conforme a Equação \ref{eq:power}, e indica o quanto cada componente de
-frequência contribui na formação da sequência.
+frequência contribui na formação da sequência. O módulo de $X_k$, que é uma
+sequência de valores complexos, é calculado conforme a Equação
+\ref{eq:complex}, para cada posição de $X_k$.
 \end{definition}
 \begin{equation}\label{eq:power}
 P_{x_n} = |X_k|
 \end{equation}
+\begin{equation}\label{eq:complex}
+|a + i \cdot b|=\sqrt{a^2 + b^2}
+\end{equation}
 \textbf{Exemplo.} A Figura \ref{fig:fft}c apresenta o espectro de potência da
 sequência da Figura \ref{fig:fft}a. O componente de frequência com maior
-potência coincide, neste caso, com o período da sequência original.  
+potência coincide, neste caso, com o período principal da sequência original.
 
-As Definições \ref{def:fft}, \ref{def:xcorr} e \ref{def:power} foram
-apresentadas neste texto de maneira breve e superficial e sua exposição foi
+\begin{definition}{\textbf{Derivada discreta}}
+\label{def:diff}
+A derivada de uma sequência discreta, também chamada de ``diferença'', é
+apenas o calculo da diferença entre valores vizinhos da sequência, conforme
+definido na Equação \ref{eq:diff}, onde ``$d$'' é a derivada discreta
+da sequência ``$x$''.
+\end{definition}
+\begin{equation}\label{eq:diff}
+d[n] = x[n] - x[n+1]
+\end{equation}
+\\
+
+As Definições \ref{def:fft}, \ref{def:xcorr}, \ref{def:power} e \ref{def:diff}
+foram apresentadas neste texto de maneira breve e superficial e sua exposição foi
 direcionada para a aplicação nesta pesquisa, pois o detalhamento completo dessas
 definições e da teoria de processamento de sinais é muito extenso e foge do
 escopo desta pesquisa.
 A área de processamento de sinais tem ampla e variada aplicação científica.
 Informações completas e detalhadas a respeito destas definições e da teoria de
 processamento de sinais discretos podem ser encontradas em
-\cite{oppenheim1989discrete}.
+\cite{oppenheim1989discrete,oppenheim1997sh}.
 
 \chapter{Trabalhos Relacionados}\label{ch:trab}
 
@@ -583,7 +603,7 @@ Caso as estruturas sejam suficientemente semelhantes (de acordo com um limiar de
 semelhança previamente estipulado) a região é identificada e os registros
 contidos nela são alinhados com um algoritmo de alinhamento de árvores
 (\textit{partial tree alignment}). O algoritmo foi desenvolvido a partir de
-observações gerais a respeito de páginas que contém registros: (1) os registros
+observações gerais a respeito de páginas que contêm registros: (1) os registros
 ocupam a mesma região do documento e; (2) os registros tem estrutura semelhante
 entre si. Não são utilizadas bases de conhecimento previamente definidas nem
 conjuntos de regras heurísticas.
@@ -706,11 +726,11 @@ segmentadas perfeitamente, 50 satisfatoriamente e 4 falhas.
 
 Em \cite{viper05} é proposta uma técnica chamada ViPER para extração de
 páginas com múltiplos registros. O algoritmo é uma extensão do MDR \cite{MDR03}.
-Vários melhoramentos foram introduzidos na identificação das regiões que contém
+Vários melhoramentos foram introduzidos na identificação das regiões que contêm
 estruturas repetitivas e na divisão das regiões em registros como o tratamento
 de \textit{tandem repeats} e informação opcional, resultando em um aumento
 considerável da eficácia. Outra melhoria, em relação ao MDR, é a identificação
-de quais regiões contém, de fato, conteúdo de interesse. As regiões
+de quais regiões contêm, de fato, conteúdo de interesse. As regiões
 identificadas são pontuadas de acordo com sua posição em relação ao centro da
 página ``renderizada'' e em relação à área total ocupada pela região. Para
 calcular a pontuação é utilizada informação visual da página ``renderizada''
@@ -738,7 +758,7 @@ da região.
 Segundo a pesquisa, a região principal fica localizada no centro da página e
 possui um tamanho grande, em relação ao documento todo. Após a localização da
 região principal do documento é realizada a divisão em registros. O processo de
-identificação dos registros tem três etapas: (1) remoção de blocos que contém
+identificação dos registros tem três etapas: (1) remoção de blocos que contêm
 apenas ruído; (2) \textit{clustering} dos blocos remanescentes de acordo com sua
 similaridade visual e; (3) reagrupamento de blocos para formar os registros de
 acordo com sua similaridade de conteúdo. Para o alinhamento dos campos é
@@ -835,7 +855,7 @@ versão modificada do algoritmo de alinhamento de árvores proposto em
 nós são alinhados em uma matriz. A cada nova árvore adicionada, as matrizes de
 alinhamento, em cada nível, precisam ser novamente realinhadas para acomodar os
 nós da nova árvore. Após o alinhamento são identificados os nós ``variáveis'',
-\textit{i.e.}, que contém os dados (nó folha com conteúdo textual diferente dos
+\textit{i.e.}, que contêm os dados (nó folha com conteúdo textual diferente dos
 demais nós com os quais foi alinhado), e os demais são considerados
 \textit{template} da página. Com esta informação, as páginas a serem extraídas
 são podadas, para remoção do \textit{template}, e os nós remanescentes
@@ -858,13 +878,25 @@ A seguir é apresentado, na Tabela \ref{table:compare}, um quadro comparativo
 entre as abordagens analisadas.
 
 As colunas \texttt{Tipo}, \texttt{Entrada}, \texttt{Alin.}, \texttt{Rend.},
-\texttt{Heur.}, \texttt{KB}, \texttt{Impl.} indicam, respectivamente: o tipo
-da abordagem, se é extração de listas, tabelas, registros ou regiões; a
-entrada, se é apenas uma única página ou múltiplas páginas; o alinhamento dos
-registros, se é realizado ou não; a renderização da página HTML, se é necessária
-ou não; regras heurísticas, se são empregadas ou não; bases de
-conhecimento, se são utilizadas ou não e; se existe implementação
-publicamente disponível.
+\texttt{Heur.}, \texttt{KB}, \texttt{Impl.} indicam, respectivamente: o
+\textbf{tipo} da abordagem, se é extração de listas, tabelas, registros ou regiões; a
+\textbf{entrada}, se é apenas uma única página ou múltiplas páginas; o
+\textbf{alinhamento} dos registros, se é realizado ou não; a
+\textbf{renderização} da página HTML, se é necessária ou não; regras
+\textbf{heurísticas}, se são empregadas ou não; \textbf{bases de conhecimento},
+se são utilizadas ou não e; se existe \textbf{implementação} publicamente
+disponível.
+
+Idealmente, o que se procura é uma abordagem computacionalmente eficiente
+(\textit{i.e.}, que não necessite de treinamento ou ``renderização'' a página e
+tenha complexidade de tempo polinomial), que seja baseada em observações
+gerais e não em regras heurísticas ou bases de conhecimento que
+comprometam sua generalidade e sua validade no longo prazo. Além desses
+atributos, para permitir a replicação e facilitar a compração e a análise das
+propostas, estas devem ser disponibilizadas publicamente (bem como os
+\textit{datasets}). Em muitos casos não é possível sequer implementar uma
+abordagem, de forma independente, a partir da sua publicação, pois faltam
+informações e detalhes indispensáveis para tanto.
  
 
 \setcounter{magicrownumbers}{0}
@@ -910,12 +942,14 @@ p{0.4cm}} \hline\hline
 
 \chapter{Proposta}\label{ch:prop}
 
-A seguir é apresentada uma proposta, para abordagem do problema de extração
-estruturada, composta das etapas de: limpeza do código HTML e construção da
-árvore DOM (Seção \ref{sec:dom}); construção da sequência de \textit{tag paths}
-(Seção \ref{sec:tps}); contorno da sequência, derivada e segmentação (Seção
-\ref{sec:contour}); filtragem das regiões (Seção \ref{sec:filter}) e;
-identificação e alinhamento dos registros (Seção \ref{sec:align}).
+A seguir são apresentados os desafios e perspectivas nesta área de pesquisa, na
+Seção \ref{sec:persp}, e em seguida, uma proposta para abordagem do problema de
+extração estruturada, composta das etapas de: limpeza do código HTML e
+construção da árvore DOM (Seção \ref{sec:dom}); construção da sequência de
+\textit{tag paths} (Seção \ref{sec:tps}); contorno da sequência, derivada e
+segmentação (Seção \ref{sec:contour}); filtragem das regiões (Seção
+\ref{sec:filter}); identificação e alinhamento dos registros (Seção
+\ref{sec:align}).
 
 A proposta tem como requisitos ser geral, eficiente e não
 supervisionada para que possa ser aplicada em larga em escala. Para garantir a
@@ -930,12 +964,12 @@ regiões de uma página HTML são formatadas de maneiras diferentes, justamente
 para que haja distinção entre elas, portanto serão formadas por conjuntos de \textit{tag
 paths} diferentes, caso contrário não haveria diferença visual
 significativa entre as regiões de uma página.
-\item[Registros:] regiões com conteúdo semi-estruturado são compostas por
+\item[Registros:] regiões com conteúdo semiestruturado são compostas por
 conjuntos de registros semelhantes e contíguos, descritos por sequências de
 \textit{tag paths} semelhantes sendo, portanto, regiões cíclicas.
 \end{description} 
 
-\section{Desafios e Perspectivas}\label{ch:persp}
+\section{Desafios e Perspectivas}\label{sec:persp}
 
 A extração estruturada é composta por diversas etapas: extração, identificação
 do \textit{schema}, integração e consulta. Nesta pesquisa o foco foi dirigido
@@ -977,7 +1011,7 @@ facilitaria muito o trabalho de disponibilização e comparação das diversas
 abordagens.
  
 \section{Limpeza do código HTML e construção da árvore DOM}\label{sec:dom}
-Para realizar a limpeza e correção de HTML mal formado, foi utilizada a
+Para realizar a limpeza e correção de HTML malformado, foi utilizada a
 ferramenta \textit{tidy} \cite{libtidy}. A biblioteca \textit{libtidy} foi
 integrada ao sistema de extração. O HTML é corrigido e convertido para XHTML e a
 árvore DOM é construída a partir daí.
@@ -993,13 +1027,6 @@ propriedades: o tamanho da sequência é igual ao número de nós na árvore DOM;
 caminhos iguais recebem códigos iguais e; os códigos são atribuídos
 incrementalmente.
 O Algoritmo \ref{alg:tree2seq} detalha a construção da sequência.
-
-\begin{figure}[h]
-  \centering
-     \includegraphics[width=\textwidth]{img/example1-pt.jpg}
-  \caption{Exemplo de uma sequência de \textit{tag paths} construída a partir do código HTML.}
-  \label{fig:ex1}
-\end{figure}
 
 \begin{algorithm}[H]
 \caption{Converte árvore DOM para de sequência de \textit{tag paths}}
@@ -1020,6 +1047,14 @@ concat(tps,tagPathMap[tp].code);$
 \end{algorithmic}
 \end{algorithm}
 
+\begin{figure}[h]
+  \centering
+     \includegraphics[width=\textwidth]{img/example1-pt.jpg}
+  \caption{Exemplo de uma sequência de \textit{tag paths} construída a partir do código HTML.}
+  \label{fig:ex1}
+\end{figure}
+\vspace{3cm}
+
 \section{Contorno, derivada e segmentação}\label{sec:contour}
 Após a construção da sequência de \textit{tag paths} é realizado o cálculo do
 contorno da sequência, conforme Algoritmo \ref{alg:contour}. Como os códigos dos
@@ -1035,7 +1070,7 @@ plano, pois essas regiões oscilam em torno de um mesmo patamar, ao passo que em
 regiões não estruturadas o contorno é inclinado.
 Portanto, onde o contorno for plano sua derivada deve ser igual a zero. Então,
 calculando a derivada do contorno, encontramos as regiões que supostamente
-contém conteúdo estruturado, conforme ilustrado na Figura \ref{fig:deriv}.
+contêm conteúdo estruturado, conforme ilustrado na Figura \ref{fig:deriv}.
 Um vez identificadas, as regiões são analisadas com relação ao seus conjuntos de
 códigos (ou símbolos do alfabeto). Caso as regiões compartilhem parte do
 alfabeto com regiões adjacentes, estas são combinadas para formar uma única
@@ -1045,7 +1080,7 @@ região, conforme Algoritmo \ref{alg:merge}.
 \caption{Calcula contorno superior de uma sequência de \textit{tag paths}}
 \label{alg:contour}
 \textbf{Input:} $tps$ - a $TPS$ de uma árvore DOM \\
-\textbf{Output:} o contorno da $tps$ 
+\textbf{Output:} o contorno da $tps$
 \begin{algorithmic}[1]
 \Function{contour}{tps}
 \State $maxHeight \leftarrow 0$ 
@@ -1061,7 +1096,7 @@ região, conforme Algoritmo \ref{alg:merge}.
 \end{algorithmic}
 \end{algorithm}
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
      \includegraphics[width=\textwidth]{img/contour-pt.jpg}
   \caption{Contorno da TPS com as principais regiões identificadas.}
@@ -1075,7 +1110,7 @@ região, conforme Algoritmo \ref{alg:merge}.
   \label{fig:deriv}
 \end{figure}
 
-\begin{algorithm}[h]
+\begin{algorithm}[H]
 \caption{Combina regiões com alfabetos em comum}
 \label{alg:merge}
 \textbf{Input:} $regs$ - regiões em ordem ascendente de posição na TPS\\
@@ -1128,7 +1163,7 @@ solução ótima, utilizando programação dinâmica. O \textit{cluster} com maior
 centro é considerado como conteúdo e as regiões do \textit{cluster} com menor
 centro são descartadas. Supõe-se que exista ao menos uma região de dados.
 
-\begin{algorithm}[h]
+\begin{algorithm}[H]
 \caption{Identifica regiões estruturadas}
 \label{alg:struct}
 \textbf{Input:} $regs$ - conjunto de regiões\\
@@ -1148,7 +1183,7 @@ centro são descartadas. Supõe-se que exista ao menos uma região de dados.
 \end{algorithmic}
 \end{algorithm}
 
-\begin{algorithm}[h]
+\begin{algorithm}[H]
 \caption{Identifica regiões com ruído}
 \label{alg:noise}
 \textbf{Input:} $regs$ - conjunto de regiões\\
@@ -1186,7 +1221,7 @@ eficiente em tempo $O(nlogn)$. Essas informações são utilizadas para encontrar
 uma estimativa para o período de cada região.
 
 Como as regiões estruturadas são cíclicas, o período de cada uma dessas regiões
-corresponde ao tamanho dos registros que ela contém, conforme ilustrado na
+corresponde ao tamanho dos registros que elas contêm, conforme ilustrado na
 Figura \ref{fig:fft}. O Algoritmo \ref{alg:period} apresenta o cálculo da
 estimativa de tamanho e quantidade de registros, conforme descrito a seguir.
 
@@ -1209,13 +1244,13 @@ registros, os símbolos da região são analisados para encontrar qual deles melhor
 divide a sequência em registros (Algoritmo \ref{alg:recs}). Os símbolos são
 analisados do menor para o maior (ordem ascendente), pois os códigos são
 atribuídos incrementalmente, o que significa que quanto menor o código de um
-símbolo, antes ele surgiu na sequência, portanto os símbolos devem ser
-analisados nesta mesma ordem.
+símbolo, antes ele surgiu na sequência (e, portanto, está mais próximo da raiz),
+por esse motivo os símbolos devem ser analisados nesta mesma ordem.
 O \textit{score} de cada símbolo é calculado a partir da estimativa de tamanho e
 quantidade de registros e, também, do percentual total da região coberta por
-aquele símbolo, caso ele seja selecionado, como demostrado nas Equações
+aquele símbolo, como demostrado nas Equações
 \ref{eq:scoreSize}, \ref{eq:scoreCount} e \ref{eq:scoreCoverage} e
-\ref{eq:scoreTotal} e na Figura \ref{fig:fft}.
+\ref{eq:scoreTotal} e na Figura \ref{fig:fft}a.
 
 %\begin{small}
 \begin{equation}\label{eq:scoreSize}
@@ -1240,8 +1275,8 @@ são alinhadas com um algoritmo de alinhamento de múltiplas sequências (MSA), o
 alinhamento de múltiplas sequências foi demonstrado NP-hard
 \cite{msanphard2006}, portanto soluções aproximadas com complexidade polinomial
 precisam ser utilizadas. Este é o caso do \textit{center star} que além de
-fornecer uma solução aproximada em tempo polinomial, ainda dá garantias de erro
-máximo.
+fornecer uma solução aproximada em tempo polinomial, também tem garantias de
+erro máximo.
 
 \begin{figure}[h]
   \centering
