@@ -370,7 +370,7 @@ ser calculada de forma eficiente utilizando-se a FFT, como mostra a Equação
 $X_k$ e a autocorrelação $C_{x_n}$ de $x_n$ é igual a transformada inversa
 do produto de $X_k$ com seu conjugado complexo. O produto $(X_k \cdot X_k^*)$ é
 calculado em tempo $O(n)$, $X_k$ é calculado em $O(nlogn)$ assim como a
-transformação inversa, portanto a complexidade de tempo para calculo da
+transformação inversa, portanto a complexidade de tempo para cálculo da
 autocorrelação é $O(nlogn)$.
 \end{definition}
 \begin{equation}\label{eq:xcorr}
@@ -401,7 +401,7 @@ potência coincide, neste caso, com o período principal da sequência original.
 \begin{definition}[\textbf{Derivada discreta}].
 \label{def:diff}
 A derivada de uma sequência discreta, também chamada de ``diferença'', é
-apenas o calculo da diferença entre valores vizinhos da sequência, conforme
+apenas o cálculo da diferença entre valores vizinhos da sequência, conforme
 definido na Equação \ref{eq:diff}, onde ``$d$'' é a derivada discreta
 da sequência ``$x$''.
 \end{definition}
@@ -1059,11 +1059,14 @@ O Algoritmo \ref{alg:tree2seq} detalha a construção da sequência.
 \Procedure{convertToSeq}{node,tp,tps by ref.}
 \State $tp \leftarrow concat(tp,$``/''$,node.$tag$,node.style)$
 \If {$tp \ni tagPathMap$}
-\State $tagPathMap \leftarrow tagPathMap + \{tp\}$ \State $tagPathMap[tp].code
-\leftarrow tagPathMap.size$ \EndIf \State $TPS \leftarrow
-concat(tps,tagPathMap[tp].code);$
+\State $tagPathMap \leftarrow tagPathMap + \{tp\}$ 
+\State $tagPathMap[tp].code \leftarrow tagPathMap.size$ 
+\EndIf 
+\State $tps \leftarrow concat(tps,tagPathMap[tp].code);$
 \For {each $child$ of $node$}
-\State $convertToSeq(child,tp,tps)$ \EndFor \EndProcedure
+\State $convertToSeq(child,tp,tps)$ 
+\EndFor 
+\EndProcedure
 \end{algorithmic}
 \end{algorithm}
 
@@ -1194,7 +1197,7 @@ centro são descartadas. Supõe-se que exista ao menos uma região de dados.
 \State $structuredRegs \leftarrow \emptyset$
 \For {$i \leftarrow 1..n$}
 \State $angularCoef \leftarrow linearRegression(regs[i])$ 
-\If {$angularCoef<10^\circ$}
+\If {$|angularCoef|<10^\circ$}
 \State $structuredRegs \leftarrow structuredRegs \cup regs[i])$
 \EndIf 
 \EndFor 
@@ -1219,9 +1222,9 @@ centro são descartadas. Supõe-se que exista ao menos uma região de dados.
 \For {$i \leftarrow 1..n$}
 \State $regionCenter \leftarrow \frac{regs[i].start +
 regs[i].end}{2}$
-\State $positionScore \leftarrow 1-\frac{abs(tpsCenter -
-regionCenter)}{maxDistance}$ \State $sizeScore \leftarrow
-\frac{length(regs[i])}{tpsSize}$ \State $score[i] \leftarrow \frac{positionScore+sizeScore}{2}$
+\State $positionScore \leftarrow 1-\frac{|tpsCenter - regionCenter|}{maxDistance}$ 
+\State $sizeScore \leftarrow \frac{length(regs[i])}{tpsSize}$ 
+\State $score[i] \leftarrow \frac{positionScore+sizeScore}{2}$
 \EndFor
 \State $clusters \leftarrow kmeans1D(regs, score, 2)$ \Comment{força dois clusters}
 \For {$i \leftarrow 1..n$}
@@ -1315,7 +1318,7 @@ erro máximo.
 \Function{estimatePeriod}{region}
 \State $region \leftarrow region - mean(region)$
 \State $fftRegion \leftarrow FFT(region)$
-\State $powerSpectrum \leftarrow abs(fftRegion)^2$
+\State $powerSpectrum \leftarrow |fftRegion|$
 \State $xCorr \leftarrow InverseFFT(fftRegion \cdot fftRegion^*)$
 \State $xCorrPeaks \leftarrow sort(xCorr,descending)$
 \State $n \leftarrow length(region)$
