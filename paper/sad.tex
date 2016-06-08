@@ -796,6 +796,24 @@ O algoritmo foi comparado ao MDR \cite{MDR03}, ViNTs \cite{vints2005} e FiVaTech
 \cite{fivatech2010} com resultados superiores de 100\% de precisão e 99.5\% de
 \textit{recall}.
 
+
+Em \cite{datapath2015} é proposta uma técnica de extração de registros
+utilizando \textit{clustering} de subárvores do DOM para identificar as regiões
+de registros da página. As subárvores são ``clusterizadas'' de acordo com a
+similaridade do conjunto de \textit{tag paths} que cada uma contém. Os
+\textit{clusters} resultantes são combinados ou eliminados de acordo com as
+informações visuais (posição e área ``renderizada'') das subárvores contidas em
+cada um. Os \textit{clusters} remanescentes são as regiões de registros. Os
+registros são, então, convertidos para sequências de \textit{tag paths} e
+alinhados. O algoritmo de alinhamento seleciona o maior registro do conjunto
+como ``\textit{master}'' contra o qual os demais registros são alinhados um a
+um. No alinhamento são considerados apenas \textit{tags} \texttt{<img>} e
+\texttt{\#text}. Os algoritmo foi comparado ao DEPTA \cite{depta05},
+apresentando resultados superiores de 94.31\% de precisão e 97.51\% de
+\textit{recall} utilizando \textit{dataset} dos próprios autores contendo
+páginas de 50 \textit{sites} reais.
+
+
 Em \cite{autorm2015} é proposta uma técnica chamada AutoRM (Automatic data
 Record Mining). O algoritmo proposto é baseado no DEPTA \cite{depta05}, que
 utiliza a \textit{tree edit distance} para encontrar as regiões e os registros.
@@ -952,6 +970,7 @@ p{0.4cm}} \hline\hline
 \rownumber & \citeonline{viper05} & registros & única & sim & sim & não & não & não\\
 \rownumber & \citeonline{vide10} & registros & única & sim & sim & sim & não & não\\
 \rownumber & \citeonline{clustVX2014} & registros & única & sim & sim & não & não & não\\
+\rownumber & \citeonline{datapath2015} & registros & única & sim & sim & sim & não & não\\
 \rownumber & \citeonline{autorm2015} & registros & única & não & sim & não & não & não\\
 \rownumber & \citeonline{RRunner01} & registros & múlt. & sim & não & não & não & sim\\
 \rownumber & \citeonline{exalg2003} & registros & múlt. & sim & não & não & não & não\\
