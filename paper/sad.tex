@@ -46,22 +46,24 @@ Galante} \bancaMembroB[\ABNTinstituicaodata]{Prof. Dr. Renato Fileto}
 
 \epigrafe{}{}
 
-\textoResumo{ Durante o levantamento do estado da arte a respeito do tema
-``extração de dados estruturados da \textit{web}'', foram identificados, entre
-os trabalhos mais relevantes, três  grupos  principais  de  abordagens:
+\textoResumo{ A extração de dados estruturados, apesar de ser um assunto
+bastante estudado, ainda representa um problema em aberto e também apresenta
+outras questões ainda não totalmente esgotadas como, por exemplo, a utilização
+de métricas mais adequadas e \textit{baseline} e/ou \textit{datasets}
+padronizados para facilitar a comparação entre as diversas propostas. Durante o
+levantamento do estado da arte a respeito do tema ``extração de dados
+estruturados da \textit{web}'', foram identificados, entre os trabalhos mais
+relevantes, três  grupos  principais  de  abordagens:
 extração de listas e tabelas; extração a partir de uma única página e extração a
-partir de múltiplas páginas. Esta área, apesar de bastante estudada, ainda
-representa um problema em aberto e também apresenta outras questões ainda não
-totalmente esgotadas como, por exemplo, a utilização de métricas mais adequadas
-e \textit{baseline} e/ou \textit{datasets} padronizados para facilitar a
-comparação entre as diversas propostas.  Em vista dos desafios existentes, esta
-pesquisa apresenta uma proposta, inédita, que aborda o problema de extração a
-partir de uma única página. A abordagem converte a árvore DOM da página
-\textit{web} para uma sequência de \textit{tag paths} e trata esta sequência
-como um ``sinal discreto'' a partir do qual são identificadas as regiões com
-conteúdo estruturado, através da utilização de técnicas de processamento de
-sinais (FFT, autocorrelação, etc). A seguir é realizada a filtragem,
-identificação e alinhamento dos registros das regiões identificadas.
+partir de múltiplas páginas. Em vista dos desafios existentes, esta pesquisa
+apresenta uma proposta, inédita, que aborda o problema de extração a partir de
+uma única página. A abordagem converte a árvore DOM da página \textit{web} para
+uma sequência de \textit{tag paths} e trata esta sequência como um ``sinal
+discreto'' a partir do qual são identificadas as regiões com conteúdo
+estruturado, através da utilização de técnicas de processamento de sinais
+discretos (FFT, autocorrelação, regressão linear, etc) e, em seguida, é
+realizada a filtragem, identificação e alinhamento dos registros das regiões
+identificadas.
 }
 
 \palavrasChave{}
@@ -942,6 +944,7 @@ informações e detalhes indispensáveis para tanto.
 \begin{tiny}
 \caption{Comparativo entre abordagens de extração de dados estruturados.}
 \label{table:compare}
+%\rotatebox{-90}{
 \begin{tabular}
 {p{0.05cm}|p{4cm} p{0.8cm} p{0.5cm} p{0.3cm} p{0.4cm} p{0.4cm} p{0.2cm}
 p{0.4cm}} \hline\hline
@@ -976,6 +979,7 @@ p{0.4cm}} \hline\hline
 \rownumber & \citeonline{exalg2003} & registros & múlt. & sim & não & não & não & não\\
 \rownumber & \citeonline{fivatech2010} & registros & múlt. & sim & não & não & não & não\\
 \end{tabular}
+%}
 \end{tiny}
 \end{table}
 
