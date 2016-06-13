@@ -90,21 +90,29 @@ identificadas.
 \sumario
 
 \chapter{Introdução}
-A extração de dados estruturados da web vem sendo estudada já há algum tempo em
-função de sua importância, que se deve à grande quantidade de informação
-estruturada disponível para extração que, de outra forma, não poderia ser
-utilizada de maneira relacional, apenas textual (ou não estruturada). Os
-objetivos que motivam a extração dessas informações são inúmeros, assim como os
-desafios envolvidos na realização desta tarefa. De acordo com
-\cite{structured2011}, a extração de dados estruturados é uma tarefa árdua, pois
-as informações são provenientes de diversas fontes e são publicadas de maneira
-desorganizada.
+A extração de dados estruturados da web vem sendo estudada já há algum
+tempo\footnote{Em \cite{RRunner01}, publicação mais antiga considerada de
+relevância nesta pesquisa, são menciandos trabalhos de extração estruturada
+publicados entre os anos de 1997-1999} em função de sua importância, que se deve
+à grande quantidade de informação estruturada disponível para extração que, de
+outra forma, não poderia ser manipulada de maneira relacional (utilizando SQL,
+por exemplo), apenas textual (ou não estruturada). Os objetivos que motivam a
+extração dessas informações são inúmeros (enriquecer pesquisas por
+palavra-chave, comparação de preços, meta-pesquisa, etc.), assim como os
+desafios envolvidos na realização desta tarefa como, por exmeplo, identificar as
+regiões de dados, identificar os registros, alinhar os campos dos registros,
+integrar os dados, entre outros.
+De acordo com \cite{structured2011}, a extração de dados estruturados é uma
+tarefa árdua, pois as informações são provenientes de diversas fontes e são
+publicadas de maneira desorganizada.
 
 \section{Contexto}
 
 Apesar de bastante estudada, a extração de dados estruturados ainda é um
 problema em aberto. Diversas formulações foram sugeridas para o problema e foram
-propostas várias abordagens para cada formulação.
+propostas várias abordagens para cada formulação, como se pode verificar no
+Capítulo \ref{ch:trab}, onde são apresentados vários trabalhos de extração,
+cada um sugerindo uma abordagem distinta para o problema.
 
 Extrair dados estruturados a partir de fontes não estruturadas (ou
 semiestruturadas) não é uma tarefa trivial. A estrutura dos dados tem que ser
@@ -113,27 +121,28 @@ documento que foi criado para ser utilizado por pessoas e não por máquinas,
 \textit{i.e.}, as informações são disponibilizadas de maneira a facilitar a
 leitura e não para serem processada por sistemas computacionais.
 
-Além da estrutura sintática dos dados, para que as informações possam ser
-utilizadas, é necessário identificar a qual entidade os dados se referem e quais
-atributos da entidade estão representados nas instâncias identificadas.  Para
-realizar esta tarefa, a utilização de taxonomias, ontologias, bases de
-conhecimento e afins, é imprescindível.
+% Além da estrutura sintática dos dados, para que as informações possam ser
+% utilizadas, é necessário identificar a qual entidade do mundo real os dados se
+% referem e quais atributos da entidade estão representados nas instâncias
+% identificadas.  Para realizar esta tarefa, a utilização de taxonomias,
+% ontologias, bases de conhecimento e afins, é imprescindível.
 
 Umas vez que as informações foram estruturadas, a entidade e os atributos
 identificados e os dados integrados, é possível utilizar essas bases de dados de
 maneira relacional para, por exemplo, contextualizar consultas por palavras
-chaves utilizando as relações, construir bases de dados para determinados
-domínios (e.g., comparação de preços de produtos), realizar meta-pesquisa, entre
-outras aplicações.
+chaves utilizando as relações, construir bases de dados para
+determinados domínios (e.g., comparação de preços de produtos), realizar meta-pesquisa, entre
+outras aplicações \cite{webtables2008, relationalWeb2008, 2015webtables}.
 
 As propostas existentes abordam várias formas do problema de extração
 estruturada. De acordo com o levantamento realizado, foram identificadas três
-formulações distintas que abrangem os trabalhos mais relevantes nesta área:
+formas distintas de abordagem que abrangem os trabalhos mais relevantes nesta
+área:
 extração de tabelas/listas, extração de registros, dedução de \textit{template}.
 
-Em \cite{listExtract2009,topklists2013,tegra2015} o problema é formulado como
-extração de tabelas e/ou listas. São abordagens com escopo mais limitado, que
-tem por objetivo extrair apenas tabelas formatadas com a \textit{tag}
+Em \cite{listExtract2009,topklists2013,tegra2015}, por exemplo, o problema é
+tratado como extração de tabelas e/ou listas. São abordagens com escopo mais
+limitado, que tem por objetivo extrair apenas tabelas formatadas com a \textit{tag}
 \texttt{<table>}, listas de itens formatadas com \textit{tag}
 \texttt{<ul/ol>} ou formatadas por \textit{templates} específicos.
 
@@ -168,8 +177,9 @@ sua aplicação em larga escala. Em relação à generalidade da abordagem, as
 informações disponíveis na \textit{web} possuem formatos heterogêneos, mesmo
 quando se considera apenas um domínio de conhecimento, por esta razão, as
 propostas de abordagem, para este problema, devem ser gerais o suficiente para
-que funcionem a contento nos mais diversos \textit{templates} e domínios. Devido
-à enorme quantidade de dados, a precisão do processo de extração deve ser
+que funcionem a contento nos mais diversos \textit{templates} de \textit{web
+sites} e domínios.
+Devido à enorme quantidade de dados, a precisão do processo de extração deve ser
 priorizada, em detrimento do \textit{recall} se necessário, pois uma baixa
 precisão resultaria em uma enorme quantidade de ``ruído'' sendo extraído e
 integrado à base relacional comprometendo, assim, sua utilização.
@@ -195,7 +205,7 @@ identificada (\textit{e.g.} alinhamento de registros);
 \item desenvolver um \textit{framework} de extração estruturada;
 \item criar \textit{datasets} com ampla cobertura para avaliação de métodos de
 extração;
-\item propor novas métricas para avaliação dos resultados.
+%\item propor novas métricas para avaliação dos resultados.
 \end{itemize}
 
 \section{Contribuições}
@@ -425,8 +435,8 @@ processamento de sinais discretos podem ser encontradas em
 
 \chapter{Trabalhos Relacionados}\label{ch:trab}
 
-Durante o levantamento foram identificadas duas tendências principais de
-pesquisa: uma delas, mais adotada pela indústria (\textit{e.g.},
+Durante o levantamento do estado da arte foram identificadas duas tendências
+principais de pesquisa: uma delas, mais adotada pela indústria (\textit{e.g.},
 \cite{webtables2008,tablesMS2012,listExtract2009,tegra2015,2015webtables,relationalWeb2008,topklists2013}),
 com foco no uso de dados maciços e a outra, mais acadêmica (\textit{e.g.},
 \cite{RRunner01, vips03, viper05, MDR03, NET05, TPC09, vide10}), com foco maior
@@ -447,13 +457,18 @@ futuros. Em contrapartida, as pesquisas desenvolvidas pela acadêmia podem não
 produzir resultados concretos imediatamente, diferente do que ocorre,
 geralmente, na indústria.
 
-Uma questão problemática identificada durante o levantamento foi a comparação
-entre as diversas propostas existentes devido, principalmente, aos seguintes
-fatores:
+Uma questão problemática identificada durante o levantamento foi a maneira como
+são realizadas as comparações entre as diversas propostas existentes devido,
+principalmente, aos seguintes fatores:
 \begin{itemize}
     \item a maioria das propostas não teve sua implementação disponibilizada publicamente;
-    \item os \textit{datasets} utilizados são diferentes, não existe padronização e, muitas vezes, também não são disponibilizados publicamente como no caso dos trabalhos desenvolvidos pela indústria que dependem de uma quantidade maciça de dados;
-    \item as métricas normalmente utilizadas (\textit{recall}, precisão e \textit{f-measure}) não são adequadas para medir a eficácia dos trabalhos de extração estruturada e alinhamento de registros, conforme exposto em \cite{ariex2016,survey2013}.
+    \item os \textit{datasets} utilizados são diferentes, não existe padronização e, muitas vezes, 
+    também não são disponibilizados publicamente \cite{survey2013}, como no caso
+    dos trabalhos desenvolvidos pela indústria que dependem de uma quantidade maciça de dados;
+    \item as métricas normalmente utilizadas (\textit{recall}, precisão e \textit{f-measure}) 
+    não são adequadamente empregadas na medição da eficácia dos
+    trabalhos de extração estruturada e alinhamento de registros, conforme
+    exposto em \cite{ariex2016}.
 \end{itemize}
 
 De acordo com levantamentos recentes (\cite{survey2013,survey2014}) as propostas
@@ -591,10 +606,9 @@ A extração de registros a partir de uma única página é realizada, geralmente,
 através da identificação de padrões na árvore DOM. Esta forma de extração é
 considerada em \cite{structured2011} como a generalização da extração de tabelas
 sendo, portanto, de maior complexidade, pois não existe uma declaração explícita
-da tabulação dos dados.
-
-Uma desvantagem desta abordagem é que são necessários ao menos dois registros em
-uma mesma página para que o padrão seja passível de identificação.
+da tabulação dos dados. Uma desvantagem desta abordagem é que são necessários ao
+menos dois registros em uma mesma página para que o padrão seja passível de
+identificação.
 
 Em \cite{MDR03} é proposta uma técnica de extração de registros chamada MDR
 (\textit{mining data records}). A abordagem consiste em localizar as regiões do
@@ -928,16 +942,16 @@ se são utilizadas ou não e; se existe \textbf{implementação} publicamente
 disponível.
 
 Idealmente, o que se procura é uma abordagem computacionalmente eficiente
-(\textit{i.e.}, que não necessite de treinamento ou ``renderização'' a página e
-tenha complexidade de tempo polinomial), que seja baseada em observações
-gerais e não em regras heurísticas ou bases de conhecimento que
-comprometam sua generalidade e sua validade no longo prazo. Além desses
-atributos, para permitir a replicação e facilitar a compração e a análise das
-propostas, estas devem ser disponibilizadas publicamente (bem como os
-\textit{datasets}). Em muitos casos não é possível sequer implementar uma
-abordagem, de forma independente, a partir da sua publicação, pois faltam
-informações e detalhes indispensáveis para tanto.
- 
+(\textit{i.e.}, que não necessite de treinamento ou ``renderização'' da página e
+tenha complexidade de tempo polinomial), que seja baseada em observações gerais
+e não em regras heurísticas ou bases de conhecimento que comprometam sua
+generalidade e sua validade no longo prazo. Além desses atributos, para permitir
+a replicação e facilitar a compração e a análise das propostas, estas devem ser
+disponibilizadas publicamente (bem como os \textit{datasets}). Em muitos casos
+não é possível sequer implementar uma abordagem, de forma independente, a partir
+da sua publicação, pois faltam informações e detalhes indispensáveis para tanto.
+A proposta apresenta no Capítulo \ref{ch:prop} foi elaborada tendo em vista
+estes requisitos.
 
 \setcounter{magicrownumbers}{0}
 \begin{table}[h]
@@ -987,13 +1001,13 @@ p{0.4cm}} \hline\hline
 \chapter{Proposta}\label{ch:prop}
 
 A seguir são apresentados os desafios e perspectivas nesta área de pesquisa, na
-Seção \ref{sec:persp}, e em seguida, uma proposta para abordagem do problema de
-extração estruturada, composta das etapas de: limpeza do código HTML e
-construção da árvore DOM (Seção \ref{sec:dom}); construção da sequência de
-\textit{tag paths} (Seção \ref{sec:tps}); contorno da sequência, derivada e
-segmentação (Seção \ref{sec:contour}); filtragem das regiões (Seção
-\ref{sec:filter}); identificação e alinhamento dos registros (Seção
-\ref{sec:align}).
+Seção \ref{sec:persp}, e em seguida, com base em sua análise, é apresentada uma
+proposta para abordagem do problema de extração estruturada, composta das etapas
+de: limpeza do código HTML e construção da árvore DOM (Seção \ref{sec:dom});
+construção da sequência de \textit{tag paths} (Seção \ref{sec:tps}); contorno da
+sequência, derivada e segmentação (Seção \ref{sec:contour}); filtragem das
+regiões (Seção \ref{sec:filter}); identificação e alinhamento dos registros
+(Seção \ref{sec:align}).
 
 A proposta tem como requisitos ser geral, eficiente e não
 supervisionada para que possa ser aplicada em larga em escala. Para garantir a
@@ -1009,43 +1023,46 @@ para que haja distinção entre elas, portanto serão formadas por conjuntos de \te
 paths} diferentes, caso contrário não haveria diferença visual
 significativa entre as regiões de uma página.
 \item[Registros:] regiões com conteúdo semiestruturado são compostas por
-conjuntos de registros semelhantes e contíguos, descritos por sequências de
-\textit{tag paths} semelhantes sendo, portanto, regiões cíclicas.
+conjuntos de registros contíguos e com estrutura semelhantes, 
+descritos por sequências de \textit{tag paths} semelhantes sendo, portanto, regiões cíclicas.
 \end{description} 
 
 \section{Desafios e Perspectivas}\label{sec:persp}
 
-A extração estruturada é composta por diversas etapas: extração, identificação
-do \textit{schema}, integração e consulta. Nesta pesquisa o foco foi dirigido
+A extração estruturada pode ser composta por diversas etapas: extração,
+identificação do \textit{schema}, integração e consulta. Nesta pesquisa o foco foi dirigido
 para fase de extração, que foi decomposta em: identificação das regiões de
 registros, identificação dos registros e alinhamento dos campos.
 
-Diante do levantamento realizado, foi constatado que existem, ainda, muitos
-problemas em aberto nesta área de pesquisa e, até o presente momento, não existe
-nenhum consenso, considerando o problema como resolvido, com relação a nenhuma
-das etapas do processo de extração estruturada.
+Diante do levantamento bibliográfico realizado, foi constatado que existem,
+ainda, muitos problemas em aberto nesta área de pesquisa e, até o presente
+momento, não existe nenhum consenso com relação a nenhuma das etapas do processo
+de extração estruturada.
 
 Os resultados apresentados pelas abordagens existentes são satisfatórios,
 geralmente, apenas nos \textit{datasets} elaborados pelos próprios autores, o
 que indica que esses algoritmos foram, provavelmente, especializados para esses
 conjuntos de dados e que, portanto, não generalizam bem, pois em comparações
-subsequentes apresentaram resultados muito aquém dos originalmente publicados.
+subsequentes apresentaram resultados muito aquém dos originalmente publicados
+(no Capítulo \ref{ch:trab} podem ser encontradas situações desse tipo).
 Sendo assim, existe bastante espaço para pesquisa de novas técnicas e algoritmos
 mais gerais para o problema de estruturação da informação.
 
 Com relação ao alinhamento de registros, muitas das técnicas sequer abordam esta
 etapa. Apesar de ser uma área muito estudada na bioinformática (\textit{e.g.},
-alinhamento de sequências de DNA), poucas soluções foram propostas
-especificamente para área de \textit{data mining web}. Não é raro que
-particularidades de um problema específico acabem levando a soluções melhores,
+alinhamento de sequências de DNA \cite{seqalignwiki}), poucas soluções
+foram propostas especificamente para área de \textit{data mining web}
+\cite{viper05,depta05,datapath2015}.
+Não é raro que particularidades de um problema específico acabem levando a soluções melhores,
 portanto também existe espaço para propostas de novas abordagem para o problema
 de alinhamento de registros.
 
 Além de existir espaço para proposta de novas abordagens para os problemas em
-si, existem espaço, também, para propostas de padronização para esta área de
-pesquisa, pois conforme apontado em levantamentos recentes
+si, existe espaço, também, para propostas de \textit{benchmarking} para esta
+área de pesquisa, pois conforme apontado em levantamentos recentes
 \cite{survey2013,survey2014} existe carência de \textit{datasets} padronizados
-para \textit{baseline} e de métricas especializadas para o problema. 
+para \textit{baseline} e de métricas especializadas para o problema
+\cite{ariex2016}.
 
 Outra questão apontada nesses levantamentos, e em diversas outras publicações,
 foi a disponibilização pública das abordagens para que os experimentos possam
@@ -1105,8 +1122,8 @@ O Algoritmo \ref{alg:tree2seq} detalha a construção da sequência.
 \section{Contorno, derivada e segmentação}\label{sec:contour}
 Após a construção da sequência de \textit{tag paths} é realizado o cálculo do
 contorno da sequência, conforme Algoritmo \ref{alg:contour}. Como os códigos dos
-\textit{tag paths} (os símbolos) são \textbf{incrementais} a sequência sempre
-avança para um novo patamar cada vez que um novo caminho é encontrado e nas
+\textit{tag paths} (os símbolos) são \textbf{incrementais}, a sequência sempre
+avança para um novo patamar, cada vez que um novo caminho é encontrado e nas
 regiões com registros a sequência oscila, pois os registros possuem estruturas
 semelhantes e, portanto, compartilham os mesmos símbolos, ou seja, os símbolos
 se repetem nas regiões estruturadas do documento, conforme ilustra a Figura
