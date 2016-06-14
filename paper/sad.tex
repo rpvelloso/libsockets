@@ -1,8 +1,6 @@
 \sloppy
 \documentclass{ufscThesis}
 
-
-
 \usepackage{graphicx}
 \usepackage[labelsep=endash]{caption}
 \usepackage{algorithmicx}
@@ -49,7 +47,7 @@ Galante} \bancaMembroB[\ABNTinstituicaodata]{Prof. Dr. Renato Fileto}
 \textoResumo{ A extração de dados estruturados, apesar de ser um assunto
 bastante estudado, ainda representa um problema em aberto e também apresenta
 outras questões ainda não totalmente esgotadas como, por exemplo, a utilização
-de métricas mais adequadas e \textit{baseline} e/ou \textit{datasets}
+adequada das métricas e \textit{baselines} e/ou \textit{datasets}
 padronizados para facilitar a comparação entre as diversas propostas. Durante o
 levantamento do estado da arte a respeito do tema ``extração de dados
 estruturados da \textit{web}'', foram identificados, entre os trabalhos mais
@@ -199,7 +197,8 @@ Os objetivos específicos são:
 \item desenvolver um método de segmentação de um documento HTML que identifique
 as regiões da página com conteúdo semiestruturado;
 \item desenvolver um método que identifique quais das regiões semiestruturadas
-possuem conteúdo e quais possuem ruído (menus, template, anúncios, etc.);
+possuem conteúdo e quais possuem ruído (menus, \textit{template}, anúncios,
+etc.);
 \item desenvolver um método de estruturação da informação semiestruturada
 identificada (\textit{e.g.} alinhamento de registros);
 \item desenvolver um \textit{framework} de extração estruturada;
@@ -316,17 +315,17 @@ $body$ até a célula da tabela $td_4$ é $TP_4=``body/table/tr/td"$.
 
 \begin{definition}[\textbf{Sequência de \textit{tag paths}}].
 \label{def:tps} 
-Uma sequência de \textit{tag paths} (TPS) de
-uma árvore DOM com ``n'' nós é definida como sendo a sequência ordenada
-$TPS[1..n] = (TP_1,TP_2,TP_3, ...,TP_{n-1},TP_n)$ onde dois \textit{tag paths}
-$TP_i$ e $TP_j$, com $i\neq{}j$, são considerados iguais apenas se seus caminhos
-e suas definições de estilo são iguais, caso contrário eles são considerados
-diferentes. Os caminhos da árvore DOM são percorridos em profundidade e para
-cada caminho é atribuído um código, de maneira incremental.
+Uma sequência de \textit{tag paths} (TPS) de uma árvore DOM com ``n'' nós é
+definida como sendo a sequência ordenada $TPS[1..n] = (TP_1,TP_2,TP_3,
+...,TP_{n-1},TP_n)$ onde dois \textit{tag paths} $TP_i$ e $TP_j$, com
+$i\neq{}j$, são considerados iguais apenas se seus caminhos e suas definições de
+estilo são iguais, caso contrário eles são considerados diferentes. Os caminhos
+da árvore DOM são percorridos em profundidade e para cada caminho é atribuído um
+código, de maneira incremental.
 \end{definition}
-\textbf{Exemplo.} Na Figura \ref{fig:ex1} é exibida a $TPS$ de um trecho
-de código HTML, onde cada $TP$ recebe um código, incremental, produzindo $TPS =
-(1,2,3,4,4,3,4,4)$.
+\textbf{Exemplo.} Na Figura \ref{fig:ex1} é exibido o processo de construção da
+$TPS$ de um trecho de código HTML, onde cada $TP$ recebe um código, incremental,
+produzindo $TPS = (1,2,3,4,4,3,4,4)$.
 Na sequência de \textit{tag paths} os \textit{tag paths} não são representados
 pelas suas \textit{strings}, mas sim por códigos (ou símbolos), com objetivo de
 facilitar sua manipulação, onde \textit{tag paths} iguais recebem o mesmo
@@ -376,12 +375,12 @@ potência, respectivamente, de forma eficiente.
 A autocorrelação é a correlação de uma sequência discreta com ela própria
 deslocada nos intervalos de $[1..n-1]$, onde $n$ é o tamanho da sequência. A
 autocorrelação pode ser utilizada, entre outras aplicações, para verificar se
-uma sequência é cíclica, com período ``$p$'', \textit{i.e.}, se ela se parece com
-ela mesma quando deslocada de ``$p$''. A autocorrelação de uma sequência pode
-ser calculada de forma eficiente utilizando-se a FFT, como mostra a Equação
+uma sequência é cíclica, com período ``$p$'', \textit{i.e.}, se ela se parece
+com ela mesma quando deslocada de ``$p$''. A autocorrelação de uma sequência
+pode ser calculada de forma eficiente utilizando-se a FFT, como mostra a Equação
 \ref{eq:xcorr}, onde $X_k$ é a FFT de $x_n$, $X_k^*$ é o conjugado complexo de
-$X_k$ e a autocorrelação $C_{x_n}$ de $x_n$ é igual a transformada inversa
-do produto de $X_k$ com seu conjugado complexo. O produto $(X_k \cdot X_k^*)$ é
+$X_k$ e a autocorrelação $C_{x_n}$ de $x_n$ é igual a transformada inversa do
+produto de $X_k$ com seu conjugado complexo. O produto $(X_k \cdot X_k^*)$ é
 calculado em tempo $O(n)$, $X_k$ é calculado em $O(nlogn)$ assim como a
 transformação inversa, portanto a complexidade de tempo para cálculo da
 autocorrelação é $O(nlogn)$.
@@ -389,8 +388,9 @@ autocorrelação é $O(nlogn)$.
 \begin{equation}\label{eq:xcorr}
 C_{x_n} = InverseFFT(X_k \cdot X_k^*)
 \end{equation}
-\textbf{Exemplo.} A Figura \ref{fig:fft}b apresenta a autocorrelação da
-sequência da Figura \ref{fig:fft}a. Como a sequência é cíclica, sua
+\textbf{Exemplo.} A Figura \ref{fig:fft}a apresenta uma região estruturada
+(cíclica) de uma página \textit{web} real (Figura \ref{fig:tps}) cuja
+autocorrelação é exibida na Figura \ref{fig:fft}b. Como a sequência é cíclica, sua
 autocorrelação apresenta picos intervalados pelo período.
 
 \begin{definition}[\textbf{Espectro de potência}].
@@ -402,13 +402,14 @@ sequência de valores complexos, é calculado conforme a Equação
 \ref{eq:complex}, para cada posição de $X_k$.
 \end{definition}
 \begin{equation}\label{eq:power}
-P_{x_n} = |X_k|
+P_{x_n} = |X_k|^2
 \end{equation}
 \begin{equation}\label{eq:complex}
-|a + i \cdot b|=\sqrt{a^2 + b^2}
+|a + i \cdot b|^2=(\sqrt{a^2 + b^2})^2=a^2 + b^2
 \end{equation}
-\textbf{Exemplo.} A Figura \ref{fig:fft}c apresenta o espectro de potência da
-sequência da Figura \ref{fig:fft}a. O componente de frequência com maior
+\textbf{Exemplo.} A Figura \ref{fig:fft}a apresenta uma região estruturada
+(cíclica) de uma página \textit{web} real (Figura \ref{fig:tps}) cujo espectro  
+de potência é exibido na Figura \ref{fig:fft}c. O componente de frequência com maior
 potência coincide, neste caso, com o período principal da sequência original.
 
 \begin{definition}[\textbf{Derivada discreta}].
@@ -451,11 +452,12 @@ lista de resultados, retornar a resposta para a pergunta que foi feita.
 A linha de pesquisa adotada pela indústria trata de problemas bem específicos,
 com escopo bem delimitado e aplicabilidade imediata (\textit{e.g.}, extrair
 apenas tabelas formatadas com \textit{tag} \texttt{<table>}), enquanto a
-academia se preocupa com problemas mais gerais, muitas vezes produzindo
-resultados intermediários, que podem servir para o desenvolvimento de trabalhos
-futuros. Em contrapartida, as pesquisas desenvolvidas pela acadêmia podem não
-produzir resultados concretos imediatamente, diferente do que ocorre,
-geralmente, na indústria.
+academia se preocupa com problemas mais gerais\footnote{\textit{e.g.}, extrair
+tabelas independente das \textit{tags} utilizadas na sua formatação}, muitas
+vezes produzindo resultados intermediários, que podem servir para o desenvolvimento de
+trabalhos futuros. Em contrapartida, as pesquisas desenvolvidas pela academia
+podem não produzir resultados com aplicabilidade comercial imediata, diferente
+do que ocorre, geralmente, na indústria.
 
 Uma questão problemática identificada durante o levantamento foi a maneira como
 são realizadas as comparações entre as diversas propostas existentes devido,
@@ -511,7 +513,7 @@ autores também apresentam uma abordagem para indexar e pesquisar resultados
 relacionais a partir de palavras-chave utilizando um índice distribuído próprio
 para conteúdo relacional. Em \cite{2015webtables}, são apresentadas várias
 aplicações, melhoramentos e desdobramentos atuais desenvolvidos em cima da
-pesquisa incial.
+pesquisa inicial.
 
 Em \cite{listExtract2009}, pesquisa desenvolvida em conjunto com o Google, o
 objetivo da abordagem é extrair tabelas relacionais a partir de listas contidas
@@ -685,8 +687,8 @@ precisão 98.9\% para registros aninhados e \textit{recall} 99.9\% e precisão
 99.4\% para registros não aninhados.
 
 Em \cite{SuffixTree12} é proposta uma técnica para extração de registros chamada
-STEM (Suffix Tree-based data record Extracting Method). O algoritmo proposto
-processa páginas HTML individuais. A árvore DOM é convertida para a mesma
+STEM (\textit{Suffix Tree-based data record Extracting Method}). O algoritmo
+proposto processa páginas HTML individuais. A árvore DOM é convertida para a mesma
 representação utilizada em \cite{TPC09} (sequência de \textit{tag paths}). A
 partir da sequência é construída sua árvore de sufixos \cite{ukkonen1995} que
 trata-se de uma estrutura de dados que permite realizar uma série de
@@ -946,7 +948,7 @@ Idealmente, o que se procura é uma abordagem computacionalmente eficiente
 tenha complexidade de tempo polinomial), que seja baseada em observações gerais
 e não em regras heurísticas ou bases de conhecimento que comprometam sua
 generalidade e sua validade no longo prazo. Além desses atributos, para permitir
-a replicação e facilitar a compração e a análise das propostas, estas devem ser
+a replicação e facilitar a comparação e a análise das propostas, estas devem ser
 disponibilizadas publicamente (bem como os \textit{datasets}). Em muitos casos
 não é possível sequer implementar uma abordagem, de forma independente, a partir
 da sua publicação, pois faltam informações e detalhes indispensáveis para tanto.
@@ -1086,8 +1088,25 @@ encontrado da raiz da árvore até cada um de seus nós é atribuído um código,
 conforme ilustrado na Figura \ref{fig:ex1}. A sequência tem as seguintes
 propriedades: o tamanho da sequência é igual ao número de nós na árvore DOM;
 caminhos iguais recebem códigos iguais e; os códigos são atribuídos
-incrementalmente.
+incrementalmente. A Figura \ref{fig:tps} apresenta a construção da TPS de uma
+página \textit{web} real, esta TPS é utilizada nas próximas seções para
+ilustrar cada etapa do processo de extração.
 O Algoritmo \ref{alg:tree2seq} detalha a construção da sequência.
+
+\begin{figure}[h]
+  \centering
+     \includegraphics[width=\textwidth]{img/example1-pt.jpg}
+  \caption{Exemplo de uma sequência de \textit{tag paths} construída a partir do código HTML.}
+  \label{fig:ex1}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+     \includegraphics[angle=0,width=\textwidth]{img/creat-tps-pt.jpg}
+  \caption{TPS construída a partir de uma página \textit{web} real; região
+  principal destacada.}
+  \label{fig:tps}
+\end{figure}
 
 \begin{algorithm}[H]
 \caption{Converte árvore DOM para de sequência de \textit{tag paths}}
@@ -1111,26 +1130,19 @@ O Algoritmo \ref{alg:tree2seq} detalha a construção da sequência.
 \end{algorithmic}
 \end{algorithm}
 
-\begin{figure}[h]
-  \centering
-     \includegraphics[width=\textwidth]{img/example1-pt.jpg}
-  \caption{Exemplo de uma sequência de \textit{tag paths} construída a partir do código HTML.}
-  \label{fig:ex1}
-\end{figure}
-\vspace{3cm}
-
 \section{Contorno, derivada e segmentação}\label{sec:contour}
 Após a construção da sequência de \textit{tag paths} é realizado o cálculo do
-contorno da sequência, conforme Algoritmo \ref{alg:contour}. Como os códigos dos
+contorno da sequência, conforme Algoritmo \ref{alg:contour}. O contorno é o
+valor máximo encontrado na sequência até cada posição. Como os códigos dos
 \textit{tag paths} (os símbolos) são \textbf{incrementais}, a sequência sempre
-avança para um novo patamar, cada vez que um novo caminho é encontrado e nas
-regiões com registros a sequência oscila, pois os registros possuem estruturas
-semelhantes e, portanto, compartilham os mesmos símbolos, ou seja, os símbolos
-se repetem nas regiões estruturadas do documento, conforme ilustra a Figura
-\ref{fig:contour}.
+avança para um novo valor máximo cada vez que um novo caminho é encontrado, e
+nas regiões com registros a sequência oscila, pois os registros possuem
+estruturas semelhantes e, portanto, compartilham os mesmos símbolos, ou seja, os
+símbolos se repetem nas regiões estruturadas do documento, como ilustrado na
+Figura \ref{fig:contour}.
 
 O motivo pelo qual o contorno é calculado é que nas regiões estruturadas ele é
-plano, pois essas regiões oscilam em torno de um mesmo patamar, ao passo que em
+plano, pois essas regiões oscilam, mantendo o valor máximo, ao passo que em
 regiões não estruturadas o contorno é inclinado.
 Portanto, onde o contorno for plano sua derivada deve ser igual a zero. Então,
 calculando a derivada do contorno, encontramos as regiões que supostamente
@@ -1162,14 +1174,16 @@ região, conforme Algoritmo \ref{alg:merge}.
 
 \begin{figure}[H]
   \centering
-     \includegraphics[width=\textwidth]{img/contour-pt.jpg}
-  \caption{Contorno da TPS com as principais regiões identificadas.}
+     \includegraphics[trim={55 200 40
+     210},clip,width=\textwidth]{img/contour-pt.pdf} \caption{Contorno da TPS,
+     calculado com Algoritmo \ref{alg:contour}.}
   \label{fig:contour}
 \end{figure}
 
 \begin{figure}[h]
   \centering
-     \includegraphics[width=\textwidth]{img/derivada-pt.jpg}
+     \includegraphics[trim={55 200 40
+     210},clip,width=\textwidth]{img/derivada-pt.pdf}
   \caption{Derivada do contorno da TPS.}
   \label{fig:deriv}
 \end{figure}
@@ -1205,15 +1219,21 @@ Uma vez que a sequência foi segmentada em regiões, este conjunto de regiões é
 submetido a dois filtros.
 
 No primeiro filtro (Algoritmo \ref{alg:struct}) é calculada a regressão linear
-de cada região e analisado seu coeficiente angular. Se a inclinação for maior
-que um determinado limiar a região é descartada por não possuir conteúdo
-estruturado. Este procedimento é adotado, pois mesmo após a segmentação da
-sequência utilizando a derivada do contorno, ainda é possível que algumas
-regiões identificadas não possuam conteúdo estruturado. O coeficiente angular da
-regressão linear é uma boa medida para identificar conteúdo estruturado, pois
-essas regiões são cíclicas (ou estáveis na terminologia utilizada em
-processamento de sinais) e, portanto, sua regressão linear será uma reta com
-coeficiente angular próximo de zero como exemplificado na Figura \ref{fig:fft}a.
+de cada região e analisado seu coeficiente angular. A idéia é utilizar a
+regressão linear da região para determinar qual a tendência da sua TPS,
+\textit{i.e.}, se a sequência está avançando/subindo, então a reta terá
+inclinação/angulação elevada significando, neste caso, que o conteúdo não é
+estruturado; ou, então, se a sequência é cíclica, então a reta terá angulação
+reduzida indicando, portanto, que seu conteúdo é estruturado.
+Se a inclinação da reta for maior que um determinado limiar a região é
+descartada por não possuir conteúdo estruturado. Este procedimento é adotado,
+pois mesmo após a segmentação da sequência utilizando a derivada do contorno,
+ainda é possível que algumas regiões identificadas não possuam conteúdo
+estruturado. O coeficiente angular da regressão linear é uma boa medida para
+identificar conteúdo estruturado, pois as regiões estruturadas são cíclicas (ou
+estáveis na terminologia utilizada em processamento de sinais) e, portanto, sua
+regressão linear será uma reta com coeficiente angular próximo de zero como
+exemplificado na Figura \ref{fig:fft}a.
 
 O segundo filtro (Algoritmo \ref{alg:noise}) serve para identificar se a região,
 apesar de ter conteúdo estruturado, não se trata de ``ruído'' (menus,
@@ -1224,8 +1244,9 @@ ao documento como um todo. As regiões são ``clusterizadas'' em dois
 \textit{clusters} utilizando o algoritmo proposto em \cite{1dkmeans2011} que é
 uma versão do algoritmo \textit{kmeans} para uma dimensão (1D) que garante
 solução ótima, utilizando programação dinâmica. O \textit{cluster} com maior
-centro é considerado como conteúdo e as regiões do \textit{cluster} com menor
-centro são descartadas. Supõe-se que exista ao menos uma região de dados.
+centro (onde estão as regiões com maior \textit{score}) é considerado como
+conteúdo e as regiões do \textit{cluster} com menor centro são descartadas.
+Supõe-se que exista ao menos uma região de dados.
 
 \begin{algorithm}[H]
 \caption{Identifica regiões estruturadas}
@@ -1278,42 +1299,53 @@ centro são descartadas. Supõe-se que exista ao menos uma região de dados.
 \end{algorithm}
 
 \section{Identificação e alinhamento dos registros}\label{sec:align}
-Após a filtragem das regiões é calculado o espectro de potência e a
-autocorrelação para cada uma delas. Ambos os cálculos são realizados de forma
-eficiente em tempo $O(nlogn)$. Essas informações são utilizadas para encontrar
-uma estimativa para o período de cada região.
+Uma vez que as regiões que contêm registros foram identificadas é necessário
+encontrar os pontos onde essas regiões podem ser subdivididas em registros.
+Para realização desta tarefa é necessário que se conheça a \textbf{quantidade de
+registros} e o \textbf{tamanho dos registros}.
 
-Como as regiões estruturadas são cíclicas, o período de cada uma dessas regiões
-corresponde ao tamanho dos registros que elas contêm, conforme ilustrado na
-Figura \ref{fig:fft}. O Algoritmo \ref{alg:period} apresenta o cálculo da
-estimativa de tamanho e quantidade de registros, conforme descrito a seguir.
+Para encontrar estimativas razoáveis para estes valores (quantidade e tamanho de
+registros), são investigadas as propriedades cíclicas e de frequência da TPS da
+região. Especificamente, é calculada a autocorrelação e o espectro de potência
+para cada região.
+
+Como as regiões estruturadas são cíclicas, o \textbf{período} de cada uma dessas
+regiões corresponde ao \textbf{tamanho dos registros} que elas contêm e a
+\textbf{frequência} associada a este período corresponde à \textbf{quantidade
+de registros}, conforme ilustrado na Figura \ref{fig:fft}.
+O Algoritmo \ref{alg:period} apresenta o cálculo da estimativa de tamanho e
+quantidade de registros (período e frequência), conforme descrito a seguir.
 
 Cada ponto da curva de autocorrelação corresponde a um deslocamento da sequência
 em relação à ela mesma. Os pontos com maior correlação são possíveis períodos,
 pois significam que a sequência tem uma correlação maior com ela mesma deslocada
-até aquele ponto, \textit{e.g.}, se existe uma autocorrelação siginificativa com
-deslocamento igual $15$, pode siginificar que os registros tem um tamanho médio
-de $15$ nós e uma quantidade (ou frequência) aproximada de $\frac{n}{15}$, onde
-$n$ é o tamanho total da região.
+até aquele ponto, \textit{e.g.}, se existe uma autocorrelação significativa com
+deslocamento igual $30$, pode significar que os registros tem um tamanho médio
+de $30$ posições e uma quantidade (ou frequência) aproximada de $\frac{n}{30}$,
+onde $n$ é o tamanho total da região.
 Desta forma, os picos da autocorrelação são ordenados do maior para o menor
-(Figura \ref{fig:fft}b) e seus períodos são convertidos para frequência (Figura
-\ref{fig:fft}c) para verificação contra o espectro de frequência da região. O
-período da autocorrelação que possuir correspondência com o maior pico no
-espectro de frequência é adotado como sendo o valor provável do tamanho e
-quantidade dos registros.
+valor de correlação (Figura \ref{fig:fft}b) e seus respectivos períodos são
+convertidos para frequência (Figura \ref{fig:fft}c) para verificação contra o
+espectro de potência da região. O ponto de autocorrelação que possuir
+correspondência com o maior pico no espectro de potência é adotado como sendo
+o valor mais provável do tamanho e quantidade dos registros, pois tanto seu
+valor de autocorrelação quanto sua potência são relativamente elevados.
 
 Após a apuração dos valores mais prováveis de tamanho e quantidade dos
 registros, os símbolos da região são analisados para encontrar qual deles melhor
 divide a sequência em registros (Algoritmo \ref{alg:recs}). Os símbolos são
-analisados do menor para o maior (ordem ascendente), pois os códigos são
-atribuídos incrementalmente, o que significa que quanto menor o código de um
-símbolo, antes ele surgiu na sequência (e, portanto, está mais próximo da raiz),
-por esse motivo os símbolos devem ser analisados nesta mesma ordem.
+analisados do menor para o maior (ordem ascendente), pois seus códigos são
+atribuídos \textit{incrementalmente}, o que significa que quanto menor o código
+de um símbolo, antes ele surgiu na sequência (e, portanto, está mais próximo da
+raiz da árvore DOM). Ao favorecer símbolos com valores menores (analisando-os
+em ordem ascendente), evita-se que um símbolo contido no meio dos registros
+(e não no início) seja utilizado para subdivisão da região, comprometendo o
+resultado da extração.
 O \textit{score} de cada símbolo é calculado a partir da estimativa de tamanho e
 quantidade de registros e, também, do percentual total da região coberta por
-aquele símbolo, como demostrado nas Equações
-\ref{eq:scoreSize}, \ref{eq:scoreCount} e \ref{eq:scoreCoverage} e
-\ref{eq:scoreTotal} e na Figura \ref{fig:fft}a.
+aquele símbolo, como demonstrado nas Equações \ref{eq:scoreSize},
+\ref{eq:scoreCount} e \ref{eq:scoreCoverage} e \ref{eq:scoreTotal} e na Figura
+\ref{fig:fft}a.
 
 %\begin{small}
 \begin{equation}\label{eq:scoreSize}
@@ -1344,8 +1376,8 @@ erro máximo.
 \begin{figure}[h]
   \centering
      \includegraphics[width=\textwidth]{img/fftxcorr-pt.jpg}
-  \caption{a) TPS e regressão linear; b) autocorrelação; c) FFT e estimativas
-  de quantidade e tamanho dos registros.}
+  \caption{a) TPS e regressão linear da região; b) autocorrelação; c) FFT e
+  estimativas de quantidade e tamanho dos registros.}
   \label{fig:fft}
 \end{figure}
 
@@ -1358,7 +1390,7 @@ erro máximo.
 \Function{estimatePeriod}{region}
 \State $region \leftarrow region - mean(region)$
 \State $fftRegion \leftarrow FFT(region)$
-\State $powerSpectrum \leftarrow |fftRegion|$
+\State $powerSpectrum \leftarrow |fftRegion|^2$
 \State $xCorr \leftarrow InverseFFT(fftRegion \cdot fftRegion^*)$
 \State $xCorrPeaks \leftarrow sort(xCorr,descending)$
 \State $n \leftarrow length(region)$
@@ -1424,6 +1456,22 @@ $score_{size} = \frac{min(estimatedPeriod,size)}{max(estimatedPeriod,size)}$
 % ViDE) schema inference (Probase e/ou ACSDb, não tem como fugir das bases de
 % conhecimento) indexação de tabelas (webtables, analisar a proposta e procurar
 % por melhorias)
+\vspace{2cm}
+\section{Cronograma}
+As próximas etapas e o cronograma desta pesquisa são as seguintes:
+\begin{enumerate}
+  \item \textbf{levantamento bibliográfico}: leitura de artigos, teses e
+  dissertações para levantamento do estado da arte (até 12/2018);
+  \item \textbf{realização de experimentos}: realização de testes e experimentos com a
+  abordagem proposta utilizando \textit{datasets} disponíveis publicamente
+  para comparação com as demais abordagens existentes (até 12/2016);
+  \item \textbf{publicação dos artigos}: escrita e publicação de artigos em
+  congressos e periódicos (até 12/2017);
+  \item \textbf{disponibilização do \textit{framework}}: finalização da codificação do
+  \textit{framework} C++/Lua \cite{luahome}, documentação da API e disponibilização publica (até 12/2017);
+  \item \textbf{qualificação}: defesa do exame de qualificação (até 6/2017);
+  \item \textbf{defesa}: finalização da escrita da tese e apresentação da defesa final (até 12/2018).
+\end{enumerate}
 
 \bibliographystyle{ufscThesis/ufsc-alf}
 \bibliography{refs}
