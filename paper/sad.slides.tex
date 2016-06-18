@@ -5,6 +5,74 @@
 \usepackage{array}
 \usepackage{listings}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%  \zoombox[box line width]{contents}
+%
+%  optimized version for beamer: in full screen, zoom boxes are centred
+%  in the viewer; useable with any documenclass
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\makeatletter
+\newsavebox\zb@x
+\newcounter{z@@m}
+\usepackage{calc}
+\newdimen\B@r\newdimen\P@r
+\newdimen\@zw\newdimen\@zh\newdimen\@zd
+
+\newcommand{\zoombox}[2][0]{%
+  \leavevmode%
+  \sbox\zb@x{#2}%
+  \setlength\B@r{1pt*\ratio{\wd\zb@x}{\ht\zb@x+\dp\zb@x}}%
+  \setlength\P@r{1pt*\ratio{\paperwidth}{\paperheight}}%
+  \ifdim\B@r>\P@r\relax%
+    \setlength\@zw{\wd\zb@x}\setlength\@zh{\@zw*\ratio{\paperheight}{\paperwidth}}%
+    \setlength\@zd{(\@zh-\ht\zb@x-\dp\zb@x)*\real{0.5}+\dp\zb@x}%
+    \setlength\@zh{\@zh-\@zd}%
+  \else%
+    \setlength\@zh{\ht\zb@x+\dp\zb@x}%
+    \setlength\@zw{\@zh*\ratio{\paperwidth}{\paperheight}}%
+    \setlength\@zh{\ht\zb@x}\setlength\@zd{\dp\zb@x}%
+  \fi%
+  \makebox[0pt][l]{\makebox[\wd\zb@x][c]{\makebox[\@zw][l]{%
+    \pdfdest name {zbfs\thez@@m} fitr
+      width  \@zw\space
+      height \@zh\space
+      depth  \@zd\space
+  }}}%
+  \pdfdest name {zb\thez@@m} fitr
+    width  \wd\zb@x\space
+    height \ht\zb@x\space
+    depth  \dp\zb@x\space
+  \immediate\pdfannot 
+    width  \wd\zb@x\space
+    height \ht\zb@x\space
+    depth  \dp\zb@x\space
+  {%
+    /Subtype/Link/H/N
+    /Border [0 0 #1 [1 2]]
+    /A <<
+      /S/JavaScript
+      /JS (
+        if(typeof(zoomed)=='undefined'||!zoomed){
+          var lastView=this.viewState;
+          if(app.fs.isFullScreen) this.gotoNamedDest('zbfs\thez@@m');
+          else this.gotoNamedDest('zb\thez@@m');
+          zoomed=true;
+        }else{
+          this.viewState=lastView;
+          zoomed=false;
+        }
+      )
+    >>
+  }%
+  \usebox{\zb@x}%
+  \stepcounter{z@@m}%
+} 
+\makeatother
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 \usetheme{Laughlin}
 
 \begin{document}
@@ -34,7 +102,11 @@
 \titlepage
 } 
 
-\frame{\frametitle{Sumário}\tableofcontents}
+\frame{\frametitle{Sumário}
+\begin{small}
+\tableofcontents
+\end{small}
+}
 
 \section{Introdução}
 %\frame{\tableofcontents[currentsection]}
@@ -124,8 +196,8 @@ métodos de extração;
 \frame{\frametitle{Extração de Tabelas e Listas}
 Abordagens fazem suposições \textbf{fortes} a respeito da entrada.
 \begin{itemize}
-  \item webtables google (\texttt{<table>}) (2008);
-  \item webtables M\$ (\texttt{<table>}) (2012);
+  \item WebTables Google/ACSDb (\texttt{<table>}) (2008);
+  \item WebTables M\$/Probase (\texttt{<table>}) (2012);
   \item ListExtract (\texttt{<ol/ul/etc.>}) (2009);
   \item Tegra (ListExtract da M\$) (\texttt{<ol/ul/etc.>}) (2015);
   \item \textit{Top-k pages} (\textit{template} fixo) (2013).
@@ -148,7 +220,7 @@ Algumas abordagens ``gerais'':
 \frame{\frametitle{Extração a partir de múltiplas páginas}
 Utilizam uma ``amostra'' do \textit{template} do \textit{site} para treinamento.
 São capazes de extrair conteúdo de páginas com apenas um registro.
-(\textit{i.e., páginas de detalhe}).
+(\textit{i.e.}, páginas de detalhe).
 \begin{itemize}
   \item RoadRunner (2001);
   \item ExAlg (2003);
@@ -189,11 +261,94 @@ descritos por sequências de \textit{tag paths} semelhantes sendo, portanto, reg
 \frame{\frametitle{$Tag$ $paths$}
 \begin{figure}[H]
   \caption{Construção da sequência de $tag$ $paths$ (TPS) a partir do HTML.}
-  \label{fig:ex1}
   \centering
-    \includegraphics[scale=0.45]{img/example1-pt.jpg}
+    \zoombox{\includegraphics[scale=0.45]{img/example1-pt.jpg}}
+\end{figure}
+}
+\frame{\frametitle{$Tag$ $paths$}
+\begin{figure}[H]
+  \caption{Construção da sequência de $tag$ $paths$ (TPS) a partir do HTML.}
+  \centering
+    \zoombox{\includegraphics[width=\textwidth]{img/creat-tps-pt.jpg}}
 \end{figure}
 }
 
+\frame{\frametitle{$Tag$ $paths$}
+\begin{figure}[H]
+  \caption{Sequência de $tag$ $paths$ (TPS).}
+  \centering
+    \zoombox{\includegraphics[width=\textwidth]{img/tps-pt.jpg}}
+\end{figure}
+}
+
+\subsection{Detecção das Regiões Semiestruturadas}
+\frame{\frametitle{Contorno superior}
+\begin{figure}[H]
+  \caption{Contorno superior da TPS.}
+  \centering
+    \zoombox{\includegraphics[trim={55 200 40
+     210},clip,scale=0.45]{img/contour-pt.pdf}}
+\end{figure}
+}
+\frame{\frametitle{Derivada do Contorno}
+\begin{figure}[H]
+  \caption{Derivada do contorno superior da TPS.}
+  \centering
+    \zoombox{\includegraphics[trim={55 200 40
+     210},clip,scale=0.45]{img/derivada-pt.pdf}}
+\end{figure}
+}
+\subsection{Filtragem das Regiões}
+\frame{\frametitle{Regressão Linear - Identificação da Estrutura}
+\begin{figure}[H]
+  \caption{Regressão linear da região.}
+  \centering
+    \zoombox{\includegraphics[scale=0.25]{img/region-pt.jpg}}
+\end{figure}
+}
+
+\frame{\frametitle{Clustering das Regiões - Identificação do Ruído}
+\begin{itemize}
+\item O \textit{score} da região utilizado para clusterização é diretamente
+proporcional ao tamanho da subsequência e inversamente proporcional à distância
+que se encontra do centro da sequência completa;
+\item É utilizado ``kmeans ótimo de uma dimensão'', forçando a criação de dois
+\textit{clusters};
+\item O \textit{cluster} com maior centro é considerado conteúdo e o outro
+\textit{cluster} (com menor centro) é descartado.
+\end{itemize}
+
+
+
+}
+\subsection{Subdivisão em Registros}
+\frame{\frametitle{Estimando tamanho e quantidade de registros}
+\begin{figure}[H]
+  \caption{a) TPS e regressão linear da região; b) autocorrelação; c) Espectro
+  de potência e estimativas de quantidade e tamanho dos registros.}
+  \centering
+    \zoombox{\includegraphics[scale=0.25]{img/fftxcorr-pt.jpg}}
+\end{figure}
+}
+
+\subsection{Alinhamento dos Registros}
+
+
 \section{Cronograma}
+\frame{\frametitle{Cronograma da pesquisa}
+\begin{enumerate}
+  \item \textbf{levantamento bibliográfico}: leitura de publicações para
+  levantamento do estado da arte \textbf{(até 12/2018)};
+  \item \textbf{realização de experimentos}: realização de testes e experimentos com a
+  abordagem proposta utilizando \textit{datasets} disponíveis publicamente
+  para comparação com as demais abordagens existentes \textbf{(até 12/2016)};
+  \item \textbf{publicação dos artigos}: escrita e publicação de artigos em
+  congressos e periódicos \textbf{(até 12/2017)};
+  \item \textbf{disponibilização do \textit{framework}}: finalização da codificação do
+  \textit{framework} C++/Lua, documentação da API e disponibilização pública
+  \textbf{(até 12/2017)};
+  \item \textbf{qualificação}: exame de qualificação \textbf{(até 6/2017)};
+  \item \textbf{defesa}: escrita da tese e defesa final \textbf{(até 12/2018)}.
+\end{enumerate}
+}
 \end{document}
