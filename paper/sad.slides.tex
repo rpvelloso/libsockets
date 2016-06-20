@@ -329,8 +329,39 @@ que se encontra do centro da sequência completa;
 \end{figure}
 }
 
-\subsection{Alinhamento dos Registros}
+\frame{\frametitle{Identificação dos Registros}
+\begin{small}
+\begin{equation}\label{eq:scoreSize}
+score_{tamanho} = \frac{min(tamanhoMedio, periodoEstimado)}{max(tamanhoMedio,
+periodoEstimado)}
+\end{equation}
+\begin{equation}\label{eq:scoreCount}
+score_{quantidade} = \frac{min(quantidade, frequenciaEstimada)}{max(quantidade,
+frequenciaEstimada)}
+\end{equation}
+\begin{equation}\label{eq:scoreCoverage}
+score_{cobertura}=\frac{posicaoRegistro_n - posicaoRegistro_1}{tamanhoTotalRegiao}
+\end{equation}
+\begin{equation}\label{eq:scoreTotal}
+score_{total}=\frac{score_{tamanho}+score_{quantidade}+score_{cobertura}}{3}
+\end{equation}
+\end{small}
+}
 
+\subsection{Alinhamento dos Registros}
+\frame{\frametitle{Center Star}
+Como o alinhamento ótimo de múltiplas sequências é \textit{NP-Hard},
+alternativas aproximadas, com complexidade polinomial, devem ser empregadas.
+
+\begin{itemize}
+\item Características do algoritmo \textit{Center Star}:
+\begin{itemize}
+  \item Não encontra necessariamente a solução ótima;
+  \item Tem complexidade computacional polinomial $O(N^2\cdot n)$;
+  \item Garante um erro máximo com relação à solução ótima.
+\end{itemize}
+\end{itemize}
+}
 
 \section{Cronograma}
 \frame{\frametitle{Cronograma da pesquisa}
