@@ -4,7 +4,7 @@
 \usepackage{algorithmicx}
 \usepackage[Algorithm,ruled]{algorithm}
 \usepackage{algpseudocode}
-\usepackage{balance}
+%\usepackage{balance}
 
 \title{Extracting Records from the Web Using a Signal Processing Approach}
 \numberofauthors{2}
@@ -31,11 +31,29 @@ Carina F. Dorneles\\
 
 \section{Introduction}
 
-The extraction of structured information from the web is, undeniably, both important and difficult. It is an important task due to the ever growing amount of information published and readily available on the web and, also, because structured information can be used to enrich, and allow, a number of applications (e.g., price comparison, semantic keyword search, metasearch, etc). It is a difficult task because the data is laid out for human consumption and published in a variety of formats and templates, as observed in \cite{structured2011}. Moreover, the Beckman report on database research\cite{abadi2014beckman} mentions the diversity of data as a key challenge in this research field.
+The extraction of structured information from the web is, undeniably, both
+important and difficult. It is an important task due to the ever growing amount
+of information published and readily available on the web and, also, because
+structured information can be used to enrich, and allow, a number of
+applications (e.g., price comparison, semantic keyword search, metasearch, etc).
+It is a difficult task because the data is laid out for human consumption and
+published in a variety of formats and templates, as observed in
+\cite{structured2011}. Moreover, the Beckman report on database
+research\cite{abadi2014beckman} mentions the diversity of data as a key
+challenge in this research field.
 
-Identifying the underling content structure in a web document was attempted before. The existing approaches range from solutions to specific instances of the problem (e.g., extracting only data formatted with \texttt{<table>}\cite{webtables2008}) to more broader attempts that search for patterns in a web document\cite{MDR03}.
+Identifying the underlying content structure in a web document was attempted
+before. The existing approaches range from solutions to specific instances of
+the problem (e.g., extracting only data formatted with
+\texttt{<table>}\cite{webtables2008}) to more broader attempts that search for
+patterns in a web document\cite{MDR03}.
 
-Here we outline a novel approach for the problem of structured extraction (or record extraction) from web pages, using an alternative representation of the DOM tree and some signal processing techniques. Our approach first converts the DOM tree to a sequence representation; segments the sequence into regions; identifies the regions with structured content; locates the records boundaries within the structured regions and; aligns the records into a table.
+Here we outline a novel approach for the problem of structured extraction (or
+record extraction) from web pages, using an alternative representation of the
+DOM tree and some signal processing techniques. Our approach first converts the
+DOM tree to a sequence representation; segments the sequence into regions;
+identifies the regions with structured content; locates the records boundaries
+within the structured regions and; aligns the records into a table.
 
 The main contributions presented here are:
 \begin{itemize}
@@ -45,40 +63,106 @@ The main contributions presented here are:
     \item a more efficient approach, when compared to the state of the art. That is due to the use of efficient signal processing algorithms. Most existing works rely mainly on dynamic programming (e.g., edit distance), clustering algorithms and/or full page rendering and hence are less efficient.
 \end{itemize}
 
-The rest of the paper is organized as follows. In Section \ref{sec:work} we briefly review the work related to structured extraction; in Section \ref{sec:defs} we presents some definitions required to better understand the proposed approach for the problem; in Section \ref{sec:prop} we outline the proposed approach; in Section \ref{sec:result} we discuss and compare the achieved results and; in Section \ref{} we conclude and present some ideas for future work.
+The rest of the paper is organized as follows. In Section \ref{sec:work} we
+briefly review the work related to structured extraction; in Section
+\ref{sec:defs} we presents some definitions required to better understand the
+proposed approach for the problem; in Section \ref{sec:prop} we outline the
+proposed approach; in Section \ref{sec:result} we discuss and compare the
+achieved results and; in Section \ref{sec:con} we conclude and present some
+ideas for future work.
 
 \section{Related Work}\label{sec:work}
 
-The task of extracting records from web pages has been approached from many angles. Some authors proposed \textit{ad hoc} solutions while others tried more broader approaches for the problem.
+The task of extracting records from web pages has been approached from many
+angles. Some authors proposed \textit{ad hoc} solutions while others tried more
+broader approaches for the problem.
 
-In \cite{webtables2008, listExtract2009, tablesMS2012, tegra2015, topklists2013} the records (or tables, for that matter) are extracted from very specific sources like data formatted with \texttt{<table>}, \texttt{<ul/ol/etc.>} or even specific templates. Although these approaches may seem to be limited, at least at a first glance, they actually yield sound results as documented in \cite{relationalWeb2008, probase, probase2012, acsdb}. Such results are due to the large amount and heterogeneity of data in the web. From that fact we get an important premise when dealing with web scale data: recall can be traded off for precision. And that is what those approaches are all about, they tackle very specific situations (sacrificing recall) in a very specialized way (ensuring high precision).
+In \cite{webtables2008, listExtract2009, tablesMS2012, tegra2015, topklists2013}
+the records (or tables, for that matter) are extracted from very specific
+sources like data formatted with \texttt{<table>}, \texttt{<ul/ol/etc.>} or even
+specific templates. Although these approaches may seem to be limited, at least
+at a first glance, they actually yield sound results as documented in
+\cite{relationalWeb2008, probase, probase2012, acsdb}. Such results are due to
+the large amount and heterogeneity of data in the web. From that fact we get an
+important premise when dealing with web scale data: recall can be traded off for
+precision. And that is what those approaches are all about, they tackle very
+specific situations (sacrificing recall) in a very specialized way (ensuring
+high precision).
 
-In the other hand, in \cite{RRunner01, exalg2003, vips03, viper05, MDR03, depta05, NET05, TPC09, vide10, gstm2010, fivatech2010, cvts2012, SuffixTree12, clustVX2014, datapath2015, autorm2015} more general approaches are proposed. These proposals try to solve the problem in a broader sense, some using machine learning techniques, others grounded on general observations about structured content. Although each of these works represent advances in the research field, they fail to provide readily usable results, unlike their \textit{ad hoc} counterparts, but they serve as stepping stones for future works to catch on.
+In the other hand, in \cite{RRunner01, exalg2003, vips03, viper05, MDR03,
+depta05, NET05, TPC09, vide10, gstm2010, fivatech2010, cvts2012, SuffixTree12,
+clustVX2014, datapath2015, autorm2015} more general approaches are proposed.
+These proposals try to solve the problem in a broader sense, some using machine
+learning techniques, others grounded on general observations about structured
+content. Although each of these works represent advances in the research field,
+they fail to provide readily usable results, unlike their \textit{ad hoc}
+counterparts, but they serve as stepping stones for future works to catch on.
 
-In \cite{TPC09, SuffixTree12, TPS2013} an alternative document representation is used. Instead of the DOM tree the document is converted to a sequence of tag paths. Such representation enables the use of algorithms targeted at strings and sequences (e.g., suffix tree/array\cite{ukkonen1995, manber1993suffix}, FFT\cite{fft1965}, lempel-ziv compression\cite{ziv1977universal}, etc.), which are vast and well studied \cite{gusfield1997algorithms}, unleashing new possibilities in this research field.
+In \cite{TPC09, SuffixTree12, TPS2013} an alternative document representation is
+used. Instead of the DOM tree the document is converted to a sequence of tag
+paths. Such representation enables the use of algorithms targeted at strings and
+sequences (e.g., suffix tree/array\cite{ukkonen1995, manber1993suffix},
+FFT\cite{fft1965}, lempel-ziv compression\cite{ziv1977universal}, etc.), which
+are vast and well studied \cite{gusfield1997algorithms}, unleashing new
+possibilities in this research field.
 
-Recent surveys\cite{survey2013, survey2014} about the subject of structured extraction have reached the same conclusion about the state of the art: existing works fail to definitively solve the problem, i.e., its still an open research problem.
+Recent surveys\cite{survey2013, survey2014} about the subject of structured
+extraction have reached the same conclusion about the state of the art: existing
+works fail to definitively solve the problem, i.e., its still an open research
+problem. Those surveys also agreed about the problem of comparing two different
+approaches in this research area: there is no standard dataset/baseline and most
+implementations are not publicly available.
 
 \section{Background}\label{sec:defs}
 In this section we define some concepts needed for the understanding of our approach.
 
-\begin{definition}\textbf{(Tag Path)} is a string describing the path from the root node of the DOM tree to every other node in the tree. For example: ``\texttt{html/body/table/tr/td/\#text}''. To better characterize each path we include style definitions of every node in the path, like this: ``\texttt{html/body/table/tr class=tbrow/td class=tbcell/\#text bgcolor=red}''.
+\begin{definition}\textbf{(Tag Path)} is a string describing the path from the
+root node of the DOM tree to every other node in the tree. For example:
+``\texttt{html/body/table/tr/td/\#text}''. To better characterize each path we
+include style definitions of every node in the path, like this:
+``\texttt{html/body/table/tr class=tbrow/td class=tbcell/\#text bgcolor=red}''.
 \end{definition}
 
-\begin{definition}\textbf{(Tag Path Code - TPC)} is a numeric ascending code assigned to every different tag path string encountered in the tree, in order of appearance. If a given path has occurred in the past, it is assigned the same code as before. The paths are built in depth first order. Figure \ref{fig:tree2seq} shows an example of this definition.
+\begin{definition}\textbf{(Tag Path Code - TPC)} is a numeric ascending code
+assigned to every different tag path string encountered in the tree, in order of
+appearance. If a given path has occurred in the past, it is assigned the same
+code as before. The paths are built in depth first order. Figure
+\ref{fig:tree2seq} shows an example of this definition.
 \end{definition}
 
-\begin{definition}\textbf{(Tag Path Sequence - TPS)} is a sequence of TPC in the same order as they were built from the DOM tree. Figure \ref{fig:tree2seq} shows the resulting TPS for an HTML snippet as  well as the set of TPC used for that the sequence. Here, in this paper, we also refer to TPS as simply ``sequence'', TPC as ``symbol'' and the set of TPC as ``alphabet''.
+\begin{definition}\textbf{(Tag Path Sequence - TPS)} is a sequence of TPC in the
+same order as they were built from the DOM tree. Figure \ref{fig:tree2seq} shows
+the resulting TPS for an HTML snippet as  well as the set of TPC used for that
+the sequence. Here, in this paper, we also refer to TPS as simply ``sequence'',
+TPC as ``symbol'' and the set of TPC as ``alphabet''.
 \end{definition}
 
-\begin{definition}\textbf{(Coefficient of Variation - CV)} is a statistical measure of data dispersion and is defined as the ratio between the standard deviation and the mean as shown in Equation \ref{eq:cv}. We use this measure to find out how well distributed a symbol is in a sequence. For example, consider the sequence $tps(1..12)=[1,2,3,4,5,4,5,4,5,6,4,5]$ and the symbol $s=4$ of this sequence; the symbol occurs at positions $[4,6,8,11]$ in the sequence and the distances between adjacent occurrences are $[6-4=2,8-6=2,11-8=3]$, so the CV for symbol $s$ is equal to $\frac{\sigma([2, 2, 3])}{\mu([2, 2, 3])}=0.24744=24,744\%$. The more regular the distance between adjacent occurrences, the lower the CV and vice versa.
+\begin{definition}\textbf{(Coefficient of Variation - CV)} is a statistical
+measure of data dispersion and is defined as the ratio between the standard
+deviation and the mean as shown in Equation \ref{eq:cv}. We use this measure to
+find out how well distributed a symbol is in a sequence. For example, consider
+the sequence $tps(1..12)=[1,2,3,4,5,4,5,4,5,6,4,5]$ and the symbol $s=4$ of this
+sequence; the symbol occurs at positions $[4,6,8,11]$ in the sequence and the
+distances between adjacent occurrences are
+$[6-4=\textbf{2},8-6=\textbf{2},11-8=\textbf{3}]$, so the CV for symbol ``$s$''
+is equal to $\frac{\sigma([2, 2, 3])}{\mu([2, 2, 3])}=0.24744=24,744\%$. The more
+regular the distance between adjacent occurrences, the lower the CV and vice
+versa.
 
 \begin{equation}\label{eq:cv}
     CV=\frac{\sigma}{\mu}
 \end{equation}
 \end{definition}
 
-\begin{definition}\textbf{(Discrete Fourier Transform - DFT)} is a mathematical transformation that decomposes a discrete sequence into its frequency components (Equation \ref{eq:dft}. The result of the transformation is complex-valued, the real part represents the amplitude and the imaginary part represents the phase. To evaluate the contribution of a frequency component in the overall sequence we use the power spectrum density (PSD), as defined in Equation \ref{eq:psd}. Figure \ref{fig:fftreg} shows a discrete sequence (a) and its corresponding PSD standardized to Z-Score (b).
+\begin{definition}\textbf{(Discrete Fourier Transform - DFT)} is a mathematical
+transformation that decomposes a discrete sequence into its frequency components
+(Equation \ref{eq:dft}). The result of the transformation is complex-valued, the
+real part represents the amplitude and the imaginary part represents the phase.
+To evaluate the contribution of a frequency component in the overall sequence we
+use the power spectrum density (PSD), which is real-valued, as defined in
+Equation \ref{eq:psd}.
+Figure \ref{fig:fftreg} shows a discrete sequence (a) and its corresponding PSD
+standardized to \textit{z score} (b).
 
 \begin{equation}\label{eq:dft}
     X_k=\sum_{n=0}^{N-1}{x_n\cdot e^{-2\pi ikn/N}}    
@@ -90,10 +174,18 @@ In this section we define some concepts needed for the understanding of our appr
 
 \end{definition}
 
-\begin{definition}\textbf{(Fast Fourier Transform - FFT)} is an efficient implementation of the DFT that yields the same result. The naive implementation of the DFT has $O(n^2)$ time complexity whereas the FFT has $O(nlogn)$ time complexity.
+\begin{definition}\textbf{(Fast Fourier Transform - FFT)} is an efficient
+implementation of the DFT that yields the same result. The naive implementation
+of the DFT has $O(n^2)$ time complexity whereas the FFT has $O(nlogn)$ time
+complexity. For many more details about DFT, FFT and discrete signal
+processing in general we refer the reader to \cite{oppenheim1989discrete},
+which covers the subject in great depth, since this is not the scope of this
+paper.
 \end{definition}
 
-\begin{definition}\textbf{(Finite Difference)} is the difference between adjacent values of a sequence as defined in Equation \ref{eq:diff}. We use the finite difference to delimit cyclic regions of a sequence.
+\begin{definition}\textbf{(Finite Difference)} is the difference between
+adjacent values of a sequence as defined in Equation \ref{eq:diff}. We use the
+finite difference to delimit cyclic regions of a sequence.
 
 \begin{equation}\label{eq:diff}
     d[n] = x[n] - x[n - 1]
@@ -101,15 +193,36 @@ In this section we define some concepts needed for the understanding of our appr
 \end{definition}
 
 \section{Proposal}\label{sec:prop}
-We present here, in this Section, the details of our proposal to tackle the problem of extracting data records from web pages. The technique is subdivided in four main steps, namely: sequence representation, region identification, record identification and record alignment. Each step is detailed in Subsections \ref{ss:seq}, \ref{ss:regi}, \ref{ss:reci} and \ref{ss:reca} respectively.
+We present here, in this Section, the details of our proposal to tackle the
+problem of extracting data records from web pages. The technique is subdivided
+in four main steps, namely: sequence representation, region identification,
+record identification and record alignment. Each step is detailed in Subsections
+\ref{ss:seq}, \ref{ss:regi}, \ref{ss:reci} and \ref{ss:reca} respectively.
 
-The whole process is based on the observation that the structured content of a document is organized and formatted in a clear and consistent way. In other words, the records are laid out so that it is obvious to the human reader that they are related to each other and they refer to same subject (or entity). Such an organization necessarily reflects on the structure of the DOM tree and its style definition and, consequently, on its tag path sequence representation.
+The whole process is based on the observation that the structured content of a
+document is organized and formatted in a clear and consistent way. In other
+words, the records are laid out so that it is obvious to the human reader that
+they are related to each other and they refer to same subject (or entity). Such
+an organization necessarily reflects on the structure of the DOM tree and its
+style definition and, consequently, on its tag path sequence representation.
 
 \subsection{Sequence Representation}\label{ss:seq}
-Most of the works in this area uses the DOM tree to represent the documents subjected to record extraction. We choose, instead, an alternative representation: a sequence of tag paths. This representation allows us to see the web page as a sequence instead of a tree, enabling us to make use of algorithms targeted at sequences. Such representation was used before
-in \cite{TPC09, SuffixTree12, TPS2013}.
+Most of the works in this area uses the DOM tree to represent the documents
+subjected to record extraction. We choose, instead, an alternative
+representation: a sequence of tag paths. This representation allows us to see
+the web page as a sequence instead of a tree, enabling us to make use of
+algorithms targeted at sequences. Such representation was used before in
+\cite{TPC09, SuffixTree12, TPS2013}.
 
-The translation process from DOM tree representation to tag path sequence is depicted in Figure \ref{fig:tree2seq} and detailed in Algorithm \ref{alg:tree2seq}. It is basically a depth first search that assembles the path from the root of the tree to every other node and assigns a code to each distinct path found. To help distinguish different regions of the document, during the region identification step, we've added style definitions to the tag paths, similar to what was done in \cite{clustVX2014} with the difference that here we use class and inline style attributes instead of rendering the entire document, avoiding the computational complexity associated with such a task.
+The translation process from DOM tree representation to tag path sequence is
+depicted in Figure \ref{fig:tree2seq} and detailed in Algorithm
+\ref{alg:tree2seq}. It is basically a depth first search that assembles the path
+from the root of the tree to every other node and assigns a code to each
+distinct path found. To help distinguish different regions of the document,
+during the region identification step, we've added style definitions to the tag
+paths, similar to what was done in \cite{clustVX2014} with the difference that
+here we use class and inline style attributes instead of rendering the entire
+document, avoiding the computational complexity associated with such a task.
 
 \begin{figure}[h]
   \centering
@@ -140,7 +253,13 @@ The translation process from DOM tree representation to tag path sequence is dep
 
 \subsection{Region Identification}\label{ss:regi}
 
-Before extracting the records itself we first isolate the regions that contain structured data. It is simpler and easier to extract records from a delimited region that is known to contain structured data than it is to do so from the entire document. The reason for this is that structured regions are cyclic, i.e., since the records have similar structure and are contiguous then its tag path sequence will display a cyclic behaviour as illustrate in Figure \ref{fig:stru}.
+Before extracting the records itself we first isolate the regions that contain
+structured data. It is simpler and easier to extract records from a delimited
+region that is known to contain structured data than it is to do so from the
+entire document. The reason for this is that structured regions are cyclic,
+i.e., since the records have similar structure and are contiguous then its tag
+path sequence will display a cyclic behaviour as illustrate in Figure
+\ref{fig:stru}.
 
 \begin{figure*}[h]
  \captionsetup{width=\textwidth}
@@ -150,7 +269,13 @@ Before extracting the records itself we first isolate the regions that contain s
   \label{fig:stru}
 \end{figure*}
 
-We can see in Figure \ref{fig:stru} that whenever there is structured content in the document, be it the main content, menus, or anything else, the corresponding interval in the sequence displays a cyclic behaviour. In other words, the sequence stabilizes during the structured portions. That happens because the records look alike and so their paths and styles repeat themselves. We took advantage of this observation to devise Algorithm \ref{alg:idreg} that isolates the structured segments of the sequence.
+We can see in Figure \ref{fig:stru} that whenever there is structured content in
+the document, be it the main content, menus, or anything else, the corresponding
+interval in the sequence displays a cyclic behaviour. In other words, the
+sequence stabilizes during the structured portions. That happens because the
+records look alike and so their paths and styles repeat themselves. We took
+advantage of this observation to devise Algorithm \ref{alg:idreg} that isolates
+the structured segments of the sequence.
 
 \begin{algorithm}
 \caption{Identifies structured regions in a document}
@@ -237,37 +362,82 @@ We can see in Figure \ref{fig:stru} that whenever there is structured content in
 \end{algorithmic}
 \end{algorithm}
 
-Algorithm \ref{alg:idreg} computes the contour of the input sequence and its first difference and then uses this to segment the document in several regions. The idea behind this procedure is that the first difference will be zero whenever the sequence stabilizes, i.e., its contour remains constant as shown in Figure \ref{fig:contour}. 
+Algorithm \ref{alg:idreg} computes the contour of the input sequence and its
+finite difference and then uses this to segment the document in several regions.
+The idea behind this procedure is that the finite difference will be zero
+whenever the sequence stabilizes, i.e., its contour remains constant as shown in
+Figure \ref{fig:contour}.
 
 \begin{figure}[h]
   \centering
      \includegraphics[trim={2.5cm 7.5cm 1cm 6.5cm}, width=\linewidth
      ]{img/contour.pdf}
-  \caption{a) Contour of a TPS; b) First difference of contour.}
+  \caption{a) Contour of a TPS; b) Finite difference of contour.}
   \label{fig:contour}
 \end{figure}
 
-The resulting regions are then merged together according to their alphabets (i.e., set of symbols that form the sequence). If two adjacent regions share a common alphabet, they are merged in a same region, if their alphabet is disjoint (i.e., they share no common symbols) they are kept apart.
+The resulting regions are then merged together according to their alphabets
+(i.e., set of symbols that form the sequence). If two adjacent regions share a
+common alphabet, they are merged in a same region, if their alphabet is disjoint
+(i.e., they share no common symbols) they are kept apart.
 
-At last, to ensure that the identified regions contain, in fact, structured content, they are filtered out according to their angular coefficient. This filtering step is necessary because when using the contour and its difference to segment the sequence, it is possible that some of the identified regions are spurious. If a region is indeed cyclic, its linear regression will yield a small angular coefficient. If it is not cyclic, then it is either increasing or decreasing and in both cases the linear regression will yield a much greater angular coefficient.
+At last, to ensure that the identified regions contain, in fact, structured
+content, they are filtered out according to their angular coefficient. This
+filtering step is necessary because when using the contour and its difference to
+segment the sequence, it is possible that some of the identified regions are
+spurious. If a region is indeed cyclic, its linear regression will yield a small
+angular coefficient. If it is not cyclic, then it is either increasing or
+decreasing and in both cases the linear regression will yield a much greater
+angular coefficient.
 
-The computational complexity of functions $contour$ and $segment$ are linear in the size of the input sequence. For functions $mergeRegions$ and $filterRegions$ the complexity is linear in the number of regions detected, which in turn have a worst case proportional to the size of the sequence, so the overall time complexity for function $idRegions$, in the worst case, is $O(n)$ where $n$ is the size of the sequence.
+The computational complexity of functions $contour$ and $segment$ are linear in
+the size of the input sequence. For functions $mergeRegions$ and $filterRegions$
+the complexity is linear in the number of regions detected, which in turn have a
+worst case proportional to the size of the sequence, so the overall time
+complexity for function $idRegions$, in the worst case, is $O(n)$ where $n$ is
+the size of the sequence.
 
 \subsection{Record Identification}\label{ss:reci}
 
-For each region identified in the previous step we now try to extract records out of it and rank those regions according to their content likelihood. To do so, we analyse the tag paths that appear in the sequence against the region's spectrum. The spectrum is calculated using the fast Fourier transform\cite{fft1965} (FFT for short). The Fourier transform factors the sequence into its frequency components, so cyclic sequences will exhibit higher peaks in frequencies that correspond to the main period of the sequence as we can see in Figure \ref{fig:fftreg} (the main content region of Figure \ref{fig:stru}).
+For each region identified in the previous step we now try to extract records
+out of it and rank those regions according to their content likelihood. To do
+so, we analyse the tag paths that appear in the sequence against the region's
+spectrum. The spectrum is calculated using the fast Fourier
+transform\cite{fft1965} (FFT for short). The Fourier transform factors the
+sequence into its frequency components, so cyclic sequences will exhibit higher
+peaks in frequencies that correspond to the main period of the sequence as we
+can see in Figure \ref{fig:fftreg} (the main content region of Figure
+\ref{fig:stru}).
 
 \begin{figure}[h]
   \centering
      \includegraphics[trim={2.5cm 7.5cm 1cm 6.5cm}, width=\linewidth
      ]{img/fftreg.pdf}
-  \caption{a) The cyclic behaviour of a structured region; b) The FFT of a structured region.}
+  \caption{a) The cyclic behaviour of a structured region; b) The PSD of a
+  structured region.}
   \label{fig:fftreg}
 \end{figure}
 
-For every tag path code, in increasing order, we check how well distributed it is along the sequence using the coefficient of variation (CV for short) of the distance between it's occurrences, e.g., if a given tag path occurs at positions \{10, 20, 30\}, the distances between consecutive occurrences are \{$20-10 = 10$, $30-20 = 10$\} and the CV is equal to 0.0\% since all distances are the same. In order to determine if a tag path is well distributed or not a threshold must be set. Since the regions are cyclic, the number of different tag paths that form the region's sequence is much smaller when compared to the size of the sequence, due to inherent repetitions, and so it is not prohibitive to check the CV of every tag path. 
+For every tag path code, in increasing order, we check how well distributed it
+is along the sequence using the coefficient of variation (CV for short) of the
+distance between it's occurrences, e.g., if a given tag path occurs at positions
+\{10, 20, 30\}, the distances between consecutive occurrences are \{$20-10 =
+\textbf{10}$, $30-20 = \textbf{10}$\} and the CV is equal to 0.0\% since all
+distances are the same. In order to determine if a tag path is well distributed or not a threshold
+must be set. Since the regions are cyclic, the number of different tag paths
+that form the region's sequence is much smaller when compared to the size of the
+sequence, due to inherent repetitions, and so it is not prohibitive to check the
+CV of every tag path.
 
-Cross validating TPC variation against the TPS spectrum is more robust than doing the inverse (i.e., selecting the highest peak in the spectrum and then searching for a corresponding TPC). That happens because the signal may be noisy and the spectrum may contain noisy artifacts and errors due to windowing (e.g., spectral leakage) and frequency resolution limitation, and so it is not guarantee that the highest peak will, in fact, correspond to the correct period. Figure \ref{fig:fftleak} shows an example of this situation where the highest peak in the spectrum is not the correct period, but nonetheless there is a significant peak that corresponds to the correct period.
+Cross validating TPC variation against the TPS spectrum is more robust than
+doing the inverse (i.e., selecting the highest peak in the spectrum and then
+searching for a corresponding TPC). That happens because the signal may be noisy
+and the spectrum may contain noisy artifacts and errors due to windowing (e.g.,
+spectral leakage) and frequency resolution limitation, and so it is not
+guarantee that the highest peak will, in fact, correspond to the correct period.
+Figure \ref{fig:fftleak} shows an example of this situation where the highest
+peak in the spectrum is not the correct period, but nonetheless there is a
+significant peak that corresponds to the correct period.
 
 \begin{figure}[h]
   \centering
@@ -277,9 +447,14 @@ Cross validating TPC variation against the TPS spectrum is more robust than doin
   \label{fig:fftleak}
 \end{figure}
 
-For those tag paths that are well distributed along the sequence, we search the corresponding range of the spectrum for a significant peak. If such a peak is found we subdivide the region accordingly, extract the records and end the process. To determine if a peak is significant we convert the spectrum to \textit{z score} and set a threshold measured in number of standard deviations.
+For those tag paths that are well distributed along the sequence, we search the
+corresponding range of the spectrum for a significant peak. If such a peak is
+found we subdivide the region accordingly, extract the records and end the
+process. To determine if a peak is significant we convert the spectrum to
+\textit{z score} and set a threshold measured in number of standard deviations.
 
-Algorithm \ref{alg:idrec} along with Figure \ref{fig:fftreg} shows in more detail the process of identifying the records within a region.
+Algorithm \ref{alg:idrec} along with Figure \ref{fig:fftreg} shows in more
+detail the process of identifying the records within a region.
 
 \begin{algorithm}
 \caption{Locates record boundaries in a region}
@@ -345,9 +520,12 @@ Ours &	92,02\%	& 94,11\%	& 93,05\% \\ \hline
 %}
 \end{table}
 
+ClustVX 99.50\% 100.00\% 99.80\% \\
+Ours 95.05\% 100.00\% 97.46\%
 
 
-\section{Conclusion and Future Work}
+
+\section{Conclusion and Future Work}\label{sec:con}
 
 \bibliographystyle{abbrv}
 \bibliography{refs}
