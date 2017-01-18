@@ -4,7 +4,7 @@
 \usepackage{algorithmicx}
 \usepackage[Algorithm,ruled]{algorithm}
 \usepackage{algpseudocode}
-%\usepackage{balance}
+\usepackage{balance}
 
 \title{Extracting Records from the Web Using a Signal Processing Approach}
 \numberofauthors{2}
@@ -527,8 +527,8 @@ provided implementations.
 We have implemented our approach using a two tier software architecture where
 the core is coded in C++ and the presentation layer (graph plotting, result
 manipulation/display, logging, timing, etc.) in embedded Lua \cite{luahome}.
-Our implementation is publicly available at \cite{} and we encourage and support the
-scientific community to build on top of it, run independent experiments,
+Our implementation is publicly available at \cite{} and we encourage and support
+the scientific community to build on top of it, run independent experiments,
 implement other techniques for the sake of comparison and so on.
 
 We used two datasets for comparison. Dataset $\#1$ was proposed by
@@ -548,11 +548,14 @@ approaches with available implementation and probably the first to achieve
 acceptable results (both in computational complexity and effectiveness).
 
 Table \ref{table:compare2} compares only against ClustVX, using dataset $\#2$.
-Again we've performed slightly worst, but close to a perfect result.
+Again we've performed slightly worst, but close to a perfect result. This
+dataset is more up to date, than dataset $\#1$, with respect to document
+template and web programming practices, but it contains only a small number of
+documents so it is not an extensive, large scale, comparison.
 
 \begin{table}[h]
 \centering
-\caption{Results comparison using the dataset $#1$.}
+\caption{Results comparison using the dataset $\#1$.}
 \label{table:compare1}
 \begin{tabular}
 {|c| c| c| c|}\hline
@@ -567,7 +570,7 @@ Ours &	92,02\%	& 94,11\%	& 93,05\% \\ \hline
 
 \begin{table}[h]
 \centering
-\caption{Results comparison using the dataset from \cite{clustVX2014}.}
+\caption{Results comparison using dataset $\#2$.}
 \label{table:compare2}
 \begin{tabular}
 {|c| c| c| c|}\hline
@@ -579,8 +582,9 @@ Ours &	100.00\% & 95.45\% & 97.67\% \\ \hline
 \end{table}
 
 Finally we present in Figure \ref{fig:runtime} the running time behaviour of our
-implementation. We can see that the graph suggests a linear increase in the
-running time to process a document end-to-end.
+implementation. We can see that the graph suggests a linear increase,
+proportional to the document size, in the running time to process a document
+end-to-end.
 
 \begin{figure}[h]
   \centering
@@ -593,7 +597,15 @@ running time to process a document end-to-end.
 
 \section{Conclusion and Future Work}\label{sec:con}
 
-- conclusoes
+We have shown here a novel approach for the problem of extracting records from
+semi-structured web pages, based on a new insight: seeing the structure of the
+document as a cyclic signal. Our results are equivalent to the state-of-the-art,
+but we claim we achieve it with less processing since no document rendering is required.
+
+Although the high efficiency and effectiveness of our technique are stated by
+the results in Section \ref{sec:result}, this is not a perfect approach.
+ 
+ - conclusoes
 	- resumo da conclusao
 	- onde falha
 	- onde eh possivel melhorar
@@ -607,6 +619,8 @@ running time to process a document end-to-end.
 	evitar retrabalho, facilitar implementacao e comparacao, fornecer
 	infraestrutura
  
+\balance 
+
 \bibliographystyle{abbrv}
 \bibliography{refs}
 
