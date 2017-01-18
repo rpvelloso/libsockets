@@ -600,24 +600,52 @@ end-to-end.
 We have shown here a novel approach for the problem of extracting records from
 semi-structured web pages, based on a new insight: seeing the structure of the
 document as a cyclic signal. Our results are equivalent to the state-of-the-art,
-but we claim we achieve it with less processing since no document rendering is required.
+but we claim we've achieved it with less processing since no document rendering
+is required.
 
 Although the high efficiency and effectiveness of our technique are stated by
-the results in Section \ref{sec:result}, this is not a perfect approach.
+the results in Section \ref{sec:result}, this is not a perfect approach. We've
+assumed the records in a web document are contiguous, consistently
+formatted/structured and with approximate size. Although these assumptions are
+plausible, they are not universal and where they do not hold our approach fails.
+Nonetheless, when considering web scale data, this subset of all structured data
+is of considerable size and value.
+
+In our opinion, the major set backs in this area of research are the
+unavailability of implementations and the inexistence of a common framework.
+Without the implementation of a particular technique we can't analyse individual
+results to gain insight about why it did or did not work in a particular case.
+This kind of analysis speeds up research because it helps refine research
+assumptions faster, using previous works. On the other hand, a common framework
+for the implementation of extractors reduces the variables involved in a
+comparison by standardizing the basic software infrastructure (e.g., same HTML
+parser used by everyone, same rendering engine, datasets, etc.)
  
- - conclusoes
-	- resumo da conclusao
-	- onde falha
-	- onde eh possivel melhorar
-	- problema para comparar tb prejudica pesquisa
-- trabalhos futuros highlight some possiblities
-	- alinhamento
-	- dataset padrao sampleado do indice
-	- reduzir complexidade com algoritmo de goertzel
-	- lempel-ziv
-	- ambiente c++/lua, melhorar para servir de suporte para pesquisas futuras,
-	evitar retrabalho, facilitar implementacao e comparacao, fornecer
-	infraestrutura
+Our guidelines for future work are the following:
+\begin{itemize}
+  \item research alignment techniques: here we have used a general and
+  supralinear (but still polynomial) sequence alignment algorithm, but we
+  believe it is possible to devise a solution specifically for the problem of
+  record alignment that is more effective and has a lower complexity bound;
+  \item standardize datasets: the ideal dataset should consist of several
+  annotated samples taken from a large scale search engine index. Such a dataset
+  enables the researcher to draw consistent conclusions from statistics (e.g.,
+  percentage of documents with structured content, ``real'' precision and
+  recall);
+  \item use Goertezel's in place of FFT: Goertezel's algorithm computes a single
+  coefficient in linear time whereas the FFT computes all coefficients in
+  loglinear time. Our technique searches for a candidate frequency in a small
+  range of the spectrum, there is no need to compute, up front, all coefficients
+  so that may be an alternative to reduce the time complexity a little more;
+  \item investigate the use of lempel-ziv\cite{ziv1977universal} (LZ) in the context of
+  pattern detection: LZ is a compression algorithm targeted specifically at sequences,
+  it works by looking for redundancies in the sequence, the redundancy can be
+  seen as a repeating pattern (much like contiguous records). We believe it is
+  possible to exploit this algorithm in this context.
+  %\item develop the extraction framework further: continue the development of
+  %the extraction framework, refine and refactor code, implement other
+  % extraction techniques, etc.
+\end{itemize}
  
 \balance 
 
