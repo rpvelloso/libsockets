@@ -512,32 +512,43 @@ quality and running time (since the input size is diminished).
 \section{Results}\label{sec:result}
 
 In this section we discuss and compare the results of our research with other
-approaches found in the literature that we consider relevant.  
+approaches found in the literature that we considered to be more relevant. We
+considered more relevant the proposals which are fully automatic, highly
+effective and computationally efficient. 
 
 The main difficulty we've encountered, when trying to compare our results with
 the results of the others, was the implementations unavailability. For this
 reason we were unable to make a deeper and independent comparative analysis.
 Were implementations available one could compare specific situations where one
 approach performs better than the other, otherwise we can only compare
-summarized results. Although several works criticizes this aspect, few provide
-implementations.
+summarized results. Although several works have criticized this aspect, few
+provided implementations.
 
 We have implemented our approach using a two tier software architecture where
-the core in coded in C++ and the presentation layer (graph plotting, result
-manipulation, logging, timing, etc.) in embedded Lua \cite{}. Our
-implementation is publicly available at \cite{} and we encourage the scientific
-community to build on top of it, run independent experiments, implement other
-techniques in parallel and so on.
+the core is coded in C++ and the presentation layer (graph plotting, result
+manipulation/display, logging, timing, etc.) in embedded Lua \cite{luahome}.
+Our implementation is publicly available at \cite{} and we encourage and support the
+scientific community to build on top of it, run independent experiments,
+implement other techniques for the sake of comparison and so on.
 
-We used two datasets for comparison. Dataset $#1$ was proposed by
-\cite{yamada2004testbed} and was used by \cite{TPC09,clustVX2014}. Dataset $#2$
-was used in \cite{clustVX2014}.
+We used two datasets for comparison. Dataset $\#1$ was proposed by
+\cite{yamada2004testbed} and was used, among others, by \cite{TPC09,clustVX2014}
+which are, in our opinion, the two more relevant works in the field and are
+relatively recent. Dataset $\#2$ was assembled and used in \cite{clustVX2014}.
 
 Table \ref{table:compare1} compares precision, recall and F-Measure of our
-approach with three other state-of-the-art techniques: MDR\cite{MDR03},
-TPC\cite{TPC09} and ClustVX\cite{clustVX2014}. Our approach performs better than
-MDR and TPC and slightly worst than ClustVX, but our technique doesn't need
-to render the entire page in order to extract the records.
+approach with three other state-of-the-art techniques, using dataset $\#1$:
+MDR\cite{MDR03}, TPC\cite{TPC09} and ClustVX\cite{clustVX2014}. Our approach performs better than
+MDR and TPC and slightly worst than ClustVX, but in the other hand our technique
+doesn't need to render the entire page in order to extract the records. As a
+matter of fact, we just parse the HTML and don't even process CSS definitions
+(our approach just cares about \texttt{class} attributes).
+We've considered MDR to be of relevance here because it is one of the few
+approaches with available implementation and probably the first to achieve
+acceptable results (both in computational complexity and effectiveness).
+
+Table \ref{table:compare2} compares only against ClustVX, using dataset $\#2$.
+Again we've performed slightly worst, but close to a perfect result.
 
 \begin{table}[h]
 \centering
@@ -567,6 +578,10 @@ Ours &	100.00\% & 95.45\% & 97.67\% \\ \hline
 %}
 \end{table}
 
+Finally we present in Figure \ref{fig:runtime} the running time behaviour of our
+implementation. We can see that the graph suggests a linear increase in the
+running time to process a document end-to-end.
+
 \begin{figure}[h]
   \centering
      \includegraphics[trim={2.5cm 7.5cm 1cm 6.5cm}, width=\linewidth
@@ -578,6 +593,17 @@ Ours &	100.00\% & 95.45\% & 97.67\% \\ \hline
 
 \section{Conclusion and Future Work}\label{sec:con}
 
+- conclusoes
+	- resumo da conclusao
+	- onde falha
+	- onde eh possivel melhorar
+	- problema para comparar tb prejudica pesquisa
+- trabalhos futuros
+	- alinhamento
+	- dataset padrao sampleado do indice
+	- reduzir complexidade com algoritmo de goertzel
+	- ambiente c++/lua
+ 
 \bibliographystyle{abbrv}
 \bibliography{refs}
 
