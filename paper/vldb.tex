@@ -250,20 +250,34 @@ document, avoiding the computational complexity associated with such a task.
 \label{alg:tree2seq}
 \begin{algorithmic}[1]
 \Procedure{treeToSequence}{node,tp,tps by ref.}
-\State $tp \leftarrow concat(tp,$``/''$,node.$tag$,node.style)$
-\If {$tp \ni tagPathMap$}
+\State $tp \leftarrow
+concat(tp,$``/''$,node.$tag$,node.style)$\label{lin:alg:tree2seq:a}
+\If {$tp \ni tagPathMap$} \label{lin:alg:tree2seq:b}
 \State $tagPathMap \leftarrow tagPathMap \cup \{tp\}$ 
 \State $tagPathMap[tp].code \leftarrow tagPathMap.size$ 
-\EndIf 
-\State $tps \leftarrow concat(tps,tagPathMap[tp].code);$
+\EndIf \label{lin:alg:tree2seq:c}
+\State $tps \leftarrow
+concat(tps,tagPathMap[tp].code);$\label{lin:alg:tree2seq:d}
 \For {each $child$ of $node$}
-\State $treeToSequence(child,tp,tps)$ 
+\State $treeToSequence(child,tp,tps)$\label{lin:alg:tree2seq:e} 
 \EndFor 
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
 
-
+\begin{description}
+\item[Algorithm \ref{alg:tree2seq} description] Procedure
+\texttt{treeToSequence} is initially called with the tree's root node, an empty
+tag path string and an empty sequence: \texttt{treeToSequence} \texttt{(root,
+``'', ``'')}. In Line \ref{lin:alg:tree2seq:a} the current tag path string is
+assembled; In Lines \ref{lin:alg:tree2seq:b}-\ref{lin:alg:tree2seq:c} the tag
+path code is retrieve, if it is a recurring path, otherwise a new, ascending,
+code is assigned to it and the path string is stored for future reference; In
+Line \ref{lin:alg:tree2seq:d} the current TPC is appended to the TPS and; In
+Line \ref{lin:alg:tree2seq:e} the procedure is called recursively for every
+child of the current node. When the procedure returns, the full TPS is stored in
+parameter \texttt{tps} which was passed by reference.
+\end{description}
 
 \subsection{Region Identification}\label{ss:regi}
 
@@ -323,8 +337,8 @@ the structured segments of the sequence.
 %\\\hrulefill
 
 \Function{segment}{contour} \Comment{Subroutine}
-\State $diff \leftarrow firstDifference(contour)$
-\State $diff \leftarrow concat(diff, 1)$
+\State $diff \leftarrow difference(contour)$
+%\State $diff \leftarrow concat(diff, 1)$
 \State $regions \leftarrow \emptyset$
 \State $start \leftarrow 1$
 \State $end \leftarrow 1$
@@ -615,7 +629,10 @@ We have shown here a novel approach for the problem of extracting records from
 semi-structured web pages, based on a new insight: seeing the structure of the
 document as a cyclic signal. Our results are equivalent to the state-of-the-art,
 but we claim we've achieved it with less processing since no document rendering
-is required.
+is required. Our approach also has some interesting byproduct, the structure
+detection, that can be used in other areas, for example, when the target is
+unstructured data one can rule out structured noise (e.g., menus and
+advertising).
 
 Although the high efficiency and effectiveness of our technique are stated by
 the results in Section \ref{sec:result}, this is not a perfect approach. We've
