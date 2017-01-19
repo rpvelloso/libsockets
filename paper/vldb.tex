@@ -1,3 +1,7 @@
+%%%%% FALTA: abstract e passo a passo dos algoritmos, corrigir algumas figuras
+%%%%% FALTA: abstract e passo a passo dos algoritmos, corrigir algumas figuras
+%%%%% FALTA: abstract e passo a passo dos algoritmos, corrigir algumas figuras
+
 \documentclass{vldb}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx, caption}
@@ -58,10 +62,19 @@ within the structured regions and; aligns the records into a table.
 
 The main contributions presented here are:
 \begin{itemize}
-    \item a novel insight on how the structure of a web document can be seen: as a periodic signal. To the best of our knowledge there is nothing alike in the literature and the results depict both its efficiency and effectiveness;
+    \item a novel insight on how the structure of a web document can be seen: as
+    a periodic signal. To the best of our knowledge there is nothing alike in
+    the literature and the results depict both its efficiency and effectiveness;
     \item a novel web page segmentation technique;
-    \item a new and efficient way of checking if a given region of a web page is structured or not. Such a framework, that is independent of the extraction process (i.e., one doesn't needs to extract the entire document), is useful to avoid processing portions of the document that are unpromising be it for record extraction, indexing or any other end;
-    \item a more efficient approach, when compared to the state of the art. That is due to the use of efficient signal processing algorithms. Most existing works rely mainly on dynamic programming (e.g., edit distance), clustering algorithms and/or full page rendering and hence are less efficient.
+    \item a new and efficient way of checking if a given region of a web page is
+    structured or not. Such a framework, that is independent of the extraction
+    process (i.e., one doesn't needs to extract the entire document), is useful
+    to avoid processing portions of the document that are unpromising be it for
+    record extraction, indexing or any other end;
+    \item a more efficient approach, when compared to the state of the art. That
+    is due to the use of efficient signal processing algorithms. Most existing
+    works rely mainly on dynamic programming (e.g., edit distance), clustering
+    algorithms and/or full page rendering and hence are less efficient.
 \end{itemize}
 
 The rest of the paper is organized as follows. In Section \ref{sec:work} we
@@ -424,11 +437,11 @@ is along the sequence using the coefficient of variation (CV for short) of the
 distance between it's occurrences, e.g., if a given tag path occurs at positions
 \{10, 20, 30\}, the distances between consecutive occurrences are \{$20-10 =
 \textbf{10}$, $30-20 = \textbf{10}$\} and the CV is equal to 0.0\% since all
-distances are the same. In order to determine if a tag path is well distributed or not a threshold
-must be set. Since the regions are cyclic, the number of different tag paths
-that form the region's sequence is much smaller when compared to the size of the
-sequence, due to inherent repetitions, and so it is not prohibitive to check the
-CV of every tag path.
+distances are the same. In order to determine if a tag path is well distributed
+or not a threshold must be set. Since the regions are cyclic, the number of
+different tag paths that form the region's sequence is much smaller when
+compared to the size of the sequence, due to inherent repetitions, and so it is
+not prohibitive to check the CV of every tag path.
 
 Cross validating TPC variation against the TPS spectrum is more robust than
 doing the inverse (i.e., selecting the highest peak in the spectrum and then
@@ -613,7 +626,7 @@ Nonetheless, when considering web scale data, this subset of all structured data
 is of considerable size and value.
 
 In our opinion, the major set backs in this area of research are the
-unavailability of implementations and the inexistence of a common framework.
+unavailability of implementations and the absence of a common framework.
 Without the implementation of a particular technique we can't analyse individual
 results to gain insight about why it did or did not work in a particular case.
 This kind of analysis speeds up research because it helps refine research
@@ -628,16 +641,18 @@ Our guidelines for future work are the following:
   supralinear (but still polynomial) sequence alignment algorithm, but we
   believe it is possible to devise a solution specifically for the problem of
   record alignment that is more effective and has a lower complexity bound;
-  \item standardize datasets: the ideal dataset should consist of several
-  annotated samples taken from a large scale search engine index. Such a dataset
-  enables the researcher to draw consistent conclusions from statistics (e.g.,
+  \item standardize datasets: the ideal testbed should consist of several
+  randomly taken samples from a large scale search engine index with annotated
+  ground-truth.
+  Such a dataset enables the researcher to draw consistent conclusions from statistics (e.g.,
   percentage of documents with structured content, ``real'' precision and
-  recall);
-  \item use Goertezel's in place of FFT: Goertezel's algorithm computes a single
-  coefficient in linear time whereas the FFT computes all coefficients in
-  loglinear time. Our technique searches for a candidate frequency in a small
-  range of the spectrum, there is no need to compute, up front, all coefficients
-  so that may be an alternative to reduce the time complexity a little more;
+  recall). We haven't found such a dataset in the literature;
+  \item use Goertezel's \cite{goertzel1958algorithm} in place of FFT:
+  Goertezel's algorithm computes a single coefficient in linear time whereas the
+  FFT computes all coefficients in loglinear time. Our technique searches for a
+  candidate frequency in a small range of the spectrum, there is no need to
+  compute, up front, all coefficients so that may be an alternative to reduce
+  the time complexity a little more;
   \item investigate the use of lempel-ziv\cite{ziv1977universal} (LZ) in the context of
   pattern detection: LZ is a compression algorithm targeted specifically at sequences,
   it works by looking for redundancies in the sequence, the redundancy can be
