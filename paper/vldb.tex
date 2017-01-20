@@ -193,7 +193,7 @@ To evaluate the contribution of a frequency component in the overall sequence we
 use the power spectrum density (PSD), which is real-valued, as defined in
 Equation \ref{eq:psd}.
 Figure \ref{fig:fftreg} shows a discrete sequence (a) and its corresponding PSD
-standardized to \textit{z score} (b).
+standardized to \textit{z-score} (b).
 
 \begin{equation}\label{eq:dft}
     X_k=\sum_{n=0}^{N-1}{x_n\cdot e^{-2\pi ikn/N}}    
@@ -522,7 +522,7 @@ For those tag paths that are well distributed along the sequence, we search the
 corresponding range of the spectrum for a significant peak. If such a peak is
 found we subdivide the region accordingly, extract the records and end the
 process. To determine if a peak is significant we convert the spectrum to
-\textit{z score} and set a threshold measured in number of standard deviations.
+\textit{z-score} and set a threshold measured in number of standard deviations.
 
 Algorithm \ref{alg:idrec} along with Figure \ref{fig:fftreg} shows in more
 detail the process of identifying the records within a region.
