@@ -1,10 +1,10 @@
-%%%%% FALTA: abstract e passo a passo dos algoritmos, corrigir algumas figuras
-%%%%% FALTA: abstract e passo a passo dos algoritmos, corrigir algumas figuras
-%%%%% FALTA: abstract e passo a passo dos algoritmos, corrigir algumas figuras
+%%%%% FALTA: abstract e corrigir algumas figuras
+%%%%% FALTA: abstract e corrigir algumas figuras
+%%%%% FALTA: abstract e corrigir algumas figuras
 
 \documentclass{vldb}
 \usepackage[utf8]{inputenc}
-\usepackage{graphicx, caption}
+\usepackage{graphicx}
 \usepackage{algorithmicx}
 \usepackage[Algorithm,ruled]{algorithm}
 \usepackage{algpseudocode}
@@ -34,6 +34,19 @@ Carina F. Dorneles\\
 
 \maketitle
 
+\begin{abstract}
+Extracting records from web pages enables a number of important
+applications and has an immense value due to the amount of available information
+that can be extracted. This problem, although vastly studied, remains open
+because it is not a simple one. Due to the scale of data a feasible approach
+must be both automatic and efficient (and of course effective). We present,
+here, a novel approach, fully automatic and computationally efficient, using
+signal processing techniques to detect regularities and patterns in the
+structure of web pages. Our approach segments the web page, detects the data
+regions within it, identifies the records boundaries and aligns the records.
+Results show high f-measure and linear runtime behaviour.
+\end{abstract}
+
 \section{Introduction}
 
 The extraction of structured information from the web is, undeniably, both
@@ -51,7 +64,11 @@ Identifying the underlying content structure in a web document was attempted
 before. The existing approaches range from solutions to specific instances of
 the problem (e.g., extracting only data formatted with
 \texttt{<table>}\cite{webtables2008}) to more broader attempts that search for
-patterns in a web document\cite{MDR03}.
+patterns in a web document\cite{MDR03}. They also vary in degree of automation
+where there can be supervised, semi-supervised and unsupervised approaches. It
+is our understanding that the scientific community should strive to achieve the
+highest possible level of automation when dealing with web extraction due
+to the volume of data, or else the approach just isn't going to scale up.
 
 Here we outline a novel approach for the problem of structured extraction (or
 record extraction) from web pages, using an alternative representation of the
@@ -70,9 +87,9 @@ The main contributions presented here are:
     structured or not. Such a framework, that is independent of the extraction
     process (i.e., one doesn't needs to extract the entire document), is useful
     to avoid processing portions of the document that are unpromising be it for
-    record extraction, indexing or any other end;
-    \item a more efficient approach, when compared to the state of the art. That
-    is due to the use of efficient signal processing algorithms. Most existing
+    record extraction, clustering, indexing or any other end;
+    \item a more efficient approach, when compared to the state-of-the-art.
+    That is due to the use of efficient signal processing algorithms. Most existing
     works rely mainly on dynamic programming (e.g., edit distance), clustering
     algorithms and/or full page rendering and hence are less efficient.
 \end{itemize}
@@ -121,7 +138,7 @@ are vast and well studied \cite{gusfield1997algorithms}, unleashing new
 possibilities in this research field.
 
 Recent surveys\cite{survey2013, survey2014} about the subject of structured
-extraction have reached the same conclusion about the state of the art: existing
+extraction have reached the same conclusion about the state-of-the-art: existing
 works fail to definitively solve the problem, i.e., its still an open research
 problem. Those surveys also agreed about the problem of comparing two different
 approaches in this research area: there is no standard dataset/baseline and most
@@ -137,22 +154,22 @@ include style definitions of every node in the path, like this:
 ``\texttt{html/body/table/tr class=tbrow/td class=tbcell/\#text bgcolor=red}''.
 \end{definition}
 
-\begin{definition}\textbf{(Tag Path Code - TPC)} is a numeric ascending code
+\begin{definition}\textbf{(Tag Path Code -- TPC)} is a numeric ascending code
 assigned to every different tag path string encountered in the tree, in order of
 appearance. If a given path has occurred in the past, it is assigned the same
 code as before. The paths are built in depth first order. Figure
 \ref{fig:tree2seq} shows an example of this definition.
 \end{definition}
 
-\begin{definition}\textbf{(Tag Path Sequence - TPS)} is a sequence of TPC in the
-same order as they were built from the DOM tree. Figure \ref{fig:tree2seq} shows
+\begin{definition}\textbf{(Tag Path Sequence -- TPS)} is a sequence of TPC in
+the same order as they were built from the DOM tree. Figure \ref{fig:tree2seq} shows
 the resulting TPS for an HTML snippet as  well as the set of TPC used for that
 the sequence. Here, in this paper, we also refer to TPS as simply ``sequence'',
 TPC as ``symbol'' and the set of TPC as ``alphabet''.
 \end{definition}
 
-\begin{definition}\textbf{(Coefficient of Variation - CV)} is a statistical
-measure of data dispersion and is defined as the ratio between the standard
+\begin{definition}\textbf{(Coefficient of Variation -- CV)}\label{def:cv} is a
+statistical measure of data dispersion and is defined as the ratio between the standard
 deviation and the mean as shown in Equation \ref{eq:cv}. We use this measure to
 find out how well distributed a symbol is in a sequence. For example, consider
 the sequence $tps(1..12)=[1,2,3,4,5,4,5,4,5,6,4,5]$ and the symbol $s=4$ of this
@@ -168,7 +185,7 @@ versa.
 \end{equation}
 \end{definition}
 
-\begin{definition}\textbf{(Discrete Fourier Transform - DFT)} is a mathematical
+\begin{definition}\textbf{(Discrete Fourier Transform -- DFT)} is a mathematical
 transformation that decomposes a discrete sequence into its frequency components
 (Equation \ref{eq:dft}). The result of the transformation is complex-valued, the
 real part represents the amplitude and the imaginary part represents the phase.
@@ -188,8 +205,8 @@ standardized to \textit{z score} (b).
 
 \end{definition}
 
-\begin{definition}\textbf{(Fast Fourier Transform - FFT)} is an efficient
-implementation of the DFT that yields the same result. The naive implementation
+\begin{definition}\textbf{(Fast Fourier Transform -- FFT)}\label{def:fft} is an
+efficient implementation of the DFT that yields the same result. The naive implementation
 of the DFT has $O(n^2)$ time complexity whereas the FFT has $O(nlogn)$ time
 complexity. For many more details about DFT, FFT and discrete signal
 processing in general we refer the reader to \cite{oppenheim1989discrete},
@@ -197,8 +214,8 @@ which covers the subject in great depth, since this is not the scope of this
 paper.
 \end{definition}
 
-\begin{definition}\textbf{(Finite Difference)} is the difference between
-adjacent values of a sequence as defined in Equation \ref{eq:diff}. We use the
+\begin{definition}\textbf{(Finite Difference)}\label{def:diff} is the difference
+between adjacent values of a sequence as defined in Equation \ref{eq:diff}. We use the
 finite difference to delimit cyclic regions of a sequence.
 
 \begin{equation}\label{eq:diff}
@@ -266,11 +283,11 @@ concat(tps,tagPathMap[tp].code);$\label{lin:alg:tree2seq:d}
 \end{algorithm}
 
 \begin{description}
-\item[Algorithm \ref{alg:tree2seq} description] Procedure
+\item[Description of Algorithm \ref{alg:tree2seq}] procedure
 \texttt{treeToSequence} is initially called with the tree's root node, an empty
 tag path string and an empty sequence: \texttt{treeToSequence} \texttt{(root,
-``'', ``'')}. In Line \ref{lin:alg:tree2seq:a} the current tag path string is
-assembled; In Lines \ref{lin:alg:tree2seq:b}-\ref{lin:alg:tree2seq:c} the tag
+``'', tps = ``'')}. In Line \ref{lin:alg:tree2seq:a} the current tag path string is
+assembled; In Lines \ref{lin:alg:tree2seq:b}--\ref{lin:alg:tree2seq:c} the tag
 path code is retrieve, if it is a recurring path, otherwise a new, ascending,
 code is assigned to it and the path string is stored for future reference; In
 Line \ref{lin:alg:tree2seq:d} the current TPC is appended to the TPS and; In
@@ -290,7 +307,7 @@ path sequence will display a cyclic behaviour as illustrate in Figure
 \ref{fig:stru}.
 
 \begin{figure*}[h]
- \captionsetup{width=\textwidth}
+ %\captionsetup{width=\textwidth}
   \centering
      \includegraphics[width=\textwidth]{img/main-reg.jpg}
   \caption{How structured content appears in the sequence (structured regions encircled).}
@@ -325,21 +342,21 @@ the structured segments of the sequence.
 
 \Function{contour}{tps} \Comment{Subroutine}
 \State $maxHeight \leftarrow 0$ 
-\For {$i \leftarrow 1..length(tps)$}
-\If {$tps[i]>maxHeight$}
+\For {$i \leftarrow 1..length(tps)$}\label{line:alg:idreg:a}
+\If {$tps[i]>maxHeight$}\label{line:alg:idreg:b}
 \State $maxHeight \leftarrow tps[i]$ 
 \EndIf 
 \State $contour[i] \leftarrow maxHeight$ 
-\EndFor 
-\State \Return $contour$ 
+\EndFor\label{line:alg:idreg:c} 
+\State \Return $contour$ \label{line:alg:idreg:d} 
 \EndFunction
 
 %\\\hrulefill
 
 \Function{segment}{contour} \Comment{Subroutine}
-\State $diff \leftarrow difference(contour)$
+\State $diff \leftarrow difference(contour)$\label{line:alg:idreg:e}
 %\State $diff \leftarrow concat(diff, 1)$
-\State $regions \leftarrow \emptyset$
+\State $regions \leftarrow \emptyset$\label{line:alg:idreg:f}
 \State $start \leftarrow 1$
 \State $end \leftarrow 1$
 \For{$i \leftarrow 1..length(diff)$}
@@ -352,43 +369,69 @@ the structured segments of the sequence.
 \Else
 \State $end \leftarrow end + 1$
 \EndIf
-\EndFor
-\State \Return $regions$
+\EndFor\label{line:alg:idreg:g}
+\State \Return $regions$\label{line:alg:idreg:h}
 \EndFunction
 
 %\\\hrulefill
 
 \Function{mergeRegions}{regions} \Comment{Subroutine}
-\State $merged[1] \leftarrow regions[1]$ 
+\State $merged[1] \leftarrow regions[1]$
 \State $j \leftarrow 1$ 
-\For {$i \leftarrow 2..regions.count()$}
-\State $\Sigma_{prev} \leftarrow alphabet(merged[j])$ 
+\For {$i \leftarrow 2..regions.count()$}\label{line:alg:idreg:i}
+\State $\Sigma_{prev} \leftarrow alphabet(merged[j])$ \label{line:alg:idreg:j}
 \State $\Sigma_{curr} \leftarrow alphabet(regions[i])$
 \If {$\Sigma_{prev}\cap\Sigma_{curr} \neq \emptyset$}
 \State $merged[j] \leftarrow concat(merged[j], regions[i])$
 \Else 
 \State $j \leftarrow j + 1$ 
 \State $merged[j] \leftarrow regions[i]$ 
-\EndIf 
-\EndFor 
+\EndIf \label{line:alg:idreg:k}
+\EndFor
 \State 
-\Return $merged$ 
+\Return $merged$ \label{line:alg:idreg:l}
 \EndFunction
 
 %\\\hrulefill
 
 \Function{filterRegions}{regions} \Comment{Subroutine}
-\For{each region in regions}
-\State $angCoef \leftarrow linearRegression(region)$
-\If{$|angCoef| > threshold$}
-\State $regions \leftarrow regions - \{region\}$
+\For{each region in regions}\label{line:alg:idreg:m}
+\State $angCoef \leftarrow linearRegression(region)$\label{line:alg:idreg:n}
+\If{$|angCoef| > threshold$}\label{line:alg:idreg:o}
+\State $regions \leftarrow regions - \{region\}$\label{line:alg:idreg:p}
 \EndIf
 \EndFor
-\State \Return $regions$
+\State \Return $regions$\label{line:alg:idreg:q}
 \EndFunction
 
 \end{algorithmic}
 \end{algorithm}
+
+\begin{description}
+\item[Description of \texttt{contour} function] this function is
+pretty straightforward, it receives the TPS as input, iterates over the sequence (Line
+\ref{line:alg:idreg:a}), computes its upper contour (i.e., the maximum value
+seen so far) in Lines \ref{line:alg:idreg:b}--\ref{line:alg:idreg:c} and then;
+returns the sequence's contour (Line \ref{line:alg:idreg:d});
+\item[Description of \texttt{segment} function] this function receives the
+sequence's contour as input, computes its finite difference (Line
+\ref{line:alg:idreg:e}), as defined in Definition \ref{def:diff};
+assembles a set with all intervals where the finite difference is zero-valued
+(Lines \ref{line:alg:idreg:f}--\ref{line:alg:idreg:g}) and then; returns this
+set of possibly structured regions (Line \ref{line:alg:idreg:h});
+\item[Description of \texttt{mergeRegions} function] this function receives, as
+input, a set of possibly structured regions; iterates over this set (Line
+\ref{line:alg:idreg:i}), merging the adjacent elements with intersecting alphabets (Lines
+\ref{line:alg:idreg:j}--\ref{line:alg:idreg:k}) and then; returns the merged set
+of possibly structured regions (Line \ref{line:alg:idreg:l});
+\item[Description of \texttt{filterRegions} function] this function receives, as
+input, a set of possibly structured regions; iterates over this set (Line
+\ref{line:alg:idreg:m}); computes the linear regression for each region in the
+set (Line \ref{line:alg:idreg:n}); if the current region has an angular
+coefficient above the threshold (Line \ref{line:alg:idreg:o}) it is removed from the set
+(Line \ref{line:alg:idreg:p}) and finally; the remaining set of regions is
+returned (Line \ref{line:alg:idreg:q}).
+\end{description}
 
 Algorithm \ref{alg:idreg} computes the contour of the input sequence and its
 finite difference and then uses this to segment the document in several regions.
@@ -406,8 +449,8 @@ Figure \ref{fig:contour}.
 
 The resulting regions are then merged together according to their alphabets
 (i.e., set of symbols that form the sequence). If two adjacent regions share a
-common alphabet, they are merged in a same region, if their alphabet is disjoint
-(i.e., they share no common symbols) they are kept apart.
+common alphabet, they are merged in a single region, if their alphabet is
+disjoint (i.e., they share no common symbols) they are kept apart.
 
 At last, to ensure that the identified regions contain, in fact, structured
 content, they are filtered out according to their angular coefficient. This
@@ -493,18 +536,19 @@ detail the process of identifying the records within a region.
 \begin{algorithmic}[1]
 
 \Function{IdRecords}{region}
-\State $\Sigma \leftarrow sort(alphabet(region), ascending)$
 \State $signal \leftarrow region-\mu(region)$ \Comment{remove DC}
-\State $PSD \leftarrow abs(FFT(signal))^2$
-\For{each $symbol$ in $\Sigma$}
+\State $PSD \leftarrow abs(FFT(signal))^2$\label{line:alg:idreg:r}
+\State $\Sigma \leftarrow sort(alphabet(region), ascending)$
+\For{each $symbol$ in $\Sigma$}\label{line:alg:idreg:s}
 \State $recordPositions \leftarrow find(region == symbol)$
-\State $recSize \leftarrow diff(recordPositions)$
+\State $recSize \leftarrow difference(recordPositions)$
 \State $recCount \leftarrow length(recordPositions)$
-\State $CV \leftarrow \frac{\sigma(recSize)}{\mu(recSize)}$
-\If{$CV < CVthreshold$}
+\State $CV \leftarrow
+\frac{\sigma(recSize)}{\mu(recSize)}$\label{line:alg:idreg:t}
+\If{$CV < CVthreshold$}\label{line:alg:idreg:u}
 \State $interval \leftarrow [recCount-2 .. recCount+2]$
-\If{$PSD[interval] > numSD \cdot \sigma(PSD)$}
-\State \Return $recordPositions$
+\If{$PSD[interval] > numSD \cdot \sigma(PSD)$}\label{line:alg:idreg:v}
+\State \Return $recordPositions$\label{line:alg:idreg:w}
 \EndIf
 \EndIf
 \EndFor
@@ -514,9 +558,20 @@ detail the process of identifying the records within a region.
 \end{algorithmic}
 \end{algorithm}
 
-% colocar aqui algo e pict
-% comentar linhas do algo e pict
-
+\begin{description}
+\item[Description of Algorithm \ref{alg:idrec}] function \texttt{IdRecords}
+receives, as input, a structured region; computes its PSD using FFT (Line
+\ref{line:alg:idreg:r}) as defined in Definition \ref{def:fft}; iterates over
+the region's alphabet, in ascending order (Line \ref{line:alg:idreg:s}); for
+each symbol in the alphabet its CV is calculated (Line \ref{line:alg:idreg:t}),
+as defined in Definition \ref{def:cv}, and checked against a threshold (Line
+\ref{line:alg:idreg:u}); if it is bellow the threshold (meaning the
+current symbol is well distributed along the sequence) then the PSD is scanned
+in the range around the number of candidate records (Line \ref{line:alg:idreg:v}
+-- \texttt{recCount} is the frequency we are validating against the sequence's
+spectrum) and; if a considerable peak is found in this range the function returns the
+positions of the current symbol (Line \ref{line:alg:idreg:w}).
+\end{description}
 \subsection{Record Alignment}\label{ss:reca}
 
 Once the records are identified they need to be properly aligned so they can be
@@ -564,7 +619,7 @@ We used two datasets for comparison. Dataset $\#1$ was proposed by
 which are, in our opinion, the two more relevant works in the field and are
 relatively recent. Dataset $\#2$ was assembled and used in \cite{clustVX2014}.
 
-Table \ref{table:compare1} compares precision, recall and F-Measure of our
+Table \ref{table:compare1} compares precision, recall and f-score of our
 approach with three other state-of-the-art techniques, using dataset $\#1$:
 MDR\cite{MDR03}, TPC\cite{TPC09} and ClustVX\cite{clustVX2014}. Our approach performs better than
 MDR and TPC and slightly worst than ClustVX, but in the other hand our technique
@@ -628,8 +683,8 @@ end-to-end.
 We have shown here a novel approach for the problem of extracting records from
 semi-structured web pages, based on a new insight: seeing the structure of the
 document as a cyclic signal. Our results are equivalent to the state-of-the-art,
-but we claim we've achieved it with less processing since no document rendering
-is required. Our approach also has some interesting byproduct, the structure
+but we claim we've achieved it in a more efficient way since no document
+rendering is required. Our approach also has some interesting byproduct, the structure
 detection, that can be used in other areas, for example, when the target is
 unstructured data one can rule out structured noise (e.g., menus and
 advertising).
@@ -660,7 +715,7 @@ Our guidelines for future work are the following:
   record alignment that is more effective and has a lower complexity bound;
   \item standardize datasets: the ideal testbed should consist of several
   randomly taken samples from a large scale search engine index with annotated
-  ground-truth.
+  ground truth.
   Such a dataset enables the researcher to draw consistent conclusions from statistics (e.g.,
   percentage of documents with structured content, ``real'' precision and
   recall). We haven't found such a dataset in the literature (annotated for
