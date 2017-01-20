@@ -133,7 +133,7 @@ In \cite{TPC09, SuffixTree12, TPS2013} an alternative document representation is
 used. Instead of the DOM tree the document is converted to a sequence of tag
 paths. Such representation enables the use of algorithms targeted at strings and
 sequences (e.g., suffix tree/array\cite{ukkonen1995, manber1993suffix},
-FFT\cite{fft1965}, lempel-ziv compression\cite{ziv1977universal}, etc.), which
+FFT\cite{fft1965}, Lempel-Ziv compression\cite{ziv1977universal}, etc.), which
 are vast and well studied \cite{gusfield1997algorithms}, unleashing new
 possibilities in this research field.
 
@@ -712,24 +712,26 @@ Our guidelines for future work are the following:
   \item research alignment techniques: here we have used a general and
   supralinear (but still polynomial) sequence alignment algorithm, but we
   believe it is possible to devise a solution specifically for the problem of
-  record alignment that is more effective and has a lower complexity bound;
+  record alignment that is more effective and has a lower complexity bound. In
+  \ref{gfrerer2017parallel} a parallel approach is proposed;
   \item standardize datasets: the ideal testbed should consist of several
   randomly taken samples from a large scale search engine index with annotated
   ground truth.
-  Such a dataset enables the researcher to draw consistent conclusions from statistics (e.g.,
-  percentage of documents with structured content, ``real'' precision and
-  recall). We haven't found such a dataset in the literature (annotated for
-  record extraction);
+  Such a dataset would enable the researcher to draw consistent conclusions
+  from statistics (e.g., percentage of documents with structured content,
+  ``real'' precision and recall). We haven't found such a dataset in the
+  literature (i.e., one that is annotated for record extraction);
   \item use Goertezel's \cite{goertzel1958algorithm} in place of FFT:
   Goertezel's algorithm computes a single coefficient in linear time whereas the
   FFT computes all coefficients in loglinear time. Our technique searches for a
   candidate frequency in a small range of the spectrum, there is no need to
   compute, up front, all coefficients so that may be an alternative to reduce
   the time complexity a little more;
-  \item investigate the use of lempel-ziv\cite{ziv1977universal} (LZ) in the context of
-  pattern detection: LZ is a compression algorithm targeted specifically at sequences,
-  it works by looking for redundancies in the sequence, the redundancy can be
-  seen as a repeating pattern (much like contiguous records). We believe it is
+  \item investigate the use of Lempel-Ziv\cite{ziv1977universal} (LZ) in the
+  context of pattern detection: LZ is a computationally efficient compression
+  algorithm targeted specifically at sequences, it works by looking for
+  redundancies in the sequence, the redundancy (i.e., repeated data) can be seen
+  as a recurring pattern (like contiguous records). We believe it is
   possible to exploit this algorithm in this context.
   %\item develop the extraction framework further: continue the development of
   %the extraction framework, refine and refactor code, implement other
