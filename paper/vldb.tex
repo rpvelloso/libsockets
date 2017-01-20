@@ -468,6 +468,36 @@ worst case proportional to the size of the sequence, so the overall time
 complexity for function $idRegions$, in the worst case, is $O(n)$ where $n$ is
 the size of the sequence.
 
+After processing the regions with function \texttt{idRegions} there is an
+optional, and application dependent, step: deciding which regions are content
+and which are noise. Here we chose to identify the main content and rule out menus
+and advertising. The approach we adopted for this task consists of assigning a
+score to each region and separate them in two cluster using optimal 1D k-means
+\cite{1dkmeans2011}. The cluster with lower centroid is discarded and the
+remaining cluster is kept as content. The algorithm in \cite{1dkmeans2011},
+although it runs in $O(n^2)$ time, in practice it doesn't have a significant
+impact in run time because it is proportional to the number of regions and not
+to the size of the document (though, in worst case, the number of regions could
+escalate to a value proportional to the document size, this is not the
+average behaviour displayed in Figure \ref{fig:runtime}).
+
+The score of a region is compute as defined in Equation \ref{eq:scorereg} where
+\texttt{positionScore} ranges between 0.00 (far from the center of the sequence)
+and 1.00 (close to the center) and \texttt{sizeScore}, which represents
+percentage of TPS occupied by the region, too. \texttt{maxDistance} is equal to
+$\frac{tpsSize}{2}$ because that is the maximum distance a region can be from
+the center of the TPS. The final \texttt{score} is the arithmetic mean of both
+scores. The higher the region's score the more likely it represents content
+rather than noise.
+
+\begin{equation}\label{eq:scorereg}
+\begin{split}
+positionScore \leftarrow 1-\frac{|tpsCenter - regionCenter|}{maxDistance}, \\
+sizeScore \leftarrow \frac{length(region)}{tpsSize},\\
+score \leftarrow \frac{positionScore+sizeScore}{2}
+\end{split}
+\end{equation}
+
 \subsection{Record Identification}\label{ss:reci}
 
 For each region identified in the previous step we now try to extract records
