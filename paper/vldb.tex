@@ -151,7 +151,7 @@ problem. Those surveys also agreed about the problem encountered when comparing
 two different approaches in this research area: there is no standard
 dataset/baseline and most implementations are not publicly available.
 
-\section{Background}\label{sec:defs}
+\section{Definitions}\label{sec:defs}
 In this section we define some concepts needed for the understanding of our approach.
 
 \begin{definition}\textbf{(Tag Path)} is a string describing the path from the
@@ -161,18 +161,18 @@ include style definitions of every node in the path, like this:
 ``\texttt{html/body/table/tr class=tbrow/td class=tbcell/\#text bgcolor=red}''.
 \end{definition}
 
-\begin{definition}\textbf{(Tag Path Code -- TPC)}\label{def:tpc} is a numeric
+\begin{definition}\textbf{(Tag Path Code -- TPCode)}\label{def:tpc} is a numeric
 ascending code assigned to every different tag path string encountered in the tree, in order of
 appearance. If a given path has occurred in the past, it is assigned the same
 code as before. The paths are built in depth first order. Figure
 \ref{fig:tree2seq} shows an example of this definition.
 \end{definition}
 
-\begin{definition}\textbf{(Tag Path Sequence -- TPS)} is a sequence of TPC in
+\begin{definition}\textbf{(Tag Path Sequence -- TPS)} is a sequence of TPCode in
 the same order as they were built from the DOM tree. Figure \ref{fig:tree2seq} shows
-the resulting TPS for an HTML snippet as  well as the set of TPC used for that
+the resulting TPS for an HTML snippet as  well as the set of TPCode used for that
 the sequence. Here, in this paper, we also refer to TPS as simply ``sequence'',
-TPC as ``symbol'' and the set of TPC as ``alphabet''.
+TPCode as ``symbol'' and the set of TPCode as ``alphabet''.
 \end{definition}
 
 \begin{definition}\textbf{(Coefficient of Variation -- CV)}\label{def:cv} is a
@@ -298,7 +298,7 @@ tag path string and an empty sequence: \texttt{treeToSequence} \texttt{(root,
 assembled; In Lines \ref{lin:alg:tree2seq:b}--\ref{lin:alg:tree2seq:c} the tag
 path code is retrieve, if it is a recurring path, otherwise a new, ascending,
 code is assigned to it and the path string is stored for future reference; In
-Line \ref{lin:alg:tree2seq:d} the current TPC is appended to the TPS and; In
+Line \ref{lin:alg:tree2seq:d} the current TPCode is appended to the TPS and; In
 Line \ref{lin:alg:tree2seq:e} the procedure is called recursively for every
 child of the current node. When the procedure returns, the full TPS is stored in
 parameter \texttt{tps} which was passed by reference.
@@ -538,9 +538,9 @@ different tag paths that form the region's sequence is much smaller when
 compared to the size of the sequence, due to inherent repetitions, and so it is
 not prohibitive to check the CV of every symbol in the region's alphabet.
 
-Cross validating TPC variation against the TPS spectrum is more robust than
+Cross validating TPCode variation against the TPS spectrum is more robust than
 doing the inverse (i.e., selecting the highest peak in the spectrum and then
-searching for a corresponding TPC). That happens because the signal may be noisy
+searching for a corresponding TPCode). That happens because the signal may be noisy
 and the spectrum may contain noisy artifacts and errors due to windowing (e.g.,
 spectral leakage) and frequency resolution limitation, and so it is not
 guarantee that the highest peak will, in fact, correspond to the correct period.
