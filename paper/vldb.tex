@@ -11,6 +11,8 @@
 \usepackage{url}
 \usepackage{balance}
 
+\hyphenation{spec-trum}
+
 \title{Extracting Records from the Web Using a Signal Processing Approach}
 \numberofauthors{2}
 \author{
@@ -45,7 +47,7 @@ computationally efficient, using signal processing techniques to detect
 regularities and patterns in the structure of web pages. Our approach segments
 the web page, detects the data regions within it, identifies the records
 boundaries and aligns the records. Results show high f-measure and linear
-runtime behaviour.
+running time behaviour.
 \end{abstract}
 
 \section{Introduction}
@@ -260,7 +262,7 @@ from the root of the tree to every other node and assigns a code to each
 distinct path found. To help distinguish different regions of the document,
 during the region identification step, we've added style definitions to the tag
 paths, similar to what was done in \cite{clustVX2014} with the difference that
-here we use class and inline style attributes instead of rendering the entire
+here we use class and in-line style attributes instead of rendering the entire
 document, avoiding the computational cost associated with such a task.
 
 \begin{figure}[h]
@@ -293,9 +295,9 @@ concat(tps,tagPathMap[tp].code);$\label{lin:alg:tree2seq:d}
 \begin{description}
 \item[Description of Algorithm \ref{alg:tree2seq}] procedure
 \texttt{treeToSequence} is initially called with the tree's root node, an empty
-tag path string and an empty sequence: \texttt{treeToSequence} \texttt{(root,
+tag path string and an empty sequence: \\\texttt{treeToSequence}\texttt{(root,
 ``'', tps = ``'')}. In Line \ref{lin:alg:tree2seq:a} the current tag path string is
-assembled; In Lines \ref{lin:alg:tree2seq:b}--\ref{lin:alg:tree2seq:c} the tag
+assembled; in Lines \ref{lin:alg:tree2seq:b}--\ref{lin:alg:tree2seq:c} the tag
 path code is retrieve, if it is a recurring path, otherwise a new, ascending,
 code is assigned to it and the path string is stored for future reference; In
 Line \ref{lin:alg:tree2seq:d} the current TPCode is appended to the TPS and; In
@@ -481,14 +483,13 @@ optional, and application dependent, step: deciding which regions are content
 and which are noise. Here we chose to identify the main content and rule out
 menus and advertising. The approach we've adopted for this task consists of
 assigning a score to each region and separate them in two clusters, using an
-optimal 1D k-means algorithm \cite{1dkmeans2011}. The cluster with lower
-centroid is discarded and the remaining cluster is kept as content. The
-algorithm in \cite{1dkmeans2011}, although it runs in $O(n^2)$ time, in practice
-it doesn't have a significant impact in run time because it is proportional to
-the number of regions and not to the size of the document (though, in worst
-case, the number of regions could escalate to a value proportional to the
-document size, this is not the average behaviour displayed in Figure
-\ref{fig:runtime}).
+optimal 1D k-means algorithm\cite{1dkmeans2011}. The cluster with lower centroid
+is discarded and the remaining cluster is kept as content. The algorithm in
+\cite{1dkmeans2011}, although it runs in $O(n^2)$ time, in practice it doesn't
+have a significant impact in run time because it is proportional to the number
+of regions and not to the size of the document (though, in worst case, the
+number of regions could escalate to a value proportional to the document size,
+this is not the average behaviour displayed in Figure \ref{fig:runtime}).
 
 The score of a region is compute as defined in Equation \ref{eq:scorereg}, where
 \texttt{positionScore} ranges between 0.00 (far from the center of the sequence)
@@ -611,9 +612,9 @@ spectrum) and; if a considerable peak is found in this range the function return
 positions of the current symbol (Line \ref{line:alg:idreg:w}).
 \end{description}
 
-With respect to the time complexity of function \texttt{idRecords}, the overall
-complexity is dominated, in practical situations, by Line
-\ref{line:alg:idreg:r}, which is $O(nlogn)$ in the size of the input.
+With respect to \texttt{idRecords}' time complexity, the overall complexity is
+dominated, in practical situations, by Line \ref{line:alg:idreg:r}, which is
+$O(nlogn)$ on the size of the input region.
 \subsection{Record Alignment}\label{ss:reca}
 
 Once the records are identified they need to be properly aligned so they can be
@@ -651,7 +652,7 @@ provided implementations.
 
 We have implemented our approach using a two tier software architecture where
 the core is coded in C++ and the presentation layer (graph plotting, result
-manipulation/display, logging, timing, etc.) in embedded Lua \cite{luahome}.
+manipulation / display, logging, timing, etc.) in embedded Lua \cite{luahome}.
 Our implementation is publicly available at \cite{} and we encourage and support
 the scientific community to build on top of it, run independent experiments,
 implement other techniques for the sake of comparison and so on.
@@ -735,7 +736,7 @@ advertising).
 Although the high efficiency and effectiveness of our technique are stated by
 the results in Section \ref{sec:result}, this is not a perfect approach. We've
 assumed the records in a web document are contiguous, consistently
-formatted/structured and with approximate size. Although these assumptions are
+formatted / structured and with approximate size. Although these assumptions are
 plausible, they are not universal and where they do not hold our approach fails.
 Nonetheless, when considering web scale data, this subset of all structured data
 is of considerable size and value.
@@ -752,7 +753,7 @@ parser used by everyone, same rendering engine, datasets, etc.)
  
 Our guidelines for future work are the following:
 \begin{itemize}
-  \item research alignment techniques: here we have used a general and
+  \item research alignment techniques: here we have used a general purpose and
   supralinear (but still polynomial) sequence alignment algorithm, but we
   believe it is possible to devise a solution specifically for the problem of
   record alignment that is more effective and has a lower complexity bound. In
