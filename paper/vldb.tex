@@ -6,6 +6,7 @@
 \usepackage{algpseudocode}
 \usepackage{url}
 \usepackage{balance}
+\usepackage{listings}
 
 \hyphenation{spec-trum}
 
@@ -649,9 +650,13 @@ provided implementations.
 We have implemented our approach using a two tier software architecture where
 the core is coded in C++ and the presentation layer (graph plotting, result
 manipulation / display, logging, timing, etc.) in embedded Lua \cite{luahome}.
-Our implementation is publicly available at \cite{} and we encourage and support
-the scientific community to build on top of it, run independent experiments,
-implement other techniques for the sake of comparison and so on.
+For HTML parsing we've linked our system against libtidy\cite{libtidy}. Our
+implementation is publicly available at \cite{} and we encourage and support the
+scientific community to build on top of it, run independent experiments,
+implement other techniques for the sake of comparison and so on. Appendix
+\ref{app:a} has a simple usage example of our system and the infrastructure we
+have exposed to the Lua environment (there is also an integrated relational database
+available to the user -- SQLite\cite{sqlite}).
 
 We used two datasets for comparison. Dataset $\#1$ was proposed by
 \cite{yamada2004testbed} and was used, among others, by \cite{TPC09,clustVX2014}
@@ -780,9 +785,53 @@ Our guidelines for future work are the following:
   % extraction techniques, etc.
 \end{itemize}
  
-\balance 
-
 \bibliographystyle{abbrv}
 \bibliography{refs}
+
+\pagebreak
+\begin{appendix}
+\section{Extraction Framework Usage Example}\label{app:a}
+\begin{lstlisting}[language={[5.2]Lua}, caption={Lua source code calling C++ exposed interface.}]
+ 
+extractFile = function(filename)
+  -- loads and parses HTML into a DOM tree 
+  local dom = DOM.new(filename)
+
+  -- instantiates extractor
+  local dsre = DSRE.new() 
+
+  -- sets z-score and CV thresholds
+  dsre:setMinZScore(minZScore)
+  dsre:setMinCV(minCV)
+
+  -- extract records
+  dsre:extract(dom)
+
+  local regions = dsre:regionCount()
+  
+  -- iterates over regions
+  for i=1,regions do
+    local dr = dsre:getDataRegion(i-1)
+    local rows = dr:recordCount()
+    local cols = dr:recordSize()
+
+    -- iterates over current region's
+    -- rows and columns
+    for r=1,rows do  
+      local record = dr:getRecord(r-1)
+      for c=1,cols do
+        -- output field value
+        print(record[c]:toString())  
+      end
+    end
+  end
+	
+  dsre:printTps()
+  dom:printHTML()
+end
+\end{lstlisting}
+\end{appendix}
+
+\balance 
 
 \end{document}
