@@ -791,14 +791,18 @@ Our guidelines for future work are the following:
 \pagebreak
 \begin{appendix}
 \section{Extraction Framework Usage Example}\label{app:a}
-\begin{lstlisting}[language={[5.2]Lua}, 
-caption={Example of Lua source code calling C++ exposed interfaces.}]
- 
-extractFile = function(filename)
+
+Listing \ref{lst:lua} shows a small code snippet that parses an HTML document,
+extracts and displays the records found in it. The classes \texttt{DOM} and
+\texttt{DSRE} are implemented in C++ and their interfaces are exposed under the
+Lua environment.
+
+\begin{lstlisting}[label=lst:lua,language={[5.2]Lua},
+caption={Example of Lua source code calling C++ exposed interfaces.}] extractFile = function(filename) 
   -- loads and parses HTML into a DOM tree 
   local dom = DOM.new(filename)
 
-  -- instantiates extractor
+  -- instantiates an extractor
   local dsre = DSRE.new() 
 
   -- sets z-score and CV thresholds
