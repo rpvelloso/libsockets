@@ -611,7 +611,7 @@ positions of the current symbol (Line \ref{line:alg:idreg:w}).
 
 With respect to \texttt{idRecords}' time complexity, the overall complexity is
 dominated, in practical situations, by Line \ref{line:alg:idreg:r}, which is
-$O(nlogn)$ on the size of the input region.
+$O(nlogn)$ on the size of the input region. 
 \subsection{Record Alignment}\label{ss:reca}
 
 Once the records are identified they need to be properly aligned so they can be
@@ -710,9 +710,8 @@ Ours &	100.00\% & 95.45\% & 97.67\% \\ \hline
 \end{table}
 
 Finally we present in Figure \ref{fig:runtime} the running time behaviour of our
-implementation. We can see that the graph suggests a linear increase,
-proportional to the document size, in the running time to process a document
-end-to-end.
+implementation. We can see that the graph suggests a $O(n\cdot log(n))$
+time complexity. This behaviour is consistent with our complexity analysis.
 
 \begin{figure}[h]
   \centering
@@ -721,7 +720,6 @@ end-to-end.
   \caption{Document size vs running time.}
   \label{fig:runtime}
 \end{figure}
-
 
 \section{Conclusion and Future Work}\label{sec:con}
 
