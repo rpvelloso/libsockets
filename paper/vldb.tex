@@ -35,11 +35,11 @@ Carina F. Dorneles\\
 
 \begin{abstract}
 Extracting records from web pages enables a number of important
-applications and has an immense value due to the amount and diversity of
+applications and has immense value due to the amount and diversity of
 available information that can be extracted. This problem, although vastly
-studied, remains open because it is not a trivial one. Due to the scale of data
+studied, remains open because it is not a trivial one. Due to the scale of data,
 a feasible approach must be both automatic and efficient (and of course
-effective). We present, here, a novel approach, fully automatic and
+effective). We present here a novel approach, fully automatic and
 computationally efficient, using signal processing techniques to detect
 regularities and patterns in the structure of web pages. Our approach segments
 the web page, detects the data regions within it, identifies the records
@@ -49,9 +49,9 @@ running time behaviour.
 
 \section{Introduction}
 
-The extraction of structured information from the web is, undeniably, both
+The extraction of structured information from the web is undeniably both
 important and difficult. It is an important task due to the ever growing amount
-of information published and readily available on the web and, also, because
+of information published and readily available on the web and because
 structured information can be used to enrich, and allow, a number of
 applications (e.g., price comparison, semantic keyword search, metasearch,
 etc.).
@@ -64,7 +64,7 @@ challenge in this research field.
 Identifying the underlying content structure in a web document was attempted
 before. The existing approaches range from solutions to specific instances of
 the problem (e.g., extracting only data formatted with
-\texttt{<table>}\cite{webtables2008}) to more broader attempts that search for
+\texttt{<table>}\cite{webtables2008}) to broader attempts that search for
 patterns in a web document\cite{MDR03}. They also vary in degree of automation
 where there can be supervised, semi-supervised and unsupervised approaches. It
 is our understanding that the scientific community should strive to achieve the
@@ -88,12 +88,12 @@ The main contributions presented here are:
     \item a novel web page segmentation technique;
     \item a new and efficient way of checking if a given region of a web page is
     structured or not. Such a framework, that is independent of the extraction
-    process (i.e., one doesn't needs to extract the entire document), is useful
+    process (i.e., one doesn't need to extract the entire document), is useful
     to avoid processing portions of the document that are unpromising be it for
     record extraction, clustering, indexing or any other end;
-    \item a more efficient approach, when compared to the state-of-the-art.
-    That is due to the use of efficient signal processing algorithms. Most existing
-    works rely mainly on dynamic programming (e.g., edit distance), clustering
+    \item a more efficient approach, when compared to the state-of-the-art,
+    that is due to the use of efficient signal processing algorithms. Most
+    existing works rely mainly on dynamic programming (e.g., edit distance), clustering
     algorithms and/or full page rendering and hence are less efficient.
 \end{itemize}
 
@@ -108,7 +108,7 @@ of our ideas for future work.
 \section{Related Work}\label{sec:work}
 
 The task of extracting records from web pages has been approached from many
-angles. Some authors proposed \textit{ad hoc} solutions while others tried more
+angles. Some authors proposed \textit{ad hoc} solutions while others tried 
 broader approaches for the problem.
 
 In \cite{webtables2008, listExtract2009, tablesMS2012, tegra2015, topklists2013}
@@ -123,7 +123,7 @@ precision. And that is what those approaches are all about, they tackle very
 specific situations (sacrificing recall) in a very specialized way (ensuring
 high precision).
 
-In the other hand, in \cite{RRunner01, exalg2003, vips03, viper05, MDR03,
+On the other hand, in \cite{RRunner01, exalg2003, vips03, viper05, MDR03,
 depta05, NET05, TPC09, vide10, gstm2010, fivatech2010, cvts2012, SuffixTree12,
 clustVX2014, datapath2015, autorm2015} more general approaches are proposed.
 These proposals try to solve the problem in a broader sense (which is a much
@@ -145,7 +145,7 @@ field.
 
 Recent surveys\cite{survey2013, survey2014} about the subject of structured
 extraction have reached the same conclusion about the state-of-the-art: existing
-works fail to definitively solve the problem, i.e., its still an open research
+works fail to definitively solve the problem, i.e., it's still an open research
 problem. Those surveys also agreed about the problem encountered when comparing
 two different approaches in this research area: there is no standard
 dataset/baseline and most implementations are not publicly available.
@@ -214,7 +214,7 @@ standardized to \textit{z-score} (b).
 \begin{definition}\textbf{(Fast Fourier Transform -- FFT)}\label{def:fft} is an
 efficient implementation of the DFT that yields the same result. The naive implementation
 of the DFT has $O(n^2)$ time complexity whereas the FFT has $O(nlogn)$ time
-complexity. For many more details about DFT, FFT and discrete signal
+complexity. For more details about DFT, FFT and discrete signal
 processing in general we refer the reader to \cite{oppenheim1989discrete},
 which covers the subject in great depth, since this is not the scope of this
 paper.
@@ -249,7 +249,7 @@ Most of the works in this area use the DOM tree to represent the documents
 subjected to record extraction. We choose, instead, an alternative
 representation: a sequence of tag paths. This representation allows us to see
 the web page as a sequence instead of a tree, enabling us to make use of
-algorithms targeted at sequences. Such representation was used before in
+algorithms targeted at sequences. Such a representation was used before in
 \cite{TPC09, SuffixTree12, TPS2013}.
 
 The translation process from DOM tree representation to tag path sequence is
@@ -295,7 +295,7 @@ concat(tps,tagPathMap[tp].code);$\label{lin:alg:tree2seq:d}
 tag path string and an empty sequence: \\\texttt{treeToSequence}\texttt{(root,
 ``'', tps = ``'')}. In Line \ref{lin:alg:tree2seq:a} the current tag path string is
 assembled; in Lines \ref{lin:alg:tree2seq:b}--\ref{lin:alg:tree2seq:c} the tag
-path code is retrieve, if it is a recurring path, otherwise a new, ascending,
+path code is retrieved, if it is a recurring path, otherwise a new, ascending,
 code is assigned to it and the path string is stored for future reference; In
 Line \ref{lin:alg:tree2seq:d} the current TPCode is appended to the TPS and; In
 Line \ref{lin:alg:tree2seq:e} the procedure is called recursively for every
@@ -305,12 +305,12 @@ parameter \texttt{tps} which was passed by reference.
 
 \subsection{Region Identification}\label{ss:regi}
 
-Before extracting the records itself we first isolate the regions that contain
-structured data. It is simpler and easier to extract records from a delimited
-region that is known to contain structured data than it is to do so from the
-entire document. The reason for this is that structured regions are cyclic,
-i.e., since the records have similar structure and are contiguous then its tag
-path sequence will display a cyclic behaviour as illustrate in Figure
+Before extracting the records themselves we first isolate the regions that
+contain structured data. It is simpler and easier to extract records from a
+delimited region that is known to contain structured data than it is to do so
+from the entire document. The reason for this is that structured regions are
+cyclic, i.e., since the records have similar structure and are contiguous then
+its tag path sequence will display a cyclic behaviour as illustrated in Figure
 \ref{fig:stru}.
 
 \begin{figure*}[h]
@@ -456,17 +456,17 @@ Figure \ref{fig:contour}.
 
 The resulting regions are then merged together according to their alphabets
 (i.e., set of symbols that form the sequence). If two adjacent regions share a
-common alphabet, they are merged in a single region, if their alphabet is
+common alphabet, they are merged into a single region, if their alphabet is
 disjoint (i.e., they share no common symbols) they are kept apart.
 
-At last, to ensure that the identified regions contain, in fact, structured
-content, they are filtered out according to their angular coefficient. This
-filtering step is necessary because when using the contour and its difference to
-segment the sequence, it is possible that some of the identified regions are
-spurious. If a region is indeed cyclic, its linear regression will yield a small
-angular coefficient. If it is not cyclic, then it is either increasing or
-decreasing and in both cases the linear regression will yield a much greater
-angular coefficient.
+At last, to ensure that the identified regions contain structured content, they
+are filtered out according to their angular coefficient. This filtering step is
+necessary because when using the contour and its difference to segment the
+sequence, it is possible that some of the identified regions are spurious. If a
+region is indeed cyclic, its linear regression will yield a small angular
+coefficient. If it is not cyclic, then it is either increasing or decreasing and
+in both cases the linear regression will yield a much greater angular
+coefficient.
 
 The computational complexity of functions $contour$ and $segment$ are linear in
 the size of the input sequence. For functions $mergeRegions$ and $filterRegions$
@@ -479,17 +479,17 @@ After processing the regions with function \texttt{idRegions} there is an
 optional, and application dependent, step: deciding which regions are content
 and which are noise. Here we chose to identify the main content and rule out
 menus and advertising. The approach we've adopted for this task consists of
-assigning a score to each region and separate them in two clusters, using an
+assigning a score to each region and separate them into two clusters, using an
 optimal 1D k-means algorithm\cite{1dkmeans2011}. The cluster with lower centroid
 is discarded and the remaining cluster is kept as content. The algorithm in
 \cite{1dkmeans2011}, although it runs in $O(n^2)$ time, in practice it doesn't
-have a significant impact in run time because it is proportional to the number
+have a significant impact on run time because it is proportional to the number
 of regions and not to the size of the document (though, in worst case, the
 number of regions could escalate to a value proportional to the document size,
 this is not the average behaviour displayed in Figure \ref{fig:runtime}).
 
-The score of a region is compute as defined in Equation \ref{eq:scorereg}, where
-\texttt{positionScore} ranges between 0.00 (far from the center of the sequence)
+The score of a region is computed as defined in Equation \ref{eq:scorereg},
+where \texttt{positionScore} ranges between 0.00 (far from the center of the sequence)
 and 1.00 (close to the center) and \texttt{sizeScore}, which represents
 percentage of TPS occupied by the region, too. The \texttt{maxDistance} is equal
 to $\frac{tpsSize}{2}$ because that is the maximum distance a region can be from
@@ -527,21 +527,22 @@ can see in Figure \ref{fig:fftreg} (the main content region of Figure
 
 For every tag path code, in increasing order, we check how well distributed it
 is along the sequence using the coefficient of variation (CV for short) of the
-distance between it's occurrences, e.g., if a given tag path occurs at positions
+distance between its occurrences, e.g., if a given tag path occurs at positions
 \{10, 20, 30\}, the distances between consecutive occurrences are \{$20-10 =
 \textbf{10}$, $30-20 = \textbf{10}$\} and the CV is equal to 0.0\% since all
 distances are the same. In order to determine if a tag path is well distributed
-or not a threshold must be set. Since the regions are cyclic, the number of
-different tag paths that form the region's sequence is much smaller when
-compared to the size of the sequence, due to inherent repetitions, and so it is
-not prohibitive to check the CV of every symbol in the region's alphabet.
+a threshold must be set. Since the regions are cyclic, the number of different
+tag paths that form the region's sequence is much smaller when compared to the
+size of the sequence. This is due to inherent repetitions and so it is not
+prohibitive to check the CV of every symbol in the region's alphabet.
 
 Cross validating TPCode variation against the TPS spectrum is more robust than
 doing the inverse (i.e., selecting the highest peak in the spectrum and then
-searching for a corresponding TPCode). That happens because the signal may be noisy
+searching for a corresponding TPCode). This is because the signal may be noisy
 and the spectrum may contain noisy artifacts and errors due to windowing (e.g.,
 spectral leakage) and frequency resolution limitation, and so it is not
-guarantee that the highest peak will, in fact, correspond to the correct period.
+guaranteed that the highest peak will in fact correspond to the correct
+period.
 Figure \ref{fig:fftleak} shows an example of this situation where the highest
 peak in the spectrum is not the correct period, but nonetheless there is a
 significant peak that corresponds to the correct period.
@@ -622,11 +623,11 @@ Star}\cite{centerstar1993}, has a polynomial time complexity and guaranteed
 error bound.
 
 It is important to note that the previous step of record identification is
-parametrized by the CV of records size and this parameter directly affects the
+parametrized by the CV of record size and this parameter directly affects the
 quality of the alignment in the following way: the lower the CV the better will
 be the alignment at the expense of recall.
 
-Another measure we take, in order to improve alignment quality, is to prune the
+Another measure we take in order to improve alignment quality, is to prune the
 records before aligning them. Since we are not constrained here by the hierarchy
 imposed by the DOM's tree structure, we can remove intermediate nodes that do
 not contain information, easing the alignment process and improving both it's
@@ -635,17 +636,17 @@ quality and running time (since the input size is diminished).
 \section{Results}\label{sec:result}
 
 In this section we discuss and compare the results of our research with other
-approaches found in the literature that we considered to be more relevant. We
-considered to be more relevant the proposals which are fully automatic, highly
-effective, domain independent and computationally efficient. 
+approaches found in the literature that we considered to be most relevant. The
+proposals we considered most relevant are those which are fully automatic,
+highly effective, domain independent and computationally efficient.
 
-The main difficulty we've encountered, when trying to compare our results with
-the results of the others, was the implementations unavailability. For this
+The main difficulty we encountered when trying to compare our results with the
+results of the others, was the unavailability of implementations. For this
 reason we were unable to make a deeper and independent comparative analysis.
-Were implementations available one could compare specific situations where one
-approach performs better than the other, otherwise we can only compare
-summarized results. Although several works have criticized this aspect, few
-provided implementations.
+Had implementations been available one could compare specific situations where
+one approach performs better than the other, otherwise we can only compare
+summarized results. 
+%Although several works have criticized this aspect, few provided implementations.
 
 We have implemented our approach using a two tier software architecture where
 the core is coded in C++ and the presentation layer (graph plotting, result
@@ -660,14 +661,14 @@ available to the user -- SQLite\cite{sqlite}).
 
 We used two datasets for comparison. Dataset $\#1$ was proposed by
 \cite{yamada2004testbed} and was used, among others, by \cite{TPC09,clustVX2014}
-which are, in our opinion, the two more relevant works in the field and are
-relatively recent. Dataset $\#2$ was assembled and used in \cite{clustVX2014}.
+which in our opinion, are two of the more relevant works in the field and
+are relatively recent. Dataset $\#2$ was assembled and used in \cite{clustVX2014}.
 
 Table \ref{table:compare1} compares precision, recall and f-score of our
 approach with three other state-of-the-art techniques, using dataset $\#1$:
 MDR\cite{MDR03}, TPC\cite{TPC09} and ClustVX\cite{clustVX2014}.
-Our approach performs better than MDR and TPC and slightly worst than ClustVX,
-but in the other hand our technique doesn't need to render the entire page in
+Our approach performs better than MDR and TPC and slightly worse than ClustVX,
+but on the other hand our technique doesn't need to render the entire page in
 order to extract the records. As a matter of fact, we just parse the HTML and
 don't even process CSS definitions (our approach just cares about \texttt{class}
 attributes).
@@ -676,8 +677,8 @@ approaches with available implementation and probably the first to achieve
 acceptable results (both in computational complexity and effectiveness).
 
 Table \ref{table:compare2} compares only against ClustVX, using dataset $\#2$.
-Again we've performed slightly worst, but close to a perfect result. This
-dataset is more up to date, than dataset $\#1$, with respect to document
+Again we've performed slightly worse, but close to a perfect result. This
+dataset is more up to date than dataset $\#1$, with respect to document
 template and web programming practices, but it contains only a small number of
 documents so it is not an extensive, large scale, comparison.
 
@@ -726,16 +727,15 @@ determination measures how much data is explained by the fitted curve} of
 \section{Conclusion and Future Work}\label{sec:con}
 
 We have shown here a novel approach for the problem of extracting records from
-semi-structured web pages, based on a new insight: seeing the structure of the
+semi-structured web pages based on a new insight: seeing the structure of the
 document as a cyclic signal. Our results are equivalent to the state-of-the-art,
 but we claim we've achieved it in a more efficient way since no document
-rendering is required. Our approach also has an interesting byproduct, the
-structure detection, that can be used in other areas, for example, when the
-target is unstructured data one can rule out structured noise (e.g., menus and
-advertising).
+rendering is required. The structure detection in our approach can also be used
+in other areas, for example, when the target is unstructured data one can rule
+out structured noise (e.g., menus and advertising).
 
-Although the high efficiency and effectiveness of our technique are stated by
-the results in Section \ref{sec:result}, this is not a perfect approach. We've
+Although the high efficiency and effectiveness of our technique are demonstrated
+by the results in Section \ref{sec:result}, this is not a perfect approach. We've
 assumed the records in a web document are contiguous, consistently
 formatted / structured and with approximate size. Although these assumptions are
 plausible, they are not universal and where they do not hold our approach fails.
