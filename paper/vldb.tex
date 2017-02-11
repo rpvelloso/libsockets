@@ -1,3 +1,7 @@
+% melhorar introducao
+% mudar titulo da secao 4 (proposal)
+% fazer figura ilustrando processo de extracao completo para secao 4
+
 \documentclass{vldb}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
@@ -49,7 +53,17 @@ $O(n\cdot log(n))$ time complexity behaviour.
 
 \section{Introduction}
 
-The extraction of structured information from the web is undeniably both
+% contextualizacao
+Throughout the web, data is often presented in a semi-structured fashion (e.g.,
+shopping items, news, search engine results, etc.) with the objective of
+organizing semantically related entities in order to facilitate document
+comprehension by a human user. This semi-structured data, although varied in
+layout and domain, has common characteristics that can be used to identify it
+inside a document and improve its structure to the point where it is possible to
+access it as relational data (i.e., as structured data).
+
+% justificativa da importancia da pesquisa e motivacao
+The extraction of structured information is undeniably both
 important and difficult. It is an important task due to the ever growing amount
 of information published and readily available on the web and because
 structured information can be used to enrich, and allow, a number of
@@ -61,6 +75,7 @@ published in a variety of formats and templates, as observed in
 research\cite{abadi2014beckman} mentions the diversity of data as a key
 challenge in this research field.
 
+% breve resumo bibliografico
 Identifying the underlying content structure in a web document was attempted
 before. The existing approaches range from solutions to specific instances of
 the problem (e.g., extracting only data formatted with
@@ -71,6 +86,7 @@ is our understanding that the scientific community should strive to achieve the
 highest possible level of automation when dealing with web extraction due
 to the volume of data, or else the approach just isn't going to scale up.
 
+% resumo da abordagem
 Here we outline a novel approach for the problem of structured extraction (or
 record extraction) from web pages, using an alternative representation of the
 DOM tree and some signal processing techniques. Our approach first converts the
@@ -80,6 +96,7 @@ within the structured regions and; aligns the records into a table. The
 technique outlined here is fully automatic, domain independent and HTML
 independent (i.e., we have no heuristic rules targeted at specific tags).
 
+% contribuicoes
 The main contributions presented here are:
 \begin{itemize}
     \item a novel insight on how the structure of a web document can be seen: as
@@ -97,6 +114,7 @@ The main contributions presented here are:
     algorithms and/or full page rendering and hence are less efficient.
 \end{itemize}
 
+% organizacao do restante do texto
 The rest of the paper is organized as follows. In Section \ref{sec:work} we
 briefly review the work related to structured extraction; in Section
 \ref{sec:defs} we presents some definitions required to better understand the
@@ -230,7 +248,7 @@ We use the finite difference to delimit cyclic regions of a sequence.
 \end{equation}
 \end{definition}
 
-\section{Proposal}\label{sec:prop}
+\section{Structured Data Extraction}\label{sec:prop}
 We present here, in this Section, the details of our proposal to tackle the
 problem of extracting data records from web pages. The technique is subdivided
 in four main steps, namely: sequence representation, region identification,
@@ -243,6 +261,14 @@ words, the records are laid out so that it is obvious to the human reader that
 they are related to each other and they refer to same subject (or entity). Such
 an organization necessarily reflects on the structure of the DOM tree and its
 style definition and, consequently, on its tag path sequence representation.
+
+\begin{figure}[h]
+  \centering
+     \includegraphics[width=\columnwidth]{img/proposal.jpg}
+  \caption{Extraction system overall diagram.}
+  \label{fig:proposal}
+\end{figure}
+
 
 \subsection{Sequence Representation}\label{ss:seq}
 Most of the works in this area use the DOM tree to represent the documents
