@@ -57,7 +57,7 @@ computationally efficient, using signal processing techniques to detect
 regularities and patterns in the structure of web pages. Our approach segments
 the web page, detects the data regions within it, identifies the records
 boundaries and aligns the records. Results show high f-score and
-$O(n\cdot log(n))$ time complexity behaviour.
+linearithmic time complexity behaviour.
 \end{abstract}
 
 \section{Introduction}
@@ -335,8 +335,7 @@ concat(tps,tagPathMap[tp].code);$\label{lin:alg:tree2seq:d}
 \end{algorithmic}
 \end{algorithm}
 
-\begin{description}
-\item[Description of Algorithm \ref{alg:tree2seq}] procedure
+\textbf{Description of Algorithm \ref{alg:tree2seq}:} procedure
 \texttt{treeToSequence} is initially called with the tree's root node, an empty
 tag path string and an empty sequence: \\\texttt{treeToSequence}\texttt{(root,
 ``'', tps = ``'')}. In Line \ref{lin:alg:tree2seq:a} the current tag path string is
@@ -347,7 +346,6 @@ Line \ref{lin:alg:tree2seq:d} the current TPCode is appended to the TPS and; In
 Line \ref{lin:alg:tree2seq:e} the procedure is called recursively for every
 child of the current node. When the procedure returns, the full TPS is stored in
 parameter \texttt{tps} which was passed by reference.
-\end{description}
 
 \subsection{Region Identification}\label{ss:regi}
 
@@ -460,31 +458,32 @@ the structured segments of the sequence.
 \end{algorithmic}
 \end{algorithm}
 
-\begin{description}
-\item[Description of \texttt{contour} function] this function is
+\textbf{Description of \texttt{contour} function:} this function is
 pretty straightforward, it receives the TPS as input, iterates over the sequence (Line
 \ref{line:alg:idreg:a}), computes its upper contour (i.e., the maximum value
 seen so far) in Lines \ref{line:alg:idreg:b}--\ref{line:alg:idreg:c} and then;
 returns the sequence's contour (Line \ref{line:alg:idreg:d});
-\item[Description of \texttt{segment} function] this function receives the
+
+\textbf{Description of \texttt{segment} function:} this function receives the
 sequence's contour as input, computes its finite difference (Line
 \ref{line:alg:idreg:e}), as defined in Definition \ref{def:diff};
 assembles a set with all intervals where the finite difference is zero-valued
 (Lines \ref{line:alg:idreg:f}--\ref{line:alg:idreg:g}) and then; returns this
 set of possibly structured regions (Line \ref{line:alg:idreg:h});
-\item[Description of \texttt{mergeRegions} function] this function receives, as
-input, a set of possibly structured regions; iterates over this set (Line
+
+\textbf{Description of \texttt{mergeRegions} function:} this function
+receives, as input, a set of possibly structured regions; iterates over this set (Line
 \ref{line:alg:idreg:i}), merging the adjacent elements with intersecting alphabets (Lines
 \ref{line:alg:idreg:j}--\ref{line:alg:idreg:k}) and then; returns the merged set
 of possibly structured regions (Line \ref{line:alg:idreg:l});
-\item[Description of \texttt{filterRegions} function] this function receives, as
-input, a set of possibly structured regions; iterates over this set (Line
+
+\textbf{Description of \texttt{filterRegions} function:} this function
+receives, as input, a set of possibly structured regions; iterates over this set (Line
 \ref{line:alg:idreg:m}); computes the linear regression for each region in the
 set (Line \ref{line:alg:idreg:n}); if the current region has an angular
 coefficient above the threshold (Line \ref{line:alg:idreg:o}) it is removed from the set
 (Line \ref{line:alg:idreg:p}) and finally; the remaining set of regions is
 returned (Line \ref{line:alg:idreg:q}).
-\end{description}
 
 Algorithm \ref{alg:idreg} computes the contour of the input sequence and its
 finite difference and then uses this to segment the document in several regions.
@@ -656,8 +655,7 @@ detail the process of identifying the records within a region.
 \end{algorithmic}
 \end{algorithm}
 
-\begin{description}
-\item[Description of Algorithm \ref{alg:idrec}] function \texttt{IdRecords}
+\textbf{Description of Algorithm \ref{alg:idrec}:} function \texttt{IdRecords}
 receives, as input, a structured region; computes its PSD using FFT (Line
 \ref{line:alg:idreg:r}) as defined in Definition \ref{def:fft}; iterates over
 the region's alphabet, in ascending order (Line \ref{line:alg:idreg:s}); for
@@ -669,11 +667,10 @@ in the range around the number of candidate records (Line \ref{line:alg:idreg:v}
 -- \texttt{recCount} is the frequency we are validating against the sequence's
 spectrum) and; if a considerable peak is found in this range the function returns the
 positions of the current symbol (Line \ref{line:alg:idreg:w}).
-\end{description}
 
 With respect to \texttt{idRecords}' time complexity, the overall complexity is
-dominated, in practical situations, by Line \ref{line:alg:idreg:r}, which is
-$O(nlogn)$ on the size of the input region. 
+dominated by Line \ref{line:alg:idreg:r}, which is $O(nlogn)$ on the size of the
+input region.
 \subsection{Record Alignment}\label{ss:reca}
 
 Once the records are identified they need to be properly aligned (i.e., their
@@ -692,7 +689,14 @@ this for similar strings, according to \cite{centerstar1993}.
 
 Table \ref{table:align} shows the resulting alignment, using \textit{Center
 Star} method, for the records extracted from the region depicted in Figure
-\ref{fig:fftreg}a.
+\ref{fig:fftreg}a. The values are TPCodes, each representing a distinct node in
+the DOM tree.
+
+The alignment of records, by itself, deserves a more in depth study. It is still
+an open, and very important, problem related to web record extraction. As
+observed in \cite{listExtract2009}, there is no single correct answer when it
+comes to the alignment of records and this constitutes an additional difficulty
+when evaluating the goodness of an alignment.
 
 \begin{table}[h]
 \centering
@@ -703,7 +707,7 @@ Star} method, for the records extracted from the region depicted in Figure
 \setlength\tabcolsep{2.3pt}
 \begin{tabular}
 {|c|l|l|l|l|l|l|l|l|l|l|l|l|l|l|l|} \hline
-rec \#&\multicolumn{15}{c|}{fields}\\ \hline
+rec \#&\multicolumn{15}{c|}{fields (TPCodes)}\\ \hline
  \#1&252&256&258&259&262&266&270&272&270&270&274&   &   &   &278\\ \hline
  \#2&252&256&258&259&262&266&270&272&270&270&   &280&   &274&278\\ \hline
  \#3&252&256&258&259&262&266&270&272&270&270&274&280&274&   &   \\ \hline
@@ -740,8 +744,6 @@ records before aligning them. Since we are not constrained here by the hierarchy
 imposed by the DOM's tree structure, we can remove intermediate nodes that do
 not contain information, easing the alignment process and improving both it's
 quality and running time (since the input size is diminished).
-
-
 
 \section{Results}\label{sec:result}
 
@@ -823,10 +825,15 @@ Ours &	100.00\% & 95.45\% & 97.67\% \\ \hline
 \end{table}
 
 Finally we present in Figure \ref{fig:runtime} the running time behaviour of our
-implementation. We can see that the graph suggests a $O(n\cdot log(n))$
-time complexity with a coefficient of determination\footnote{the coefficient of
+implementation. We can see that the graph suggests a $O(n\cdot log(n))$ time
+complexity with a coefficient of determination\footnote{the coefficient of
 determination ($R^2$) measures how much data is explained by the fitted curve.}
-of 93.297\%. This behaviour is consistent with our complexity analysis.
+of 93.297\%. This behaviour is consistent with our complexity analysis. The
+alignment phase, although with a greater time complexity, does not affect the
+overall time complexity because the alignment input size, compare to overall
+input size, is much smaller. Anyway, the alignment phase is a limiting
+factor of our approach when dealing with long records, but that is not the
+average behaviour we observed in practice.
 
 \begin{figure}[h]
   \centering
