@@ -103,7 +103,14 @@ DOM tree to a sequence representation; segments the sequence into regions;
 identifies the regions with structured content; locates the records boundaries
 within the structured regions and; aligns the records into a table. The
 technique outlined here is fully automatic, domain independent and HTML
-independent (i.e., we have no heuristic rules targeted at specific tags).
+independent (i.e., we have no heuristic rules targeted at specific tags). The
+sequence representation enables the use of signal processing techniques. We
+segment the sequence into its cyclic subsequences (which represent structured
+data regions) using the finite difference (Definition \ref{def:diff}) and within
+each of this cyclic subsequences we find their main period (which represents the
+size of the records) and frequency (which represents the number of records within that data
+region) using its spectrum (Definition \ref{def:fft}) and we use this
+information (record size and record count) to break down the data region into records.
 
 % contribuicoes
 The main contributions presented here are:
@@ -154,12 +161,20 @@ On the other hand, in \cite{RRunner01, exalg2003, vips03, viper05, MDR03,
 depta05, NET05, TPC09, vide10, gstm2010, fivatech2010, cvts2012, SuffixTree12,
 clustVX2014, datapath2015, autorm2015} more general approaches are proposed.
 These proposals try to solve the problem in a broader sense (which is a much
-harder problem to solve), some using machine learning techniques, others
-grounded on general observations about structured content. Although each of
-these researches represent advances in the research field, they do not provide
-readily usable results (i.e., production grade), unlike their \textit{ad hoc}
-counterparts, but they do serve as stepping stones for future works to catch
-on.
+harder problem to solve), some using machine learning
+techniques\cite{RRunner01,fivatech2010,clustVX2014,datapath2015}, others
+grounded on general observations about structured
+content\cite{MDR03,exalg2003,NET05,depta05,TPC09,gstm2010,SuffixTree12,cvts2012,autorm2015}.
+Some approaches also make use of visual information, by rendering the entire
+document in a browser engine before processing
+it\cite{vips03,viper05,depta05,vide10,clustVX2014}.
+Although each of these researches represent advances in the field of structured
+extraction, they do not provide, like their \textit{ad hoc} counterparts do,
+readily usable results (i.e., end-to-end production grade results), but they do
+serve as stepping stones for future works to catch on. For instance, some
+researches focus on records extraction only, not bothering with alignment at all
+(e.g., \cite{TPC09}), others focus on main data region detection (e.g.,
+\cite{vips03}).
 
 In \cite{TPC09, SuffixTree12, TPS2013} an alternative document representation is
 used. Instead of using the DOM tree as document representation, the web page
@@ -168,7 +183,10 @@ algorithms targeted at strings and sequences (e.g., suffix
 tree/array\cite{ukkonen1995, manber1993suffix}, FFT\cite{fft1965}, Lempel-Ziv
 compression\cite{ziv1977universal}, etc.), which are vast and well studied
 \cite{gusfield1997algorithms}, unleashing new possibilities in this research
-field.
+field. Some of this algorithms were used before (e.g., Suffix Tree in
+\cite{SuffixTree12}), the FFT is used here in this work and in Section
+\ref{sec:con} we discuss the use of LZ compression for record extraction as a
+promissing possibility.
 
 Recent surveys\cite{survey2013, survey2014} about the subject of structured
 extraction have reached the same conclusion about the state-of-the-art: existing
@@ -176,6 +194,17 @@ works fail to definitively solve the problem, i.e., it's still an open research
 problem. Those surveys also agreed about the problem encountered when comparing
 two different approaches in this research area: there is no standard
 dataset/baseline and most implementations are not publicly available.
+
+Our work falls in the category of general approaches because we developed it
+based on general observations about structured data, but we address only a
+subset of all structured data: records with similar structure \textbf{and} size.
+By doing that we trade recall for precision. We also managed to do so
+automatically, efficiently, without rendering the full web page in a browser
+engine, and without heuristic rules associated to HTML tags (that is undesirable
+because HTML syntax and programming practices changes over time, compromising
+the technique's longevity).
+% diferencial do trabalho: complexidade de tempo baixa, independe do HTML, não
+% renderiza página,
 
 \section{Definitions}\label{sec:defs}
 In this section we define some concepts needed for the understanding of our approach.
