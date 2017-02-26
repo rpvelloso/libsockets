@@ -1,3 +1,5 @@
+% repeticoes: DUE TO, i.e.
+% 
 % - melhorar introducao
 % - mudar titulo da secao 4 (proposal)
 % - fazer figura ilustrando processo de extracao completo para secao 4
@@ -67,7 +69,7 @@ Throughout the web, data is often presented in a semi-structured fashion (e.g.,
 shopping items, news, search engine results, etc.) with the objective of
 organizing semantically related entities in order to facilitate document
 comprehension by a human user. This semi-structured data, although varied in
-layout and domain, has common characteristics that can be used to identify it
+layout and domain, has similar characteristics that can be used to identify it
 inside a document and improve its structure to the point where it is possible to
 access it as relational data (i.e., as structured data).
 
@@ -191,7 +193,7 @@ promissing possibility.
 Recent surveys\cite{survey2013, survey2014} about the subject of structured
 extraction have reached the same conclusion about the state-of-the-art: existing
 works fail to definitively solve the problem, i.e., it's still an open research
-problem. Those surveys also agreed about the problem encountered when comparing
+problem. Those surveys also agree about the problem encountered when comparing
 two different approaches in this research area: there is no standard
 dataset/baseline and most implementations are not publicly available.
 
@@ -291,7 +293,7 @@ the data's mean and standard deviation, as defined by Equation \ref{eq:zscore},
 where $x$ is the data being converted. Each data point is converted to a value
 that means the distance, in number of standard deviations, from the mean.
 We use it here to convert the PSD of all structured regions to a common ground, so they
-can be validated against the same thresold. This is needed because each
+can be validated against the same threshold. This is needed because each
 structured region has a different range of values and varying size, so
 standardization is required if they are to be compared against a common
 threshold.
@@ -692,7 +694,7 @@ TPCode is only about 8.5564\% (a low CV means little variation in record size).
 Cross validating TPCode variation against the TPS spectrum is more robust than
 doing the inverse (i.e., selecting the highest peak in the spectrum and then
 searching for a corresponding TPCode). This is because the signal may be noisy
-and the spectrum may contain noisy artifacts and errors due to windowing (e.g.,
+and the spectrum may contain artifacts and errors due to windowing (e.g.,
 spectral leakage) and frequency resolution limitation, and so it is not
 guaranteed that the highest peak will in fact correspond to the correct
 period.
@@ -797,7 +799,7 @@ The alignment of records, by itself, deserves a more in depth study. It is still
 an open, and very important, problem related to web record extraction. As
 observed in \cite{listExtract2009}, there is no single correct answer when it
 comes to the alignment of records and this constitutes an additional difficulty
-when evaluating the goodness of an alignment.
+when evaluating the correctness of an alignment.
 
 \begin{table}[h]
 \centering
