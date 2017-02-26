@@ -285,6 +285,20 @@ which covers the subject in great depth, since this is not the scope of this
 paper.
 \end{definition}
 
+\begin{definition}\textbf{(Z-Score)}\label{def:zscore} or standard
+score\cite{CVeveritt2006cambridge}, is a standardization method with respect to
+the data's mean and standard deviation, as defined by Equation \ref{eq:zscore}.
+We use it here to convert the PSD of all structured regions to a common ground,
+so they can be validated against the same thresold. This is needed because each
+structured region has a different range of values and varying size, so
+standardization is required if they are to be compared against a common
+threshold.
+\begin{equation}\label{eq:zscore}
+    z = \frac{x -\mu}{\sigma}
+\end{equation}
+
+\end{definition}
+
 \begin{definition}\textbf{(Sequence Contour)}\label{def:contour} is actually the
 upper contour of a sequence. In other words, the contour is the maximum value
 seen so far in the sequence. It can be tought of as the \textit{skyline} of the
