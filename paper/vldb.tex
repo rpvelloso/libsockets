@@ -635,18 +635,26 @@ score \leftarrow \frac{positionScore+sizeScore}{2}
 
 For each region identified in the previous step we now try to extract records
 out of it. To do so, we analyse the tag paths that appear in the sequence
-against the region's spectrum. The spectrum is calculated using the fast Fourier
-transform\cite{fft1965} (FFT for short). The Fourier transform factors the
-sequence into its frequency components, so cyclic sequences will exhibit higher
-peaks in frequencies that correspond to the main period of the sequence as we
-can see in Figure \ref{fig:fftreg} (the main content region of Figure
-\ref{fig:stru}). Figure \ref{fig:fftreg}a shows the subsequence that represents
-a structured region of the TPS and, hence, displays a cyclic behaviour and a
-linear regression with a small angle; Figure \ref{fig:fftreg}b shows the
-subsequence's PSD with a highlighted frequency peak. This frequency peak
-represents the record count (or number of cycles in the subsequence) and the
-corresponding period (i.e., the subsequence length divided by the frequency) is
-equivalent to the records mean size.
+against the region's spectrum (Definition \ref{def:dft}). The spectrum is
+calculated using the fast Fourier transform\cite{fft1965} (FFT for short --
+Definition \ref{def:fft}).
+The Fourier transform factors the sequence into its frequency components, so
+cyclic sequences will exhibit higher peaks in frequencies that correspond to the
+main period of the sequence as we can see in Figure \ref{fig:fftreg} (the main
+content region of Figure \ref{fig:stru}). Figure \ref{fig:fftreg}a shows the
+subsequence that represents a structured region of the TPS and, hence, displays
+a cyclic behaviour and a linear regression with a small angle. In this case the
+linear regression displays an inclination of only 0.15 degrees (almost
+horizontally flat), if the region were unstructured (i.e., an increasing or
+decreasing subsequence) its angular coefficient would be much higher (e.g., 45
+degrees of inclination); Figure \ref{fig:fftreg}b shows the subsequence's PSD
+with a highlighted frequency peak. The frequency peak is located at position 20
+of the spectrum, which corresponds exactly to the number of records present in
+this region and if we divide the size of the region by the number of records we
+get the average record size (31 in this case).
+In short, this frequency peak represents the record count (or number of cycles
+in the subsequence) and its corresponding period (i.e., the subsequence length
+divided by the frequency) is equivalent to the average record size.
 
 \begin{figure}[h]
   \centering
@@ -659,15 +667,27 @@ equivalent to the records mean size.
 
 To decide if a certain TPCode represents a record boundary within the region, we
 check how well distributed along the subsequence each TPCode is, in increasing
-order, using the coefficient of variation (CV for short) of the distance between
-its occurrences, e.g., if a given tag path occurs at positions \{10, 20, 30\},
-the distances between consecutive occurrences are \{$20-10 = \textbf{10}$,
-$30-20 = \textbf{10}$\} and the CV is equal to 0.0\% since all distances are the
-same. In order to determine if a tag path is well distributed a threshold must
-be set. Since the regions are cyclic, the number of different tag paths that
-form the region's sequence is much smaller when compared to the size of the
-sequence. This is due to inherent repetitions and so it is not prohibitive to
-check the CV of every symbol in the region's alphabet.
+order, using the coefficient of variation (CV for short -- Definition
+\ref{def:cv}) of the distance between its occurrences, e.g., if a given tag path
+occurs at positions \{10, 20, 30\}, the distances between consecutive
+occurrences are \{$20-10 = \textbf{10}$, $30-20 = \textbf{10}$\} and the CV is
+equal to 0.0\% since all distances are the same. In order to determine if a tag
+path is well distributed a threshold must be set. Since the regions are cyclic,
+the number of different tag paths that form the region's sequence is much
+smaller when compared to the size of the sequence. This is due to inherent
+repetitions and so it is not prohibitive to check the CV of every symbol in the
+region's alphabet. Figure \ref{fig:fftreg}a exhibits the record boundaries
+detected for that region (highlited with squares). In this case the TPCode with
+value 252 matches the spectrum and CV constraints as we shall see. TPCode 252
+occurs 20 times at positions \{1, 32, 65, 95, 129, 159, 193, 220, 254, 283, 313,
+344, 375, 402, 431, 461, 488 518, 552, 588\} and the distance between adjacent
+occurrences are \{31, 33, 30, 34, 30, 34, 27, 34, 29, 30, 31, 31, 27, 29, 30,
+27, 30, 34, 36,\} so the average record size, for this TPCode, is 30.895, the
+standard deviation is 2.6435 and the CV is equal to 0.085564. If we validate
+this information against the region's spectrum we'll have a match because both
+the number of occurences (frequency) and the average size (period) match the
+peak encoutered in the region's spectrum at position 20 and the CV for this
+TPCode is only about 8.5564\% (a low CV means little variation in record size).
 
 Cross validating TPCode variation against the TPS spectrum is more robust than
 doing the inverse (i.e., selecting the highest peak in the spectrum and then
@@ -1037,6 +1057,6 @@ end
 \end{lstlisting}
 \end{appendix}
 
-\balance 
+%\balance
 
 \end{document}
