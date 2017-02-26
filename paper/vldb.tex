@@ -287,9 +287,11 @@ paper.
 
 \begin{definition}\textbf{(Z-Score)}\label{def:zscore} or standard
 score\cite{CVeveritt2006cambridge}, is a standardization method with respect to
-the data's mean and standard deviation, as defined by Equation \ref{eq:zscore}.
-We use it here to convert the PSD of all structured regions to a common ground,
-so they can be validated against the same thresold. This is needed because each
+the data's mean and standard deviation, as defined by Equation \ref{eq:zscore},
+where $x$ is the data being converted. Each data point is converted to a value
+that means the distance, in number of standard deviations, from the mean.
+We use it here to convert the PSD of all structured regions to a common ground, so they
+can be validated against the same thresold. This is needed because each
 structured region has a different range of values and varying size, so
 standardization is required if they are to be compared against a common
 threshold.
@@ -696,7 +698,8 @@ For those tag paths that are well distributed along the sequence, we search the
 corresponding range of the spectrum for a significant peak. If such a peak is
 found we subdivide the region accordingly, extract the records and end the
 process. To determine if a peak is significant we convert the spectrum to
-\textit{z-score} and set a threshold measured in number of standard deviations.
+\textit{z-score} (Definition \ref{def:zscore}) and set a threshold measured in
+number of standard deviations.
 
 Algorithm \ref{alg:idrec} along with Figure \ref{fig:fftreg} shows in more
 detail the process of identifying the records within a region.
