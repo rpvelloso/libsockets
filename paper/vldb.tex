@@ -206,8 +206,9 @@ the technique's longevity).
 % diferencial do trabalho: complexidade de tempo baixa, independe do HTML, não
 % renderiza página,
 
-\section{Definitions}\label{sec:defs}
-In this section we define some concepts needed for the understanding of our approach.
+\section{Preliminaries}\label{sec:defs}
+In this section we define some concepts needed for the understanding of our
+approach and the motivation behind them.
 
 \begin{definition}\textbf{(Tag Path)} is a string describing the path from the
 root node of the DOM tree to every other node in the tree. For example:
@@ -217,45 +218,53 @@ include style definitions of every node in the path, like this:
 \end{definition}
 
 \begin{definition}\textbf{(Tag Path Code -- TPCode)}\label{def:tpc} is a numeric
-ascending code assigned to every different tag path string encountered in the tree, in order of
-appearance. If a given path has occurred in the past, it is assigned the same
-code as before. The paths are built in depth first order. Figure
-\ref{fig:tree2seq} shows an example of this definition.
+ascending code assigned to every different tag path string encountered in the
+tree, in order of appearance. If a given path has occurred in the past, it is
+assigned the same code as before. The paths are built in depth first order.
+Figure \ref{fig:tree2seq} shows an example of this definition. In this paper we
+also refer to TPCode as ``symbol'' and a set of TPCodes as ``alphabet''.
 \end{definition}
 
-\begin{definition}\textbf{(Tag Path Sequence -- TPS)} is a sequence of TPCode in
-the same order as they were built from the DOM tree. Figure \ref{fig:tree2seq} shows
+\begin{definition}\textbf{(Tag Path Sequence -- TPS)} is a sequence of TPCodes
+in the same order as they were built from the DOM tree. Figure \ref{fig:tree2seq} shows
 the resulting TPS for an HTML snippet as  well as the set of TPCode used for that
-the sequence. Here, in this paper, we also refer to TPS as simply ``sequence'',
-TPCode as ``symbol'' and the set of TPCode as ``alphabet''.
+the sequence. In this paper we also refer to TPS as simply ``sequence''.
 \end{definition}
 
 \begin{definition}\textbf{(Coefficient of Variation -- CV)}\label{def:cv} is a
-statistical measure of data dispersion and is defined as the ratio between the standard
-deviation and the mean as shown in Equation \ref{eq:cv}. We use this measure to
-find out how well distributed a symbol is in a sequence. For example, consider
-the sequence $tps(1..12)=[1,2,3,4,5,4,5,4,5,6,4,5]$ and the symbol $s=4$ of this
-sequence; the symbol occurs at positions $[4,6,8,11]$ in the sequence and the
-distances between adjacent occurrences are
+statistical measure of data dispersion and is defined as the ratio between the
+standard deviation and the mean as shown in Equation
+\ref{eq:cv}\cite{CVeveritt2006cambridge}. We use a measure of dispersion to find
+out how well distributed a symbol is in a sequence and we chose the CV,
+specifically, because it is a \textbf{standardized} measure of dispersion.
+For example, consider the sequence $tps(1..12)=[1,2,3,4,5,4,5,4,5,6,4,5]$ and
+the symbol $s=4$ of this sequence; the symbol occurs at positions $[4,6,8,11]$
+in the sequence and the distances between adjacent occurrences are
 $[6-4=\textbf{2},8-6=\textbf{2},11-8=\textbf{3}]$, so the CV for symbol ``$s$''
-is equal to $\frac{\sigma([2, 2, 3])}{\mu([2, 2, 3])}=0.24744=24,744\%$. The more
-regular the distance between adjacent occurrences, the lower the CV and vice
-versa.
+is equal to $\frac{\sigma([2, 2, 3])}{\mu([2, 2, 3])}=0.24744=24,744\%$. The
+more evenly distributed a symbol is, along the sequence, the lower the CV and
+vice versa.
 
 \begin{equation}\label{eq:cv}
     CV=\frac{\sigma}{\mu}
 \end{equation}
 \end{definition}
 
-\begin{definition}\textbf{(Discrete Fourier Transform -- DFT)} is a mathematical
-transformation that decomposes a discrete sequence into its frequency components
+\begin{definition}\textbf{(Discrete Fourier Transform -- DFT)}\label{def:dft} is
+a mathematical transformation that decomposes a discrete sequence into its frequency components
 (Equation \ref{eq:dft}). The result of the transformation is complex-valued, the
 real part represents the amplitude and the imaginary part represents the phase.
 To evaluate the contribution of a frequency component in the overall sequence we
 use the power spectrum density (PSD), which is real-valued, as defined in
 Equation \ref{eq:psd}. Here, we may refer to the PSD as simply ``spectrum''.
 Figure \ref{fig:fftreg} shows a discrete sequence (a) and its corresponding PSD
-standardized to \textit{z-score} (b).
+standardized to \textit{z-score} (b). We use the PSD to detect record count
+(main frequency) and record size (main period) in structured regions. A
+structured region is a cyclic subsequence (or periodic) and, as such, its PSD
+displays a higher peak at the frequency that corresponds to the main period (as
+we can see in Figure \ref{fig:fftreg}b). This kind of analysis is made possible
+by the decomposition of the signal into a summation of \textbf{weighted}
+frequencies.
 
 \begin{equation}\label{eq:dft}
     X_k=\sum_{n=0}^{N-1}{x_n\cdot e^{-2\pi ikn/N}}    
@@ -276,10 +285,27 @@ which covers the subject in great depth, since this is not the scope of this
 paper.
 \end{definition}
 
+\begin{definition}\textbf{(Sequence Contour)}\label{def:contour} is actually the
+upper contour of a sequence. In other words, the contour is the maximum value
+seen so far in the sequence. It can be tought of as the \textit{skyline} of the
+sequence.
+The contour is important, in our context, because it is flat throughout a
+structured region as illustrated in Figure \ref{fig:contour}a. Function \texttt{contour} of algorithm
+\ref{alg:idreg} (Lines
+\ref{line:alg:idreg:contour:begin}--\ref{line:alg:idreg:contour:end}) details de
+construction of a sequence's contour.
+\end{definition}
+
 \begin{definition}\textbf{(Finite Difference)}\label{def:diff} is the difference
 between adjacent values of a discrete sequence as defined in Equation
 \ref{eq:diff}.
-We use the finite difference to delimit cyclic regions of a sequence.
+We use the finite difference, in conjunction with contour (Definition
+\ref{def:contour}), to break down a sequence into cyclic regions. 
+By computing the difference (Figure \ref{fig:contour}b) of the sequence's
+contour (Figure \ref{fig:contour}a) we find the intervals where the difference
+is zero and consider them to be candidate data regions that are submited to
+subsequent analysis and validation to verify if they are indeed structured.
+This process is explained in depth in Subsection \ref{ss:regi}.
 
 \begin{equation}\label{eq:diff}
     d[n] = x[n] - x[n - 1]
@@ -394,13 +420,15 @@ its tag path sequence will display a cyclic behaviour as illustrated in Figure
   \label{fig:stru}
 \end{figure*}
 
-We can see in Figure \ref{fig:stru} that whenever there is structured content in
-the document, be it the main content, menus, or anything else, the corresponding
-interval in the sequence displays a cyclic behaviour. In other words, the
-sequence stabilizes during the structured portions. That happens because the
-records look alike and so their paths and styles repeat themselves. We took
-advantage of this observation to devise Algorithm \ref{alg:idreg} that isolates
-the structured segments of the sequence.
+We can see in Figure \ref{fig:stru} that whenever there is structured
+content in the document (i.e., repeating records with similar structure), be it
+the main content, menus, or anything else, the corresponding interval in the
+sequence displays a cyclic behaviour (the encircled subsequences in Figure
+\ref{fig:stru}).
+In other words, the sequence stabilizes during the structured portions. That
+happens because the records look alike and so their paths and styles repeat
+themselves. We took advantage of this observation to devise Algorithm
+\ref{alg:idreg} that isolates the structured segments of the sequence.
 
 \begin{algorithm}
 \caption{Identifies structured regions in a document}
@@ -420,7 +448,7 @@ the structured segments of the sequence.
 
 %\\\hrulefill
 
-\Function{contour}{tps} \Comment{Subroutine}
+\Function{contour}{tps} \Comment{Subroutine}\label{line:alg:idreg:contour:begin}
 \State $maxHeight \leftarrow 0$ 
 \For {$i \leftarrow 1..length(tps)$}\label{line:alg:idreg:a}
 \If {$tps[i]>maxHeight$}\label{line:alg:idreg:b}
@@ -429,7 +457,7 @@ the structured segments of the sequence.
 \State $contour[i] \leftarrow maxHeight$ 
 \EndFor\label{line:alg:idreg:c} 
 \State \Return $contour$ \label{line:alg:idreg:d} 
-\EndFunction
+\EndFunction\label{line:alg:idreg:contour:end}
 
 %\\\hrulefill
 
@@ -487,6 +515,10 @@ the structured segments of the sequence.
 \end{algorithmic}
 \end{algorithm}
 
+\textbf{Description of \texttt{idRegions} function:} this is the main function
+that calls the other subrotines. It receives a TPS as input and returns the
+detected structured regions as output;
+
 \textbf{Description of \texttt{contour} function:} this function is
 pretty straightforward, it receives the TPS as input, iterates over the sequence (Line
 \ref{line:alg:idreg:a}), computes its upper contour (i.e., the maximum value
@@ -514,13 +546,15 @@ coefficient above the threshold (Line \ref{line:alg:idreg:o}) it is removed from
 (Line \ref{line:alg:idreg:p}) and finally; the remaining set of regions is
 returned (Line \ref{line:alg:idreg:q}).
 
-Algorithm \ref{alg:idreg} computes the contour of the input sequence and its
-finite difference and then uses this to segment the document in several regions.
-The idea behind this procedure is that the finite difference will be zero
-whenever the sequence stabilizes, i.e., its contour remains constant as shown in
-Figure \ref{fig:contour}a. In Figure \ref{fig:contour}b we show the subsequences
-where the finite difference of the contour is zero-valued (i.e., the intervals
-where the sequence stabilizes).
+Algorithm \ref{alg:idreg} starts by computing the contour of the input sequence,
+in function \texttt{contour}, and its finite difference, in function
+\texttt{segment}, using this to segment the document into several regions.
+The idea behind function \texttt{segment} is that the finite difference of
+the contour will be zero whenever the contour stabilizes (i.e., when it
+remains constant during an interval). As we can see in Figure
+\ref{fig:contour}a there are flat (constant) intervals in the sequence's
+contour and consequently the first difference will be zero during those
+intervals, as shown in Figure \ref{fig:contour}b.
 
 \begin{figure}[h]
   \centering
@@ -685,17 +719,18 @@ detail the process of identifying the records within a region.
 \end{algorithm}
 
 \textbf{Description of Algorithm \ref{alg:idrec}:} function \texttt{IdRecords}
-receives, as input, a structured region; computes its PSD using FFT (Line
-\ref{line:alg:idreg:r}) as defined in Definition \ref{def:fft}; iterates over
-the region's alphabet, in ascending order (Line \ref{line:alg:idreg:s}); for
-each symbol in the alphabet its CV is calculated (Line \ref{line:alg:idreg:t}),
-as defined in Definition \ref{def:cv}, and checked against a threshold (Line
-\ref{line:alg:idreg:u}); if it is bellow the threshold (meaning the
-current symbol is well distributed along the sequence) then the PSD is scanned
-in the range around the number of candidate records (Line \ref{line:alg:idreg:v}
--- \texttt{recCount} is the frequency we are validating against the sequence's
-spectrum) and; if a considerable peak is found in this range the function returns the
-positions of the current symbol (Line \ref{line:alg:idreg:w}).
+receives, as input, a structured region; it computes the PSD (Definition
+\ref{def:dft}, Equation \ref{eq:psd}) of the input sequence using the FFT
+(Definition \ref{def:fft} -- Line \ref{line:alg:idreg:r}); iterates over the
+region's alphabet, in ascending order (Line \ref{line:alg:idreg:s}); for each
+symbol in the alphabet its CV is calculated (Line \ref{line:alg:idreg:t}), as
+defined in Definition \ref{def:cv}, and checked against a threshold (Line
+\ref{line:alg:idreg:u}); if it is bellow the threshold (meaning the current
+symbol is well distributed along the sequence) then the PSD is scanned in the
+range around the number of candidate records (Line \ref{line:alg:idreg:v} --
+\texttt{recCount} is the frequency we are validating against the sequence's
+spectrum) and; if a considerable peak is found in this range the function
+returns the positions of the current symbol (Line \ref{line:alg:idreg:w}).
 
 With respect to \texttt{idRecords}' time complexity, the overall complexity is
 dominated by Line \ref{line:alg:idreg:r}, which is $O(nlogn)$ on the size of the
@@ -918,7 +953,7 @@ Our guidelines for future work are the following:
   correctly estimated, similar to what was done in \cite{webtables2008};
   \item use Goertezel's \cite{goertzel1958algorithm} in place of FFT:
   Goertezel's algorithm computes a single coefficient in linear time whereas the
-  FFT computes all coefficients in loglinear time. Our technique searches for a
+  FFT computes all coefficients in linearithmic time. Our technique searches for a
   candidate frequency in a small range of the spectrum, there is no need to
   compute, up front, all coefficients so that may be an alternative to reduce
   the time complexity a little more;
