@@ -188,7 +188,7 @@ compression\cite{ziv1977universal}, etc.), which are vast and well studied
 field. Some of this algorithms were used before (e.g., Suffix Tree in
 \cite{SuffixTree12}), the FFT is used here in this work and in Section
 \ref{sec:con} we discuss the use of LZ compression for record extraction as a
-promissing possibility.
+promising possibility.
 
 Recent surveys\cite{survey2013, survey2014} about the subject of structured
 extraction have reached the same conclusion about the state-of-the-art: existing
@@ -305,11 +305,11 @@ threshold.
 
 \begin{definition}\textbf{(Sequence Contour)}\label{def:contour} is actually the
 upper contour of a sequence. In other words, the contour is the maximum value
-seen so far in the sequence. It can be tought of as the \textit{skyline} of the
+seen so far in the sequence. It can be thought of as the \textit{skyline} of the
 sequence.
 The contour is important, in our context, because it is flat throughout a
-structured region as illustrated in Figure \ref{fig:contour}a. Function \texttt{contour} of algorithm
-\ref{alg:idreg} (Lines
+structured region as illustrated in Figure \ref{fig:contour}a. Function
+\texttt{contour} of algorithm \ref{alg:idreg} (Lines
 \ref{line:alg:idreg:contour:begin}--\ref{line:alg:idreg:contour:end}) details de
 construction of a sequence's contour.
 \end{definition}
@@ -321,7 +321,7 @@ We use the finite difference, in conjunction with contour (Definition
 \ref{def:contour}), to break down a sequence into cyclic regions. 
 By computing the difference (Figure \ref{fig:contour}b) of the sequence's
 contour (Figure \ref{fig:contour}a) we find the intervals where the difference
-is zero and consider them to be candidate data regions that are submited to
+is zero and consider them to be candidate data regions that are submitted to
 subsequent analysis and validation to verify if they are indeed structured.
 This process is explained in depth in Subsection \ref{ss:regi}.
 
@@ -534,7 +534,7 @@ themselves. We took advantage of this observation to devise Algorithm
 \end{algorithm}
 
 \textbf{Description of \texttt{idRegions} function:} this is the main function
-that calls the other subrotines. It receives a TPS as input and returns the
+that calls the other subroutines. It receives a TPS as input and returns the
 detected structured regions as output;
 
 \textbf{Description of \texttt{contour} function:} this function is
@@ -679,7 +679,7 @@ the number of different tag paths that form the region's sequence is much
 smaller when compared to the size of the sequence. This is due to inherent
 repetitions and so it is not prohibitive to check the CV of every symbol in the
 region's alphabet. Figure \ref{fig:fftreg}a exhibits the record boundaries
-detected for that region (highlited with squares). In this case the TPCode with
+detected for that region (highlighted with squares). In this case the TPCode with
 value 252 matches the spectrum and CV constraints as we shall see. TPCode 252
 occurs 20 times at positions \{1, 32, 65, 95, 129, 159, 193, 220, 254, 283, 313,
 344, 375, 402, 431, 461, 488 518, 552, 588\} and the distance between adjacent
@@ -687,8 +687,8 @@ occurrences are \{31, 33, 30, 34, 30, 34, 27, 34, 29, 30, 31, 31, 27, 29, 30,
 27, 30, 34, 36,\} so the average record size, for this TPCode, is 30.895, the
 standard deviation is 2.6435 and the CV is equal to 0.085564. If we validate
 this information against the region's spectrum we'll have a match because both
-the number of occurences (frequency) and the average size (period) match the
-peak encoutered in the region's spectrum at position 20 and the CV for this
+the number of occurrences (frequency) and the average size (period) match the
+peak encountered in the region's spectrum at position 20 and the CV for this
 TPCode is only about 8.5564\% (a low CV means little variation in record size).
 
 Cross validating TPCode variation against the TPS spectrum is more robust than
