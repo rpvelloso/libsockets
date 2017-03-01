@@ -22,6 +22,8 @@
 \usepackage{url}
 \usepackage{balance}
 \usepackage{listings}
+\usepackage{enumerate}
+\usepackage{color}
 
 \hyphenation{spec-trum}
 
@@ -70,7 +72,7 @@ shopping items, news, search engine results, etc.) with the objective of
 organizing semantically related entities in order to facilitate the
 comprehension of the document by a human user. This semi-structured data,
 although varied in layout and domain, has similar characteristics that can be
-used to identify it inside a document and improve its structure to the point
+used to identify it inside a document and to improve its structure to the point
 where it is possible to access it as relational data (i.e., as structured data).
 
 % justificativa da importancia da pesquisa e motivacao
@@ -79,7 +81,7 @@ important and difficult. It is an important task due to the ever growing amount
 of information published and readily available on the web and because
 structured information can be used to enrich, and allow, a number of
 applications (e.g., price comparison, semantic keyword search, metasearch,
-etc.).
+etc.) \cite{relationalWeb2008,kalyanpur2012structured,2015webtables}.
 It is a difficult task because the data is laid out for human consumption and
 published in a variety of formats and templates, as observed in
 \cite{structured2011}. Moreover, the Beckman report on database
@@ -89,13 +91,21 @@ challenge in this research field.
 % breve resumo bibliografico
 Identifying the underlying content structure in a web document was attempted
 before. The existing approaches range from solutions to specific instances of
-the problem (e.g., extracting only data formatted with
-\texttt{<table>}\cite{webtables2008}) to broader attempts that search for
-patterns in a web document\cite{MDR03}. They also vary in degree of automation
-where there can be supervised, semi-supervised and unsupervised approaches. It
-is our understanding that the scientific community should strive to achieve the
-highest possible level of automation when dealing with web extraction due
-to the volume of data, or else the approach just isn't going to scale up.
+the problem (e.g., extracting only data formatted with specific HTML
+tags\cite{webtables2008,listExtract2009,qiu2015dexter}) to broader attempts that
+search for patterns in a web
+document\cite{MDR03,NET05,depta05,TPC09,grigalis2013towards}.
+They also vary in degree of automation where there can be supervised,
+semi-supervised and unsupervised approaches. It is our understanding that the
+scientific community should strive to achieve the highest possible level of
+automation when dealing with web extraction, due to the volume of data,
+otherwise an eventual approach will not scale up. For this reason we will focus
+on unsupervised approaches in this paper.
+Existing work fails to definitively solve the problem, as observed in recent
+surveys\cite{survey2013,survey2014}, they solve just a part of it. The ideal
+solution should be unsupervised, computationally efficient, effective (at
+least near perfect precision) and as general as possible (e.g., domain
+independent and HTML syntax independent).
 
 % resumo da abordagem
 Here we outline a novel approach for the problem of structured extraction (or
@@ -104,33 +114,37 @@ DOM tree and some signal processing techniques. Our approach first converts the
 DOM tree to a sequence representation; segments the sequence into regions;
 identifies the regions with structured content; locates the records boundaries
 within the structured regions and; aligns the records into a table. The
-technique outlined here is fully automatic, domain independent and HTML
-independent (i.e., we have no heuristic rules targeted at specific tags). 
+technique outlined here has the following characteristics: it takes a single
+page as input, does not need training and it is unsupervised, computationally
+efficient ($O(nlogn)$) and domain independent. It is also effective (we provide
+a mechanism to ensure high precision at the expense of recall) and HTML syntax
+independent, i.e., there are no heuristic rules targeted at specific tags.
 
 % motivacao para uso de processamento de sinais
 When the DOM tree is converted into its sequence representation, and plotted in
 a graph, the patterns of structured data become evident (see Figure
 \ref{fig:stru} for instance). That said, the research area concerned with signal
 processing has been dealing with pattern detection and recognition long before
-the web became what it is today (e.g., FFT\cite{fft1965} algorithm as published
-in 1965) and as a consequence it is much more developed in that aspect, so it is
-only natural to employ some of these consolidated techniques when we succeeded
-in converting the problem of record extraction into a signal processing problem.
+the web became what it is today (e.g., Fast Fourier Transform --
+FFT\cite{fft1965} algorithm as published in 1965) and as a consequence it is
+much more developed in that aspect, so it is only logical to employ some of
+these consolidated techniques once we succeed converting the problem of
+record extraction into a signal processing problem.
 
 % detalhes do uso processamento de sinais
 The adopted sequence representation enables the use of signal processing
 techniques that, otherwise, would not be possible. The sequence is segmented
 into cyclic subsequences, which represent structured data regions, using the
-finite difference (Definition \ref{def:diff}) and within each of this cyclic
+finite difference (Definition \ref{def:diff}). Within each of this cyclic
 subsequences we use its spectrum (Definition \ref{def:fft}) to find their main
 period (which represents the size of the records) and frequency (which
-represents the number of records within that data region) and then use this
-information (record size and record count) to break down the data region into
-records that are subsequently aligned.
+represents the number of records within that data region). Once we have the
+main period (record size) and frequency (record count) we use this information
+to break down the data region into records that are subsequently aligned.
 
 % contribuicoes
 The main contributions presented here are:
-\begin{itemize}
+\begin{enumerate}
     \item a novel insight on how the structure of a web document can be seen: as
     a periodic signal. To the best of our knowledge there is nothing alike in
     the literature and the results depict both its efficiency and effectiveness;
@@ -144,7 +158,7 @@ The main contributions presented here are:
     that is due to the use of efficient signal processing algorithms. Most
     existing works rely mainly on dynamic programming (e.g., edit distance), clustering
     algorithms and/or full page rendering and hence are less efficient.
-\end{itemize}
+\end{enumerate}
 
 % organizacao do restante do texto
 The rest of the paper is organized as follows. In Section \ref{sec:work} we
@@ -252,7 +266,9 @@ statistical measure of data dispersion and is defined as the ratio between the
 standard deviation and the mean as shown in Equation
 \ref{eq:cv}\cite{CVeveritt2006cambridge}. We use a measure of dispersion to find
 out how well distributed a symbol is in a sequence and we chose the CV,
-specifically, because it is a \textbf{standardized} measure of dispersion.
+specifically, because it is a \textbf{standardized} measure of dispersion. In
+our approach we need to compare the CV of symbols from several different
+sequences against the same threshold, so a standardized measure is needed.
 For example, consider the sequence $tps(1..12)=[1,2,3,4,5,4,5,4,5,6,4,5]$ and
 the symbol $s=4$ of this sequence; the symbol occurs at positions $[4,6,8,11]$
 in the sequence and the distances between adjacent occurrences are
@@ -344,12 +360,12 @@ This process is explained in depth in Subsection \ref{ss:regi}.
 \end{equation}
 \end{definition}
 
-\section{Structured Data Extraction}\label{sec:prop}
-We present here, in this Section, the details of our proposal to tackle the
-problem of extracting data records from web pages. The technique is subdivided
-in four main steps, namely: sequence representation, region identification,
-record identification and record alignment. Each step is detailed in Subsections
-\ref{ss:seq}, \ref{ss:regi}, \ref{ss:reci} and \ref{ss:reca} respectively.
+\section{Structured Data Extraction}\label{sec:prop} We present here, in this
+Section, the details of our proposal to tackle the problem of extracting data
+records from web pages. The technique is subdivided in four main steps, namely:
+sequence representation, region identification, record identification and record
+alignment. Each step is detailed in Subsections \ref{ss:seq}, \ref{ss:regi},
+\ref{ss:reci} and \ref{ss:reca} respectively.
 
 The whole process is based on the observation that the structured content of a
 document is organized and formatted in a clear and consistent way. In other
@@ -365,13 +381,13 @@ standardization tool). After this, Step 1 converts the DOM tree into a TPS; Step
 2 divides the TPS into several structured regions; Step 3 identifies the record
 boundaries within each region and; Step 4 aligns the records in tabular form.
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
-     \includegraphics[width=\columnwidth]{img/proposal.jpg}
+     \includegraphics[width=208pt]{img/proposal.jpg}
   \caption{Extraction system overall diagram.}
   \label{fig:overall}
 \end{figure}
-
+%\vspace{0.67cm}
 
 \subsection{Sequence Representation}\label{ss:seq}
 Most of the works in this area use the DOM tree to represent the documents
@@ -386,6 +402,13 @@ depicted in Figure \ref{fig:tree2seq}. The HTML code is converted to a DOM tree
 in Step 1; the DOM tree is converted to a sequence of tag paths in Step 2 and;
 in Step 3 the TPS is built by assigning TPCodes to each tag path. 
 
+\begin{figure}[H]
+  \centering
+     \includegraphics[width=\columnwidth]{img/tree2seq.jpg}
+  \caption{tag path sequence built from HTML code snippet.}
+  \label{fig:tree2seq}
+\end{figure}
+
 Algorithm \ref{alg:tree2seq} presents the TPS build process.
 It is basically a depth first search that assembles the path from the root of
 the tree to every other node and assigns a code to each distinct path found. To
@@ -395,14 +418,7 @@ what was done in \cite{grigalis2013towards} with the difference that here we use
 and in-line style attributes instead of rendering the entire document, avoiding
 the computational cost associated with such a task.
 
-\begin{figure}[h]
-  \centering
-     \includegraphics[width=\columnwidth]{img/tree2seq.jpg}
-  \caption{tag path sequence built from HTML code snippet.}
-  \label{fig:tree2seq}
-\end{figure}
-
-\begin{algorithm}[H]
+\begin{algorithm}[h]
 \caption{Builds a tag path sequence from a DOM tree}
 \label{alg:tree2seq}
 \begin{algorithmic}[1]
@@ -443,14 +459,6 @@ from the entire document. The reason for this is that structured regions are
 cyclic, i.e., since the records have similar structure and are contiguous then
 its tag path sequence will display a cyclic behaviour as illustrated in Figure
 \ref{fig:stru}.
-
-\begin{figure*}[h]
- %\captionsetup{width=\textwidth}
-  \centering
-     \includegraphics[width=\textwidth]{img/main-reg.jpg}
-  \caption{How structured content appears in the sequence (structured regions encircled).}
-  \label{fig:stru}
-\end{figure*}
 
 We can see in Figure \ref{fig:stru} that whenever there is structured
 content in the document (i.e., repeating records with similar structure), be it
@@ -578,6 +586,14 @@ coefficient above the threshold (Line \ref{line:alg:idreg:o}) it is removed from
 (Line \ref{line:alg:idreg:p}) and finally; the remaining set of regions is
 returned (Line \ref{line:alg:idreg:q}).
 
+\begin{figure*}[h]
+ %\captionsetup{width=\textwidth}
+  \centering
+     \includegraphics[width=\textwidth]{img/main-reg.jpg}
+  \caption{How structured content appears in the sequence (structured regions encircled).}
+  \label{fig:stru}
+\end{figure*}
+
 Algorithm \ref{alg:idreg} starts by computing the contour of the input sequence,
 in function \texttt{contour}, and its finite difference, in function
 \texttt{segment}, using this to segment the document into several regions.
@@ -631,10 +647,12 @@ number of regions could escalate to a value proportional to the document size,
 this is not the average behaviour displayed in Figure \ref{fig:runtime}).
 
 The score of a region is computed as defined in Equation \ref{eq:scorereg},
-where \texttt{positionScore} ranges between 0.00 (far from the center of the sequence)
-and 1.00 (close to the center) and \texttt{sizeScore}, which represents
-percentage of TPS occupied by the region, too. The \texttt{maxDistance} is equal
-to $\frac{tpsSize}{2}$ because that is the maximum distance a region can be from
+where \texttt{positionScore} means the distance of the region to the center of
+the sequence (the lower the score, the greater the distance of the region from
+the center of the sequence) and \texttt{sizeScore} means the percentage of the
+sequence occupied by the region. Both \texttt{positionScore} and
+\texttt{sizeScore} vary from 0.00 to 1.00. \texttt{maxDistance} is equal to
+$\frac{tpsSize}{2}$ because that is the maximum distance a region can be from
 the center of the TPS. The final \texttt{score} is the arithmetic mean of both
 scores. The higher the region's score the more likely it represents content
 rather than noise.
@@ -652,9 +670,8 @@ score \leftarrow \frac{positionScore+sizeScore}{2}
 For each region identified in the previous step we now try to extract records
 out of it. To do so, we analyse the tag paths that appear in the sequence
 against the region's spectrum (Definition \ref{def:dft}). The spectrum is
-calculated using the fast Fourier transform\cite{fft1965} (FFT for short --
-Definition \ref{def:fft}).
-The Fourier transform factors the sequence into its frequency components, so
+calculated using the FFT\cite{fft1965} (Definition \ref{def:fft}).
+The FFT factors the sequence into its frequency components, so
 cyclic sequences will exhibit higher peaks in frequencies that correspond to the
 main period of the sequence as we can see in Figure \ref{fig:fftreg} (the main
 content region of Figure \ref{fig:stru}). Figure \ref{fig:fftreg}a shows the
@@ -667,7 +684,7 @@ degrees of inclination); Figure \ref{fig:fftreg}b shows the subsequence's PSD
 with a highlighted frequency peak. The frequency peak is located at position 20
 of the spectrum, which corresponds exactly to the number of records present in
 this region and if we divide the size of the region by the number of records we
-get the average record size (31 in this case).
+get the average record size (approximately 31 in this case).
 In short, this frequency peak represents the record count (or number of cycles
 in the subsequence) and its corresponding period (i.e., the subsequence length
 divided by the frequency) is equivalent to the average record size.
@@ -698,7 +715,7 @@ value 255 matches the spectrum and CV constraints as we shall see. TPCode 255
 occurs 20 times at positions \{1, 32, 65, 95, 129, 159, 193, 220, 254, 283, 313,
 344, 375, 402, 431, 461, 488 518, 552, 588\} and the distance between adjacent
 occurrences are \{31, 33, 30, 34, 30, 34, 27, 34, 29, 30, 31, 31, 27, 29, 30,
-27, 30, 34, 36,\} so the average record size, for this TPCode, is 30.895, the
+27, 30, 34, 36\} so the average record size, for this TPCode, is 30.895, the
 standard deviation is 2.6435 and the CV is equal to 0.085564. If we validate
 this information against the region's spectrum we'll have a match because both
 the number of occurrences (frequency) and the average size (period) match the
@@ -900,12 +917,15 @@ We have implemented our approach using a two tier software architecture where
 the core is coded in C++ and the presentation layer (graph plotting, result
 manipulation / display, logging, timing, etc.) in embedded Lua \cite{luahome}.
 For HTML parsing we've linked our system against libtidy\cite{libtidy}. Our
-implementation is publicly available at \cite{} and we encourage and support the
-scientific community to build on top of it, run independent experiments,
-implement other techniques for the sake of comparison and so on. Appendix
-\ref{app:a} has a simple usage example of our system and the infrastructure we
-have exposed to the Lua environment.
-%(there is also an integrated relational database available to the user -- SQLite\cite{sqlite}).
+implementation is publicly available at
+GitHub\footnote{\url{https://github.com/rpvelloso/webMining.git}} and we
+encourage and support the scientific community to build on top of it, run
+independent experiments, implement other techniques for the sake of comparison
+and so on.
+Appendix \ref{app:a} has a simple usage example of our system and the
+infrastructure we have exposed to the Lua environment.
+% (there is also an integrated relational database available to the user --
+% SQLite\cite{sqlite}).
 
 We used two datasets for comparison. Dataset $\#1$ was proposed by
 \cite{yamada2004testbed} and consists of 5 pages per site and 51 sites
@@ -1049,7 +1069,7 @@ were pointed out in \cite{survey2013,survey2014} and would be mitigated by such
 a framework.
  
 Our guidelines for future work are the following:
-\begin{itemize}
+\begin{enumerate}
   \item research alignment techniques: here we have used a general purpose and
   supralinear (but still polynomial) sequence alignment algorithm, but we
   believe it is possible to devise a solution specifically for the problem of
@@ -1079,13 +1099,14 @@ Our guidelines for future work are the following:
   %\item develop the extraction framework further: continue the development of
   %the extraction framework, refine and refactor code, implement other
   % extraction techniques, etc.
-\end{itemize}
+\end{enumerate}
+
+\balance
  
 \bibliographystyle{abbrv}
 \bibliography{refs}
 
 %\pagebreak
-\balance
 
 \begin{appendix}
 \section{Extraction Framework Usage Example}\label{app:a}
