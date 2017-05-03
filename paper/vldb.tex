@@ -1031,6 +1031,25 @@ Ours &	100.00\% & 95.45\% & 97.67\% \\ \hline
 %}
 \end{table}
 
+\begin{table}[h]
+\centering
+\caption{Rendering vs no rendering.}
+\label{table:compare4}
+\begin{tabular}
+{| c| c| c|}\hline
+\end{tabular}
+%}
+\end{table}
+
+Resumo do processamento.
+
+                             rendering; no rendering; diferença
+tempo total (segundos)         113,905;       19,996; 17,55%
+tempo médio (segundos)           0,889;        0,156; 	
+tamanho total (# nodes)         296665;       293034; 98,78%/1,22% (3631 nodes)
+tamanho médio (# nodes)           2317;         2289;
+
+
 Finally we present in Figure \ref{fig:runtime} the running time behaviour of our
 implementation. We can see that the graph suggests a $O(nlog(n))$ time
 complexity with a coefficient of determination\footnote{the coefficient of
@@ -1046,7 +1065,8 @@ average behaviour we observed in practice.
   \centering
      \includegraphics[trim={2.5cm 7.5cm 1cm 6.5cm}, width=\linewidth
      ]{img/runtime.pdf}
-  \caption{Document size vs running time.}
+  \caption{Document size vs running time and rendering vs no rendering for
+  all datasets.}
   \label{fig:runtime}
 \end{figure}
 
