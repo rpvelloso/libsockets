@@ -5,7 +5,7 @@
 % - fazer figura ilustrando processo de extracao completo para secao 4
 % - comentar figura
 % - melhorar subsec 4.4 sobre alinhamento
-% - melhorar a crítica sobre a falta de implementacoes: nao permitem analise
+% - melhorar a crï¿½tica sobre a falta de implementacoes: nao permitem analise
 % qualitativa entre os trabalhos, apenas quantitativa
 % - comentar figura 2
 % - botar um exemplo de alinhamento na secao 4.4
@@ -233,8 +233,8 @@ automatically, efficiently, without rendering the full web page in a browser
 engine, and without heuristic rules associated to HTML tags (that is undesirable
 because HTML syntax and programming practices changes over time, compromising
 the technique's longevity).
-% diferencial do trabalho: complexidade de tempo baixa, independe do HTML, não
-% renderiza página,
+% diferencial do trabalho: complexidade de tempo baixa, independe do HTML, nï¿½o
+% renderiza pï¿½gina,
 
 \section{Preliminaries}\label{sec:defs}
 In this section we define some concepts needed for the understanding of our
@@ -943,12 +943,12 @@ Table \ref{table:dataset} presents summarized information about the datasets.
 \caption{Summarized dataset information.}
 \label{table:dataset}
 \begin{tabular}
-{|l| c| c|}\hline
-Dataset	& \#1	& \#2 \\ \hline
-Sites &	51 & 10 \\ \hline
-Pages per site	& 5 & 3 \\ \hline
-Average records & 21 & 22 \\ \hline
-Total records &	1052 & 218 \\ \hline
+{|l| c| c| c|}\hline
+Dataset	& \#1	& \#2 & \#3 \\ \hline
+Sites &	51 & 10 & 46\\ \hline
+Pages per site	& 5 & 3 & 1\\ \hline
+Average records & 21 & 22 & 32 \\ \hline
+Total records &	1052 & 218 & 1466 \\ \hline
 \end{tabular}
 %}
 \end{table}
@@ -1015,6 +1015,18 @@ Ours &	92,02\%	& 94,11\%	& 93,05\% \\ \hline
 	& Precision	& Recall	& F-Score\\ \hline
 ClustVX\cite{grigalis2013towards} &	100.00\% & 99.50\% & 99.80\%\\ \hline
 Ours &	100.00\% & 95.45\% & 97.67\% \\ \hline
+\end{tabular}
+%}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Results using dataset $\#3$.}
+\label{table:compare3}
+\begin{tabular}
+{| c| c| c|}\hline
+	Precision	& Recall	& F-Score\\ \hline
+	98.95\% & 89.77\% & 94.13\% \\ \hline
 \end{tabular}
 %}
 \end{table}
