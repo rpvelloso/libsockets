@@ -907,10 +907,10 @@ one approach performs better than the other, otherwise we can only compare
 against published results (usually summarized precision and recall).
 %Although several works have criticized this aspect, few provided implementations.
 
-Furthermore, implementing approaches proposed by other is also a complex matter.
-For starters, most papers do not provide full details (maybe due to space
-constraints?) and there is no guarantee that an independent implementation will
-match the one used by the authors in their experiments.
+Furthermore, implementing approaches proposed by others is also a complex
+matter. For starters, most papers do not provide full details (maybe due to
+space constraints?) and there is no guarantee that an independent implementation
+will match exactly the one used by the authors in their experiments.
 % and that invalidates the effort.
 
 We have implemented our approach using a two tier software architecture where
@@ -927,15 +927,24 @@ infrastructure we have exposed to the Lua environment.
 % (there is also an integrated relational database available to the user --
 % SQLite\cite{sqlite}).
 
-We used two datasets for comparison. Dataset $\#1$ was proposed by
-\cite{yamada2004testbed} and consists of 5 pages per site and 51 sites
-randomly sampled out of 114,540 pages. This dataset was used, among others, by
-\cite{TPC09,grigalis2013towards} which, in our opinion, are relevant works in
-the field, specially when we consider the requirements of being unsupervised,
-efficient, effective and HTML syntax independent. They are also relatively
-recent.
+We used three datasets for comparison, two of them are commonly used for
+benchmarking and the other one was compiled by ourselves with pages collected
+from top largest internet companies\footnote{most pages were drawn from domains
+owned by the companies listed here:
+\url{https://en.wikipedia.org/wiki/List_of_largest_Internet_companies}.}
+websites with more up to date templates from various domains (the documents were
+collected in may/2017). Dataset $\#1$ was proposed by \cite{yamada2004testbed}
+and consists of 5 pages per site and 51 sites randomly sampled out of 114,540
+pages. This dataset was used, among others, by \cite{TPC09,grigalis2013towards}
+which, in our opinion, are relevant works in the field, specially when we
+consider the requirements of being unsupervised, efficient, effective and HTML
+syntax independent. They are also relatively recent.
 Dataset $\#2$ was assembled and used in \cite{grigalis2013towards} and consists
-of 3 pages per site and 10 sites picked by the author.
+of 3 pages per site and 10 sites picked by the author. Dataset \#3 was assembled
+by ourselves and consists of 46 sites from various domains, 1 page per site. To
+better evaluate and demonstrate the effectiveness of our approach we needed more
+recent and up to date site templates in our test cases, that is the reason we
+added this third dataset to the experiments.
 Table \ref{table:dataset} presents summarized information about the datasets.
 
 \begin{table}[h]
@@ -981,15 +990,18 @@ template and web programming practices.
 % documents so it is not an extensive, large scale, comparison.
 
 We have mentioned that an important requirement when dealing with web scale is
-efficiency. On that subject ClustVX fails to deliver for two reasons: (1)
-it employs a browser engine to render the entire web page and issues several
-calls to the browser API during extraction and; (2) it clusters DOM tree nodes with
+efficiency. On that subject ClustVX fails to deliver for two reasons: (1) it
+employs a browser engine to render the entire web page and issues several calls
+to the browser API during extraction and; (2) it clusters DOM tree nodes with
 similar ``Xstrings'' (a variation of a tag path) probably using edit distance
-(the paper is not clear about this issue) which has quadratic time complexity. 
-Anyway, we chose to compare against this approach mostly because the
-reported results are near perfect and we wanted to show that our proposal
-achieves very similar results without incurring in unnecessary computational
-cost.
+(the paper is not clear about this issue) which has quadratic time complexity.
+Anyway, we chose to compare against this approach mostly because the reported
+results are near perfect and we wanted to show that our proposal achieves very
+similar results without incurring in unnecessary computational cost. To support
+our claim about the computational cost involved in document rendering, we have
+compared running time of our approach using an internal HTML parser versus a
+browser engine. The browser engine is controlled via WebDriver interface in
+offline mode (to avoid computing networking latence as runtime).
 
 \begin{table}[h]
 \centering
@@ -1021,7 +1033,7 @@ Ours &	100.00\% & 95.45\% & 97.67\% \\ \hline
 
 \begin{table}[h]
 \centering
-\caption{Results using dataset $\#3$.}
+\caption{Results of precision and recall for dataset $\#3$.}
 \label{table:compare3}
 \begin{tabular}
 {| c| c| c|}\hline
@@ -1036,37 +1048,49 @@ Ours &	100.00\% & 95.45\% & 97.67\% \\ \hline
 \caption{Rendering vs no rendering.}
 \label{table:compare4}
 \begin{tabular}
-{| c| c| c|}\hline
+{|l| r| r| r}\hline
+ & render & no render. & var. \\\hline
+total runtime (seconds) & 113.905s & 19.996s & 17.55\% \\\hline
+avg. runtime (seconds) & 0.889s & 0.156s & \\\hline
+total size (\# of nodes) & 296,665 & 293,034 & 98.78\% \\\hline
+avg. size  (\# of nodes) & 2,317 & 2,289 & \\\hline
 \end{tabular}
 %}
 \end{table}
-
-Resumo do processamento.
-
-                             rendering; no rendering; diferença
-tempo total (segundos)         113,905;       19,996; 17,55%
-tempo médio (segundos)           0,889;        0,156; 	
-tamanho total (# nodes)         296665;       293034; 98,78%/1,22% (3631 nodes)
-tamanho médio (# nodes)           2317;         2289;
-
 
 Finally we present in Figure \ref{fig:runtime} the running time behaviour of our
 implementation. We can see that the graph suggests a $O(nlog(n))$ time
 complexity with a coefficient of determination\footnote{the coefficient of
 determination ($R^2$) measures how much data is explained by the fitted curve.}
-of 93.297\%. This behaviour is consistent with our complexity analysis. The
+of 89.03\%. This behaviour is consistent with our complexity analysis. The
 alignment phase, although with a greater time complexity, does not affect the
 overall time complexity because the alignment input size, compare to overall
-input size, is much smaller. Anyway, the alignment phase is a limiting
-factor of our approach when dealing with long records, but that is not the
-average behaviour we observed in practice.
+input size, is much smaller. Anyway, the alignment phase is a limiting factor of
+our approach when dealing with long records, but that is not the average
+behaviour we observed in practice. 
+
+Figure \ref{fig:runtime} also shows the running time comparison when using a
+browser engine to render the entire document. Our approach does not need the rendered
+pages in order to extract the records, we just did this comparison to illustrate
+the huge difference in running time to other approaches that do need to render the
+document. The processing time is almost six times greater (113.905s rendering vs
+19.996s no rendering), the change in input size (the browser engine generates a
+slightly different DOM tree than our built in HTML parser) is marginal, only
+1.22\% larger, and the achieved results are the same (precision, recall and
+F-Score) as shown in Tables \ref{table:compare3} and \ref{table:compare4}. In
+Figure \ref{fig:runtime} we can see, as well, both asymptotic behaviours.
+Although asymptotically they look alike, the rendering running time adds a much
+greater constant factor. In practice an approach like ClustVX, that needs to
+render the page in order to extract the records, incurs in a very large overhead
+(at least six times slower than our approach) to obtain an F-Score gain of only
+6.61\% (in dataset \#1) and 2.13\% (in dataset \#2) over our approach.
 
 \begin{figure}[h]
   \centering
      \includegraphics[trim={2.5cm 7.5cm 1cm 6.5cm}, width=\linewidth
      ]{img/runtime.pdf}
-  \caption{Document size vs running time and rendering vs no rendering for
-  all datasets.}
+  \caption{Document size vs running time and rendering vs no rendering for all
+  datasets.}
   \label{fig:runtime}
 \end{figure}
 
