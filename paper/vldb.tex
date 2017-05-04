@@ -1000,8 +1000,9 @@ results are near perfect and we wanted to show that our proposal achieves very
 similar results without incurring in unnecessary computational cost. To support
 our claim about the computational cost involved in document rendering, we have
 compared running time of our approach using an internal HTML parser versus a
-browser engine. The browser engine is controlled via WebDriver interface in
-offline mode (to avoid computing networking latence as runtime).
+browser engine. The browser engine is controlled via
+WebDriver\footnote{\url{https://www.w3.org/TR/webdriver/}} interface in offline
+mode (to avoid computing networking latence as runtime).
 
 \begin{table}[h]
 \centering
@@ -1033,7 +1034,7 @@ Ours &	100.00\% & 95.45\% & 97.67\% \\ \hline
 
 \begin{table}[h]
 \centering
-\caption{Results of precision and recall for dataset $\#3$.}
+\caption{Results of precision, recall and F-Score for dataset $\#3$.}
 \label{table:compare3}
 \begin{tabular}
 {| c| c| c|}\hline
@@ -1045,20 +1046,20 @@ Ours &	100.00\% & 95.45\% & 97.67\% \\ \hline
 
 \begin{table}[h]
 \centering
-\caption{Rendering vs no rendering.}
+\caption{Rendering vs no rendering benchmarking for all three datasets.}
 \label{table:compare4}
 \begin{tabular}
-{|l| r| r| r}\hline
- & render & no render. & var. \\\hline
-total runtime (seconds) & 113.905s & 19.996s & 17.55\% \\\hline
-avg. runtime (seconds) & 0.889s & 0.156s & \\\hline
+{|l| r| r| r|}\hline
+ & render & no render. & variation \\\hline
+total runtime (in secs) & 113.905s & 19.996s & 17.55\% \\\hline
+avg. runtime per page & 0.889s & 0.156s & \\\hline
 total size (\# of nodes) & 296,665 & 293,034 & 98.78\% \\\hline
-avg. size  (\# of nodes) & 2,317 & 2,289 & \\\hline
+avg. size per page & 2,317 & 2,289 & \\\hline
 \end{tabular}
 %}
 \end{table}
 
-Finally we present in Figure \ref{fig:runtime} the running time behaviour of our
+We present in Figure \ref{fig:runtime} the running time behaviour of our
 implementation. We can see that the graph suggests a $O(nlog(n))$ time
 complexity with a coefficient of determination\footnote{the coefficient of
 determination ($R^2$) measures how much data is explained by the fitted curve.}
@@ -1094,7 +1095,7 @@ this trade-off be worth it?
      \includegraphics[trim={2.5cm 7.5cm 1cm 6.5cm}, width=\linewidth
      ]{img/runtime.pdf}
   \caption{Document size vs running time and rendering vs no rendering for all
-  datasets.}
+  three datasets.}
   \label{fig:runtime}
 \end{figure}
 
