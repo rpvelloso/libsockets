@@ -76,17 +76,28 @@ used to identify it inside a document and to improve its structure to the point
 where it is possible to access it as relational data (i.e., as structured data).
 
 % justificativa da importancia da pesquisa e motivacao
-The extraction of structured information is undeniably both
-important and difficult. It is an important task due to the ever growing amount
-of information published and readily available on the web and because
-structured information can be used to enrich, and allow, a number of
-applications (e.g., price comparison, semantic keyword search, metasearch,
-etc.) \cite{relationalWeb2008,kalyanpur2012structured,2015webtables}.
+The extraction of structured information is undeniably both important and
+difficult. It is an important task due to the ever growing amount of information
+published and readily available on the web and because structured information
+can be used to enrich, and allow, a number of applications (e.g., price
+comparison, semantic keyword search, metasearch, etc.)
+\cite{relationalWeb2008,kalyanpur2012structured,2015webtables}.
 It is a difficult task because the data is laid out for human consumption and
 published in a variety of formats and templates, as observed in
 \cite{structured2011}. Moreover, the Beckman report on database
 research\cite{abadi2014beckman} mentions the diversity of data as a key
-challenge in this research field.
+challenge in this research field. The subset of structured data we address in
+this work is a major data source according to \cite{structured2011}, since it
+can be considered a generalization of the data addressed by WebTables
+\cite{webtables2008}, we quote from \cite{structured2011}:
+\begin{quote} 
+``\textit{Hypertext-based data models}. These models, in which page authors use
+combinations of HTML elements (such as a list of hyperlinks), perform certain 
+data-model tasks (such as indicate that all entities pointed to by the
+hyperlinks belong to the same set); this category can be considered a
+\textbf{generalization} of the observation that HTML tables are used to
+communicate relations;''
+\end{quote}
 
 % breve resumo bibliografico
 Identifying the underlying content structure in a web document was attempted
@@ -1027,7 +1038,7 @@ Ours &	92,02\%	& 94,11\%	& 93,05\% \\ \hline
 {|c| c| c| c|}\hline
 	& Precision	& Recall	& F-Score\\ \hline
 ClustVX\cite{grigalis2013towards} &	100.00\% & 99.50\% & 99.80\%\\ \hline
-Ours &	100.00\% & 95.45\% & 97.67\% \\ \hline
+Ours &	100.00\% & 97.68\% & 98.83\% \\ \hline
 \end{tabular}
 %}
 \end{table}
@@ -1077,15 +1088,15 @@ illustrate the huge difference in running time to other approaches that do need
 to render the document. The processing time is almost six times greater
 (113.905s rendering vs 19.996s no rendering), the change in input size (the
 browser engine generates a slightly different DOM tree than our built in HTML
-parser) is marginal, only 1.22\% larger, and the achieved results are the same
-(precision, recall and F-Score) as shown in Tables \ref{table:compare3} and
+parser) is marginal, only 1.22\% larger, and the achieved results are the
+same (precision, recall and F-Score) as shown in Tables \ref{table:compare3} and
 \ref{table:compare4}. In Figure \ref{fig:runtime} we can see, as well, both
 asymptotic behaviours.
 Although asymptotically they look alike, the rendering running time adds a much
 greater constant factor. In practice an approach like ClustVX, that needs to
 render the page in order to extract the records, incurs in a very large overhead
 (at least six times slower than our approach) to obtain an F-Score gain of only
-6.61\% (in dataset \#1) and 2.13\% (in dataset \#2) over our approach. Put
+6.61\% (in dataset \#1) and 0.97\% (in dataset \#2) over our approach. Put
 another way, let's assume we have to process an entire search engine index
 containing a sizable portion of all indexable content on the internet, would
 this trade-off be worth it?
@@ -1162,12 +1173,12 @@ Our guidelines for future work are the following:
   % extraction techniques, etc.
 \end{enumerate}
 
-\balance
+%\balance
  
 \bibliographystyle{abbrv}
 \bibliography{refs}
 
-%\pagebreak
+\pagebreak
 
 \begin{appendix}
 \section{Extraction Framework Usage Example}\label{app:a}
@@ -1217,6 +1228,6 @@ end
 \end{lstlisting}
 \end{appendix}
 
-%\balance
+\balance
 
 \end{document}
