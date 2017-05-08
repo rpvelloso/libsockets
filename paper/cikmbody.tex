@@ -867,8 +867,8 @@ GitHub\footnote{\url{https://github.com/rpvelloso/webMining.git}} and we
 encourage and support the scientific community to build on top of it, run
 independent experiments, implement other techniques for the sake of comparison
 and so on.
-Appendix \ref{app:a} has a simple usage example of our system and the
-infrastructure we have exposed to the Lua environment.
+%Appendix \ref{app:a} has a simple usage example of our system and the
+%infrastructure we have exposed to the Lua environment.
 % (there is also an integrated relational database available to the user --
 % SQLite\cite{sqlite}).
 
@@ -1107,49 +1107,49 @@ Our guidelines for future work are the following:
   % extraction techniques, etc.
 \end{enumerate}
 
-\appendix
-\section{Extraction Framework Usage Example}\label{app:a}
+%\appendix
+%\section{Extraction Framework Usage Example}\label{app:a}
 
-Listing \ref{lst:lua} shows a small code snippet that parses an HTML document,
-extracts and displays the records found in it. The classes \texttt{DOM} and
-\texttt{DSRE} are implemented in C++ and their interfaces are exposed under the
-Lua environment.
+%Listing \ref{lst:lua} shows a small code snippet that parses an HTML document,
+%extracts and displays the records found in it. The classes \texttt{DOM} and
+%\texttt{DSRE} are implemented in C++ and their interfaces are exposed under the
+%Lua environment.
 
-\begin{lstlisting}[label=lst:lua,language={[5.2]Lua},
-caption={Example of Lua source code calling C++ exposed interfaces.}] extractFile = function(filename) 
-  -- loads and parses HTML into a DOM tree 
-  local dom = DOM.new(filename)
+%\begin{lstlisting}[label=lst:lua,language={[5.2]Lua},
+%caption={Example of Lua source code calling C++ exposed interfaces.}]
+% extractFile = function(filename) -- loads and parses HTML into a DOM tree 
+%  local dom = DOM.new(filename)
 
-  -- instantiates an extractor
-  local dsre = DSRE.new() 
+%  -- instantiates an extractor
+%  local dsre = DSRE.new() 
 
-  -- sets z-score and CV thresholds
-  dsre:setMinZScore(minZScore)
-  dsre:setMinCV(minCV)
+%  -- sets z-score and CV thresholds
+%  dsre:setMinZScore(minZScore)
+%  dsre:setMinCV(minCV)
 
-  -- extract records
-  dsre:extract(dom)
+%  -- extract records
+%  dsre:extract(dom)
 
-  local regions = dsre:regionCount()
+%  local regions = dsre:regionCount()
   
-  -- iterates over regions
-  for i=1,regions do
-    local dr = dsre:getDataRegion(i-1)
-    local rows = dr:recordCount()
-    local cols = dr:recordSize()
+%  -- iterates over regions
+%  for i=1,regions do
+%    local dr = dsre:getDataRegion(i-1)
+%    local rows = dr:recordCount()
+%    local cols = dr:recordSize()
 
-    -- iterates over current region's
-    -- rows and columns
-    for r=1,rows do  
-      local record = dr:getRecord(r-1)
-      for c=1,cols do
-        -- output field value
-        print(record[c]:toString())  
-      end
-    end
-  end
+%    -- iterates over current region's
+%    -- rows and columns
+%    for r=1,rows do  
+%      local record = dr:getRecord(r-1)
+%      for c=1,cols do
+%        -- output field value
+%        print(record[c]:toString())  
+%      end
+%    end
+%  end
 	
-  dsre:printTps()
-  dom:printHTML()
-end
-\end{lstlisting}
+%  dsre:printTps()
+%  dom:printHTML()
+%end
+%\end{lstlisting}
