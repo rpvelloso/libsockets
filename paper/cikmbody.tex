@@ -61,9 +61,10 @@ identifies the regions with structured content; locates the records boundaries
 within the structured regions and; aligns the records into a table. The
 technique outlined here has the following characteristics: it takes a single
 page as input, does not need training and it is unsupervised, computationally
-efficient ($O(nlogn)$) and domain independent. It is also effective (we provide
-a mechanism to ensure high precision at the expense of recall) and HTML syntax
-independent, i.e., there are no heuristic rules targeted at specific tags.
+efficient ($O(nlogn)$) and domain independent. It is also effective 
+%(we provide a mechanism to ensure high precision at the expense of recall) 
+and HTML syntax independent, i.e., there are no heuristic rules targeted at
+specific tags.
 
 % motivacao para uso de processamento de sinais
 When the DOM tree is converted into its sequence representation, and plotted in
@@ -89,21 +90,21 @@ to break down the data region into records that are subsequently aligned.
 
 % contribuicoes
 The main contributions presented here are:
-\begin{enumerate}
-    \item a novel insight on how the structure of a web document can be seen: as
+%\begin{enumerate} 
+	(1) a novel insight on how the structure of a web document can be seen: as
     a periodic signal. To the best of our knowledge there is nothing alike in
     the literature and the results depict both its efficiency and effectiveness;
-    \item a novel web page segmentation technique;
-    \item a new and efficient way of checking if a given region of a web page is
+    (2) a novel web page segmentation technique;
+    (3) a new and efficient way of checking if a given region of a web page is
     structured or not. Such a framework, that is independent of the extraction
     process (i.e., one doesn't need to extract the entire document), is useful
     to avoid processing portions of the document that are unpromising be it for
     record extraction, clustering, indexing or any other end;
-    \item a more efficient approach, when compared to the state-of-the-art,
+    (4) a more efficient approach, when compared to the state-of-the-art,
     that is due to the use of efficient signal processing algorithms. Most
     existing works rely mainly on dynamic programming (e.g., edit distance), clustering
     algorithms and/or full page rendering and hence are less efficient.
-\end{enumerate}
+%\end{enumerate}
 
 % organizacao do restante do texto
 The rest of the paper is organized as follows. In Section \ref{sec:work} we
@@ -125,7 +126,7 @@ topklists2013} the records (or tables, for that matter) are extracted from very
 specific sources like data formatted with \texttt{<table>},
 \texttt{<ul/ol/etc.>} or even specific templates. Although these approaches may
 seem to be limited, at least at a first glance, they actually yield sound
-results as documented in \cite{relationalWeb2008, probase, probase2012, acsdb}.
+results as documented in \cite{relationalWeb2008, probase2012, acsdb}.
 Such results are due to the large amount and heterogeneity of data in the web.
 From that fact we get an important premise when dealing with web scale data:
 recall can be traded off for precision. And that is what those approaches are
@@ -222,9 +223,11 @@ is equal to $\frac{\sigma([2, 2, 3])}{\mu([2, 2, 3])}=0.24744=24.744\%$. The
 more evenly distributed a symbol is, along the sequence, the lower the CV and
 vice versa.
 
+\begin{small}
 \begin{equation}\label{eq:cv}
     CV=\frac{\sigma}{\mu}
 \end{equation}
+\end{small}
 \end{definition}
 
 \begin{definition}\textbf{(Discrete Fourier Transform -- DFT)}\label{def:dft} is
@@ -243,6 +246,7 @@ we can see in Figure \ref{fig:fftreg}b). This kind of analysis is made possible
 by the decomposition of the signal into a summation of \textbf{weighted}
 frequencies.
 
+\begin{small}
 \begin{equation}\label{eq:dft}
     X_k=\sum_{n=0}^{N-1}{x_n\cdot e^{-2\pi ikn/N}}    
 \end{equation}
@@ -250,6 +254,7 @@ frequencies.
 \begin{equation}\label{eq:psd}
     PSD=|X_k|^2
 \end{equation}
+\end{small}
 
 \end{definition}
 
@@ -272,9 +277,11 @@ can be validated against the same threshold. This is needed because each
 structured region has a different range of values and varying size, so
 standardization is required if they are to be compared against a common
 threshold.
+\begin{small}
 \begin{equation}\label{eq:zscore}
     z = \frac{x -\mu}{\sigma}
 \end{equation}
+\end{small}
 
 \end{definition}
 
@@ -300,9 +307,12 @@ is zero and consider them to be candidate data regions that are submitted to
 subsequent analysis and validation to verify if they are indeed structured.
 This process is explained in depth in Subsection \ref{ss:regi}.
 
+\begin{small}
 \begin{equation}\label{eq:diff}
     d[n] = x[n] - x[n - 1]
 \end{equation}
+\end{small}
+
 \end{definition}
 
 \section{Structured Data Extraction}\label{sec:prop} We present here, in this
@@ -363,6 +373,7 @@ what was done in \cite{grigalis2013towards} with the difference that here we use
 and in-line style attributes instead of rendering the entire document, avoiding
 the computational cost associated with such a task.
 
+\begin{small}
 \begin{algorithm}[h]
 \caption{Builds a tag path sequence from a DOM tree}
 \label{alg:tree2seq}
@@ -382,6 +393,7 @@ concat(tps,tagPathMap[tp].code);$\label{lin:alg:tree2seq:d}
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
+\end{small}
 
 \textbf{Description of Algorithm \ref{alg:tree2seq}:} procedure
 \texttt{treeToSequence} is initially called with the tree's root node, an empty
@@ -414,12 +426,14 @@ In other words, the sequence stabilizes during the structured portions. That
 happens because the records look alike and so their paths and styles repeat
 themselves. We took advantage of this observation to devise Algorithm
 \ref{alg:idreg} that isolates the structured segments of the sequence.
-
+\begin{small}
 \begin{algorithm}
 \caption{Identifies structured regions in a document}
 \label{alg:idreg}
+\begin{flushleft}
 \textbf{Input:} tag path sequence \\
 \textbf{Output:} a set of structured regions
+\end{flushleft} 
 
 \begin{algorithmic}[1]
 
@@ -499,6 +513,7 @@ themselves. We took advantage of this observation to devise Algorithm
 
 \end{algorithmic}
 \end{algorithm}
+\end{small}
 
 \textbf{Description of \texttt{idRegions} function:} this is the main function
 that calls the other subroutines. It receives a TPS as input and returns the
@@ -602,6 +617,7 @@ the center of the TPS. The final \texttt{score} is the arithmetic mean of both
 scores. The higher the region's score the more likely it represents content
 rather than noise.
 
+\begin{small}
 \begin{equation}\label{eq:scorereg}
 \begin{split}
 positionScore \leftarrow 1-\frac{|tpsCenter - regionCenter|}{maxDistance}, \\
@@ -609,6 +625,7 @@ sizeScore \leftarrow \frac{length(region)}{tpsSize},\\
 score \leftarrow \frac{positionScore+sizeScore}{2}
 \end{split}
 \end{equation}
+\end{small}
 
 \subsection{Record Identification}\label{ss:reci}
 
@@ -701,12 +718,14 @@ number of standard deviations.
 
 Algorithm \ref{alg:idrec} along with Figure \ref{fig:fftreg} shows in more
 detail the process of identifying the records within a region.
-
+\begin{small}
 \begin{algorithm}
 \caption{Locates record boundaries in a region}
 \label{alg:idrec}
+\begin{flushleft}
 \textbf{Input:} a region's TPS \\
 \textbf{Output:} a set of record starting positions
+\end{flushleft}
 
 \begin{algorithmic}[1]
 
@@ -732,6 +751,7 @@ detail the process of identifying the records within a region.
 
 \end{algorithmic}
 \end{algorithm}
+\end{small}
 
 \textbf{Description of Algorithm \ref{alg:idrec}:} function \texttt{IdRecords}
 receives, as input, a structured region; it computes the PSD (Definition
@@ -860,21 +880,23 @@ will match exactly the one used by the authors in their experiments.
 
 We have implemented our approach using a two tier software architecture where
 the core is coded in C++ and the presentation layer (graph plotting, result
-manipulation / display, logging, timing, etc.) in embedded Lua \cite{luahome}.
-For HTML parsing we've linked our system against libtidy\cite{libtidy}. Our
+manipulation / display, logging, timing, etc.) in embedded
+Lua\footnote{\url{https://www.lua.org/home.html}}.
+For HTML parsing we've linked our system against
+libtidy\footnote{\url{http://tidy.sourceforge.net/libintro.html}}. Our
 implementation is publicly available at
 GitHub\footnote{\url{https://github.com/rpvelloso/webMining.git}} and we
 encourage and support the scientific community to build on top of it, run
 independent experiments, implement other techniques for the sake of comparison
 and so on.
-%Appendix \ref{app:a} has a simple usage example of our system and the
-%infrastructure we have exposed to the Lua environment.
+% Appendix \ref{app:a} has a simple usage example of our system and the
+% infrastructure we have exposed to the Lua environment.
 % (there is also an integrated relational database available to the user --
 % SQLite\cite{sqlite}).
 
 We used three datasets for comparison, two of them are commonly used for
 benchmarking and the other one was compiled by ourselves with pages collected
-from top largest internet companies\footnote{most pages were drawn from domains
+from top largest internet companies\footnote{most pages were drawn from sites
 owned by the companies listed here:
 \url{https://en.wikipedia.org/wiki/List_of_largest_Internet_companies}.}
 websites with more up to date templates from various domains (the documents were
@@ -896,6 +918,7 @@ Table \ref{table:dataset} presents summarized information about the datasets.
 \centering
 \caption{Summarized dataset information.}
 \label{table:dataset}
+\begin{small}
 \begin{tabular}
 {|l| c| c| c|}\hline
 Dataset	& \#1	& \#2 & \#3 \\ \hline
@@ -904,6 +927,7 @@ Pages per site	& 5 & 3 & 1\\ \hline
 Average records & 21 & 22 & 32 \\ \hline
 Total records &	1052 & 218 & 1466 \\ \hline
 \end{tabular}
+\end{small}
 %}
 \end{table}
 
@@ -968,6 +992,7 @@ mode (to avoid computing networking latency as runtime).
 \centering
 \caption{Results comparison using the dataset $\#1$.}
 \label{table:compare1}
+\begin{small}
 \begin{tabular}
 {|c| c| c| c|}\hline
 	& Precision	& Recall	& F-Score\\ \hline
@@ -976,6 +1001,7 @@ TPC\cite{TPC09}	& 90,40\%	& 93,10\%	& 91,73\%\\ \hline
 ClustVX\cite{grigalis2013towards} &	99.81\% & 99.52\% & 99.66\%\\ \hline
 Ours &	92,02\%	& 94,11\%	& 93,05\% \\ \hline
 \end{tabular}
+\end{small}
 %}
 \end{table}
 
@@ -983,12 +1009,14 @@ Ours &	92,02\%	& 94,11\%	& 93,05\% \\ \hline
 \centering
 \caption{Results comparison using dataset $\#2$.}
 \label{table:compare2}
+\begin{small}
 \begin{tabular}
 {|c| c| c| c|}\hline
 	& Precision	& Recall	& F-Score\\ \hline
 ClustVX\cite{grigalis2013towards} &	100.00\% & 99.50\% & 99.80\%\\ \hline
 Ours &	100.00\% & 97.68\% & 98.83\% \\ \hline
 \end{tabular}
+\end{small}
 %}
 \end{table}
 
@@ -996,11 +1024,13 @@ Ours &	100.00\% & 97.68\% & 98.83\% \\ \hline
 \centering
 \caption{Results of precision, recall and F-Score for dataset $\#3$.}
 \label{table:compare3}
+\begin{small}
 \begin{tabular}
 {| c| c| c|}\hline
 	Precision	& Recall	& F-Score\\ \hline
 	98.95\% & 89.77\% & 94.13\% \\ \hline
 \end{tabular}
+\end{small}
 %}
 \end{table}
 
@@ -1008,14 +1038,16 @@ Ours &	100.00\% & 97.68\% & 98.83\% \\ \hline
 \centering
 \caption{Rendering vs no rendering benchmarking for all three datasets.}
 \label{table:compare4}
+\begin{small}
 \begin{tabular}
 {|l| r| r| r|}\hline
  & render & no render. & variation \\\hline
 total runtime (in secs) & 113.905s & 19.996s & 17.55\% \\\hline
-avg. runtime per page & 0.889s & 0.156s & \\\hline
+%avg. runtime per page & 0.889s & 0.156s & \\\hline
 total size (\# of nodes) & 296,665 & 293,034 & 98.78\% \\\hline
-avg. size per page & 2,317 & 2,289 & \\\hline
+%avg. size per page & 2,317 & 2,289 & \\\hline
 \end{tabular}
+\end{small}
 %}
 \end{table}
 
@@ -1090,13 +1122,13 @@ were pointed out in \cite{survey2013,survey2014} and would be mitigated by such
 a framework.
  
 Our guidelines for future work are the following:
-\begin{enumerate}
-  \item research alignment techniques: here we have used a general purpose and
+%\begin{enumerate}
+  (1) research alignment techniques: here we have used a general purpose and
   supralinear (but still polynomial) sequence alignment algorithm, but we
   believe it is possible to devise a solution specifically for the problem of
   record alignment that is more effective and has a lower complexity bound. In
   \cite{gfrerer2017parallel} a parallel approach is proposed;
-  \item standardize datasets: the ideal testbed should consist of several
+  (2) standardize datasets: the ideal testbed should consist of several
   randomly taken samples from a large scale search engine index with annotated
   ground truth.
   Such a dataset would enable the researcher to draw consistent conclusions
@@ -1105,13 +1137,13 @@ Our guidelines for future work are the following:
   literature (i.e., one that is annotated for record extraction). With reliable
   statistics the amount of this kind of structured information could be
   correctly estimated, similar to what was done in \cite{webtables2008};
-  \item use Goertezel's \cite{goertzel1958algorithm} in place of FFT:
+  (3) use Goertezel's \cite{goertzel1958algorithm} in place of FFT:
   Goertezel's algorithm computes a single coefficient in linear time whereas the
   FFT computes all coefficients in linearithmic time. Our technique searches for a
   candidate frequency in a small range of the spectrum, there is no need to
   compute, up front, all coefficients so that may be an alternative to reduce
   the time complexity a little more;
-  \item investigate the use of Lempel-Ziv\cite{ziv1977universal} (LZ) in the
+  (4) investigate the use of Lempel-Ziv\cite{ziv1977universal} (LZ) in the
   context of pattern detection: LZ is a computationally efficient compression
   algorithm targeted specifically at sequences, it works by looking for
   redundancies in the sequence, the redundancy (i.e., repeated data) can be seen
@@ -1120,7 +1152,7 @@ Our guidelines for future work are the following:
   %\item develop the extraction framework further: continue the development of
   %the extraction framework, refine and refactor code, implement other
   % extraction techniques, etc.
-\end{enumerate}
+%\end{enumerate}
 
 %\appendix
 %\section{Extraction Framework Usage Example}\label{app:a}
