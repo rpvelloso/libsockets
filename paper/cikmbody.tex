@@ -934,6 +934,21 @@ template and web programming practices.
 % but it contains only a small number of
 % documents so it is not an extensive, large scale, comparison.
 
+Table \ref{table:compare3} presents the results obtained over our own dataset,
+assembled with documents from large internet companies' websites using modern
+and up to date layouts (since the documents were collected recently - may/2017)
+from various distinct domains, including: travel (e.g., booking.com,
+tripadvisor.com), real estate (e.g., airbnb.com), car rental and sales (e.g.,
+rentalcars.com), search engines (e.g., google.com, yahoo.com), videos (e.g.,
+youtube.com), movies (e.g., imdb.com), music (e.g., itunes.com), retail sales
+(e.g., aliexpress.com, walmart.com, amazon.com) and social networks (e.g.,
+facebook.com, linkedin.com). Despite a somewhat lower recall, 89.77\%, the
+overall quality is still pretty good, 94.13\% f-score, due to the high (near
+perfect) precision of 98.95\%. This high precision is a key factor when dealing
+with web scale data and it is quite an achievement when we consider data
+diversity and the fact that our approach is both automatic and computationally
+efficient, such attributes are necessary for feasibility.
+
 We have mentioned that an important requirement when dealing with web scale is
 efficiency. On that subject ClustVX fails to deliver for two reasons: (1) it
 employs a browser engine to render the entire web page and issues several calls
@@ -1023,13 +1038,13 @@ to render the document. The processing time is almost six times greater
 (113.905s rendering vs 19.996s no rendering), the change in input size (the
 browser engine generates a slightly different DOM tree than our built in HTML
 parser) is marginal, only 1.22\% larger, and the achieved results are the
-same (precision, recall and F-Score) as shown in Tables \ref{table:compare3} and
-\ref{table:compare4}. In Figure \ref{fig:runtime} we can see, as well, both
+same (precision, recall and f-score) as shown in Tables \ref{table:compare3}
+and \ref{table:compare4}. In Figure \ref{fig:runtime} we can see, as well, both
 asymptotic behaviours.
 Although asymptotically they look alike, the rendering running time adds a much
 greater constant factor. In practice an approach like ClustVX, that needs to
 render the page in order to extract the records, incurs in a very large overhead
-(at least six times slower than our approach) to obtain an F-Score gain of only
+(at least six times slower than our approach) to obtain an f-score gain of only
 6.61\% (in dataset \#1) and 0.97\% (in dataset \#2) over our approach. Put
 another way, let's assume we have to process an entire search engine index
 containing a sizable portion of all indexable content on the internet, would
