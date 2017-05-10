@@ -16,7 +16,7 @@ difficult. It is an important task due to the ever growing amount of information
 published and readily available on the web and because structured information
 can be used to enrich, and allow, a number of applications (e.g., price
 comparison, semantic keyword search, metasearch, etc.)
-\cite{relationalWeb2008,kalyanpur2012structured,2015webtables}.
+\cite{relationalWeb2008,2015webtables}.
 It is a difficult task because the data is laid out for human consumption and
 published in a variety of formats and templates, as observed in
 \cite{structured2011}. Moreover, the Beckman report on database
@@ -137,14 +137,14 @@ all about, they tackle very specific situations (sacrificing recall) in a very
 specialized way (ensuring high precision).
 
 On the other hand, in \cite{RRunner01, exalg2003, vips03, viper05, MDR03,
-depta05, NET05, TPC09, vide10, gstm2010, fivatech2010, cvts2012, SuffixTree12,
-grigalis2013towards, datapath2015, autorm2015} more general approaches are
+depta05, NET05, TPC09, vide10, gstm2010, fivatech2010, SuffixTree12,
+grigalis2013towards, autorm2015} more general approaches are
 proposed.
 These proposals try to solve the problem in a broader sense (which is a much
 harder problem to solve), some using machine learning
-techniques\cite{RRunner01,fivatech2010,grigalis2013towards,datapath2015}, others
+techniques\cite{RRunner01,fivatech2010,grigalis2013towards}, others
 grounded on general observations about structured
-content\cite{MDR03,exalg2003,NET05,depta05,TPC09,gstm2010,SuffixTree12,cvts2012,autorm2015}.
+content\cite{MDR03,exalg2003,NET05,depta05,TPC09,gstm2010,SuffixTree12,autorm2015}.
 Some approaches make use of visual information, rendering the entire document in
 a browser engine before processing
 it\cite{vips03,viper05,depta05,vide10,grigalis2013towards}.
@@ -803,8 +803,8 @@ during sequence alignment.
 The alignment of records, by itself, deserves a more in depth study. It is still
 an open, and very important, problem related to web record extraction. As
 observed in \cite{listExtract2009}, there is no single correct answer when it
-comes to the alignment of records and this constitutes an additional difficulty
-when evaluating the correctness of an alignment.
+comes to record alignment and this constitutes an additional difficulty when
+evaluating alignment correctness.
 
 \begin{table}[h]
 \centering
@@ -818,21 +818,22 @@ rec \#&\multicolumn{15}{c|}{fields (TPCodes)}\\ \hline
  \#1&255&256&258&259&262&266&270&272&270&270&274&   &   &   &278\\ \hline
  \#2&255&256&258&259&262&266&270&272&270&270&   &280&   &274&278\\ \hline
  \#3&255&256&258&259&262&266&270&272&270&270&274&280&274&   &   \\ \hline
- \#4&255&256&258&259&262&266&270&272&270&270&274&280&   &274&278\\ \hline
- \#5&255&256&258&259&262&266&270&272&270&270&274&280&   &274&   \\ \hline
- \#6&255&256&258&259&262&266&270&272&270&270&274&280&   &274&278\\ \hline
- \#7&255&256&258&259&262&266&270&272&270&270&274&   &   &   &   \\ \hline
- \#8&255&256&258&259&262&266&270&272&270&270&274&280&   &274&278\\ \hline
- \#9&255&256&258&259&262&266&270&272&270&270&   &280&   &274&   \\ \hline
-\#10&255&256&258&259&262&266&270&272&270&270&274&280&   &274&   \\ \hline
-\#11&255&256&258&259&262&266&270&272&270&270&274&   &   &   &278\\ \hline
-\#12&255&256&258&259&262&266&270&272&270&270&274&   &   &   &278\\ \hline
-\#13&255&256&258&259&262&266&270&272&270&270&274&   &   &   &   \\ \hline
-\#14&255&256&258&259&262&266&270&272&270&270&   &280&   &274&   \\ \hline
-\#15&255&256&258&259&262&266&270&272&270&270&274&280&   &274&   \\ \hline
-\#16&255&256&258&259&262&266&270&272&270&270&274&   &   &   &   \\ \hline
-\#17&255&256&258&259&262&266&270&272&270&270&274&280&   &274&   \\ \hline
-\#18&255&256&258&259&262&266&270&272&270&270&274&280&   &274&278\\ \hline
+ \ldots&\multicolumn{15}{|c|}{\ldots}   \\ \hline
+% \#4&255&256&258&259&262&266&270&272&270&270&274&280&   &274&278\\ \hline
+% \#5&255&256&258&259&262&266&270&272&270&270&274&280&   &274&   \\ \hline
+% \#6&255&256&258&259&262&266&270&272&270&270&274&280&   &274&278\\ \hline
+% \#7&255&256&258&259&262&266&270&272&270&270&274&   &   &   &   \\ \hline
+% \#8&255&256&258&259&262&266&270&272&270&270&274&280&   &274&278\\ \hline
+% \#9&255&256&258&259&262&266&270&272&270&270&   &280&   &274&   \\ \hline
+%\#10&255&256&258&259&262&266&270&272&270&270&274&280&   &274&   \\ \hline
+%\#11&255&256&258&259&262&266&270&272&270&270&274&   &   &   &278\\ \hline
+%\#12&255&256&258&259&262&266&270&272&270&270&274&   &   &   &278\\ \hline
+%\#13&255&256&258&259&262&266&270&272&270&270&274&   &   &   &   \\ \hline
+%\#14&255&256&258&259&262&266&270&272&270&270&   &280&   &274&   \\ \hline
+%\#15&255&256&258&259&262&266&270&272&270&270&274&280&   &274&   \\ \hline
+%\#16&255&256&258&259&262&266&270&272&270&270&274&   &   &   &   \\ \hline
+%\#17&255&256&258&259&262&266&270&272&270&270&274&280&   &274&   \\ \hline
+%\#18&255&256&258&259&262&266&270&272&270&270&274&280&   &274&278\\ \hline
 \#19&255&256&258&259&262&266&270&272&270&270&274&280&274&278&278\\ \hline
 \#20&255&256&258&259&262&266&270&272&270&270&274&280&274&   &   \\ \hline
 \end{tabular}
@@ -865,21 +866,6 @@ approaches found in the literature that we considered to be most relevant. The
 proposals we considered most relevant are those which are fully automatic,
 highly effective (i.e., high f-score), domain independent and computationally
 efficient.
-
-The main difficulty we encountered when trying to compare our results with the
-results of the others, was the unavailability of implementations (despite
-contacting the authors). For this reason we were unable to make a deeper and
-independent comparative analysis.
-Had implementations been available one could compare specific situations where
-one approach performs better than the other, otherwise we can only compare
-against published results (usually summarized precision and recall).
-%Although several works have criticized this aspect, few provided implementations.
-
-Furthermore, implementing approaches proposed by others is also a complex
-matter. For starters, most papers do not provide full details (maybe due to
-space constraints?) and there is no guarantee that an independent implementation
-will match exactly the one used by the authors in their experiments.
-% and that invalidates the effort.
 
 We have implemented our approach using a two tier software architecture where
 the core is coded in C++ and the presentation layer (graph plotting, result
@@ -991,7 +977,7 @@ browser engine. The browser engine is controlled via
 \textit{WebDriver}\footnote{\url{https://www.w3.org/TR/webdriver/}} interface in
 offline mode (to avoid computing networking latency as runtime).
 
-\vspace{-0.3cm}
+\vspace{-0.2cm}
 \begin{table}[h]
 \centering
 \caption{\small{Results comparison using the dataset $\#1$.}}
@@ -1009,7 +995,7 @@ Ours &	92,02\%	& 94,11\%	& 93,05\% \\ \hline
 %}
 \end{table}
 
-\vspace{-0.3cm}
+\vspace{-0.5cm}
 \begin{table}[h]
 \centering
 \caption{\small{Results comparison using dataset $\#2$.}}
@@ -1025,7 +1011,7 @@ Ours &	100.00\% & 97.68\% & 98.83\% \\ \hline
 %}
 \end{table}
 
-\vspace{-0.3cm}
+\vspace{-0.5cm}
 \begin{table}[h]
 \centering
 \caption{\small{Precision, recall and F-Score for dataset $\#3$.}}
@@ -1040,7 +1026,7 @@ Ours &	100.00\% & 97.68\% & 98.83\% \\ \hline
 %}
 \end{table}
 
-\vspace{-0.3cm}
+\vspace{-0.5cm}
 \begin{table}[H]
 \centering
 \caption{\small{Benchmarking for all three datasets.}}
@@ -1058,6 +1044,7 @@ total size (\# of nodes) & 296,665 & 293,034 & 98.78\% \\\hline
 %}
 \end{table}
 
+\vspace{-0.3cm}
 We present in Figure \ref{fig:runtime} the running time behaviour of our
 implementation. We can see that the graph suggests a $O(nlog(n))$ time
 complexity with a coefficient of determination\footnote{the coefficient of
@@ -1097,6 +1084,7 @@ this trade-off be worth it?
   \label{fig:runtime}
 \end{figure}
 
+\vspace{-0.3cm}
 \section{Conclusion and Future Work}\label{sec:con}
 
 We have shown here a novel approach for the problem of extracting records from
@@ -1117,15 +1105,26 @@ is of considerable size and value.
 
 In our opinion, the major set backs in this area of research are the
 unavailability of implementations and the absence of a common framework.
+
 Without the implementation of a particular technique we can't analyse individual
-results to gain insight about why it did or did not work in a particular case.
-This kind of analysis speeds up research because it helps refine research
-assumptions faster, using previous works. On the other hand, a common framework
-for the implementation of extractors reduces the variables involved in a
-comparison by standardizing the basic software infrastructure (e.g., same HTML
-parser used by everyone, same rendering engine, datasets, etc.). This problems
-were pointed out in \cite{survey2013,survey2014} and would be mitigated by such
-a framework.
+results to gain insight about why it did or did not work in a particular case
+and we are unable to make a deeper and independent comparative analysis of
+published results. This kind of analysis speeds up research because it helps
+refine research assumptions faster, using previous works. Had implementations
+been available one could compare specific situations where one approach performs
+better than the other, otherwise we can only compare against published results
+(usually summarized precision and recall). Furthermore, implementing approaches
+proposed by others is also a complex matter. For starters, most papers do not
+provide full details (maybe due to space constraints?) and there is no guarantee
+that an independent implementation will match exactly the one used by the
+authors in their experiments.
+% and that invalidates the effort.
+ 
+On the other hand, a common framework for the implementation of extractors
+reduces the variables involved in a comparison by standardizing the basic
+software infrastructure (e.g., same HTML parser used by everyone, same rendering
+engine, datasets, etc.). These problems were pointed out in
+\cite{survey2013,survey2014} and would be mitigated by such a framework.
  
 Our guidelines for future work are the following:
 %\begin{enumerate}
