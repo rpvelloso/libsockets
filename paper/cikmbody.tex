@@ -1,3 +1,4 @@
+\vspace{-0.3cm}
 \section{Introduction}
 
 % contextualizacao
@@ -115,6 +116,7 @@ proposed approach; in Section \ref{sec:result} we discuss and compare the
 achieved results and; in Section \ref{sec:con} we conclude and present some
 of our ideas for future work.
 
+%\vspace{-0.1cm}
 \section{Related Work}\label{sec:work}
 
 The task of extracting records from web pages has been approached from many
@@ -122,7 +124,8 @@ angles. Some authors proposed \textit{ad hoc} solutions while others tried
 broader approaches for the problem.
 
 In \cite{webtables2008, listExtract2009, tablesMS2012, tegra2015, qiu2015dexter,
-topklists2013} the records (or tables, for that matter) are extracted from very
+topklists2013} the records %(or tables, for that matter) 
+are extracted from very
 specific sources like data formatted with \texttt{<table>},
 \texttt{<ul/ol/etc.>} or even specific templates. Although these approaches may
 seem to be limited, at least at a first glance, they actually yield sound
@@ -135,22 +138,22 @@ specialized way (ensuring high precision).
 
 On the other hand, in \cite{RRunner01, exalg2003, vips03, viper05, MDR03,
 depta05, NET05, TPC09, vide10, gstm2010, fivatech2010, cvts2012, SuffixTree12,
-grigalis2013towards, datapath2015, autorm2015} more general approaches are proposed.
+grigalis2013towards, datapath2015, autorm2015} more general approaches are
+proposed.
 These proposals try to solve the problem in a broader sense (which is a much
 harder problem to solve), some using machine learning
 techniques\cite{RRunner01,fivatech2010,grigalis2013towards,datapath2015}, others
 grounded on general observations about structured
 content\cite{MDR03,exalg2003,NET05,depta05,TPC09,gstm2010,SuffixTree12,cvts2012,autorm2015}.
-Some approaches also make use of visual information, by rendering the entire
-document in a browser engine before processing
+Some approaches make use of visual information, rendering the entire document in
+a browser engine before processing
 it\cite{vips03,viper05,depta05,vide10,grigalis2013towards}.
-Although each of these researches represent advances in the field of structured
+Although each of these works represent advances in the field of structured
 extraction, they do not provide, like their \textit{ad hoc} counterparts do,
 readily usable results (i.e., end-to-end production grade results), but they do
-serve as stepping stones for future works to catch on. For instance, some
-researches focus on records extraction only, not bothering with alignment at all
-(e.g., \cite{TPC09}), others focus on main data region detection (e.g.,
-\cite{vips03}).
+serve as stepping stones for future works to catch on. For instance, some works
+focus on records extraction only, disregarding alignment (e.g., \cite{TPC09}),
+others focus on main data region detection (e.g., \cite{vips03}).
 
 In \cite{TPC09, SuffixTree12, TPS2013} an alternative document representation is
 used. Instead of using the DOM tree as document representation, the web page
@@ -197,8 +200,8 @@ include style definitions of every node in the path, like this:
 ascending code assigned to every different tag path string encountered in the
 tree, in order of appearance. If a given path has occurred in the past, it is
 assigned the same code as before. The paths are built in depth first order.
-Figure \ref{fig:tree2seq} shows an example of this definition. In this paper we
-also refer to TPCode as ``symbol'' and a set of TPCodes as ``alphabet''.
+Figure \ref{fig:tree2seq} shows an example of this definition. Here we refer to
+TPCode as ``symbol'' and a set of TPCodes as ``alphabet''.
 \end{definition}
 
 \begin{definition}\textbf{(Tag Path Sequence -- TPS)} is a sequence of TPCodes
@@ -258,6 +261,7 @@ frequencies.
 
 \end{definition}
 
+\vspace{-0.7cm}
 \begin{definition}\textbf{(Fast Fourier Transform -- FFT)}\label{def:fft} is an
 efficient implementation of the DFT that yields the same result. The naive implementation
 of the DFT has $O(n^2)$ time complexity whereas the FFT has $O(nlogn)$ time
@@ -285,6 +289,7 @@ threshold.
 
 \end{definition}
 
+\vspace{-0.5cm}
 \begin{definition}\textbf{(Sequence Contour)}\label{def:contour} is actually the
 upper contour of a sequence. In other words, the contour is the maximum value
 seen so far in the sequence. It can be thought of as the \textit{skyline} of the
@@ -331,15 +336,15 @@ style definition and, consequently, on its tag path sequence representation.
 
 Figure \ref{fig:overall} depicts the entire process of record extraction
 proposed here. First the HTML document is parsed into a DOM tree using
-\textit{libtidy}\cite{tidyw3c} (a W3C endorsed HTML cleanup and
-standardization tool). After this, Step 1 converts the DOM tree into a TPS; Step
-2 divides the TPS into several structured regions; Step 3 identifies the record
-boundaries within each region and; Step 4 aligns the records in tabular form.
+\textit{libtidy} (a W3C endorsed HTML cleanup and standardization tool).
+After this, Step 1 converts the DOM tree into a TPS; Step 2 divides the TPS into
+several structured regions; Step 3 identifies the record boundaries within each
+region and; Step 4 aligns the records in tabular form.
 
 \begin{figure}[H]
   \centering
-     \includegraphics[width=208pt]{img/proposal.jpg}
-  \caption{Extraction system overall diagram.}
+     \includegraphics[width=158pt]{img/proposal.jpg}
+  \caption{\small{Extraction system overall diagram.}}
   \label{fig:overall}
 \end{figure}
 %\vspace{0.67cm}
@@ -359,8 +364,8 @@ in Step 3 the TPS is built by assigning TPCodes to each tag path.
 
 \begin{figure}[H]
   \centering
-     \includegraphics[width=\columnwidth]{img/tree2seq.jpg}
-  \caption{tag path sequence built from HTML code snippet.}
+     \includegraphics[width=205pt]{img/tree2seq.jpg}
+  \caption{\small{tag path sequence built from HTML code snippet.}}
   \label{fig:tree2seq}
 \end{figure}
 
@@ -375,7 +380,7 @@ the computational cost associated with such a task.
 
 \begin{small}
 \begin{algorithm}[h]
-\caption{Builds a tag path sequence from a DOM tree}
+\caption{\small{Builds a tag path sequence from a DOM tree}}
 \label{alg:tree2seq}
 \begin{algorithmic}[1]
 \Procedure{treeToSequence}{node,tp,tps by ref.}
@@ -428,7 +433,7 @@ themselves. We took advantage of this observation to devise Algorithm
 \ref{alg:idreg} that isolates the structured segments of the sequence.
 \begin{small}
 \begin{algorithm}
-\caption{Identifies structured regions in a document}
+\caption{\small{Identifies structured regions in a document}}
 \label{alg:idreg}
 \begin{flushleft}
 \textbf{Input:} tag path sequence \\
@@ -550,7 +555,7 @@ returned (Line \ref{line:alg:idreg:q}).
  %\captionsetup{width=\textwidth}
   \centering
      \includegraphics[width=\textwidth]{img/main-reg.jpg}
-  \caption{How structured content appears in the sequence (structured regions encircled).}
+  \caption{\small{How structured content appears in the sequence (structured regions encircled).}}
   \label{fig:stru}
 \end{figure*}
 
@@ -568,7 +573,7 @@ intervals, as shown in Figure \ref{fig:contour}b.
   \centering
      \includegraphics[trim={2.5cm 7.5cm 1cm 6.5cm}, width=\linewidth
      ]{img/contour.pdf}
-  \caption{a) Contour of a TPS; b) Finite difference of contour.}
+  \caption{\small{a) Contour of a TPS; b) Finite difference of contour.}}
   \label{fig:contour}
 \end{figure}
 
@@ -655,8 +660,7 @@ divided by the frequency) is equivalent to the average record size.
   \centering
      \includegraphics[trim={2.5cm 7.5cm 1cm 6.5cm}, width=\linewidth
      ]{img/fftreg.pdf}
-  \caption{a) The cyclic behaviour of a structured region; b) The PSD of a
-  structured region.}
+  \caption{\small{a) The cyclic behaviour of a structured region; b) The PSD of a structured region.}}
   \label{fig:fftreg}
 \end{figure}
 
@@ -705,7 +709,7 @@ and record count.
   \centering
      \includegraphics[trim={2.5cm 7.5cm 1cm 6.5cm}, width=\linewidth
      ]{img/fftleak.pdf}
-  \caption{An example when the maximum peak in the spectrum does not correspond to the correct period.}
+  \caption{\small{An example when the maximum peak in the spectrum does not correspond to the correct period.}}
   \label{fig:fftleak}
 \end{figure}
 
@@ -720,7 +724,7 @@ Algorithm \ref{alg:idrec} along with Figure \ref{fig:fftreg} shows in more
 detail the process of identifying the records within a region.
 \begin{small}
 \begin{algorithm}
-\caption{Locates record boundaries in a region}
+\caption{\small{Locates record boundaries in a region}}
 \label{alg:idrec}
 \begin{flushleft}
 \textbf{Input:} a region's TPS \\
@@ -804,8 +808,7 @@ when evaluating the correctness of an alignment.
 
 \begin{table}[h]
 \centering
-\caption{\textit{Center Star} -- result of record alignment for region in Figure
-\ref{fig:fftreg}a.}
+\caption{\small{\textit{Center Star} record alignment for Figure \ref{fig:fftreg}a region}}
 \label{table:align}
 \begin{tiny}
 \setlength\tabcolsep{2.3pt}
@@ -896,8 +899,8 @@ and so on.
 
 We used three datasets for comparison, two of them are commonly used for
 benchmarking and the other one was compiled by ourselves with pages collected
-from top largest internet companies\footnote{most pages were drawn from sites
-owned by the companies listed here:
+from top largest internet companies\footnote{pages mostly drawn from sites
+owned by companies listed here:
 \url{https://en.wikipedia.org/wiki/List_of_largest_Internet_companies}.}
 websites with more up to date templates from various domains (the documents were
 collected in may/2017). Dataset $\#1$ was proposed by \cite{yamada2004testbed}
@@ -916,7 +919,7 @@ Table \ref{table:dataset} presents summarized information about the datasets.
 
 \begin{table}[h]
 \centering
-\caption{Summarized dataset information.}
+\caption{\small{Summarized dataset information.}}
 \label{table:dataset}
 \begin{small}
 \begin{tabular}
@@ -985,12 +988,13 @@ similar results without incurring in unnecessary computational cost. To support
 our claim about the computational cost involved in document rendering, we have
 compared running time of our approach using an internal HTML parser versus a
 browser engine. The browser engine is controlled via
-WebDriver\footnote{\url{https://www.w3.org/TR/webdriver/}} interface in offline
-mode (to avoid computing networking latency as runtime).
+\textit{WebDriver}\footnote{\url{https://www.w3.org/TR/webdriver/}} interface in
+offline mode (to avoid computing networking latency as runtime).
 
+\vspace{-0.3cm}
 \begin{table}[h]
 \centering
-\caption{Results comparison using the dataset $\#1$.}
+\caption{\small{Results comparison using the dataset $\#1$.}}
 \label{table:compare1}
 \begin{small}
 \begin{tabular}
@@ -1005,9 +1009,10 @@ Ours &	92,02\%	& 94,11\%	& 93,05\% \\ \hline
 %}
 \end{table}
 
+\vspace{-0.3cm}
 \begin{table}[h]
 \centering
-\caption{Results comparison using dataset $\#2$.}
+\caption{\small{Results comparison using dataset $\#2$.}}
 \label{table:compare2}
 \begin{small}
 \begin{tabular}
@@ -1020,9 +1025,10 @@ Ours &	100.00\% & 97.68\% & 98.83\% \\ \hline
 %}
 \end{table}
 
+\vspace{-0.3cm}
 \begin{table}[h]
 \centering
-\caption{Results of precision, recall and F-Score for dataset $\#3$.}
+\caption{\small{Precision, recall and F-Score for dataset $\#3$.}}
 \label{table:compare3}
 \begin{small}
 \begin{tabular}
@@ -1034,9 +1040,10 @@ Ours &	100.00\% & 97.68\% & 98.83\% \\ \hline
 %}
 \end{table}
 
-\begin{table}[h]
+\vspace{-0.3cm}
+\begin{table}[H]
 \centering
-\caption{Rendering vs no rendering benchmarking for all three datasets.}
+\caption{\small{Benchmarking for all three datasets.}}
 \label{table:compare4}
 \begin{small}
 \begin{tabular}
@@ -1086,8 +1093,7 @@ this trade-off be worth it?
   \centering
      \includegraphics[trim={2.5cm 7.5cm 1cm 6.5cm}, width=\linewidth
      ]{img/runtime.pdf}
-  \caption{Document size vs running time and rendering vs no rendering for all
-  three datasets.}
+  \caption{\small{Document size vs running time and rendering vs no rendering for all three datasets.}}
   \label{fig:runtime}
 \end{figure}
 
