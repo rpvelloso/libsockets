@@ -521,8 +521,8 @@ themselves. We took advantage of this observation to devise Algorithm
 \label{alg:idreg}
 \begin{small}
 %\begin{flushleft}
-\textbf{Input:} tag path sequence \\
-\textbf{Output:} a set of structured regions
+%\textbf{Input:} tag path sequence \\
+%\textbf{Output:} a set of structured regions
 %\end{flushleft} 
 
 \begin{algorithmic}[1]
@@ -554,15 +554,13 @@ themselves. We took advantage of this observation to devise Algorithm
 \State $diff \leftarrow difference(contour)$\label{line:alg:idreg:e}
 %\State $diff \leftarrow concat(diff, 1)$
 \State $regions \leftarrow \emptyset$\label{line:alg:idreg:f}
-\State $start \leftarrow 1$
-\State $end \leftarrow 1$
+\State $start \leftarrow end \leftarrow 1$
 \For{$i \leftarrow 1..length(diff)$}
 \If {$diff[i] \neq 0$}
 \If {$start \neq end$}
 \State $regions \leftarrow regions \cup [start, end)$
 \EndIf
-\State $start \leftarrow i + 1$
-\State $end \leftarrow i + 1$
+\State $start \leftarrow end \leftarrow i + 1$
 \Else
 \State $end \leftarrow end + 1$
 \EndIf
@@ -963,10 +961,10 @@ GitHub\footnote{\url{https://github.com/rpvelloso/webMining.git}} and we
 encourage and support the scientific community to build on top of it, run
 independent experiments, implement other techniques for the sake of comparison
 and so on.
-% Appendix \ref{app:a} has a simple usage example of our system and the
-% infrastructure we have exposed to the Lua environment.
-% (there is also an integrated relational database available to the user --
-% SQLite\cite{sqlite}).
+ Appendix \ref{app:a} has a simple usage example of our system and the
+ infrastructure we have exposed to the Lua environment
+ (there is also an integrated relational database available to the user --
+ SQLite\footnote{\url{https://sqlite.org/}}).
 
 We used three datasets for comparison, two of them are commonly used for
 benchmarking and the other one was compiled by ourselves with pages collected
@@ -1156,7 +1154,7 @@ another way, let's assume we have to process an entire search engine index
 containing a sizable portion of all indexable content on the internet, would
 this trade-off be worth it?
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering
      \includegraphics[trim={2.5cm 7.5cm 1cm 6.5cm}, width=\linewidth
      ]{img/runtime.pdf}
