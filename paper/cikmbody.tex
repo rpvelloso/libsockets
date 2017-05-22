@@ -572,7 +572,7 @@ returned (Line \ref{line:alg:idreg:q}).
 \begin{figure*}[h]
  %\captionsetup{width=\textwidth}
   \centering
-     \includegraphics[width=440pt]{img/main-reg.jpg}
+     \includegraphics[width=400pt]{img/main-reg.jpg}
   \caption{\small{How structured content appears in the sequence (structured regions encircled).}}
   \label{fig:stru}
 \end{figure*}
@@ -591,7 +591,7 @@ intervals, as shown in Figure \ref{fig:contour}b.
 
 \begin{figure}[h]
   \centering
-     \includegraphics[trim={2.5cm 7.5cm 1cm 6.5cm}, width=\linewidth
+     \includegraphics[trim={2.5cm 7.5cm 1cm 6.5cm}, width=220pt
      ]{img/contour.pdf}
   \caption{\small{a) Contour of a TPS; b) Finite difference of contour.}}
   \label{fig:contour}
@@ -644,7 +644,7 @@ the center of the TPS. The final \texttt{score} is the arithmetic mean of both
 scores. The higher the region's score the more likely it represents content
 rather than noise.
 
-\vspace{-0.3cm}
+\vspace{-0.2cm}
 
 \begin{small}
 \begin{equation}\label{eq:scorereg}
@@ -656,7 +656,7 @@ score \leftarrow \frac{positionScore+sizeScore}{2}
 \end{equation}
 \end{small}
 
-\vspace{-0.3cm}
+\vspace{-0.2cm}
 
 \subsection{Record Identification}\label{ss:reci}
 
@@ -682,17 +682,17 @@ In short, this frequency peak represents the record count (or number of cycles
 in the subsequence) and its corresponding period (i.e., the subsequence length
 divided by the frequency) is equivalent to the average record size.
 
-\vspace{-0.3cm}
+%\vspace{-0.3cm}
 
 \begin{figure}[h]
   \centering
-     \includegraphics[trim={2.5cm 7.5cm 1cm 6.5cm}, width=\linewidth
+     \includegraphics[trim={2.5cm 7.5cm 1cm 6.5cm}, width=220pt
      ]{img/fftreg.pdf}
   \caption{\small{a) The cyclic behaviour of a structured region; b) The PSD of a structured region.}}
   \label{fig:fftreg}
 \end{figure}
 
-\vspace{-0.3cm}
+%\vspace{-0.3cm}
 
 To decide if a certain TPCode represents a record boundary within the region, we
 check how well distributed along the subsequence each TPCode is, in increasing
@@ -738,7 +738,7 @@ and record count.
 
 \begin{figure}[h]
   \centering
-     \includegraphics[trim={2.5cm 7.5cm 1cm 6.5cm}, width=\linewidth
+     \includegraphics[trim={2.5cm 7.5cm 1cm 6.5cm}, width=220pt
      ]{img/fftleak.pdf}
   \caption{\small{An example when the maximum peak in the spectrum does not correspond to the correct period.}}
   \label{fig:fftleak}
@@ -792,6 +792,8 @@ detail the process of identifying the records within a region.
 \end{algorithmic}
 \end{algorithm}
 \end{small}
+
+\vspace{-0.3cm}
 
 \textbf{Description of Algorithm \ref{alg:idrec}:} function \texttt{IdRecords}
 receives, as input, a structured region; it computes the PSD (Definition
@@ -1022,7 +1024,7 @@ browser engine. The browser engine is controlled via
 \textit{WebDriver}\footnote{\url{https://www.w3.org/TR/webdriver/}} interface in
 offline mode (to avoid computing networking latency as runtime).
 
-\vspace{-0.2cm}
+%\vspace{-0.2cm}
 \begin{table}[h]
 \centering
 \caption{\small{Results comparison using the dataset $\#1$.}}
@@ -1040,7 +1042,7 @@ Ours &	92,02\%	& 94,11\%	& 93,05\% \\ \hline
 %}
 \end{table}
 
-\vspace{-0.5cm}
+%\vspace{-0.5cm}
 \begin{table}[h]
 \centering
 \caption{\small{Results comparison using dataset $\#2$.}}
@@ -1056,7 +1058,7 @@ Ours &	100.00\% & 97.68\% & 98.83\% \\ \hline
 %}
 \end{table}
 
-\vspace{-0.5cm}
+%\vspace{-0.5cm}
 \begin{table}[h]
 \centering
 \caption{\small{Precision, recall and F-Score for dataset $\#3$.}}
@@ -1071,8 +1073,8 @@ Ours &	100.00\% & 97.68\% & 98.83\% \\ \hline
 %}
 \end{table}
 
-\vspace{-0.5cm}
-\begin{table}[H]
+%\vspace{-0.5cm}
+\begin{table}[h]
 \centering
 \caption{\small{Benchmarking for all three datasets.}}
 \label{table:compare4}
@@ -1089,7 +1091,7 @@ total size (\# of nodes) & 296,665 & 293,034 & 98.78\% \\\hline
 %}
 \end{table}
 
-\vspace{-0.3cm}
+%\vspace{-0.3cm}
 We present in Figure \ref{fig:runtime} the running time behaviour of our
 implementation. We can see that the graph suggests a $O(nlog(n))$ time
 complexity with a coefficient of determination\footnote{the coefficient of
@@ -1122,17 +1124,16 @@ another way, let's assume we have to process an entire search engine index
 containing a sizable portion of all indexable content on the internet, would
 this trade-off be worth it?
 
-\vspace{-0.3cm}
+%\vspace{-0.3cm}
 
 \begin{figure}[h]
   \centering
-     \includegraphics[trim={2.5cm 7.5cm 1cm 6.5cm}, width=\linewidth
+     \includegraphics[trim={2.5cm 7.5cm 1cm 6.5cm}, width=220pt
      ]{img/runtime.pdf}
   \caption{\small{Document size vs running time and rendering vs no rendering for all three datasets.}}
   \label{fig:runtime}
 \end{figure}
-
-\vspace{-0.3cm}
+%\vspace{-0.3cm}
 
 \section{Conclusion and Future Work}\label{sec:con}
 
@@ -1142,7 +1143,11 @@ document as a cyclic signal. Our results are equivalent to the state-of-the-art,
 but we claim we've achieved it in a more efficient way since no document
 rendering is required. The structure detection in our approach can also be used
 in other areas, for example, when the target is unstructured data one can rule
-out structured noise (e.g., menus and advertising).
+out structured noise (e.g., menus and advertising). In our work we have tried to
+exploit, as much as possible, the syntactical characteristics of semi-structured
+data, without resorting to more costly approaches (e.g., machine learning,
+rendering, supervised learning, etc.). However, we believe that such techniques
+could be combined to improve the results even further. 
 
 Although the high efficiency and effectiveness of our technique are demonstrated
 by the results in Section \ref{sec:result}, it is not an error free approach.
@@ -1152,9 +1157,8 @@ plausible, they are not universal and where they do not hold our approach fails.
 Nonetheless, when considering web scale data, this subset of all structured data
 is of considerable size and value.
 
-In our opinion, the major set backs in this area of research are the
-unavailability of implementations and the absence of a common framework.
-
+In our opinion the major set backs in this research area are the unavailability
+of implementations and the absence of a common framework.
 Without the implementation of a particular technique we can't analyse individual
 results to gain insight about why it did or did not work in a particular case
 and we are unable to make a deeper and independent comparative analysis of
@@ -1164,16 +1168,16 @@ been available one could compare specific situations where one approach performs
 better than the other, otherwise we can only compare against published results
 (usually summarized precision and recall). Furthermore, implementing approaches
 proposed by others is also a complex matter. For starters, most papers do not
-provide full details (maybe due to space constraints?) and there is no guarantee
-that an independent implementation will match exactly the one used by the
-authors in their experiments.
+provide full details and there is no guarantee that an independent
+implementation will match exactly the one used by the authors in their
+experiments.
 % and that invalidates the effort.
  
-On the other hand, a common framework for the implementation of extractors
+On the other hand a common framework, for implementing extractors,
 reduces the variables involved in a comparison by standardizing the basic
-software infrastructure (e.g., same HTML parser used by everyone, same rendering
-engine, datasets, etc.). These problems were pointed out in
-\cite{survey2013,survey2014} and would be mitigated by such a framework.
+software infrastructure (e.g., same HTML parser used by everyone, as well as
+rendering engine and testbeds). These problems were pointed out
+in \cite{survey2013,survey2014} and would be mitigated by such a framework.
  
 Our guidelines for future work are the following:
 %\begin{enumerate}
@@ -1254,3 +1258,4 @@ Our guidelines for future work are the following:
 %  dom:printHTML()
 %end
 %\end{lstlisting}
+\vspace{-0.3cm}
