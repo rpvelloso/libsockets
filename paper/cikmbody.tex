@@ -166,7 +166,8 @@ serve as stepping stones for future works to catch on. For instance, some works
 focus on records extraction only, disregarding alignment (e.g., \cite{TPC09}),
 others focus on main data region detection (e.g., \cite{vips03}).
 
-In \cite{TPC09, SuffixTree12, TPS2013} an alternative document representation is
+%,TPS2013
+In \cite{TPC09, SuffixTree12} an alternative document representation is
 used. Instead of using the DOM tree as document representation, the web page
 is converted to a sequence of tag paths. Such representation enables the use of
 algorithms targeted at strings and sequences (e.g., suffix
@@ -365,7 +366,8 @@ subjected to record extraction. We choose, instead, an alternative
 representation: a sequence of tag paths. This representation allows us to see
 the web page as a sequence instead of a tree, enabling us to make use of
 algorithms targeted at sequences. Such a representation was used before in
-\cite{TPC09, SuffixTree12, TPS2013}.
+\cite{TPC09, SuffixTree12}.
+%, TPS2013
 
 The translation process from DOM tree representation to tag path sequence is
 depicted in Figure \ref{fig:tree2seq}. The HTML code is converted to a DOM tree
@@ -917,7 +919,10 @@ Lua\footnote{\url{https://www.lua.org/home.html}}.
 For HTML parsing we've linked our system against
 libtidy\footnote{\url{http://tidy.sourceforge.net/libintro.html}}. Our
 implementation is publicly available at
-GitHub\footnote{\url{https://github.com/rpvelloso/webMining.git}} and we
+GitHub\footnote{
+%\url{https://github.com/rpvelloso/webMining.git}
+\url{http://source.url}
+} and we
 encourage and support the scientific community to build on top of it, run
 independent experiments, implement other techniques for the sake of comparison
 and so on.
