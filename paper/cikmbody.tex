@@ -53,6 +53,17 @@ solution should be unsupervised, computationally efficient, effective (at
 least near perfect precision) and as general as possible (e.g., domain
 independent and HTML syntax independent).
 
+Our work falls in the category of general approaches because we developed it
+based on general observations about structured data, but we address only a
+subset of all structured data: records with similar structure \textbf{and} size.
+By doing that we trade recall for precision. We also managed to do so
+automatically, efficiently, without rendering the full web page in a browser
+engine, and without heuristic rules associated to HTML tags (that is undesirable
+because HTML syntax and programming practices changes over time, compromising
+the technique's longevity).
+% diferencial do trabalho: complexidade de tempo baixa, independe do HTML, n�o
+% renderiza p�gina,
+
 % resumo da abordagem
 Here we outline a novel approach for the problem of structured extraction (or
 record extraction) from web pages, using an alternative representation of the
@@ -132,17 +143,17 @@ seem to be limited, at least at a first glance, they actually yield sound
 results as documented in \cite{relationalWeb2008, probase2012, acsdb}.
 Such results are due to the large amount and heterogeneity of data in the web.
 From that fact we get an important premise when dealing with web scale data:
-recall can be traded off for precision. And that is what those approaches are
+recall can be traded off for precision. That is what those approaches are
 all about, they tackle very specific situations (sacrificing recall) in a very
 specialized way (ensuring high precision).
 
 On the other hand, in \cite{RRunner01, exalg2003, vips03, viper05, MDR03,
 depta05, NET05, TPC09, vide10, gstm2010, fivatech2010, SuffixTree12,
-grigalis2013towards, autorm2015} more general approaches are
+grigalis2013towards, autorm2015,cortez2010ondux} more general approaches are
 proposed.
 These proposals try to solve the problem in a broader sense (which is a much
 harder problem to solve), some using machine learning
-techniques\cite{RRunner01,fivatech2010,grigalis2013towards}, others
+techniques\cite{RRunner01,fivatech2010,grigalis2013towards,cortez2010ondux}, others
 grounded on general observations about structured
 content\cite{MDR03,exalg2003,NET05,depta05,TPC09,gstm2010,SuffixTree12,autorm2015}.
 Some approaches make use of visual information, rendering the entire document in
@@ -170,20 +181,9 @@ promising possibility.
 Recent surveys\cite{survey2013, survey2014} about the subject of structured
 extraction have reached the same conclusion about the state-of-the-art: existing
 works fail to definitively solve the problem, i.e., it's still an open research
-problem. Those surveys also agree about the problem encountered when comparing
+problem. Those surveys also agree about a problem encountered when comparing
 two different approaches in this research area: there is no standard
 dataset/baseline and most implementations are not publicly available.
-
-Our work falls in the category of general approaches because we developed it
-based on general observations about structured data, but we address only a
-subset of all structured data: records with similar structure \textbf{and} size.
-By doing that we trade recall for precision. We also managed to do so
-automatically, efficiently, without rendering the full web page in a browser
-engine, and without heuristic rules associated to HTML tags (that is undesirable
-because HTML syntax and programming practices changes over time, compromising
-the technique's longevity).
-% diferencial do trabalho: complexidade de tempo baixa, independe do HTML, n�o
-% renderiza p�gina,
 
 \section{Preliminaries}\label{sec:defs}
 In this section we define some concepts needed for the understanding of our
@@ -281,6 +281,7 @@ can be validated against the same threshold. This is needed because each
 structured region has a different range of values and varying size, so
 standardization is required if they are to be compared against a common
 threshold.
+
 \begin{small}
 \begin{equation}\label{eq:zscore}
     z = \frac{x -\mu}{\sigma}
@@ -289,7 +290,8 @@ threshold.
 
 \end{definition}
 
-\vspace{-0.5cm}
+\vspace{-0.7cm}
+
 \begin{definition}\textbf{(Sequence Contour)}\label{def:contour} is actually the
 upper contour of a sequence. In other words, the contour is the maximum value
 seen so far in the sequence. It can be thought of as the \textit{skyline} of the
@@ -312,6 +314,7 @@ is zero and consider them to be candidate data regions that are submitted to
 subsequent analysis and validation to verify if they are indeed structured.
 This process is explained in depth in Subsection \ref{ss:regi}.
 
+
 \begin{small}
 \begin{equation}\label{eq:diff}
     d[n] = x[n] - x[n - 1]
@@ -320,9 +323,12 @@ This process is explained in depth in Subsection \ref{ss:regi}.
 
 \end{definition}
 
+\vspace{-0.7cm}
+
 \section{Structured Data Extraction}\label{sec:prop} We present here, in this
-Section, the details of our proposal to tackle the problem of extracting data
-records from web pages. The technique is subdivided in four main steps, namely:
+Section, the details of our proposal to tackle the problem of automatically
+extracting data records from web pages. The technique is subdivided in four main
+steps, namely:
 sequence representation, region identification, record identification and record
 alignment. Each step is detailed in Subsections \ref{ss:seq}, \ref{ss:regi},
 \ref{ss:reci} and \ref{ss:reca} respectively.
@@ -341,13 +347,17 @@ After this, Step 1 converts the DOM tree into a TPS; Step 2 divides the TPS into
 several structured regions; Step 3 identifies the record boundaries within each
 region and; Step 4 aligns the records in tabular form.
 
-\begin{figure}[H]
+%\vspace{-0.3cm}
+
+\begin{figure}[h]
   \centering
-     \includegraphics[width=158pt]{img/proposal.jpg}
+%     \includegraphics[width=150pt]{img/proposal.jpg}
+     \includegraphics[width=160pt]{img/proposal.jpg}
   \caption{\small{Extraction system overall diagram.}}
   \label{fig:overall}
 \end{figure}
-%\vspace{0.67cm}
+
+%\vspace{-0.3cm}
 
 \subsection{Sequence Representation}\label{ss:seq}
 Most of the works in this area use the DOM tree to represent the documents
@@ -362,12 +372,17 @@ depicted in Figure \ref{fig:tree2seq}. The HTML code is converted to a DOM tree
 in Step 1; the DOM tree is converted to a sequence of tag paths in Step 2 and;
 in Step 3 the TPS is built by assigning TPCodes to each tag path. 
 
+\vspace{-0.3cm}
+
 \begin{figure}[H]
   \centering
-     \includegraphics[width=205pt]{img/tree2seq.jpg}
+     \includegraphics[trim={1.5cm 2.5cm 1.5cm
+     1.0cm}, width=180pt]{img/tree2seq.pdf}
   \caption{\small{tag path sequence built from HTML code snippet.}}
   \label{fig:tree2seq}
 \end{figure}
+
+\vspace{-0.3cm}
 
 Algorithm \ref{alg:tree2seq} presents the TPS build process.
 It is basically a depth first search that assembles the path from the root of
@@ -377,6 +392,8 @@ identification step, we've added style definitions to the tag paths, similar to
 what was done in \cite{grigalis2013towards} with the difference that here we use class
 and in-line style attributes instead of rendering the entire document, avoiding
 the computational cost associated with such a task.
+
+\vspace{-0.3cm}
 
 \begin{small}
 \begin{algorithm}[h]
@@ -400,9 +417,11 @@ concat(tps,tagPathMap[tp].code);$\label{lin:alg:tree2seq:d}
 \end{algorithm}
 \end{small}
 
+\vspace{-0.3cm}
+
 \textbf{Description of Algorithm \ref{alg:tree2seq}:} procedure
 \texttt{treeToSequence} is initially called with the tree's root node, an empty
-tag path string and an empty sequence: \\\texttt{treeToSequence}\texttt{(root,
+tag path string and an empty sequence: \texttt{treeToSequence}\texttt{(root,
 ``'', tps = ``'')}. In Line \ref{lin:alg:tree2seq:a} the current tag path string is
 assembled; in Lines \ref{lin:alg:tree2seq:b}--\ref{lin:alg:tree2seq:c} the tag
 path code is retrieved, if it is a recurring path, otherwise a new, ascending,
@@ -431,6 +450,7 @@ In other words, the sequence stabilizes during the structured portions. That
 happens because the records look alike and so their paths and styles repeat
 themselves. We took advantage of this observation to devise Algorithm
 \ref{alg:idreg} that isolates the structured segments of the sequence.
+
 \begin{small}
 \begin{algorithm}
 \caption{\small{Identifies structured regions in a document}}
@@ -469,15 +489,13 @@ themselves. We took advantage of this observation to devise Algorithm
 \State $diff \leftarrow difference(contour)$\label{line:alg:idreg:e}
 %\State $diff \leftarrow concat(diff, 1)$
 \State $regions \leftarrow \emptyset$\label{line:alg:idreg:f}
-\State $start \leftarrow 1$
-\State $end \leftarrow 1$
+\State $start \leftarrow end \leftarrow 1$
 \For{$i \leftarrow 1..length(diff)$}
 \If {$diff[i] \neq 0$}
 \If {$start \neq end$}
 \State $regions \leftarrow regions \cup [start, end)$
 \EndIf
-\State $start \leftarrow i + 1$
-\State $end \leftarrow i + 1$
+\State $start \leftarrow end \leftarrow i + 1$
 \Else
 \State $end \leftarrow end + 1$
 \EndIf
@@ -554,7 +572,7 @@ returned (Line \ref{line:alg:idreg:q}).
 \begin{figure*}[h]
  %\captionsetup{width=\textwidth}
   \centering
-     \includegraphics[width=\textwidth]{img/main-reg.jpg}
+     \includegraphics[width=440pt]{img/main-reg.jpg}
   \caption{\small{How structured content appears in the sequence (structured regions encircled).}}
   \label{fig:stru}
 \end{figure*}
@@ -569,6 +587,8 @@ remains constant during an interval). As we can see in Figure
 contour and consequently the first difference will be zero during those
 intervals, as shown in Figure \ref{fig:contour}b.
 
+%\vspace{-0.3cm}
+
 \begin{figure}[h]
   \centering
      \includegraphics[trim={2.5cm 7.5cm 1cm 6.5cm}, width=\linewidth
@@ -576,6 +596,8 @@ intervals, as shown in Figure \ref{fig:contour}b.
   \caption{\small{a) Contour of a TPS; b) Finite difference of contour.}}
   \label{fig:contour}
 \end{figure}
+
+%\vspace{-0.3cm}
 
 The resulting regions are then merged together according to their alphabets
 (i.e., set of symbols that form the sequence). If two adjacent regions share a
@@ -622,6 +644,8 @@ the center of the TPS. The final \texttt{score} is the arithmetic mean of both
 scores. The higher the region's score the more likely it represents content
 rather than noise.
 
+\vspace{-0.3cm}
+
 \begin{small}
 \begin{equation}\label{eq:scorereg}
 \begin{split}
@@ -631,6 +655,8 @@ score \leftarrow \frac{positionScore+sizeScore}{2}
 \end{split}
 \end{equation}
 \end{small}
+
+\vspace{-0.3cm}
 
 \subsection{Record Identification}\label{ss:reci}
 
@@ -656,6 +682,8 @@ In short, this frequency peak represents the record count (or number of cycles
 in the subsequence) and its corresponding period (i.e., the subsequence length
 divided by the frequency) is equivalent to the average record size.
 
+\vspace{-0.3cm}
+
 \begin{figure}[h]
   \centering
      \includegraphics[trim={2.5cm 7.5cm 1cm 6.5cm}, width=\linewidth
@@ -663,6 +691,8 @@ divided by the frequency) is equivalent to the average record size.
   \caption{\small{a) The cyclic behaviour of a structured region; b) The PSD of a structured region.}}
   \label{fig:fftreg}
 \end{figure}
+
+\vspace{-0.3cm}
 
 To decide if a certain TPCode represents a record boundary within the region, we
 check how well distributed along the subsequence each TPCode is, in increasing
@@ -704,6 +734,7 @@ in Figure \ref{fig:fftleak}b does not correspond to the correct period, but
 still, there is a significant frequency peak that matches the correct period
 and record count.
 
+\vspace{-0.3cm}
 
 \begin{figure}[h]
   \centering
@@ -712,6 +743,8 @@ and record count.
   \caption{\small{An example when the maximum peak in the spectrum does not correspond to the correct period.}}
   \label{fig:fftleak}
 \end{figure}
+
+\vspace{-0.3cm}
 
 For those tag paths that are well distributed along the sequence, we search the
 corresponding range of the spectrum for a significant peak. If such a peak is
@@ -722,6 +755,9 @@ number of standard deviations.
 
 Algorithm \ref{alg:idrec} along with Figure \ref{fig:fftreg} shows in more
 detail the process of identifying the records within a region.
+
+\vspace{-0.3cm}
+
 \begin{small}
 \begin{algorithm}
 \caption{\small{Locates record boundaries in a region}}
@@ -806,6 +842,8 @@ observed in \cite{listExtract2009}, there is no single correct answer when it
 comes to record alignment and this constitutes an additional difficulty when
 evaluating alignment correctness.
 
+\vspace{-0.3cm}
+
 \begin{table}[h]
 \centering
 \caption{\small{\textit{Center Star} record alignment for Figure \ref{fig:fftreg}a region}}
@@ -840,6 +878,8 @@ rec \#&\multicolumn{15}{c|}{fields (TPCodes)}\\ \hline
 \end{tiny}%}
 \end{table}
 
+\vspace{-0.3cm}
+
 It is important to note that the previous step of record identification
 is parametrized by the CV of record size and this parameter directly affects the
 quality of the alignment in the following way: the lower the CV the better will
@@ -865,7 +905,8 @@ In this section, we discuss and compare the results of our research with other
 approaches found in the literature that we considered to be most relevant. The
 proposals we considered most relevant are those which are fully automatic,
 highly effective (i.e., high f-score), domain independent and computationally
-efficient.
+efficient. We have used in our comparisons published results since we were not
+given access to the authors' implementation.
 
 We have implemented our approach using a two tier software architecture where
 the core is coded in C++ and the presentation layer (graph plotting, result
@@ -903,6 +944,8 @@ recent and up to date site templates in our test cases, that is the reason we
 added this third dataset to the experiments.
 Table \ref{table:dataset} presents summarized information about the datasets.
 
+%\vspace{-0.3cm}
+
 \begin{table}[h]
 \centering
 \caption{\small{Summarized dataset information.}}
@@ -920,6 +963,7 @@ Total records &	1052 & 218 & 1466 \\ \hline
 %}
 \end{table}
 
+
 The following parameters were used in the experiments: CV threshold $0.35$,
 Z-Score threshold $9.5$ and angular coefficient threshold $4.5$ degrees. These
 parameters were chosen empirically.
@@ -929,9 +973,10 @@ approach with three other state-of-the-art techniques, using dataset $\#1$:
 MDR\cite{MDR03}, TPC\cite{TPC09} and ClustVX\cite{grigalis2013towards}.
 Our approach performs better than MDR and TPC and slightly worse than ClustVX,
 but on the other hand our technique doesn't need to render the entire page in
-order to extract the records. As a matter of fact, we just parse the HTML and
-don't even process CSS definitions (our approach just cares about \texttt{class}
-attributes).
+order to extract the records (we show the rendering impact in Figure
+\ref{fig:runtime}).
+As a matter of fact, we just parse the HTML and don't even process CSS
+definitions (our approach just cares about \texttt{class} attributes).
 We've considered MDR to be of relevance here because it is one of the few
 approaches with available implementation and probably the first to achieve
 acceptable results (both in computational complexity and effectiveness).
@@ -1050,11 +1095,12 @@ implementation. We can see that the graph suggests a $O(nlog(n))$ time
 complexity with a coefficient of determination\footnote{the coefficient of
 determination ($R^2$) measures how much data is explained by the fitted curve.}
 of 89.03\%. This behaviour is consistent with our complexity analysis. The
-alignment phase, although with a greater time complexity, does not affect the
-overall time complexity because the alignment input size, compare to overall
-input size, is much smaller. Anyway, the alignment phase is a limiting factor of
-our approach when dealing with long records, but that is not the average
-behaviour we observed in practice. 
+alignment and noise detection phases, although they have a greater time
+complexity, they do not impact (asymptotically) the overall time complexity
+because their input size, compare to overall input size, is much smaller.
+Anyway, those phases can be considered as a limiting factor of our approach when
+dealing with long records and/or a large number of data regions, but that is not
+the average behaviour we observed in practice.
 
 Figure \ref{fig:runtime} also shows the running time comparison when using a
 browser engine to render the entire document. Our approach does not need the
@@ -1076,6 +1122,8 @@ another way, let's assume we have to process an entire search engine index
 containing a sizable portion of all indexable content on the internet, would
 this trade-off be worth it?
 
+\vspace{-0.3cm}
+
 \begin{figure}[h]
   \centering
      \includegraphics[trim={2.5cm 7.5cm 1cm 6.5cm}, width=\linewidth
@@ -1085,6 +1133,7 @@ this trade-off be worth it?
 \end{figure}
 
 \vspace{-0.3cm}
+
 \section{Conclusion and Future Work}\label{sec:con}
 
 We have shown here a novel approach for the problem of extracting records from
