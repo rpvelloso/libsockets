@@ -15,7 +15,7 @@ void testWindowsServerSocket() {
 	ServerSocket srv(new WindowsSocket());
 
 	srv.listenForConnections("0.0.0.0","30000");
-	auto cli = srv.acceptConnection();
+	std::unique_ptr<ClientSocket> cli(srv.acceptConnection());
 
 	std::cout << "connection received" << std::endl;
 	cli->sendData("xpto\n", 5);
