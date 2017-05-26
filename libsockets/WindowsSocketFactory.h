@@ -16,6 +16,7 @@ public:
 	virtual ~WindowsSocketFactory();
 	std::unique_ptr<ClientSocket> CreateClientSocket();
 	std::unique_ptr<ServerSocket> CreateServerSocket();
+	std::unique_ptr<Multiplexer> CreateMultiplexer();
 };
 
 extern SocketFactory *socketFactory;

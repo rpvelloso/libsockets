@@ -17,7 +17,7 @@ public:
 	Multiplexer(MultiplexerImpl *impl) : impl(impl) {};
 	virtual ~Multiplexer() {};
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) {
-		impl->addClientSocket(clientSocket);
+		impl->addClientSocket(std::move(clientSocket));
 	};
 	virtual void multiplex() {
 		impl->multiplex();
@@ -26,7 +26,7 @@ public:
 		impl->cancel();
 	};
 	virtual size_t clientCount() {
-		impl->clientCount();
+		return impl->clientCount();
 	};
 protected:
 	std::unique_ptr<MultiplexerImpl> impl;

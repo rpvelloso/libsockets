@@ -8,10 +8,12 @@
 #ifndef MULTIPLEXERIMPL_H_
 #define MULTIPLEXERIMPL_H_
 
+#include "ClientSocket.h"
+
 class MultiplexerImpl {
 public:
-	MultiplexerImpl();
-	virtual ~MultiplexerImpl();
+	MultiplexerImpl() {};
+	virtual ~MultiplexerImpl() {};
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) = 0;
 	virtual void multiplex() = 0;
 	virtual void cancel() = 0;

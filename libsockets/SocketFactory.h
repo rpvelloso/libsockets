@@ -11,6 +11,7 @@
 #include <memory>
 #include "ServerSocket.h"
 #include "ClientSocket.h"
+#include "Multiplexer.h"
 
 class SocketFactory {
 public:
@@ -18,6 +19,7 @@ public:
 	virtual ~SocketFactory() {};
 	virtual std::unique_ptr<ClientSocket> CreateClientSocket() = 0;
 	virtual std::unique_ptr<ServerSocket> CreateServerSocket() = 0;
+	virtual std::unique_ptr<Multiplexer> CreateMultiplexer() = 0;
 };
 
 

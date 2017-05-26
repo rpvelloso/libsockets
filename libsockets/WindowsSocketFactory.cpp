@@ -7,6 +7,7 @@
 
 #include "WindowsSocketFactory.h"
 #include "WindowsSocket.h"
+#include "WindowsMultiplexer.h"
 
 SocketFactory *socketFactory = new WindowsSocketFactory();
 
@@ -22,4 +23,8 @@ std::unique_ptr<ClientSocket> WindowsSocketFactory::CreateClientSocket() {
 
 std::unique_ptr<ServerSocket> WindowsSocketFactory::CreateServerSocket() {
 	return std::make_unique<ServerSocket>(new WindowsSocket);
+}
+
+std::unique_ptr<Multiplexer> WindowsSocketFactory::CreateMultiplexer() {
+	return std::make_unique<Multiplexer>(new WindowsMultiplexer);
 }
