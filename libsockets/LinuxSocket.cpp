@@ -15,6 +15,8 @@
 #include <string.h>
 #include <fcntl.h>
 
+using ResPtr = std::unique_ptr<struct addrinfo, decltype(&freeaddrinfo)>;
+
 LinuxSocket::LinuxSocket() {
 	fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 }
@@ -40,8 +42,13 @@ int LinuxSocket::connectTo(const std::string &host, const std::string &port) {
 	memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
-	getaddrinfo(host.c_str(), port.c_str(), &hints, &res);
-	std::unique_ptr<struct addrinfo, std::function<void(struct addrinfo *)>> pres(res,freeaddrinfo);
+
+	int ret;
+
+	if ((ret = getaddrinfo(host.c_str(), port.c_str(), &hints, &res)) != 0)
+		return ret;
+
+	ResPtr resPtr(res, freeaddrinfo);
 
 	return connect(fd, res->ai_addr, res->ai_addrlen);
 }
@@ -58,10 +65,12 @@ int LinuxSocket::listenForConnections(const std::string &bindAddr, const std::st
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
 
-	getaddrinfo(bindAddr.c_str(), port.c_str(), &hints, &res);
-	std::unique_ptr<struct addrinfo, std::function<void(struct addrinfo *)>> pres(res,freeaddrinfo);
-
 	int ret;
+
+	if ((ret = getaddrinfo(bindAddr.c_str(), port.c_str(), &hints, &res)) != 0)
+		return ret;
+
+	ResPtr resPtr(res,freeaddrinfo);
 
 	if ((ret = bind(fd, res->ai_addr, res->ai_addrlen)) != 0)
 		return ret;
