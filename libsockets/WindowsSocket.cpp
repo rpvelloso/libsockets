@@ -9,6 +9,9 @@
 #include <memory>
 #include "ClientSocket.h"
 #include "WindowsSocket.h"
+#include "WindowsSocketFactory.h"
+
+SocketFactory *socketFactory = new WindowsSocketFactory();
 
 int winSockInit() {
 	WSADATA wsaData;

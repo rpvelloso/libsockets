@@ -10,6 +10,7 @@
 
 #include "Socket.h"
 #include "SocketImpl.h"
+#include "SocketFactory.h"
 
 //#define WINVER _WIN32_WINNT_WIN7
 //#define _WIN32_WINNT 0x0600
@@ -34,6 +35,8 @@ private:
 	WindowsSocket(SOCKET); // ctor used by acceptConnections()
 	SOCKET fd;
 };
+
+extern SocketFactory *socketFactory;
 
 extern int winSockInit();
 extern void winSockCleanup();
