@@ -8,6 +8,8 @@
 #include "LinuxSocketFactory.h"
 #include "LinuxSocket.h"
 
+SocketFactory *socketFactory = new LinuxSocketFactory();
+
 LinuxSocketFactory::LinuxSocketFactory() {
 }
 

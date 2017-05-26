@@ -11,8 +11,10 @@
 
 #ifdef _WIN32
 	#include "WindowsSocket.h"
+	#include "WindowsSocketFactory.h"
 #elif
 	#include "LinuxSocket.h"
+	#include "LinuxSocketFactory.h"
 #endif
 
 #include "ClientSocket.h"

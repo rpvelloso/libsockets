@@ -8,6 +8,8 @@
 #include "WindowsSocketFactory.h"
 #include "WindowsSocket.h"
 
+SocketFactory *socketFactory = new WindowsSocketFactory();
+
 WindowsSocketFactory::WindowsSocketFactory() {
 }
 

@@ -10,7 +10,6 @@
 
 #include "Socket.h"
 #include "SocketImpl.h"
-#include "SocketFactory.h"
 
 #include <winsock2.h>
 #include <windows.h>
@@ -33,8 +32,6 @@ private:
 	WindowsSocket(SOCKET); // ctor used by acceptConnections()
 	SOCKET fd;
 };
-
-extern SocketFactory *socketFactory;
 
 extern int winSockInit();
 extern void winSockCleanup();

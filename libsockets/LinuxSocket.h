@@ -10,7 +10,6 @@
 
 #include "Socket.h"
 #include "SocketImpl.h"
-#include "SocketFactory.h"
 
 class LinuxSocket: public SocketImpl {
 public:
@@ -28,7 +27,5 @@ private:
 	LinuxSocket(int); // ctor used by acceptConnections()
 	int fd;
 };
-
-extern SocketFactory *socketFactory;
 
 #endif /* WINDOWSSOCKET_H_ */

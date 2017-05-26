@@ -8,15 +8,12 @@
 #include <unistd.h>
 #include "ClientSocket.h"
 #include "LinuxSocket.h".
-#include "LinuxSocketFactory.h"
 
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
 #include <string.h>
 #include <fcntl.h>
-
-SocketFactory *socketFactory = new LinuxSocketFactory();
 
 LinuxSocket::LinuxSocket() {
 	fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
