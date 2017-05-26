@@ -5,17 +5,17 @@
  *      Author: rvelloso
  */
 
-#ifndef CLIENTSOCKETMULTIPLEXER_H_
-#define CLIENTSOCKETMULTIPLEXER_H_
+#ifndef MULTIPLEXER_H_
+#define MULTIPLEXER_H_
 
 #include <memory>
 #include "ClientSocket.h"
-#include "ClientSocketMultiplexerImpl.h"
+#include "MultiplexerImpl.h"
 
-class ClientSocketMultiplexer {
+class Multiplexer {
 public:
-	ClientSocketMultiplexer(ClientSocketMultiplexerImpl *impl) : impl(impl) {};
-	virtual ~ClientSocketMultiplexer() {};
+	Multiplexer(MultiplexerImpl *impl) : impl(impl) {};
+	virtual ~Multiplexer() {};
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) {
 		impl->addClientSocket(clientSocket);
 	};
@@ -29,7 +29,7 @@ public:
 		impl->clientCount();
 	};
 protected:
-	std::unique_ptr<ClientSocketMultiplexerImpl> impl;
+	std::unique_ptr<MultiplexerImpl> impl;
 };
 
-#endif /* CLIENTSOCKETMULTIPLEXER_H_ */
+#endif /* MULTIPLEXER_H_ */
