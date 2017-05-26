@@ -17,7 +17,7 @@ public:
 	ServerSocket(SocketImpl *impl);
 	virtual ~ServerSocket();
 	int listenForConnections(const std::string &bindAddr, const std::string &port);
-	ClientSocket *acceptConnection();
+	std::unique_ptr<ClientSocket> acceptConnection();
 };
 
 #endif /* SERVERSOCKET_H_ */

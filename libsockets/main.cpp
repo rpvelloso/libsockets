@@ -6,25 +6,27 @@
  */
 
 #include <iostream>
+#include <memory>
 #include "Socket.h"
-#include "WindowsSocket.h"
+//#include "WindowsSocket.h"
+#include "LinuxSocket.h"
 #include "ClientSocket.h"
 #include "ServerSocket.h"
 
-void testWindowsServerSocket() {
-	ServerSocket srv(new WindowsSocket());
+void testServerSocket() {
+	ServerSocket srv(new LinuxSocket());
 
 	srv.listenForConnections("0.0.0.0","30000");
-	std::unique_ptr<ClientSocket> cli(srv.acceptConnection());
+	auto cli = srv.acceptConnection();
 
 	std::cout << "connection received" << std::endl;
 	cli->sendData("xpto\n", 5);
 	cli->disconnect();
 }
 
-void testWindowsClientSocket() {
+void testClientSocket() {
 
-	ClientSocket cli(new WindowsSocket());
+	ClientSocket cli(new LinuxSocket());
 
 	cli.connectTo("127.0.0.1","30000");
 	std::string outp = "hello!\n";
@@ -42,8 +44,8 @@ void testWindowsClientSocket() {
 }
 
 int main() {
-	winSockInit();
-	//testWindowsClientSocket();
-	testWindowsServerSocket();
-	winSockCleanup();
+	//winSockInit();
+	//testClientSocket();
+	testServerSocket();
+	//winSockCleanup();
 }

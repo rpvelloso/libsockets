@@ -7,37 +7,34 @@
 
 #include <unistd.h>
 #include "ClientSocket.h"
-#include "WindowsSocket.h"
+#include "LinuxSocket.h"
 
-int winSockInit() {
-	WSADATA wsaData;
-	return WSAStartup(MAKEWORD(2, 2), &wsaData);
-}
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <string.h>
+#include <fcntl.h>
 
-void winSockCleanup() {
-	WSACleanup();
-}
-
-WindowsSocket::WindowsSocket() {
+LinuxSocket::LinuxSocket() {
 	fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 }
 
-WindowsSocket::WindowsSocket(SOCKET fd) {
+LinuxSocket::LinuxSocket(int fd) {
 	this->fd = fd;
 }
 
-WindowsSocket::~WindowsSocket() {
+LinuxSocket::~LinuxSocket() {
 }
 
-int WindowsSocket::receiveData(void *buf, size_t len) {
+int LinuxSocket::receiveData(void *buf, size_t len) {
 	return recv(fd, static_cast<char *>(buf), len, 0);
 }
 
-int WindowsSocket::sendData(const void *buf, size_t len) {
+int LinuxSocket::sendData(const void *buf, size_t len) {
 	return send(fd, static_cast<const char *>(buf), len, 0);
 }
 
-int WindowsSocket::connectTo(const std::string &host, const std::string &port) {
+int LinuxSocket::connectTo(const std::string &host, const std::string &port) {
 	struct addrinfo hints, *res;
 
 	memset(&hints, 0, sizeof(hints));
@@ -49,12 +46,12 @@ int WindowsSocket::connectTo(const std::string &host, const std::string &port) {
 	return connect(fd, res->ai_addr, res->ai_addrlen);
 }
 
-void WindowsSocket::disconnect() {
-	shutdown(fd, SD_BOTH);
+void LinuxSocket::disconnect() {
+	shutdown(fd, SHUT_RDWR);
 	close(fd);
 }
 
-int WindowsSocket::listenForConnections(const std::string &bindAddr, const std::string &port) {
+int LinuxSocket::listenForConnections(const std::string &bindAddr, const std::string &port) {
 	struct addrinfo hints, *res;
 
 	memset(&hints, 0, sizeof hints);
@@ -72,20 +69,23 @@ int WindowsSocket::listenForConnections(const std::string &bindAddr, const std::
 	return listen(fd, 20);
 }
 
-std::unique_ptr<ClientSocket> WindowsSocket::acceptConnection() {
+std::unique_ptr<ClientSocket> LinuxSocket::acceptConnection() {
 	struct sockaddr_storage addr;
 	socklen_t addrlen = sizeof(addr);
 
-	SOCKET clientFd = accept(fd, (struct sockaddr *)&addr, &addrlen);
-	return std::make_unique<ClientSocket>(new WindowsSocket(clientFd));
+	int clientFd = accept(fd, (struct sockaddr *)&addr, &addrlen);
+	return std::make_unique<ClientSocket>(new LinuxSocket(clientFd));
 }
 
-int WindowsSocket::setNonBlockingIO(bool status) {
-	unsigned long int mode = status? 1 : 0;
-	return ioctlsocket(fd, FIONBIO, &mode);
+int LinuxSocket::setNonBlockingIO(bool status) {
+	int flags = fcntl(fd, F_GETFL, 0);
+	if (flags < 0)
+		return flags;
+	flags = status ? (flags|O_NONBLOCK) : (flags&~O_NONBLOCK);
+	return fcntl(fd, F_SETFL, flags);
 }
 
-int WindowsSocket::reuseAddress() {
-	char reuse = 1;
-	return setsockopt(fd,SOL_SOCKET,SO_REUSEADDR,(char *)&reuse,sizeof(reuse));
+int LinuxSocket::reuseAddress() {
+	int reuse = 1;
+	return setsockopt(fd,SOL_SOCKET,SO_REUSEADDR,(int *)&reuse,sizeof(reuse));
 }

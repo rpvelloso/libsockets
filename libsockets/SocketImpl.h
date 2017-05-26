@@ -10,6 +10,7 @@
 
 #include <cstddef>
 #include <string>
+#include <memory>
 
 class ClientSocket;
 
@@ -22,7 +23,7 @@ public:
 	virtual int connectTo(const std::string &host, const std::string &port) = 0;
 	virtual void disconnect() = 0;
 	virtual int listenForConnections(const std::string &bindAddr, const std::string &port) = 0;
-	virtual ClientSocket *acceptConnection() = 0;
+	virtual std::unique_ptr<ClientSocket> acceptConnection() = 0;
 	virtual int setNonBlockingIO(bool status) = 0;
 	virtual int reuseAddress() = 0;
 };
