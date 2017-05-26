@@ -6,6 +6,7 @@
  */
 
 #include <unistd.h>
+#include <memory>
 #include "ClientSocket.h"
 #include "WindowsSocket.h"
 
