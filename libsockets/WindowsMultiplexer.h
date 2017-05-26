@@ -25,6 +25,7 @@ public:
 private:
 	std::vector<std::unique_ptr<ClientSocket>> clients;
 	std::mutex clientsMutex;
+	void interrupt();
 };
 
 #endif /* WINDOWSMULTIPLEXER_H_ */

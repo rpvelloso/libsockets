@@ -29,3 +29,6 @@ size_t WindowsMultiplexer::clientCount() {
 	std::lock_guard<std::mutex> lock(clientsMutex);
 	return clients.size();
 }
+
+void WindowsMultiplexer::interrupt() {
+}
