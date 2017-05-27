@@ -5,7 +5,7 @@
  *      Author: rvelloso
  */
 
-#include <unistd.h>
+//#include <unistd.h>
 #include <memory>
 #include "ClientSocket.h"
 #include "WindowsSocket.h"
@@ -23,6 +23,10 @@ void winSockCleanup() {
 
 WindowsSocket::WindowsSocket() {
 	fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+}
+
+SOCKET WindowsSocket::getFD() {
+	return fd;
 }
 
 WindowsSocket::WindowsSocket(SOCKET fd) {
@@ -59,7 +63,7 @@ int WindowsSocket::connectTo(const std::string &host, const std::string &port) {
 
 void WindowsSocket::disconnect() {
 	shutdown(fd, SD_BOTH);
-	close(fd);
+	closesocket(fd);
 }
 
 int WindowsSocket::listenForConnections(const std::string &bindAddr, const std::string &port) {
@@ -92,7 +96,7 @@ std::unique_ptr<ClientSocket> WindowsSocket::acceptConnection() {
 }
 
 int WindowsSocket::setNonBlockingIO(bool status) {
-	unsigned long int mode = status? 1 : 0;
+	unsigned int mode = status? 1 : 0;
 	return ioctlsocket(fd, FIONBIO, &mode);
 }
 

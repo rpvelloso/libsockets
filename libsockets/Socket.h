@@ -18,8 +18,11 @@ public:
 	virtual int setNonBlockingIO(bool status) {
 		return impl->setNonBlockingIO(status);
 	};
+	std::shared_ptr<SocketImpl> getImpl() {
+		return impl;
+	};
 protected:
-	std::unique_ptr<SocketImpl> impl;
+	std::shared_ptr<SocketImpl> impl;
 };
 
 #endif /* SOCKET_H_ */

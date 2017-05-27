@@ -11,21 +11,29 @@
 #include <vector>
 #include <mutex>
 #include <memory>
+#include <functional>
+#include <unordered_map>
+#include "WindowsSocket.h"
 #include "MultiplexerImpl.h"
 #include "ClientSocket.h"
 
 class WindowsMultiplexer: public MultiplexerImpl {
 public:
-	WindowsMultiplexer();
+	WindowsMultiplexer(std::function<bool(std::shared_ptr<ClientSocket>)> callback);
 	virtual ~WindowsMultiplexer();
-	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket);
-	virtual void multiplex();
-	virtual void cancel();
-	virtual size_t clientCount();
+	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) override;
+	void multiplex() override;
+	void cancel() override;
+	size_t clientCount() override;
 private:
-	std::vector<std::unique_ptr<ClientSocket>> clients;
+	std::unordered_map<SOCKET, std::shared_ptr<ClientSocket>> clients;
 	std::mutex clientsMutex;
+	std::shared_ptr<ClientSocket> sockIn;
+	SOCKET sockOutFD;
+
+	void sendMultiplexerCommand(int cmd);
 	void interrupt();
+	void removeClientSocket(SOCKET fd);
 };
 
 #endif /* WINDOWSMULTIPLEXER_H_ */

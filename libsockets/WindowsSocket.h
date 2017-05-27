@@ -28,6 +28,11 @@ public:
 	std::unique_ptr<ClientSocket> acceptConnection() override;
 	int setNonBlockingIO(bool status) override;
 	int reuseAddress() override;
+
+	/* Implementation specific!!! FD data type changes from one OS to another.
+	 * the FD is needed by multiplexer class.
+	 * */
+	SOCKET getFD();
 private:
 	WindowsSocket(SOCKET); // ctor used by acceptConnections()
 	SOCKET fd;

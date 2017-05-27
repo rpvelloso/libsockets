@@ -7,18 +7,14 @@
 
 #include <iostream>
 #include <memory>
+#include <thread>
 #include "Socket.h"
 
-#ifdef _WIN32
-	#include "WindowsSocket.h"
-	#include "WindowsSocketFactory.h"
-#else
-	#include "LinuxSocket.h"
-	#include "LinuxSocketFactory.h"
-#endif
+#include "SocketFactory.h"
 
-#include "ClientSocket.h"
-#include "ServerSocket.h"
+#ifdef _WIN32
+#include "WindowsSocket.h"
+#endif
 
 void testServerSocket() {
 	auto srv = socketFactory->CreateServerSocket();
@@ -50,9 +46,42 @@ void testClientSocket() {
 	}
 }
 
+void testMultiplexer() {
+	auto multiplexer = socketFactory->CreateMultiplexer([](std::shared_ptr<ClientSocket> client)->bool {
+		char buf[4096];
+		int len;
+
+		std::cout << "lendo dados" << std::endl;
+
+		if ((len = client->receiveData(buf, 4096)) <= 0) {
+			return false;
+		} else {
+			buf[len] = 0x00;
+			std::cout << buf << std::endl;
+			client->sendData("dados recebidos\n", 15);
+			return true;
+		};
+	});
+
+	std::thread server([&multiplexer](){
+		std::cout << "multiplexing..." << std::endl;
+		multiplexer->multiplex();
+	});
+
+	auto serverSocket = socketFactory->CreateServerSocket();
+
+	serverSocket->listenForConnections("0.0.0.0","30000");
+	while (true) {
+		auto clientSocket = serverSocket->acceptConnection();
+		std::cout << "conexao recebida" << std::endl;
+		multiplexer->addClientSocket(std::move(clientSocket));
+	}
+}
+
 int main() {
-	//winSockInit();
+	winSockInit();
 	//testClientSocket();
-	testServerSocket();
-	//winSockCleanup();
+	//testServerSocket();
+	testMultiplexer();
+	winSockCleanup();
 }

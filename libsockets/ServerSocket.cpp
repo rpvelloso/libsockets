@@ -12,6 +12,7 @@ ServerSocket::ServerSocket(SocketImpl* impl) : Socket(impl) {
 }
 
 ServerSocket::~ServerSocket() {
+	impl->disconnect();
 }
 
 int ServerSocket::listenForConnections(const std::string &bindAddr, const std::string &port) {

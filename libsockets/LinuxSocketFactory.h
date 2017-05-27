@@ -18,6 +18,4 @@ public:
 	std::unique_ptr<ServerSocket> CreateServerSocket();
 };
 
-extern SocketFactory *socketFactory;
-
 #endif /* LINUXSOCKETFACTORY_H_ */
