@@ -11,6 +11,8 @@
 #include <memory>
 #include "SocketImpl.h"
 
+//TODO: create getPort() method. Needed by the WindowsMultiplexer to use random ports for self-pipe
+
 class Socket {
 public:
 	Socket(SocketImpl *impl) : impl(impl) {};
