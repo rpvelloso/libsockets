@@ -27,7 +27,7 @@ public:
 	size_t clientCount() override;
 private:
 	std::unordered_map<SOCKET, std::shared_ptr<ClientSocket>> clients;
-	std::mutex clientsMutex;
+	std::mutex clientsMutex, commandMutex;
 	std::shared_ptr<ClientSocket> sockIn;
 	SOCKET sockOutFD;
 

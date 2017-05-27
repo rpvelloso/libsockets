@@ -55,16 +55,12 @@ void WindowsMultiplexer::multiplex() {
 		auto nfds = clients.size();
 		WSAPOLLFD fdarray[nfds];
 
-		size_t i = 0;
-		for (auto &c:clients) {
-			fdarray[i].fd = c.first;
+		auto clientIt = clients.begin();
+		for (size_t i = 0; i < nfds; ++i, ++clientIt) {
+			fdarray[i].fd = clientIt->first;
 			fdarray[i].events = POLLIN;
-			std::cout << c.first << std::endl;
 		}
-		std::cout <<"***"<< std::endl;
 		clientsMutex.unlock();
-
-		std::cout << "polling..." << std::endl;
 
 		if (WSAPoll(fdarray,nfds,-1) > 0) {
 			std::lock_guard<std::mutex> lock(clientsMutex);
@@ -72,7 +68,6 @@ void WindowsMultiplexer::multiplex() {
 			for (auto &c:fdarray) {
 				if (c.revents & POLLIN) {
 					auto client = clients[c.fd];
-					std::cout << c.fd << " " << sockOutFD << " " << nfds << std::endl;
 					if (c.fd == sockOutFD) {
 						int cmd;
 
@@ -87,7 +82,8 @@ void WindowsMultiplexer::multiplex() {
 						if (!callback(client))
 							clients.erase(c.fd);
 					}
-				}
+				} else if ((c.revents & POLLERR) || (c.revents & POLLHUP))
+					clients.erase(c.fd);
 			}
 		} else
 			break;
@@ -104,14 +100,10 @@ size_t WindowsMultiplexer::clientCount() {
 }
 
 void WindowsMultiplexer::sendMultiplexerCommand(int cmd) {
+	std::lock_guard<std::mutex> lock(commandMutex);
 	sockIn->sendData(static_cast<void *>(&cmd), sizeof(cmd));
 }
 
 void WindowsMultiplexer::interrupt() {
 	sendMultiplexerCommand(MultiplexerCommand::INTERRUPT);
-}
-
-void WindowsMultiplexer::removeClientSocket(SOCKET fd) {
-	std::lock_guard<std::mutex> lock(clientsMutex);
-	clients.erase(fd);
 }

@@ -47,35 +47,38 @@ void testClientSocket() {
 }
 
 void testMultiplexer() {
-	auto multiplexer = socketFactory->CreateMultiplexer([](std::shared_ptr<ClientSocket> client)->bool {
+	std::unique_ptr<Multiplexer> multiplexer = socketFactory->CreateMultiplexer([&multiplexer](std::shared_ptr<ClientSocket> client)->bool {
 		char buf[4096];
 		int len;
 
-		std::cout << "lendo dados" << std::endl;
+		std::cout << "receiving data" << std::endl;
 
 		if ((len = client->receiveData(buf, 4096)) <= 0) {
 			return false;
 		} else {
 			buf[len] = 0x00;
 			std::cout << buf << std::endl;
-			client->sendData("dados recebidos\n", 15);
+			std::string msg = "data received\n";
+			client->sendData(msg.c_str(), msg.size());
+			if (std::string(buf).substr(0,9) == "terminate") multiplexer->cancel();
 			return true;
 		};
 	});
 
 	std::thread server([&multiplexer](){
-		std::cout << "multiplexing..." << std::endl;
-		multiplexer->multiplex();
+		auto serverSocket = socketFactory->CreateServerSocket();
+
+		serverSocket->listenForConnections("0.0.0.0","30000");
+		while (true) {
+			auto clientSocket = serverSocket->acceptConnection();
+			std::cout << "connection received" << std::endl;
+			multiplexer->addClientSocket(std::move(clientSocket));
+		}
 	});
 
-	auto serverSocket = socketFactory->CreateServerSocket();
-
-	serverSocket->listenForConnections("0.0.0.0","30000");
-	while (true) {
-		auto clientSocket = serverSocket->acceptConnection();
-		std::cout << "conexao recebida" << std::endl;
-		multiplexer->addClientSocket(std::move(clientSocket));
-	}
+	std::cout << "multiplexing..." << std::endl;
+	multiplexer->multiplex();
+	std::cout << "exiting..." << std::endl;
 }
 
 int main() {
