@@ -26,6 +26,7 @@ public:
 	virtual std::unique_ptr<ClientSocket> acceptConnection() = 0;
 	virtual int setNonBlockingIO(bool status) = 0;
 	virtual int reuseAddress() = 0;
+	virtual std::string getPort() = 0;
 };
 
 #endif /* SOCKETIMPL_H_ */

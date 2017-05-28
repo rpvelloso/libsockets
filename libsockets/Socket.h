@@ -11,8 +11,6 @@
 #include <memory>
 #include "SocketImpl.h"
 
-//TODO: create getPort() method. Needed by the WindowsMultiplexer to use random ports for self-pipe
-
 class Socket {
 public:
 	Socket(SocketImpl *impl) : impl(impl) {};
@@ -20,6 +18,9 @@ public:
 	virtual int setNonBlockingIO(bool status) {
 		return impl->setNonBlockingIO(status);
 	};
+	virtual std::string getPort() {
+		return impl->getPort();
+	}
 	std::shared_ptr<SocketImpl> getImpl() {
 		return impl;
 	};

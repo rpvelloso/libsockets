@@ -29,6 +29,10 @@ SOCKET WindowsSocket::getFD() {
 	return fd;
 }
 
+std::string WindowsSocket::getPort() {
+	return port;
+}
+
 WindowsSocket::WindowsSocket(SOCKET fd) {
 	this->fd = fd;
 }
@@ -58,7 +62,9 @@ int WindowsSocket::connectTo(const std::string &host, const std::string &port) {
 
 	ResPtr resPtr(res, freeaddrinfo);
 
-	return connect(fd, res->ai_addr, res->ai_addrlen);
+	if ((ret = connect(fd, res->ai_addr, res->ai_addrlen)) == 0)
+		this->port = port;
+	return ret;
 }
 
 void WindowsSocket::disconnect() {
@@ -83,6 +89,10 @@ int WindowsSocket::listenForConnections(const std::string &bindAddr, const std::
 
 	if ((ret = bind(fd, res->ai_addr, res->ai_addrlen)) != 0)
 		return ret;
+
+	int len = res->ai_addrlen;
+	getsockname(fd, res->ai_addr, &len);
+	this->port = std::to_string(htons(((struct sockaddr_in *)res->ai_addr)->sin_port));
 
 	return listen(fd, 20);
 }

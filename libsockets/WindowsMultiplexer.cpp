@@ -5,8 +5,6 @@
  *      Author: rvelloso
  */
 
-#include <iostream>
-
 #include "SocketFactory.h"
 #include "WindowsMultiplexer.h"
 #include "WindowsSocket.h"
@@ -17,10 +15,14 @@ enum MultiplexerCommand : int {
 };
 
 WindowsMultiplexer::WindowsMultiplexer(std::function<bool(std::shared_ptr<ClientSocket>)> callback) : MultiplexerImpl(callback) {
+	/**
+	 * Self-pipe trick to interrupt poll/select.
+	 * Windows alternative to socketpair()
+	 */
 	auto server = socketFactory->CreateServerSocket();
 	sockIn = socketFactory->CreateClientSocket();
-	server->listenForConnections("127.0.0.1","60000");
-	sockIn->connectTo("127.0.0.1","60000");
+	server->listenForConnections("127.0.0.1",""); // listen on a random free port
+	sockIn->connectTo("127.0.0.1",server->getPort());
 	sockIn->setNonBlockingIO(true);
 	auto sockOut = server->acceptConnection();
 

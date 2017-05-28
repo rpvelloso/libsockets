@@ -28,6 +28,7 @@ public:
 	std::unique_ptr<ClientSocket> acceptConnection() override;
 	int setNonBlockingIO(bool status) override;
 	int reuseAddress() override;
+	std::string getPort() override;
 
 	/* Implementation specific!!! FD data type changes from one OS to another.
 	 * the FD is needed by multiplexer class.
@@ -36,6 +37,7 @@ public:
 private:
 	WindowsSocket(SOCKET); // ctor used by acceptConnections()
 	SOCKET fd;
+	std::string port;
 };
 
 extern int winSockInit();
