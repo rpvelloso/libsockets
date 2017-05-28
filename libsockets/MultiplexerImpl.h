@@ -21,6 +21,10 @@ public:
 	virtual void cancel() = 0;
 	virtual size_t clientCount() = 0;
 protected:
+	/*
+	 * return true: keep multiplexing the client;
+	 * return false: remove client from multiplexer.
+	 */
 	std::function<bool(std::shared_ptr<ClientSocket>)> callback;
 };
 

@@ -65,7 +65,7 @@ void testMultiplexer() {
 		};
 	});
 
-	std::thread server([&multiplexer](){
+	std::thread *server = new std::thread([&multiplexer](){
 		auto serverSocket = socketFactory->CreateServerSocket();
 
 		serverSocket->listenForConnections("0.0.0.0","30000");
@@ -76,8 +76,10 @@ void testMultiplexer() {
 		}
 	});
 
+	server->detach();
 	std::cout << "multiplexing..." << std::endl;
 	multiplexer->multiplex();
+	delete server;
 	std::cout << "exiting..." << std::endl;
 }
 
