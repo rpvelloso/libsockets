@@ -16,10 +16,10 @@ class ClientSocket : public Socket {
 public:
 	ClientSocket(SocketImpl *impl);
 	virtual ~ClientSocket();
-	int receiveData(void *buf, size_t len);
-	int sendData(const void *buf, size_t len);
-	int connectTo(const std::string &host, const std::string &port);
-	void disconnect();
+	virtual int receiveData(void *buf, size_t len);
+	virtual int sendData(const void *buf, size_t len);
+	virtual int connectTo(const std::string &host, const std::string &port);
+	virtual void disconnect();
 };
 
 #endif /* CLIENTSOCKET_H_ */

@@ -36,7 +36,6 @@ private:
 
 	void sendMultiplexerCommand(int cmd);
 	void interrupt();
-	void removeClientSocket(SOCKET fd);
 };
 
 #endif /* WINDOWSMULTIPLEXER_H_ */

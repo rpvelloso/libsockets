@@ -11,6 +11,7 @@
 #include "ClientSocket.h"
 
 using MultiplexerCallback = std::function<bool(std::shared_ptr<ClientSocket>)>;
+
 class MultiplexerImpl {
 public:
 	MultiplexerImpl(MultiplexerCallback defaultCallback) {

@@ -21,7 +21,7 @@ public:
 	virtual std::string getPort() {
 		return impl->getPort();
 	}
-	std::shared_ptr<SocketImpl> getImpl() {
+	virtual std::shared_ptr<SocketImpl> getImpl() {
 		return impl;
 	};
 protected:
