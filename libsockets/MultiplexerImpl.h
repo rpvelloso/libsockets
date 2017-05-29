@@ -14,17 +14,17 @@
 
 class MultiplexedClientSocket;
 
-using MultiplexerCallback = std::function<bool(std::shared_ptr<MultiplexedClientSocket>, bool, bool)>;
+using MultiplexerCallback = std::function<bool(std::shared_ptr<MultiplexedClientSocket>)>;
 
 class MultiplexerImpl {
 public:
-	MultiplexerImpl(MultiplexerCallback defaultCallback) {
-		this->defaultCallback = defaultCallback;
+	MultiplexerImpl(MultiplexerCallback readCallback,
+			MultiplexerCallback writeCallback) : readCallback(readCallback), writeCallback(writeCallback) {
 	};
 	virtual ~MultiplexerImpl() {};
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) = 0;
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-			MultiplexerCallback customCallback) = 0;
+			std::shared_ptr<ClientData> clientData) = 0;
 	virtual void multiplex() = 0;
 	virtual void cancel() = 0;
 	virtual void interrupt() = 0;
@@ -34,7 +34,8 @@ protected:
 	 * return true: keep multiplexing the client;
 	 * return false: remove client from multiplexer.
 	 */
-	MultiplexerCallback defaultCallback;
+	MultiplexerCallback readCallback;
+	MultiplexerCallback writeCallback;
 
 	/*
 	 * Factory method that wraps a clientSocket with a multiplexing interface

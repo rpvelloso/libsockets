@@ -14,7 +14,7 @@ enum MultiplexerCommand : int {
 	INTERRUPT = 0x01
 };
 
-WindowsMultiplexer::WindowsMultiplexer(MultiplexerCallback callback) : MultiplexerImpl(callback) {
+WindowsMultiplexer::WindowsMultiplexer(MultiplexerCallback readCallback, MultiplexerCallback writeCallback) : MultiplexerImpl(readCallback, writeCallback) {
 	/**
 	 * Self-pipe trick to interrupt poll/select.
 	 * Windows alternative to socketpair()
@@ -50,11 +50,12 @@ void WindowsMultiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSoc
 	auto fd = impl->getFD();
 
 	clients[fd] = makeMultiplexed(std::move(clientSocket));
+	clients[fd]->setClientData(std::make_shared<ClientData>());
 	interrupt();
 }
 
 void WindowsMultiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-		MultiplexerCallback customCallback) {
+		std::shared_ptr<ClientData> clientData) {
 	std::lock_guard<std::mutex> lock(clientsMutex);
 
 	clientSocket->setNonBlockingIO(true);
@@ -66,7 +67,7 @@ void WindowsMultiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSoc
 	auto fd = impl->getFD();
 
 	clients[fd] = makeMultiplexed(std::move(clientSocket));
-	this->customCallback[fd] = customCallback;
+	clients[fd]->setClientData(clientData);
 	interrupt();
 }
 
@@ -92,34 +93,37 @@ void WindowsMultiplexer::multiplex() {
 			for (auto &c:fdarray) {
 				bool readEvent = c.revents & POLLIN;
 				bool writeEvent = c.revents & POLLOUT;
-				if (readEvent || writeEvent) {
+				bool errorEvent = (c.revents & POLLERR) || (c.revents & POLLHUP);
+				bool removeClient = false;
+
+				if (errorEvent)
+					removeClient = true;
+				else {
 					auto client = clients[c.fd];
-					if (c.fd == sockOutFD) {
-						int cmd;
 
-						client->receiveData(static_cast<void *>(&cmd),sizeof(cmd));
-						switch (cmd) {
-						case MultiplexerCommand::INTERRUPT:
-							break;
-						case MultiplexerCommand::CANCEL:
-							return;
-						}
-					} else {
-						MultiplexerCallback callback;
+					if (readEvent) {
+						if (c.fd == sockOutFD) {
+							int cmd;
 
-						auto cbIt = customCallback.find(c.fd);
-						if (cbIt != customCallback.end())
-							callback = cbIt->second;
-						else
-							callback = defaultCallback;
-
-						if (!callback(client, readEvent, writeEvent)) {
-							clients.erase(c.fd);
-							if (cbIt != customCallback.end())
-								customCallback.erase(c.fd);
+							client->receiveData(static_cast<void *>(&cmd),sizeof(cmd));
+							switch (cmd) {
+							case MultiplexerCommand::INTERRUPT:
+								break;
+							case MultiplexerCommand::CANCEL:
+								return;
+							}
+						} else {
+							removeClient = !readCallback(client);
 						}
 					}
-				} else if ((c.revents & POLLERR) || (c.revents & POLLHUP))
+
+					if (writeEvent) {
+						if (!removeClient)
+							removeClient = !writeCallback(client);
+					}
+				}
+
+				if (removeClient)
 					clients.erase(c.fd);
 			}
 		} else

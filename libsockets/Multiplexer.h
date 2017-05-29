@@ -20,8 +20,8 @@ public:
 		impl->addClientSocket(std::move(clientSocket));
 	};
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-			MultiplexerCallback customCallback) {
-		impl->addClientSocket(std::move(clientSocket), customCallback);
+			std::shared_ptr<ClientData> clientData) {
+		impl->addClientSocket(std::move(clientSocket), clientData);
 	};
 	virtual void multiplex() {
 		impl->multiplex();

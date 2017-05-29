@@ -8,6 +8,7 @@
 #include <iostream>
 #include <memory>
 #include <thread>
+#include <sstream>
 #include "Socket.h"
 
 #include "SocketFactory.h"
@@ -18,57 +19,51 @@
 
 #include "MultiplexedClientSocket.h"
 
-void testServerSocket() {
-	auto srv = socketFactory->CreateServerSocket();
-
-	srv->listenForConnections("0.0.0.0","30000");
-	auto cli = srv->acceptConnection();
-
-	std::cout << "connection received" << std::endl;
-	cli->sendData("xpto\n", 5);
-	cli->disconnect();
-}
-
-void testClientSocket() {
-
-	auto cli = socketFactory->CreateClientSocket();
-
-	cli->connectTo("127.0.0.1","30000");
-	std::string outp = "hello!\n";
-
-	cli->sendData(outp.c_str(),outp.size());
-
-	char buf[4096];
-	int len;
-	while ((len = cli->receiveData(static_cast<void *>(buf), 4096)) > 0) {
-		buf[len] = 0;
-		std::string inp(buf);
-
-		std::cout << inp << std::endl;
-	}
-}
-
 void testMultiplexer() {
-	std::unique_ptr<Multiplexer> multiplexer = socketFactory->CreateMultiplexer([&multiplexer](std::shared_ptr<MultiplexedClientSocket> client, bool re, bool we)->bool {
+	class EchoBuffer : public ClientData {
+	public:
+		EchoBuffer() : ClientData() {};
+		~EchoBuffer() {};
+		std::stringstream ss;
+	};
+
+
+	std::unique_ptr<Multiplexer> multiplexer = socketFactory->CreateMultiplexer(
+	[&multiplexer](std::shared_ptr<MultiplexedClientSocket> client)->bool {
 		char buf[4096];
 		int len;
 
-		if (re) {
-			std::cout << "receiving data. default callback" << re << we << std::endl;
+		if ((len = client->receiveData(buf, 4096)) <= 0) {
+			return false;
+		} else {
+			buf[len] = 0x00;
 
-			if ((len = client->receiveData(buf, 4096)) <= 0) {
-				std::cout << "connection closed." << std::endl;
-				return false;
-			} else {
-				buf[len] = 0x00;
-				std::cout << buf << std::endl;
-				std::string msg = "data received\n";
-				client->sendData(msg.c_str(), msg.size());
-				if (std::string(buf).substr(0,9) == "terminate") multiplexer->cancel();
-				return true;
-			}
+			/*
+			 * business logic goes here
+			 */
+			EchoBuffer *echoBuffer = static_cast<EchoBuffer *>(client->getClientData().get());
+			echoBuffer->ss << buf;
+			if (std::string(buf).substr(0,9) == "terminate") multiplexer->cancel();
+			/*
+			 * end business logic
+			 */
+
+			client->setHasOutput(echoBuffer->ss.rdbuf()->in_avail() > 0);
+			return true;
 		}
-	});
+	},
+	[&multiplexer](std::shared_ptr<MultiplexedClientSocket> client)->bool {
+		EchoBuffer *echoBuffer = static_cast<EchoBuffer *>(client->getClientData().get());
+
+		while (echoBuffer->ss.rdbuf()->in_avail() > 0) {
+			auto ch = echoBuffer->ss.get();
+			if (client->sendData(&ch, sizeof(char)) != 0)
+				break;
+		}
+		client->setHasOutput(echoBuffer->ss.rdbuf()->in_avail() > 0);
+		return true;
+	}
+	);
 
 	std::thread *server = new std::thread([&multiplexer](){
 		auto serverSocket = socketFactory->CreateServerSocket();
@@ -76,8 +71,7 @@ void testMultiplexer() {
 		serverSocket->listenForConnections("0.0.0.0","30000");
 		while (true) {
 			auto clientSocket = serverSocket->acceptConnection();
-			std::cout << "connection received" << std::endl;
-			multiplexer->addClientSocket(std::move(clientSocket));
+			multiplexer->addClientSocket(std::move(clientSocket), std::make_shared<EchoBuffer>());
 		}
 	});
 
@@ -90,8 +84,6 @@ void testMultiplexer() {
 
 int main() {
 	winSockInit();
-	//testClientSocket();
-	//testServerSocket();
 	testMultiplexer();
 	winSockCleanup();
 }

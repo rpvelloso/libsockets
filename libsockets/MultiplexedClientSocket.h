@@ -15,18 +15,28 @@ class MultiplexerImpl;
 
 /*
  * Wrapper/Decorator class. Adds multiplexing capabilities to a ClientSocket.
- * Client can signal the multiplexer if there is data to be sent.
+ * Client can signal the multiplexer if there is data to be sent and store client data/state.
  */
+class ClientData {
+public:
+	ClientData() {};
+	virtual ~ClientData() {};
+};
+
 class MultiplexedClientSocket: public ClientSocket {
 public:
-	MultiplexedClientSocket(std::shared_ptr<SocketImpl> impl, std::function<void()> interruptFunc);
-	virtual ~MultiplexedClientSocket();
-	bool getHasOutput();
-	void setHasOutput(bool hasOutput);
-	void interrupt();
+	MultiplexedClientSocket(std::shared_ptr<SocketImpl> impl,
+			std::function<void()> interruptFunc) : ClientSocket(impl), interruptFunc(interruptFunc) {};
+	virtual ~MultiplexedClientSocket() {};
+	bool getHasOutput() { return hasOutput; };
+	void setHasOutput(bool hasOutput) { this->hasOutput = hasOutput; };
+	void interrupt() { interruptFunc(); };
+	std::shared_ptr<ClientData> getClientData() {return clientData;};
+	void setClientData(std::shared_ptr<ClientData> clientData) {this->clientData = clientData;};
 private:
 	bool hasOutput = false;
 	std::function<void()> interruptFunc;
+	std::shared_ptr<ClientData> clientData;
 };
 
 #endif /* MULTIPLEXEDCLIENTSOCKET_H_ */

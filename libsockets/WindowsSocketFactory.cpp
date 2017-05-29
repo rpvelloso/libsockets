@@ -27,6 +27,6 @@ std::unique_ptr<ServerSocket> WindowsSocketFactory::CreateServerSocket() {
 	return std::make_unique<ServerSocket>(impl);
 }
 
-std::unique_ptr<Multiplexer> WindowsSocketFactory::CreateMultiplexer(MultiplexerCallback callback) {
-	return std::make_unique<Multiplexer>(new WindowsMultiplexer(callback));
+std::unique_ptr<Multiplexer> WindowsSocketFactory::CreateMultiplexer(MultiplexerCallback readCallback, MultiplexerCallback writeCallback) {
+	return std::make_unique<Multiplexer>(new WindowsMultiplexer(readCallback, writeCallback));
 }
