@@ -13,7 +13,7 @@
 
 class Socket {
 public:
-	Socket(SocketImpl *impl) : impl(impl) {};
+	Socket(std::shared_ptr<SocketImpl> impl) : impl(impl) {};
 	virtual ~Socket() {};
 	virtual int setNonBlockingIO(bool status) {
 		return impl->setNonBlockingIO(status);

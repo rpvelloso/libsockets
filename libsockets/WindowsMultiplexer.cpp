@@ -14,7 +14,7 @@ enum MultiplexerCommand : int {
 	INTERRUPT = 0x01
 };
 
-WindowsMultiplexer::WindowsMultiplexer(std::function<bool(std::shared_ptr<ClientSocket>)> callback) : MultiplexerImpl(callback) {
+WindowsMultiplexer::WindowsMultiplexer(MultiplexerCallback callback) : MultiplexerImpl(callback) {
 	/**
 	 * Self-pipe trick to interrupt poll/select.
 	 * Windows alternative to socketpair()
@@ -47,12 +47,14 @@ void WindowsMultiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSoc
 	 * WindowsMultiplexer is coupled with WindowsSocket
 	 */
 	WindowsSocket *impl = static_cast<WindowsSocket *>(clientSocket->getImpl().get());
-	clients[impl->getFD()] = std::move(clientSocket);
+	auto fd = impl->getFD();
+
+	clients[fd] = makeMultiplexed(std::move(clientSocket));
 	interrupt();
 }
 
 void WindowsMultiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-		std::function<bool(std::shared_ptr<ClientSocket>)> customCallback) {
+		MultiplexerCallback customCallback) {
 	std::lock_guard<std::mutex> lock(clientsMutex);
 
 	clientSocket->setNonBlockingIO(true);
@@ -62,7 +64,8 @@ void WindowsMultiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSoc
 	 */
 	WindowsSocket *impl = static_cast<WindowsSocket *>(clientSocket->getImpl().get());
 	auto fd = impl->getFD();
-	clients[fd] = std::move(clientSocket);
+
+	clients[fd] = makeMultiplexed(std::move(clientSocket));
 	this->customCallback[fd] = customCallback;
 	interrupt();
 }
@@ -77,6 +80,9 @@ void WindowsMultiplexer::multiplex() {
 		for (size_t i = 0; i < nfds; ++i, ++clientIt) {
 			fdarray[i].fd = clientIt->first;
 			fdarray[i].events = POLLIN;
+			if (clientIt->second->getHasOutput()) {
+				fdarray[i].events |= POLLOUT;
+			}
 		}
 		clientsMutex.unlock();
 
@@ -84,7 +90,9 @@ void WindowsMultiplexer::multiplex() {
 			std::lock_guard<std::mutex> lock(clientsMutex);
 
 			for (auto &c:fdarray) {
-				if (c.revents & POLLIN) {
+				bool readEvent = c.revents & POLLIN;
+				bool writeEvent = c.revents & POLLOUT;
+				if (readEvent || writeEvent) {
 					auto client = clients[c.fd];
 					if (c.fd == sockOutFD) {
 						int cmd;
@@ -105,7 +113,7 @@ void WindowsMultiplexer::multiplex() {
 						else
 							callback = defaultCallback;
 
-						if (!callback(client)) {
+						if (!callback(client, readEvent, writeEvent)) {
 							clients.erase(c.fd);
 							if (cbIt != customCallback.end())
 								customCallback.erase(c.fd);
@@ -123,6 +131,10 @@ void WindowsMultiplexer::cancel() {
 	sendMultiplexerCommand(MultiplexerCommand::CANCEL);
 }
 
+void WindowsMultiplexer::interrupt() {
+	sendMultiplexerCommand(MultiplexerCommand::INTERRUPT);
+}
+
 size_t WindowsMultiplexer::clientCount() {
 	std::lock_guard<std::mutex> lock(clientsMutex);
 	return clients.size()-1; // self-pipe is always in clients
@@ -133,6 +145,3 @@ void WindowsMultiplexer::sendMultiplexerCommand(int cmd) {
 	sockIn->sendData(static_cast<void *>(&cmd), sizeof(cmd));
 }
 
-void WindowsMultiplexer::interrupt() {
-	sendMultiplexerCommand(MultiplexerCommand::INTERRUPT);
-}

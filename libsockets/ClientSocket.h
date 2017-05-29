@@ -14,7 +14,7 @@
 
 class ClientSocket : public Socket {
 public:
-	ClientSocket(SocketImpl *impl);
+	ClientSocket(std::shared_ptr<SocketImpl> impl);
 	virtual ~ClientSocket();
 	virtual int receiveData(void *buf, size_t len);
 	virtual int sendData(const void *buf, size_t len);

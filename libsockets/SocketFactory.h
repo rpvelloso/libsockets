@@ -19,7 +19,7 @@ public:
 	virtual ~SocketFactory() {};
 	virtual std::unique_ptr<ClientSocket> CreateClientSocket() = 0;
 	virtual std::unique_ptr<ServerSocket> CreateServerSocket() = 0;
-	virtual std::unique_ptr<Multiplexer> CreateMultiplexer(std::function<bool(std::shared_ptr<ClientSocket>)> callback) = 0;
+	virtual std::unique_ptr<Multiplexer> CreateMultiplexer(MultiplexerCallback callback) = 0;
 };
 
 extern SocketFactory *socketFactory;

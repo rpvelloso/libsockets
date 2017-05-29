@@ -8,7 +8,7 @@
 #include "ServerSocket.h"
 #include "ClientSocket.h"
 
-ServerSocket::ServerSocket(SocketImpl* impl) : Socket(impl) {
+ServerSocket::ServerSocket(std::shared_ptr<SocketImpl> impl) : Socket(impl) {
 }
 
 ServerSocket::~ServerSocket() {

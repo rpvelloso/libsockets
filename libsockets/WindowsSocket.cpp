@@ -102,11 +102,12 @@ std::unique_ptr<ClientSocket> WindowsSocket::acceptConnection() {
 	socklen_t addrlen = sizeof(addr);
 
 	SOCKET clientFd = accept(fd, (struct sockaddr *)&addr, &addrlen);
-	return std::make_unique<ClientSocket>(new WindowsSocket(clientFd));
+	std::shared_ptr<SocketImpl> impl(new WindowsSocket(clientFd));
+	return std::make_unique<ClientSocket>(impl);
 }
 
 int WindowsSocket::setNonBlockingIO(bool status) {
-	unsigned int mode = status? 1 : 0;
+	unsigned long int mode = status? 1 : 0;
 	return ioctlsocket(fd, FIONBIO, &mode);
 }
 

@@ -26,16 +26,16 @@ public:
 			MultiplexerCallback customCallback) override;
 	void multiplex() override;
 	void cancel() override;
+	void interrupt();
 	size_t clientCount() override;
 private:
-	std::unordered_map<SOCKET, std::shared_ptr<ClientSocket>> clients;
+	std::unordered_map<SOCKET, std::shared_ptr<MultiplexedClientSocket>> clients;
 	std::unordered_map<SOCKET, MultiplexerCallback> customCallback;
 	std::mutex clientsMutex, commandMutex;
 	std::shared_ptr<ClientSocket> sockIn;
 	SOCKET sockOutFD;
 
 	void sendMultiplexerCommand(int cmd);
-	void interrupt();
 };
 
 #endif /* WINDOWSMULTIPLEXER_H_ */

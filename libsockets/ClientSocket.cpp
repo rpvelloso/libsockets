@@ -7,7 +7,7 @@
 
 #include "ClientSocket.h"
 
-ClientSocket::ClientSocket(SocketImpl *impl) : Socket(impl) {
+ClientSocket::ClientSocket(std::shared_ptr<SocketImpl> impl) : Socket(impl) {
 }
 
 ClientSocket::~ClientSocket() {

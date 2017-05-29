@@ -29,11 +29,14 @@ public:
 	virtual void cancel() {
 		impl->cancel();
 	};
+	virtual void interrupt() {
+		impl->interrupt();
+	};
 	virtual size_t clientCount() {
 		return impl->clientCount();
 	};
 protected:
-	std::unique_ptr<MultiplexerImpl> impl;
+	std::shared_ptr<MultiplexerImpl> impl;
 };
 
 #endif /* MULTIPLEXER_H_ */

@@ -16,6 +16,8 @@
 #include "WindowsSocket.h"
 #endif
 
+#include "MultiplexedClientSocket.h"
+
 void testServerSocket() {
 	auto srv = socketFactory->CreateServerSocket();
 
@@ -47,23 +49,25 @@ void testClientSocket() {
 }
 
 void testMultiplexer() {
-	std::unique_ptr<Multiplexer> multiplexer = socketFactory->CreateMultiplexer([&multiplexer](std::shared_ptr<ClientSocket> client)->bool {
+	std::unique_ptr<Multiplexer> multiplexer = socketFactory->CreateMultiplexer([&multiplexer](std::shared_ptr<MultiplexedClientSocket> client, bool re, bool we)->bool {
 		char buf[4096];
 		int len;
 
-		std::cout << "receiving data. default callback" << std::endl;
+		if (re) {
+			std::cout << "receiving data. default callback" << re << we << std::endl;
 
-		if ((len = client->receiveData(buf, 4096)) <= 0) {
-			std::cout << "connection closed." << std::endl;
-			return false;
-		} else {
-			buf[len] = 0x00;
-			std::cout << buf << std::endl;
-			std::string msg = "data received\n";
-			client->sendData(msg.c_str(), msg.size());
-			if (std::string(buf).substr(0,9) == "terminate") multiplexer->cancel();
-			return true;
-		};
+			if ((len = client->receiveData(buf, 4096)) <= 0) {
+				std::cout << "connection closed." << std::endl;
+				return false;
+			} else {
+				buf[len] = 0x00;
+				std::cout << buf << std::endl;
+				std::string msg = "data received\n";
+				client->sendData(msg.c_str(), msg.size());
+				if (std::string(buf).substr(0,9) == "terminate") multiplexer->cancel();
+				return true;
+			}
+		}
 	});
 
 	std::thread *server = new std::thread([&multiplexer](){
@@ -73,27 +77,7 @@ void testMultiplexer() {
 		while (true) {
 			auto clientSocket = serverSocket->acceptConnection();
 			std::cout << "connection received" << std::endl;
-			if (multiplexer->clientCount() == 0)
-				multiplexer->addClientSocket(std::move(clientSocket));
-			else
-				multiplexer->addClientSocket(std::move(clientSocket),[&multiplexer](std::shared_ptr<ClientSocket> client)->bool {
-				char buf[4096];
-				int len;
-
-				std::cout << "RECEIVING DATA!!! CUSTOM CALLBACK" << std::endl;
-
-				if ((len = client->receiveData(buf, 4096)) <= 0) {
-					std::cout << "connection closed." << std::endl;
-					return false;
-				} else {
-					buf[len] = 0x00;
-					std::cout << buf << std::endl;
-					std::string msg = "data received\n";
-					client->sendData(msg.c_str(), msg.size());
-					if (std::string(buf).substr(0,9) == "terminate") multiplexer->cancel();
-					return true;
-				};
-			});
+			multiplexer->addClientSocket(std::move(clientSocket));
 		}
 	});
 
