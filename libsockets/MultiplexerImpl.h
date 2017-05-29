@@ -10,13 +10,16 @@
 
 #include "ClientSocket.h"
 
+using MultiplexerCallback = std::function<bool(std::shared_ptr<ClientSocket>)>;
 class MultiplexerImpl {
 public:
-	MultiplexerImpl(std::function<bool(std::shared_ptr<ClientSocket>)> callback) {
-		this->callback = callback;
+	MultiplexerImpl(MultiplexerCallback defaultCallback) {
+		this->defaultCallback = defaultCallback;
 	};
 	virtual ~MultiplexerImpl() {};
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) = 0;
+	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
+			MultiplexerCallback customCallback) = 0;
 	virtual void multiplex() = 0;
 	virtual void cancel() = 0;
 	virtual size_t clientCount() = 0;
@@ -25,7 +28,7 @@ protected:
 	 * return true: keep multiplexing the client;
 	 * return false: remove client from multiplexer.
 	 */
-	std::function<bool(std::shared_ptr<ClientSocket>)> callback;
+	MultiplexerCallback defaultCallback;
 };
 
 #endif /* MULTIPLEXERIMPL_H_ */

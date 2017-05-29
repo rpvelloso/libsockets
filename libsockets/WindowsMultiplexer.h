@@ -19,14 +19,17 @@
 
 class WindowsMultiplexer: public MultiplexerImpl {
 public:
-	WindowsMultiplexer(std::function<bool(std::shared_ptr<ClientSocket>)> callback);
+	WindowsMultiplexer(MultiplexerCallback callback);
 	virtual ~WindowsMultiplexer();
 	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) override;
+	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
+			MultiplexerCallback customCallback) override;
 	void multiplex() override;
 	void cancel() override;
 	size_t clientCount() override;
 private:
 	std::unordered_map<SOCKET, std::shared_ptr<ClientSocket>> clients;
+	std::unordered_map<SOCKET, MultiplexerCallback> customCallback;
 	std::mutex clientsMutex, commandMutex;
 	std::shared_ptr<ClientSocket> sockIn;
 	SOCKET sockOutFD;

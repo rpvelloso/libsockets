@@ -51,6 +51,22 @@ void WindowsMultiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSoc
 	interrupt();
 }
 
+void WindowsMultiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
+		std::function<bool(std::shared_ptr<ClientSocket>)> customCallback) {
+	std::lock_guard<std::mutex> lock(clientsMutex);
+
+	clientSocket->setNonBlockingIO(true);
+
+	/* encapsulation breach!!! Due to socket FD data type,
+	 * WindowsMultiplexer is coupled with WindowsSocket
+	 */
+	WindowsSocket *impl = static_cast<WindowsSocket *>(clientSocket->getImpl().get());
+	auto fd = impl->getFD();
+	clients[fd] = std::move(clientSocket);
+	this->customCallback[fd] = customCallback;
+	interrupt();
+}
+
 void WindowsMultiplexer::multiplex() {
 	while (true) {
 		clientsMutex.lock();
@@ -81,8 +97,19 @@ void WindowsMultiplexer::multiplex() {
 							return;
 						}
 					} else {
-						if (!callback(client))
+						MultiplexerCallback callback;
+
+						auto cbIt = customCallback.find(c.fd);
+						if (cbIt != customCallback.end())
+							callback = cbIt->second;
+						else
+							callback = defaultCallback;
+
+						if (!callback(client)) {
 							clients.erase(c.fd);
+							if (cbIt != customCallback.end())
+								customCallback.erase(c.fd);
+						}
 					}
 				} else if ((c.revents & POLLERR) || (c.revents & POLLHUP))
 					clients.erase(c.fd);
@@ -98,7 +125,7 @@ void WindowsMultiplexer::cancel() {
 
 size_t WindowsMultiplexer::clientCount() {
 	std::lock_guard<std::mutex> lock(clientsMutex);
-	return clients.size();
+	return clients.size()-1; // self-pipe is always in clients
 }
 
 void WindowsMultiplexer::sendMultiplexerCommand(int cmd) {
