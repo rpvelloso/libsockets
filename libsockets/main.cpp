@@ -52,7 +52,7 @@ void testMultiplexer() {
 			return true;
 		}
 	},
-	[&multiplexer](std::shared_ptr<MultiplexedClientSocket> client)->bool {
+	[](std::shared_ptr<MultiplexedClientSocket> client)->bool {
 		EchoBuffer *echoBuffer = static_cast<EchoBuffer *>(client->getClientData().get());
 
 		while (echoBuffer->ss.rdbuf()->in_avail() > 0) {
