@@ -21,9 +21,6 @@ public:
 	int reuseAddress() override {
 		return impl->reuseAddress();
 	};
-	std::string getPort() override {
-		return impl->getPort();
-	};
 protected:
 	std::shared_ptr<SocketImpl> impl;
 };
@@ -42,16 +39,19 @@ public:
 		return impl->sendData(buf, len);
 	};
 	int connectTo(const std::string &host, const std::string &port) override {
-		throw std::runtime_error("invalid operation connectTo()." + std::to_string((int)getSocketState()));
+		throw std::runtime_error("invalid operation connectTo().");
 	};
 	void disconnect() override {
 		impl->disconnect();
 	};
 	int listenForConnections(const std::string &bindAddr, const std::string &port) override {
-		throw std::runtime_error("invalid operation listenForConnections()." + std::to_string((int)getSocketState()));
+		throw std::runtime_error("invalid operation listenForConnections().");
 	};
 	std::unique_ptr<ClientSocket> acceptConnection() override {
-		throw std::runtime_error("invalid operation listenForConnections()." + std::to_string((int)getSocketState()));
+		throw std::runtime_error("invalid operation listenForConnections().");
+	};
+	std::string getPort() override {
+		return impl->getPort();
 	};
 };
 
@@ -63,22 +63,25 @@ public:
 	};
 	virtual ~DisconnectedState() {};
 	int receiveData(void *buf, size_t len) override {
-		throw std::runtime_error("invalid operation receiveData()." + std::to_string((int)getSocketState()));
+		throw std::runtime_error("invalid operation receiveData().");
 	};
 	int sendData(const void *buf, size_t len) override {
-		throw std::runtime_error("invalid operation sendData()." + std::to_string((int)getSocketState()));
+		throw std::runtime_error("invalid operation sendData().");
 	};
 	int connectTo(const std::string &host, const std::string &port) override {
 		return impl->connectTo(host, port);
 	};
 	void disconnect() override {
-		throw std::runtime_error("invalid operation disconnect()." + std::to_string((int)getSocketState()));
+		throw std::runtime_error("invalid operation disconnect().");
 	};
 	int listenForConnections(const std::string &bindAddr, const std::string &port) override {
 		return impl->listenForConnections(bindAddr, port);
 	};
 	std::unique_ptr<ClientSocket> acceptConnection() override {
-		throw std::runtime_error("invalid operation acceptConnection()." + std::to_string((int)getSocketState()));
+		throw std::runtime_error("invalid operation acceptConnection().");
+	};
+	std::string getPort() override {
+		throw std::runtime_error("invalid operation getPort().");
 	};
 };
 
@@ -90,22 +93,25 @@ public:
 	};
 	virtual ~ListeningState() {};
 	int receiveData(void *buf, size_t len) override {
-		throw std::runtime_error("invalid operation receiveData()." + std::to_string((int)getSocketState()));
+		throw std::runtime_error("invalid operation receiveData().");
 	};
 	int sendData(const void *buf, size_t len) override {
-		throw std::runtime_error("invalid operation sendData()." + std::to_string((int)getSocketState()));
+		throw std::runtime_error("invalid operation sendData().");
 	};
 	int connectTo(const std::string &host, const std::string &port) override {
-		throw std::runtime_error("invalid operation connectTo()." + std::to_string((int)getSocketState()));
+		throw std::runtime_error("invalid operation connectTo().");
 	};
 	void disconnect() override {
 		impl->disconnect();
 	};
 	int listenForConnections(const std::string &bindAddr, const std::string &port) override {
-		throw std::runtime_error("invalid operation listenForConnections()." + std::to_string((int)getSocketState()));
+		throw std::runtime_error("invalid operation listenForConnections().");
 	};
 	std::unique_ptr<ClientSocket> acceptConnection() override {
 		return impl->acceptConnection();
+	};
+	std::string getPort() override {
+		return impl->getPort();
 	};
 };
 
@@ -117,22 +123,25 @@ public:
 	};
 	virtual ~ClosedState() {};
 	int receiveData(void *buf, size_t len) override {
-		throw std::runtime_error("invalid operation receiveData()." + std::to_string((int)getSocketState()));
+		throw std::runtime_error("invalid operation receiveData().");
 	};
 	int sendData(const void *buf, size_t len) override {
-		throw std::runtime_error("invalid operation sendData()." + std::to_string((int)getSocketState()));
+		throw std::runtime_error("invalid operation sendData().");
 	};
 	int connectTo(const std::string &host, const std::string &port) override {
-		throw std::runtime_error("invalid operation connectTo()." + std::to_string((int)getSocketState()));
+		throw std::runtime_error("invalid operation connectTo().");
 	};
 	void disconnect() override {
-		throw std::runtime_error("invalid operation disconnect()." + std::to_string((int)getSocketState()));
+		throw std::runtime_error("invalid operation disconnect().");
 	};
 	int listenForConnections(const std::string &bindAddr, const std::string &port) override {
-		throw std::runtime_error("invalid operation listenForConnections()." + std::to_string((int)getSocketState()));
+		throw std::runtime_error("invalid operation listenForConnections().");
 	};
 	std::unique_ptr<ClientSocket> acceptConnection() override {
-		throw std::runtime_error("invalid operation acceptConnection()." + std::to_string((int)getSocketState()));
+		throw std::runtime_error("invalid operation acceptConnection().");
+	};
+	std::string getPort() override {
+		throw std::runtime_error("invalid operation getPort().");
 	};
 };
 #endif /* SRC_SOCKETSTATE_H_ */
