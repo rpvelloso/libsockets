@@ -7,7 +7,7 @@
 
 #include <unistd.h>
 #include "ClientSocket.h"
-#include "LinuxSocket.h".
+#include "LinuxSocket.h"
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -19,6 +19,14 @@ using ResPtr = std::unique_ptr<struct addrinfo, decltype(&freeaddrinfo)>;
 
 LinuxSocket::LinuxSocket() {
 	fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+}
+
+int LinuxSocket::getFD() {
+	return fd;
+}
+
+std::string LinuxSocket::getPort() {
+	return port;
 }
 
 LinuxSocket::LinuxSocket(int fd) {
@@ -50,7 +58,10 @@ int LinuxSocket::connectTo(const std::string &host, const std::string &port) {
 
 	ResPtr resPtr(res, freeaddrinfo);
 
-	return connect(fd, res->ai_addr, res->ai_addrlen);
+	if ((ret = connect(fd, res->ai_addr, res->ai_addrlen)) != 0)
+		this->port = port;
+
+	return ret;
 }
 
 void LinuxSocket::disconnect() {
@@ -75,6 +86,10 @@ int LinuxSocket::listenForConnections(const std::string &bindAddr, const std::st
 	if ((ret = bind(fd, res->ai_addr, res->ai_addrlen)) != 0)
 		return ret;
 
+	socklen_t len = res->ai_addrlen;
+	getsockname(fd, res->ai_addr, &len);
+	this->port = std::to_string(htons(((struct sockaddr_in *)res->ai_addr)->sin_port));
+
 	return listen(fd, 20);
 }
 
@@ -83,7 +98,8 @@ std::unique_ptr<ClientSocket> LinuxSocket::acceptConnection() {
 	socklen_t addrlen = sizeof(addr);
 
 	int clientFd = accept(fd, (struct sockaddr *)&addr, &addrlen);
-	return std::make_unique<ClientSocket>(new LinuxSocket(clientFd));
+	std::shared_ptr<SocketImpl> impl(new LinuxSocket(clientFd));
+	return std::make_unique<ClientSocket>(impl);
 }
 
 int LinuxSocket::setNonBlockingIO(bool status) {
