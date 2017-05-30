@@ -64,6 +64,7 @@ int WindowsSocket::connectTo(const std::string &host, const std::string &port) {
 
 	if ((ret = connect(fd, res->ai_addr, res->ai_addrlen)) == 0)
 		this->port = port;
+
 	return ret;
 }
 
