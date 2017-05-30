@@ -102,6 +102,11 @@ std::unique_ptr<ClientSocket> WindowsSocket::acceptConnection() {
 	socklen_t addrlen = sizeof(addr);
 
 	SOCKET clientFd = accept(fd, (struct sockaddr *)&addr, &addrlen);
+
+	if (clientFd == INVALID_SOCKET) {
+		throw std::runtime_error("accept() returned an invalid socket. " + std::to_string(WSAGetLastError()));
+	}
+
 	std::shared_ptr<SocketImpl> impl(new WindowsSocket(clientFd));
 	return std::make_unique<ClientSocket>(impl);
 }

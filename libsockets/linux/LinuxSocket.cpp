@@ -6,6 +6,7 @@
  */
 
 #include <unistd.h>
+#include <cerrno>
 #include "ClientSocket.h"
 #include "LinuxSocket.h"
 
@@ -98,6 +99,11 @@ std::unique_ptr<ClientSocket> LinuxSocket::acceptConnection() {
 	socklen_t addrlen = sizeof(addr);
 
 	int clientFd = accept(fd, (struct sockaddr *)&addr, &addrlen);
+
+	if (clientFd < 0) {
+		throw std::runtime_error("accept() returned an invalid socket. " + std::to_string(errno));
+	}
+
 	std::shared_ptr<SocketImpl> impl(new LinuxSocket(clientFd));
 	return std::make_unique<ClientSocket>(impl);
 }
