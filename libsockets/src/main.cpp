@@ -83,7 +83,7 @@ void testMultiplexer() {
 }
 
 int main() {
-	//winSockInit();
+	winSockInit();
 	testMultiplexer();
-	//winSockCleanup();
+	winSockCleanup();
 }

@@ -37,7 +37,7 @@ public:
 private:
 	WindowsSocket(SOCKET); // ctor used by acceptConnections()
 	SOCKET fd;
-	std::string port;
+	std::string port = "";
 };
 
 extern int winSockInit();

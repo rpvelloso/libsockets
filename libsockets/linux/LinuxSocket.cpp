@@ -17,7 +17,7 @@
 
 using ResPtr = std::unique_ptr<struct addrinfo, decltype(&freeaddrinfo)>;
 
-LinuxSocket::LinuxSocket() {
+LinuxSocket::LinuxSocket() : SocketImpl() {
 	fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 }
 
@@ -29,8 +29,8 @@ std::string LinuxSocket::getPort() {
 	return port;
 }
 
-LinuxSocket::LinuxSocket(int fd) {
-	this->fd = fd;
+LinuxSocket::LinuxSocket(int fd) : SocketImpl(), fd(fd) {
+	setSocketState(SocketStateType::Connected);
 }
 
 LinuxSocket::~LinuxSocket() {

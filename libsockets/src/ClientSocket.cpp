@@ -14,17 +14,23 @@ ClientSocket::~ClientSocket() {
 }
 
 int ClientSocket::receiveData(void* buf, size_t len) {
-	return impl->receiveData(buf, len);
+	return state->receiveData(buf, len);
 }
 
 int ClientSocket::sendData(const void* buf, size_t len) {
-	return impl->sendData(buf, len);
+	return state->sendData(buf, len);
 }
 
 int ClientSocket::connectTo(const std::string &host, const std::string &port) {
-	return impl->connectTo(host, port);
+	int ret;
+
+	if ((ret = state->connectTo(host, port)) == 0)
+		state.reset(new ConnectedState(impl));
+
+	return ret;
 }
 
 void ClientSocket::disconnect() {
-	impl->disconnect();
+	state->disconnect();
+	state.reset(new ClosedState(impl));
 }

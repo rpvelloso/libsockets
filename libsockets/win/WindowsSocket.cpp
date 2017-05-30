@@ -5,7 +5,6 @@
  *      Author: rvelloso
  */
 
-//#include <unistd.h>
 #include <memory>
 #include "ClientSocket.h"
 #include "WindowsSocket.h"
@@ -21,7 +20,7 @@ void winSockCleanup() {
 	WSACleanup();
 }
 
-WindowsSocket::WindowsSocket() {
+WindowsSocket::WindowsSocket() : SocketImpl() {
 	fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 }
 
@@ -33,8 +32,8 @@ std::string WindowsSocket::getPort() {
 	return port;
 }
 
-WindowsSocket::WindowsSocket(SOCKET fd) {
-	this->fd = fd;
+WindowsSocket::WindowsSocket(SOCKET fd) : SocketImpl(), fd(fd) {
+	setSocketState(SocketStateType::Connected);
 }
 
 WindowsSocket::~WindowsSocket() {

@@ -36,7 +36,7 @@ public:
 	int getFD();
 private:
 	int fd;
-	std::string port;
+	std::string port = "";
 
 	LinuxSocket(int); // ctor used by acceptConnections() & LinuxMultiplexer
 };

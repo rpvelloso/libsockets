@@ -14,9 +14,16 @@
 
 class ClientSocket;
 
+enum class SocketStateType {
+	Disconnected = 0,
+	Connected = 1,
+	Listening = 2,
+	Closed = 3
+};
+
 class SocketImpl {
 public:
-	SocketImpl() {};
+	SocketImpl() : socketState(SocketStateType::Disconnected) {};
 	virtual ~SocketImpl() {};
 	virtual int receiveData(void *buf, size_t len) = 0;
 	virtual int sendData(const void *buf, size_t len) = 0;
@@ -27,6 +34,14 @@ public:
 	virtual int setNonBlockingIO(bool status) = 0;
 	virtual int reuseAddress() = 0;
 	virtual std::string getPort() = 0;
+	virtual SocketStateType getSocketState() {
+		return socketState;
+	};
+	virtual void setSocketState(SocketStateType socketState) {
+		this->socketState = socketState;
+	};
+protected:
+	SocketStateType socketState;
 };
 
 #endif /* SOCKETIMPL_H_ */

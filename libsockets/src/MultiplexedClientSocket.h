@@ -14,14 +14,18 @@
 class MultiplexerImpl;
 
 /*
- * Wrapper/Decorator class. Adds multiplexing capabilities to a ClientSocket.
- * Client can signal the multiplexer if there is data to be sent and store client data/state.
+ * memento class with specific client data/state
  */
 class ClientData {
 public:
 	ClientData() {};
 	virtual ~ClientData() {};
 };
+
+/*
+ * Wrapper/Decorator class. Adds multiplexing capabilities to a ClientSocket.
+ * Client can signal the multiplexer if there is data to be sent and store client data/state.
+ */
 
 class MultiplexedClientSocket: public ClientSocket {
 public:

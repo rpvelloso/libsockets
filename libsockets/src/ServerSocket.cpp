@@ -12,18 +12,25 @@ ServerSocket::ServerSocket(std::shared_ptr<SocketImpl> impl) : Socket(impl) {
 }
 
 ServerSocket::~ServerSocket() {
-	impl->disconnect();
 }
 
 int ServerSocket::listenForConnections(const std::string &bindAddr, const std::string &port) {
 	int ret;
 
-	if ((ret = impl->reuseAddress()) != 0)
+	if ((ret = state->reuseAddress()) != 0)
 		return ret;
 
-	return impl->listenForConnections(bindAddr, port);
+	if ((ret = state->listenForConnections(bindAddr, port)) == 0)
+		state.reset(new ListeningState(impl));
+
+	return ret;
 }
 
 std::unique_ptr<ClientSocket> ServerSocket::acceptConnection() {
-	return impl->acceptConnection();
+	return state->acceptConnection();
+}
+
+void ServerSocket::disconnect() {
+	state->disconnect();
+	state.reset(new ClosedState(impl));
 }
