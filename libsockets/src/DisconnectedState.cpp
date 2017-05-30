@@ -1,0 +1,45 @@
+/*
+ * DisconnectedState.cpp
+ *
+ *  Created on: 30 de mai de 2017
+ *      Author: rvelloso
+ */
+
+#include "DisconnectedState.h"
+
+DisconnectedState::DisconnectedState(std::shared_ptr<SocketImpl> impl) : SocketState(impl) {
+	setSocketState(SocketStateType::Disconnected);
+	impl->setSocketState(socketState);
+};
+
+DisconnectedState::~DisconnectedState() {
+
+};
+
+int DisconnectedState::receiveData(void *buf, size_t len) {
+	throw std::runtime_error("invalid operation receiveData().");
+};
+
+int DisconnectedState::sendData(const void *buf, size_t len) {
+	throw std::runtime_error("invalid operation sendData().");
+};
+
+int DisconnectedState::connectTo(const std::string &host, const std::string &port) {
+	return impl->connectTo(host, port);
+};
+
+void DisconnectedState::disconnect() {
+	throw std::runtime_error("invalid operation disconnect().");
+};
+
+int DisconnectedState::listenForConnections(const std::string &bindAddr, const std::string &port) {
+	return impl->listenForConnections(bindAddr, port);
+};
+
+std::unique_ptr<ClientSocket> DisconnectedState::acceptConnection() {
+	throw std::runtime_error("invalid operation acceptConnection().");
+};
+
+std::string DisconnectedState::getPort() {
+	throw std::runtime_error("invalid operation getPort().");
+};

@@ -9,8 +9,8 @@
 #define CLIENTSOCKET_H_
 
 #include <memory>
-#include "Socket.h"
 #include "SocketImpl.h"
+#include "Socket.h"
 
 class ClientSocket : public Socket {
 public:

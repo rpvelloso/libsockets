@@ -9,8 +9,13 @@
 #define SOCKET_H_
 
 #include <memory>
+
 #include "SocketImpl.h"
-#include "SocketState.h"
+
+#include "ConnectedState.h"
+#include "DisconnectedState.h"
+#include "ListeningState.h"
+#include "ClosedState.h"
 
 class Socket {
 public:
