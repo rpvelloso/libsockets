@@ -7,6 +7,7 @@
 
 #include "LinuxSocketFactory.h"
 #include "LinuxSocket.h"
+#include "LinuxMultiplexer.h"
 
 SocketFactory *socketFactory = new LinuxSocketFactory();
 
@@ -17,9 +18,15 @@ LinuxSocketFactory::~LinuxSocketFactory() {
 }
 
 std::unique_ptr<ClientSocket> LinuxSocketFactory::CreateClientSocket() {
-	return std::make_unique<ClientSocket>(new LinuxSocket);
+	std::shared_ptr<SocketImpl> impl(new LinuxSocket);
+	return std::make_unique<ClientSocket>(impl);
 }
 
 std::unique_ptr<ServerSocket> LinuxSocketFactory::CreateServerSocket() {
-	return std::make_unique<ServerSocket>(new LinuxSocket);
+	std::shared_ptr<SocketImpl> impl(new LinuxSocket);
+	return std::make_unique<ServerSocket>(impl);
+}
+
+std::unique_ptr<Multiplexer> LinuxSocketFactory::CreateMultiplexer(MultiplexerCallback readCallback, MultiplexerCallback writeCallback) {
+	return std::make_unique<Multiplexer>(new LinuxMultiplexer(readCallback, writeCallback));
 }

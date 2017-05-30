@@ -9,6 +9,7 @@
 #define LINUXSOCKETFACTORY_H_
 
 #include "SocketFactory.h"
+#include "Multiplexer.h"
 
 class LinuxSocketFactory: public SocketFactory {
 public:
@@ -16,6 +17,7 @@ public:
 	virtual ~LinuxSocketFactory();
 	std::unique_ptr<ClientSocket> CreateClientSocket();
 	std::unique_ptr<ServerSocket> CreateServerSocket();
+	std::unique_ptr<Multiplexer> CreateMultiplexer(MultiplexerCallback readCallback, MultiplexerCallback writeCallback);
 };
 
 #endif /* LINUXSOCKETFACTORY_H_ */
