@@ -1,5 +1,5 @@
 /*
- * WindowsSocket.cpp
+ * LinuxSocket.cpp
  *
  *  Created on: 24 de mai de 2017
  *      Author: rvelloso

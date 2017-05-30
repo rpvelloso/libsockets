@@ -17,11 +17,10 @@ ServerSocket::~ServerSocket() {
 
 int ServerSocket::listenForConnections(const std::string &bindAddr, const std::string &port) {
 	int ret;
-	if ((ret = impl->reuseAddress()) != 0) {
-		perror("");
+
+	if ((ret = impl->reuseAddress()) != 0)
 		return ret;
 
-	}
 	return impl->listenForConnections(bindAddr, port);
 }
 
