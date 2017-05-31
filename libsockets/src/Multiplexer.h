@@ -12,6 +12,10 @@
 #include "ClientSocket.h"
 #include "MultiplexerImpl.h"
 
+/*
+ * AKA Reactor Pattern - https://en.wikipedia.org/wiki/Reactor_pattern
+ */
+
 class Multiplexer {
 public:
 	Multiplexer(MultiplexerImpl *impl) : impl(impl) {};

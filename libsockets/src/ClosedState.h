@@ -21,6 +21,7 @@ public:
 	int listenForConnections(const std::string &bindAddr, const std::string &port) override;
 	std::unique_ptr<ClientSocket> acceptConnection() override;
 	std::string getPort() override;
+	size_t getSendBufferSize() override;
 };
 
 #endif /* CLOSEDSTATE_H_ */

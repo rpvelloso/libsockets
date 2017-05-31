@@ -42,4 +42,9 @@ std::unique_ptr<ClientSocket> ClosedState::acceptConnection() {
 
 std::string ClosedState::getPort() {
 	throw std::runtime_error("invalid operation getPort().");
-};
+}
+;
+
+size_t ClosedState::getSendBufferSize() {
+	throw std::runtime_error("invalid operation getSendBufferSize().");
+}

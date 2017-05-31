@@ -20,6 +20,10 @@ public:
 	virtual int sendData(const void *buf, size_t len);
 	virtual int connectTo(const std::string &host, const std::string &port);
 	virtual void disconnect();
+	size_t getSendBufferSize() const;
+
+private:
+	size_t sendBufferSize = 0;
 };
 
 #endif /* CLIENTSOCKET_H_ */

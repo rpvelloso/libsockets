@@ -42,4 +42,9 @@ std::unique_ptr<ClientSocket> DisconnectedState::acceptConnection() {
 
 std::string DisconnectedState::getPort() {
 	throw std::runtime_error("invalid operation getPort().");
-};
+}
+;
+
+size_t DisconnectedState::getSendBufferSize() {
+	throw std::runtime_error("invalid operation getSendBufferSize().");
+}

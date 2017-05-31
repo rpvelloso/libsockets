@@ -32,6 +32,18 @@ std::string WindowsSocket::getPort() {
 	return port;
 }
 
+size_t WindowsSocket::getSendBufferSize() {
+	int sendBufferSize = 0;
+	int  len = sizeof(sendBufferSize);
+
+	if (getsockopt(fd, SOL_SOCKET, SO_SNDBUF, (char *)&sendBufferSize, &len) == 0) {
+		if (sendBufferSize >= 0)
+			return sendBufferSize >> 1; // half buffer size
+	}
+
+	return 0;
+}
+
 WindowsSocket::WindowsSocket(SOCKET fd) : SocketImpl(), fd(fd) {
 	setSocketState(SocketStateType::Connected);
 }
@@ -44,7 +56,14 @@ int WindowsSocket::receiveData(void *buf, size_t len) {
 }
 
 int WindowsSocket::sendData(const void *buf, size_t len) {
-	return send(fd, static_cast<const char *>(buf), len, 0);
+	int ret;
+
+	if ((ret = send(fd, static_cast<const char *>(buf), len, 0)) == -1) {
+		auto err = WSAGetLastError();
+		if (err != WSAEWOULDBLOCK)
+			throw std::runtime_error("sendData() error: " + std::to_string(err) + ".");
+	}
+	return ret;
 }
 
 int WindowsSocket::connectTo(const std::string &host, const std::string &port) {

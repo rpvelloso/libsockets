@@ -29,6 +29,7 @@ public:
 	int setNonBlockingIO(bool status) override;
 	int reuseAddress() override;
 	std::string getPort() override;
+	size_t getSendBufferSize();
 
 	/* Implementation specific!!! FD data type changes from one OS to another.
 	 * the FD is needed by multiplexer class.

@@ -42,4 +42,9 @@ std::unique_ptr<ClientSocket> ConnectedState::acceptConnection() {
 
 std::string ConnectedState::getPort() {
 	return impl->getPort();
-};
+}
+;
+
+size_t ConnectedState::getSendBufferSize() {
+	return impl->getSendBufferSize();
+}

@@ -43,4 +43,9 @@ std::unique_ptr<ClientSocket> ListeningState::acceptConnection() {
 
 std::string ListeningState::getPort() {
 	return impl->getPort();
-};
+}
+;
+
+size_t ListeningState::getSendBufferSize() {
+	throw std::runtime_error("invalid operation getSendBufferSize().");
+}

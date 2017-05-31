@@ -9,6 +9,7 @@
 #include <memory>
 #include <thread>
 #include <sstream>
+#include <algorithm>
 #include "Socket.h"
 
 #include "SocketFactory.h"
@@ -27,7 +28,10 @@ void testMultiplexer() {
 		std::stringstream ss;
 	};
 
-
+/*
+ * TODO: move stringstream inside MultiplexedClientSocket and deal automatically with I/O
+ * changing client callback: the client should only see the I/O streams and his own ClientData.
+ */
 	std::unique_ptr<Multiplexer> multiplexer = socketFactory->CreateMultiplexer(
 	[&multiplexer](std::shared_ptr<MultiplexedClientSocket> client)->bool {
 		char buf[4096];
@@ -42,7 +46,7 @@ void testMultiplexer() {
 			 * business logic goes here
 			 */
 			EchoBuffer *echoBuffer = static_cast<EchoBuffer *>(client->getClientData().get());
-			echoBuffer->ss << buf;
+			echoBuffer->ss.write(buf, len);
 			if (std::string(buf).substr(0,9) == "terminate") multiplexer->cancel();
 			/*
 			 * end business logic
@@ -56,11 +60,22 @@ void testMultiplexer() {
 		EchoBuffer *echoBuffer = static_cast<EchoBuffer *>(client->getClientData().get());
 
 		while (echoBuffer->ss.rdbuf()->in_avail() > 0) {
-			auto ch = echoBuffer->ss.get();
-			if (client->sendData(&ch, sizeof(char)) != 0)
+			size_t bufSize = client->getSendBufferSize()*2;
+			char buf[bufSize];
+
+			auto savePos = echoBuffer->ss.tellg();
+			echoBuffer->ss.readsome(buf, bufSize);
+			if (client->sendData(buf, echoBuffer->ss.gcount()) <= 0) {
+				echoBuffer->ss.seekg(savePos, echoBuffer->ss.beg);
 				break;
+			}
 		}
-		client->setHasOutput(echoBuffer->ss.rdbuf()->in_avail() > 0);
+
+		if (echoBuffer->ss.rdbuf()->in_avail() == 0) {
+			echoBuffer->ss.str(std::string());
+			client->setHasOutput(false);
+		} else
+			client->setHasOutput(true);
 		return true;
 	}
 	);

@@ -7,6 +7,7 @@
 
 #include <unistd.h>
 #include <cerrno>
+#include <exception>
 #include "ClientSocket.h"
 #include "LinuxSocket.h"
 
@@ -42,7 +43,13 @@ int LinuxSocket::receiveData(void *buf, size_t len) {
 }
 
 int LinuxSocket::sendData(const void *buf, size_t len) {
-	return send(fd, static_cast<const char *>(buf), len, 0);
+	int ret;
+
+	if ((ret = send(fd, static_cast<const char *>(buf), len, 0)) == -1)
+		if (errno != EWOULDBLOCK && errno != EAGAIN)
+			throw std::runtime_error("sendData() error: " + std::to_string(errno) + ".");
+
+	return ret;
 }
 
 int LinuxSocket::connectTo(const std::string &host, const std::string &port) {
