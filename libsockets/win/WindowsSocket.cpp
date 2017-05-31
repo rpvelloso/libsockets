@@ -34,7 +34,7 @@ std::string WindowsSocket::getPort() {
 
 size_t WindowsSocket::getSendBufferSize() {
 	int sendBufferSize = 0;
-	int  len = sizeof(sendBufferSize);
+	socklen_t len = sizeof(sendBufferSize);
 
 	if (getsockopt(fd, SOL_SOCKET, SO_SNDBUF, (char *)&sendBufferSize, &len) == 0) {
 		if (sendBufferSize >= 0)

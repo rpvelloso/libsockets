@@ -35,6 +35,18 @@ LinuxSocket::LinuxSocket(int fd) : SocketImpl(), fd(fd) {
 	setSocketState(SocketStateType::Connected);
 }
 
+size_t LinuxSocket::getSendBufferSize() {
+	int sendBufferSize = 0;
+	socklen_t len = sizeof(sendBufferSize);
+
+	if (getsockopt(fd, SOL_SOCKET, SO_SNDBUF, (void *)&sendBufferSize, &len) == 0) {
+		if (sendBufferSize >= 0)
+			return sendBufferSize >> 1; // half buffer size
+	}
+
+	return 0;
+}
+
 LinuxSocket::~LinuxSocket() {
 }
 
