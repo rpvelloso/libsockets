@@ -18,6 +18,8 @@
 #include "WindowsSocket.h"
 #endif
 
+#include "MultiplexedServer.h"
+
 void testMultiplexer() {
 	struct EchoData : public ClientData {
 		size_t count=0;
@@ -26,7 +28,7 @@ void testMultiplexer() {
 /*
  * TODO: refactor linux multiplex
  */
-	auto multiplexer = socketFactory.CreateMultiplexer(
+	MultiplexedServer server("0.0.0.0", "30000", 1,
 	[](std::stringstream &inp, std::stringstream &outp, std::shared_ptr<ClientData> clientData) {
 		auto echoData = std::static_pointer_cast<EchoData>(clientData);
 		size_t bufSize = 4096;
@@ -39,24 +41,8 @@ void testMultiplexer() {
 		}
 	});
 
-	auto serverSocket = socketFactory.CreateServerSocket();
-	std::thread *server = new std::thread([&multiplexer, &serverSocket](){
-		serverSocket->listenForConnections("0.0.0.0","30000");
-		while (true) {
-			try {
-				auto clientSocket = serverSocket->acceptConnection();
-				multiplexer->addClientSocket(std::move(clientSocket), std::make_shared<EchoData>());
-			} catch (std::exception &e) {
-				std::cerr << e.what() << std::endl;
-				break;
-			}
-		}
-	});
-
 	std::cout << "multiplexing..." << std::endl;
-	multiplexer->multiplex();
-	serverSocket->disconnect();
-	server->join();
+	server.listen();
 	std::cout << "exiting..." << std::endl;
 }
 

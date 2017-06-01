@@ -8,6 +8,7 @@
 #ifndef MULTIPLEXER_H_
 #define MULTIPLEXER_H_
 
+#include <thread>
 #include <memory>
 #include "ClientSocket.h"
 #include "MultiplexerImpl.h"
@@ -18,7 +19,12 @@
 
 class Multiplexer {
 public:
-	Multiplexer(MultiplexerImpl *impl) : impl(impl) {};
+	Multiplexer(MultiplexerImpl *impl) : impl(impl) {
+		thread.reset(new std::thread([this](){
+			this->impl->multiplex();
+		}));
+	};
+
 	virtual ~Multiplexer() {};
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) {
 		impl->addClientSocket(std::move(clientSocket));
@@ -41,6 +47,7 @@ public:
 	};
 protected:
 	std::shared_ptr<MultiplexerImpl> impl;
+	std::unique_ptr<std::thread> thread;
 };
 
 #endif /* MULTIPLEXER_H_ */
