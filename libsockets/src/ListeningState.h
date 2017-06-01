@@ -22,6 +22,7 @@ public:
 	std::unique_ptr<ClientSocket> acceptConnection() override;
 	std::string getPort() override;
 	size_t getSendBufferSize() override;
+	size_t getReceiveBufferSize() override;
 };
 
 #endif /* LISTENINGSTATE_H_ */

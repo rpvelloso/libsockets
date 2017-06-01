@@ -30,6 +30,7 @@ public:
 	int reuseAddress() override;
 	std::string getPort() override;
 	size_t getSendBufferSize() override;
+	size_t getReceiveBufferSize() override;
 
 	/* Implementation specific!!! FD data type changes from one OS to another.
 	 * the FD is needed by multiplexer class.

@@ -21,9 +21,11 @@ public:
 	virtual int connectTo(const std::string &host, const std::string &port);
 	virtual void disconnect();
 	size_t getSendBufferSize() const;
+	size_t getReceiveBufferSize() const;
 
 private:
 	size_t sendBufferSize = 0;
+	size_t receiveBufferSize = 0;
 };
 
 #endif /* CLIENTSOCKET_H_ */

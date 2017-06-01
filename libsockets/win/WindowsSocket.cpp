@@ -37,7 +37,7 @@ size_t WindowsSocket::getSendBufferSize() {
 	socklen_t len = sizeof(sendBufferSize);
 
 	if (getsockopt(fd, SOL_SOCKET, SO_SNDBUF, (char *)&sendBufferSize, &len) == 0) {
-		if (sendBufferSize >= 0)
+		if (sendBufferSize > 0)
 			return sendBufferSize >> 1; // half buffer size
 	}
 

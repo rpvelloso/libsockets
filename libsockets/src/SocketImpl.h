@@ -35,6 +35,7 @@ public:
 	virtual int reuseAddress() = 0;
 	virtual std::string getPort() = 0;
 	virtual size_t getSendBufferSize() = 0;
+	virtual size_t getReceiveBufferSize() = 0;
 	virtual SocketStateType getSocketState() {
 		return socketState;
 	};

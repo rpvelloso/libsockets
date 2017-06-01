@@ -118,8 +118,8 @@ void WindowsMultiplexer::multiplex() {
 					}
 
 					if (writeEvent) {
-						if (!removeClient)
-							removeClient = !writeCallback(client);
+						//if (!removeClient)
+							removeClient |= !writeCallback(client);
 					}
 				}
 

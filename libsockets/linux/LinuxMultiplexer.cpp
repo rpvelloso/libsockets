@@ -10,6 +10,8 @@
 #include "LinuxMultiplexer.h"
 #include "LinuxSocket.h"
 
+#include <iostream>
+
 enum MultiplexerCommand : int {
 	CANCEL = 0x00,
 	INTERRUPT = 0x01
@@ -82,6 +84,8 @@ void LinuxMultiplexer::multiplex() {
 		}
 		clientsMutex.unlock();
 
+		std::cout << "# " << nfds << std::endl;
+
 		if (poll(fdarray,nfds,-1) > 0) {
 			std::lock_guard<std::mutex> lock(clientsMutex);
 
@@ -91,12 +95,15 @@ void LinuxMultiplexer::multiplex() {
 				bool errorEvent = (c.revents & POLLERR) || (c.revents & POLLHUP);
 				bool removeClient = false;
 
+				auto client = clients[c.fd];
+
 				if (errorEvent)
 					removeClient = true;
 				else {
-					auto client = clients[c.fd];
-
 					if (readEvent) {
+						auto &outputBuffer = client->getOutputBuffer();
+						auto &inputBuffer = client->getInputBuffer();
+
 						if (c.fd == sockOutFD) {
 							int cmd;
 
@@ -108,14 +115,60 @@ void LinuxMultiplexer::multiplex() {
 								return;
 							}
 						} else {
-							removeClient = !readCallback(client);
+							auto bufSize = client->getReceiveBufferSize();
+							char buf[bufSize+1];
+							int len;
+
+							try {
+								if ((len = client->receiveData(buf, bufSize)) <= 0) {
+									client->setHangUp(true);
+								} else {
+									buf[len] = 0x00;
+									inputBuffer.write(buf, len);
+
+									readCallback(client);
+
+									client->setHasOutput(outputBuffer.rdbuf()->in_avail() > 0);
+								}
+							} catch (std::exception &e) {
+								removeClient = true;
+							}
 						}
 					}
 
 					if (writeEvent) {
-						if (!removeClient)
-							removeClient = !writeCallback(client);
+
+						writeCallback(client);
+
+						auto &outputBuffer = client->getOutputBuffer();
+
+						while (outputBuffer.rdbuf()->in_avail() > 0) {
+							int bufSize = client->getSendBufferSize();
+							char buf[bufSize];
+
+							auto savePos = outputBuffer.tellg();
+							outputBuffer.readsome(buf, bufSize);
+							try {
+								if (client->sendData(buf, outputBuffer.gcount()) <= 0) {
+									outputBuffer.clear();
+									outputBuffer.seekg(savePos, outputBuffer.beg);
+									break;
+								}
+							} catch (std::exception &e) {
+								removeClient = true;
+								break;
+							}
+						}
+
+						if (outputBuffer.rdbuf()->in_avail() == 0) {
+							outputBuffer.str(std::string());
+							client->setHasOutput(false);
+						} else
+							client->setHasOutput(true);
 					}
+
+					if (client->getHangUp() && !client->getHasOutput())
+						removeClient = true;
 				}
 
 				if (removeClient)

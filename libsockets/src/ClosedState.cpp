@@ -48,3 +48,7 @@ std::string ClosedState::getPort() {
 size_t ClosedState::getSendBufferSize() {
 	throw std::runtime_error("invalid operation getSendBufferSize().");
 }
+
+size_t ClosedState::getReceiveBufferSize() {
+	throw std::runtime_error("invalid operation getReceiveBufferSize().");
+}

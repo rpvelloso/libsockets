@@ -8,6 +8,7 @@
 #ifndef MULTIPLEXEDCLIENTSOCKET_H_
 #define MULTIPLEXEDCLIENTSOCKET_H_
 
+#include <sstream>
 #include "ClientSocket.h"
 #include "MultiplexerImpl.h"
 
@@ -37,10 +38,17 @@ public:
 	void interrupt() { interruptFunc(); };
 	std::shared_ptr<ClientData> getClientData() {return clientData;};
 	void setClientData(std::shared_ptr<ClientData> clientData) {this->clientData = clientData;};
+	bool getHangUp() {return hangUp;};
+	void setHangUp(bool hangUp) {this->hangUp = hangUp;};
+	std::stringstream &getOutputBuffer() {return outputBuffer;};
+	std::stringstream &getInputBuffer() {return inputBuffer;};
 private:
 	bool hasOutput = false;
 	std::function<void()> interruptFunc;
 	std::shared_ptr<ClientData> clientData;
+	bool hangUp = false;
+	std::stringstream outputBuffer;
+	std::stringstream inputBuffer;
 };
 
 #endif /* MULTIPLEXEDCLIENTSOCKET_H_ */

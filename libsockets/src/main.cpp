@@ -29,56 +29,25 @@ void testMultiplexer() {
 	};
 
 /*
- * TODO: move stringstream inside MultiplexedClientSocket and deal automatically with I/O
- * changing client callback: the client should only see the I/O streams and his own ClientData.
+ * TODO: write callback really necessary?
+ * TODO: refactor multiplex using template pattern implementing hooks with pimpl (win/linux)
  */
 	std::unique_ptr<Multiplexer> multiplexer = socketFactory->CreateMultiplexer(
-	[&multiplexer](std::shared_ptr<MultiplexedClientSocket> client)->bool {
+	[](std::shared_ptr<MultiplexedClientSocket> client) {
+		// echo read callback
+		auto &inputBuffer = client->getInputBuffer();
+		auto &outputBuffer = client->getOutputBuffer();
+
+		size_t bufSize = 4096;
 		char buf[4096];
-		int len;
-
-		if ((len = client->receiveData(buf, 4096)) <= 0) {
-			return false;
-		} else {
-			buf[len] = 0x00;
-
-			/*
-			 * business logic goes here
-			 */
-			EchoBuffer *echoBuffer = static_cast<EchoBuffer *>(client->getClientData().get());
-			echoBuffer->ss.write(buf, len);
-			if (std::string(buf).substr(0,9) == "terminate") multiplexer->cancel();
-			/*
-			 * end business logic
-			 */
-
-			client->setHasOutput(echoBuffer->ss.rdbuf()->in_avail() > 0);
-			return true;
+		while (inputBuffer.rdbuf()->in_avail() > 0) {
+			inputBuffer.readsome(buf, bufSize);
+			outputBuffer.write(buf, inputBuffer.gcount());
 		}
 	},
-	[](std::shared_ptr<MultiplexedClientSocket> client)->bool {
-		EchoBuffer *echoBuffer = static_cast<EchoBuffer *>(client->getClientData().get());
-
-		while (echoBuffer->ss.rdbuf()->in_avail() > 0) {
-			size_t bufSize = client->getSendBufferSize()*2;
-			char buf[bufSize];
-
-			auto savePos = echoBuffer->ss.tellg();
-			echoBuffer->ss.readsome(buf, bufSize);
-			if (client->sendData(buf, echoBuffer->ss.gcount()) <= 0) {
-				echoBuffer->ss.seekg(savePos, echoBuffer->ss.beg);
-				break;
-			}
-		}
-
-		if (echoBuffer->ss.rdbuf()->in_avail() == 0) {
-			echoBuffer->ss.str(std::string());
-			client->setHasOutput(false);
-		} else
-			client->setHasOutput(true);
-		return true;
-	}
-	);
+	[](std::shared_ptr<MultiplexedClientSocket> client) {
+		// empty write callback
+	});
 
 	auto serverSocket = socketFactory->CreateServerSocket();
 	std::thread *server = new std::thread([&multiplexer, &serverSocket](){
@@ -102,7 +71,7 @@ void testMultiplexer() {
 }
 
 int main() {
-	winSockInit();
+	//winSockInit();
 	testMultiplexer();
-	winSockCleanup();
+	//winSockCleanup();
 }

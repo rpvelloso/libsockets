@@ -13,7 +13,7 @@
 
 class MultiplexedClientSocket;
 
-using MultiplexerCallback = std::function<bool(std::shared_ptr<MultiplexedClientSocket>)>;
+using MultiplexerCallback = std::function<void(std::shared_ptr<MultiplexedClientSocket>)>;
 
 class MultiplexerImpl {
 public:

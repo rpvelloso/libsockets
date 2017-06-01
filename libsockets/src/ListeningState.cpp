@@ -49,3 +49,7 @@ std::string ListeningState::getPort() {
 size_t ListeningState::getSendBufferSize() {
 	throw std::runtime_error("invalid operation getSendBufferSize().");
 }
+
+size_t ListeningState::getReceiveBufferSize() {
+	throw std::runtime_error("invalid operation getReceiveBufferSize().");
+}

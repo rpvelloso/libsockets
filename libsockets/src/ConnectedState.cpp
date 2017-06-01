@@ -48,3 +48,7 @@ std::string ConnectedState::getPort() {
 size_t ConnectedState::getSendBufferSize() {
 	return impl->getSendBufferSize();
 }
+
+size_t ConnectedState::getReceiveBufferSize() {
+	return impl->getReceiveBufferSize();
+}
