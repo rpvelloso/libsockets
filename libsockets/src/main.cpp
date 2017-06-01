@@ -26,7 +26,7 @@ void testMultiplexer() {
 /*
  * TODO: refactor linux multiplex
  */
-	std::unique_ptr<Multiplexer> multiplexer = socketFactory.CreateMultiplexer(
+	auto multiplexer = socketFactory.CreateMultiplexer(
 	[](std::stringstream &inp, std::stringstream &outp, std::shared_ptr<ClientData> clientData) {
 		auto echoData = static_cast<EchoData *>(clientData.get());
 		size_t bufSize = 4096;
