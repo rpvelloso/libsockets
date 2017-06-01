@@ -18,45 +18,34 @@
 #include "WindowsSocket.h"
 #endif
 
-#include "MultiplexedClientSocket.h"
-
 void testMultiplexer() {
-	class EchoBuffer : public ClientData {
-	public:
-		EchoBuffer() : ClientData() {};
-		~EchoBuffer() {};
-		std::stringstream ss;
+	struct EchoData : public ClientData {
+		size_t count=0;
 	};
 
 /*
- * TODO: write callback really necessary?
- * TODO: refactor multiplex using template pattern implementing hooks with pimpl (win/linux)
- * TODO: hide MultiplexedClientSocket class, pass I/O streams by param to callback
+ * TODO: refactor linux multiplex
  */
-	std::unique_ptr<Multiplexer> multiplexer = socketFactory->CreateMultiplexer(
-	[](std::shared_ptr<MultiplexedClientSocket> client) {
-		// echo read callback
-		auto &inputBuffer = client->getInputBuffer();
-		auto &outputBuffer = client->getOutputBuffer();
-
+	std::unique_ptr<Multiplexer> multiplexer = socketFactory.CreateMultiplexer(
+	[](std::stringstream &inp, std::stringstream &outp, std::shared_ptr<ClientData> clientData) {
+		auto echoData = static_cast<EchoData *>(clientData.get());
 		size_t bufSize = 4096;
 		char buf[4096];
-		while (inputBuffer.rdbuf()->in_avail() > 0) {
-			inputBuffer.readsome(buf, bufSize);
-			outputBuffer.write(buf, inputBuffer.gcount());
+		while (inp.rdbuf()->in_avail() > 0) {
+			inp.readsome(buf, bufSize);
+			outp.write(buf, inp.gcount());
+			echoData->count += inp.gcount();
+			//outp << " " << echoData->count;
 		}
-	},
-	[](std::shared_ptr<MultiplexedClientSocket> client) {
-		// empty write callback
 	});
 
-	auto serverSocket = socketFactory->CreateServerSocket();
+	auto serverSocket = socketFactory.CreateServerSocket();
 	std::thread *server = new std::thread([&multiplexer, &serverSocket](){
 		serverSocket->listenForConnections("0.0.0.0","30000");
 		while (true) {
 			try {
 				auto clientSocket = serverSocket->acceptConnection();
-				multiplexer->addClientSocket(std::move(clientSocket), std::make_shared<EchoBuffer>());
+				multiplexer->addClientSocket(std::move(clientSocket), std::make_shared<EchoData>());
 			} catch (std::exception &e) {
 				std::cerr << e.what() << std::endl;
 				break;

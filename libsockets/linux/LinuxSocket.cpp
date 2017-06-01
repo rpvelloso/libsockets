@@ -17,8 +17,6 @@
 #include <string.h>
 #include <fcntl.h>
 
-#include <iostream>
-
 using ResPtr = std::unique_ptr<struct addrinfo, decltype(&freeaddrinfo)>;
 
 LinuxSocket::LinuxSocket() : SocketImpl() {
@@ -42,7 +40,6 @@ size_t LinuxSocket::getSendBufferSize() {
 	socklen_t len = sizeof(sendBufferSize);
 
 	if (getsockopt(fd, SOL_SOCKET, SO_SNDBUF, &sendBufferSize, &len) == 0) {
-		std::cout << "S " << sendBufferSize << std::endl;
 		if (sendBufferSize > 0)
 			return sendBufferSize / 2; // half buffer size
 	}
@@ -55,7 +52,6 @@ size_t LinuxSocket::getReceiveBufferSize() {
 	socklen_t len = sizeof(receiveBufferSize);
 
 	if (getsockopt(fd, SOL_SOCKET, SO_RCVBUF, &receiveBufferSize, &len) == 0) {
-		std::cout << "R " << receiveBufferSize << std::endl;
 		if (receiveBufferSize > 0)
 			return receiveBufferSize / 2; // half buffer size
 	}

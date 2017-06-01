@@ -16,7 +16,7 @@ public:
 	virtual ~WindowsSocketFactory();
 	std::unique_ptr<ClientSocket> CreateClientSocket();
 	std::unique_ptr<ServerSocket> CreateServerSocket();
-	std::unique_ptr<Multiplexer> CreateMultiplexer(MultiplexerCallback readCallback, MultiplexerCallback writeCallback);
+	std::unique_ptr<Multiplexer> CreateMultiplexer(MultiplexerCallback callback);
 };
 
 #endif /* WINDOWSSOCKETFACTORY_H_ */

@@ -10,13 +10,6 @@
 #include "LinuxMultiplexer.h"
 #include "LinuxSocket.h"
 
-#include <iostream>
-
-enum MultiplexerCommand : int {
-	CANCEL = 0x00,
-	INTERRUPT = 0x01
-};
-
 LinuxMultiplexer::LinuxMultiplexer(MultiplexerCallback readCallback, MultiplexerCallback writeCallback) : MultiplexerImpl(readCallback, writeCallback) {
 	int selfPipe[2];
 
@@ -83,8 +76,6 @@ void LinuxMultiplexer::multiplex() {
 			}
 		}
 		clientsMutex.unlock();
-
-		std::cout << "# " << nfds << std::endl;
 
 		if (poll(fdarray,nfds,-1) > 0) {
 			std::lock_guard<std::mutex> lock(clientsMutex);

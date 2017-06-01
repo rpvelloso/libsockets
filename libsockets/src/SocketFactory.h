@@ -16,12 +16,17 @@
 class SocketFactory {
 public:
 	SocketFactory() {};
+	SocketFactory(std::unique_ptr<SocketFactory> impl) : impl(std::move(impl)) {};
 	virtual ~SocketFactory() {};
-	virtual std::unique_ptr<ClientSocket> CreateClientSocket() = 0;
-	virtual std::unique_ptr<ServerSocket> CreateServerSocket() = 0;
-	virtual std::unique_ptr<Multiplexer> CreateMultiplexer(MultiplexerCallback readCallback, MultiplexerCallback writeCallback) = 0;
+	virtual std::unique_ptr<ClientSocket> CreateClientSocket() {return std::move(impl->CreateClientSocket());};
+	virtual std::unique_ptr<ServerSocket> CreateServerSocket() {return std::move(impl->CreateServerSocket());};
+	virtual std::unique_ptr<Multiplexer> CreateMultiplexer(MultiplexerCallback callback) {
+		return std::move(impl->CreateMultiplexer(callback));
+	};
+private:
+	std::unique_ptr<SocketFactory> impl;
 };
 
-extern SocketFactory *socketFactory;
+extern SocketFactory socketFactory;
 
 #endif /* SOCKETFACTORY_H_ */

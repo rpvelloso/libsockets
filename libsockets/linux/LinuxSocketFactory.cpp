@@ -9,7 +9,7 @@
 #include "LinuxSocket.h"
 #include "LinuxMultiplexer.h"
 
-SocketFactory *socketFactory = new LinuxSocketFactory();
+SocketFactory socketFactory(std::make_unique<LinuxSocketFactory>());
 
 LinuxSocketFactory::LinuxSocketFactory() {
 }

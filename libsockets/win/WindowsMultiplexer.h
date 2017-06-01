@@ -9,32 +9,27 @@
 #define WINDOWSMULTIPLEXER_H_
 
 #include <vector>
-#include <mutex>
-#include <memory>
-#include <functional>
-#include <unordered_map>
 #include "WindowsSocket.h"
 #include "MultiplexerImpl.h"
 #include "ClientSocket.h"
 
 class WindowsMultiplexer: public MultiplexerImpl {
 public:
-	WindowsMultiplexer(MultiplexerCallback readCallback, MultiplexerCallback writeCallback);
+	WindowsMultiplexer(MultiplexerCallback callback);
 	virtual ~WindowsMultiplexer();
 	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) override;
 	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
 			std::shared_ptr<ClientData> clientData) override;
-	void multiplex() override;
-	void cancel() override;
-	void interrupt();
 	size_t clientCount() override;
+protected:
+	void removeClientSocket(std::shared_ptr<MultiplexedClientSocket> clientSocket) override;
+	bool selfPipe(std::shared_ptr<MultiplexedClientSocket> clientSocket) override;
+	std::unordered_map<std::shared_ptr<MultiplexedClientSocket>, std::pair<bool, bool>> poll() override;
+
 private:
 	std::unordered_map<SOCKET, std::shared_ptr<MultiplexedClientSocket>> clients;
-	std::mutex clientsMutex, commandMutex;
-	std::shared_ptr<ClientSocket> sockIn;
 	SOCKET sockOutFD;
 
-	void sendMultiplexerCommand(int cmd);
 };
 
 #endif /* WINDOWSMULTIPLEXER_H_ */

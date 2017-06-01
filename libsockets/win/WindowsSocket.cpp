@@ -5,7 +5,6 @@
  *      Author: rvelloso
  */
 
-#include <iostream>
 #include <memory>
 #include "ClientSocket.h"
 #include "WindowsSocket.h"
@@ -38,7 +37,6 @@ size_t WindowsSocket::getSendBufferSize() {
 	socklen_t len = sizeof(sendBufferSize);
 
 	if (getsockopt(fd, SOL_SOCKET, SO_SNDBUF, (char *)&sendBufferSize, &len) == 0) {
-		std::cout << "S " << sendBufferSize << std::endl;
 		if (sendBufferSize > 0)
 			return sendBufferSize >> 1; // half buffer size
 	}
@@ -51,7 +49,6 @@ size_t WindowsSocket::getReceiveBufferSize() {
 	socklen_t len = sizeof(receiveBufferSize);
 
 	if (getsockopt(fd, SOL_SOCKET, SO_RCVBUF, (char *)&receiveBufferSize, &len) == 0) {
-		std::cout << "R " << receiveBufferSize << std::endl;
 		if (receiveBufferSize > 0)
 			return receiveBufferSize / 2; // half buffer size
 	}
@@ -146,7 +143,7 @@ std::unique_ptr<ClientSocket> WindowsSocket::acceptConnection() {
 }
 
 int WindowsSocket::setNonBlockingIO(bool status) {
-	unsigned int mode = status? 1 : 0;
+	u_long mode = status? 1 : 0;
 	return ioctlsocket(fd, FIONBIO, &mode);
 }
 
