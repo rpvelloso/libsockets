@@ -28,14 +28,14 @@ void testMultiplexer() {
  */
 	auto multiplexer = socketFactory.CreateMultiplexer(
 	[](std::stringstream &inp, std::stringstream &outp, std::shared_ptr<ClientData> clientData) {
-		auto echoData = static_cast<EchoData *>(clientData.get());
+		auto echoData = std::static_pointer_cast<EchoData>(clientData);
 		size_t bufSize = 4096;
 		char buf[4096];
 		while (inp.rdbuf()->in_avail() > 0) {
 			inp.readsome(buf, bufSize);
 			outp.write(buf, inp.gcount());
 			echoData->count += inp.gcount();
-			//outp << " " << echoData->count;
+			outp << " " << echoData->count;
 		}
 	});
 
