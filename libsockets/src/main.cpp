@@ -31,6 +31,7 @@ void testMultiplexer() {
 /*
  * TODO: write callback really necessary?
  * TODO: refactor multiplex using template pattern implementing hooks with pimpl (win/linux)
+ * TODO: hide MultiplexedClientSocket class, pass I/O streams by param to callback
  */
 	std::unique_ptr<Multiplexer> multiplexer = socketFactory->CreateMultiplexer(
 	[](std::shared_ptr<MultiplexedClientSocket> client) {
