@@ -101,9 +101,6 @@ void LinuxMultiplexer::multiplex() {
 					removeClient = true;
 				else {
 					if (readEvent) {
-						auto &outputBuffer = client->getOutputBuffer();
-						auto &inputBuffer = client->getInputBuffer();
-
 						if (c.fd == sockOutFD) {
 							int cmd;
 
@@ -115,6 +112,9 @@ void LinuxMultiplexer::multiplex() {
 								return;
 							}
 						} else {
+							auto &outputBuffer = client->getOutputBuffer();
+							auto &inputBuffer = client->getInputBuffer();
+
 							auto bufSize = client->getReceiveBufferSize();
 							char buf[bufSize+1];
 							int len;

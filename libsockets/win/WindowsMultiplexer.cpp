@@ -5,6 +5,7 @@
  *      Author: rvelloso
  */
 
+#include <iostream>
 #include "SocketFactory.h"
 #include "WindowsMultiplexer.h"
 #include "WindowsSocket.h"
@@ -87,6 +88,8 @@ void WindowsMultiplexer::multiplex() {
 		}
 		clientsMutex.unlock();
 
+		std::cout << "# " << nfds << std::endl;
+
 		if (WSAPoll(fdarray,nfds,-1) > 0) {
 			std::lock_guard<std::mutex> lock(clientsMutex);
 
@@ -113,14 +116,64 @@ void WindowsMultiplexer::multiplex() {
 								return;
 							}
 						} else {
-							removeClient = !readCallback(client);
+							auto &outputBuffer = client->getOutputBuffer();
+							auto &inputBuffer = client->getInputBuffer();
+
+							auto bufSize = client->getReceiveBufferSize();
+							char buf[bufSize+1];
+							int len;
+
+							try {
+								if ((len = client->receiveData(buf, bufSize)) <= 0) {
+									client->setHangUp(true);
+								} else {
+									buf[len] = 0x00;
+									inputBuffer.write(buf, len);
+
+									readCallback(client);
+
+									client->setHasOutput(outputBuffer.rdbuf()->in_avail() > 0);
+								}
+							} catch (std::exception &e) {
+								removeClient = true;
+							}
 						}
 					}
 
 					if (writeEvent) {
-						//if (!removeClient)
-							removeClient |= !writeCallback(client);
+
+						writeCallback(client);
+
+						auto &outputBuffer = client->getOutputBuffer();
+
+						while (outputBuffer.rdbuf()->in_avail() > 0) {
+							int bufSize = client->getSendBufferSize();
+							char buf[bufSize];
+
+							auto savePos = outputBuffer.tellg();
+							outputBuffer.readsome(buf, bufSize);
+							try {
+								if (client->sendData(buf, outputBuffer.gcount()) <= 0) {
+									outputBuffer.clear();
+									outputBuffer.seekg(savePos, outputBuffer.beg);
+									break;
+								}
+							} catch (std::exception &e) {
+								removeClient = true;
+								break;
+							}
+						}
+
+						if (outputBuffer.rdbuf()->in_avail() == 0) {
+							outputBuffer.str(std::string());
+							client->setHasOutput(false);
+						} else
+							client->setHasOutput(true);
 					}
+
+					if (client->getHangUp() && !client->getHasOutput())
+						removeClient = true;
+
 				}
 
 				if (removeClient)
