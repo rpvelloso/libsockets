@@ -28,7 +28,7 @@ void testMultiplexer() {
 /*
  * TODO: refactor linux multiplex
  */
-	MultiplexedServer server("0.0.0.0", "30000", 1,
+	MultiplexedServer<EchoData> server("0.0.0.0", "30000", 1,
 	[](std::stringstream &inp, std::stringstream &outp, std::shared_ptr<ClientData> clientData) {
 		auto echoData = std::static_pointer_cast<EchoData>(clientData);
 		size_t bufSize = 4096;
@@ -47,7 +47,7 @@ void testMultiplexer() {
 }
 
 int main() {
-	winSockInit();
+	//winSockInit();
 	testMultiplexer();
-	winSockCleanup();
+	//winSockCleanup();
 }

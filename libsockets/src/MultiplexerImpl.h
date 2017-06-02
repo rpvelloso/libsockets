@@ -39,7 +39,7 @@ protected:
 
 	virtual void sendMultiplexerCommand(int cmd);
 
-	virtual std::unordered_map<std::shared_ptr<MultiplexedClientSocket>, std::pair<bool, bool>> poll() = 0;
+	virtual std::unordered_map<std::shared_ptr<MultiplexedClientSocket>, std::pair<bool, bool>> pollClients() = 0;
 	virtual void removeClientSocket(std::shared_ptr<MultiplexedClientSocket> clientSocket) = 0;
 	virtual bool selfPipe(std::shared_ptr<MultiplexedClientSocket> clientSocket) = 0;
 

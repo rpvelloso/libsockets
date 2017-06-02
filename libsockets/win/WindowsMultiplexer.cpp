@@ -5,6 +5,8 @@
  *      Author: rvelloso
  */
 
+#include <iostream>
+
 #include "SocketFactory.h"
 #include "WindowsMultiplexer.h"
 #include "WindowsSocket.h"
@@ -66,7 +68,7 @@ void WindowsMultiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSoc
 	interrupt();
 }
 
-std::unordered_map<std::shared_ptr<MultiplexedClientSocket>, std::pair<bool, bool>> WindowsMultiplexer::poll() {
+std::unordered_map<std::shared_ptr<MultiplexedClientSocket>, std::pair<bool, bool>> WindowsMultiplexer::pollClients() {
 	// <client, <read, write>>, if both read & write false then remove client
 	std::unordered_map<std::shared_ptr<MultiplexedClientSocket>, std::pair<bool, bool>> readyClients;
 
@@ -86,8 +88,9 @@ std::unordered_map<std::shared_ptr<MultiplexedClientSocket>, std::pair<bool, boo
 
 	clientsMutex.unlock();
 
-	int r;
-	if ((r=WSAPoll(fdarray,nfds,-1)) > 0) {
+	std::cout << "# " << nfds << std::endl;
+
+	if (WSAPoll(fdarray,nfds,-1) > 0) {
 		std::lock_guard<std::mutex> lock(clientsMutex);
 		for (auto c:fdarray) {
 			bool fdError = (c.revents & POLLERR) || (c.revents & POLLHUP);

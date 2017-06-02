@@ -24,12 +24,11 @@ public:
 protected:
 	void removeClientSocket(std::shared_ptr<MultiplexedClientSocket> clientSocket) override;
 	bool selfPipe(std::shared_ptr<MultiplexedClientSocket> clientSocket) override;
-	std::unordered_map<std::shared_ptr<MultiplexedClientSocket>, std::pair<bool, bool>> poll() override;
+	std::unordered_map<std::shared_ptr<MultiplexedClientSocket>, std::pair<bool, bool>> pollClients() override;
 
 private:
 	std::unordered_map<SOCKET, std::shared_ptr<MultiplexedClientSocket>> clients;
 	SOCKET sockOutFD;
-
 };
 
 #endif /* WINDOWSMULTIPLEXER_H_ */

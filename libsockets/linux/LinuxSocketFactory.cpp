@@ -27,6 +27,6 @@ std::unique_ptr<ServerSocket> LinuxSocketFactory::CreateServerSocket() {
 	return std::make_unique<ServerSocket>(impl);
 }
 
-std::unique_ptr<Multiplexer> LinuxSocketFactory::CreateMultiplexer(MultiplexerCallback readCallback, MultiplexerCallback writeCallback) {
-	return std::make_unique<Multiplexer>(new LinuxMultiplexer(readCallback, writeCallback));
+std::unique_ptr<Multiplexer> LinuxSocketFactory::CreateMultiplexer(MultiplexerCallback callback) {
+	return std::make_unique<Multiplexer>(new LinuxMultiplexer(callback));
 }

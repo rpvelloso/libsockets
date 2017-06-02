@@ -33,7 +33,7 @@ void MultiplexerImpl::sendMultiplexerCommand(int cmd) {
 
 void MultiplexerImpl::multiplex() {
 	while (true) {
-		auto readyClients = poll();
+		auto readyClients = pollClients();
 
 		std::lock_guard<std::mutex> lock(clientsMutex);
 		for (auto rc:readyClients) {
