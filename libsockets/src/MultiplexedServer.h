@@ -32,7 +32,7 @@ public:
 		while (true) {
 			try {
 				auto clientSocket = serverSocket->acceptConnection();
-				multiplexers[0]->addClientSocket(std::move(clientSocket), std::make_shared<ClientDataType>());
+				getMultiplexer().addClientSocket(std::move(clientSocket), std::make_shared<ClientDataType>());
 			} catch (std::exception &e) {
 				std::cerr << e.what() << std::endl;
 				break;
@@ -42,6 +42,20 @@ public:
 private:
 	std::vector<std::unique_ptr<Multiplexer>> multiplexers;
 	std::string bindAddr, port;
+
+	Multiplexer &getMultiplexer() {
+		size_t pos = 0;
+		size_t min = multiplexers[0]->clientCount();
+
+		for (size_t i = 1; i < multiplexers.size(); ++i) {
+			auto count = multiplexers[i]->clientCount();
+			if (count < min) {
+				min = count;
+				pos = i;
+			}
+		}
+		return *multiplexers[pos];
+	}
 };
 
 #endif /* MULTIPLEXEDSERVER_H_ */

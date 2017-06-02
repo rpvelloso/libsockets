@@ -28,7 +28,7 @@ void testMultiplexer() {
 /*
  * TODO: refactor linux multiplex
  */
-	MultiplexedServer<EchoData> server("0.0.0.0", "30000", 1,
+	MultiplexedServer<EchoData> server("0.0.0.0", "30000", 4,
 	[](std::stringstream &inp, std::stringstream &outp, std::shared_ptr<ClientData> clientData) {
 		auto echoData = std::static_pointer_cast<EchoData>(clientData);
 		size_t bufSize = 4096;
@@ -37,7 +37,7 @@ void testMultiplexer() {
 			inp.readsome(buf, bufSize);
 			outp.write(buf, inp.gcount());
 			echoData->count += inp.gcount();
-			outp << " " << echoData->count;
+			//outp << " " << echoData->count;
 		}
 	});
 
