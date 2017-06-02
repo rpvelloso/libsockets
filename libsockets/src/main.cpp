@@ -5,8 +5,6 @@
  *      Author: rvelloso
  */
 
-//TODO: review all shared/unique ptr
-
 #include <iostream>
 #include <memory>
 #include <thread>

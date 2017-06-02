@@ -37,9 +37,9 @@ void MultiplexerImpl::multiplex() {
 
 		std::lock_guard<std::mutex> lock(clientsMutex);
 		for (auto rc:readyClients) {
-			auto client = rc.first;
-			auto readFlag = rc.second.first;
-			auto writeFlag = rc.second.second;
+			auto &client = std::get<0>(rc);
+			auto readFlag = std::get<1>(rc);
+			auto writeFlag = std::get<2>(rc);
 			auto errorFlag = !(readFlag || writeFlag);
 			auto sp = selfPipe(client);
 
@@ -47,7 +47,7 @@ void MultiplexerImpl::multiplex() {
 				if (sp) {
 					int cmd;
 
-					client->receiveData(static_cast<void *>(&cmd),sizeof(cmd));
+					client.receiveData(static_cast<void *>(&cmd),sizeof(cmd));
 					switch (cmd) {
 					case MultiplexerCommand::INTERRUPT:
 						break;
@@ -55,15 +55,15 @@ void MultiplexerImpl::multiplex() {
 						return;
 					}
 				} else {
-					errorFlag = !readHandler(*client);
+					errorFlag = !readHandler(client);
 				}
 			}
 
 			if (writeFlag && !errorFlag && !sp) {
-				errorFlag = !writeHandler(*client);
+				errorFlag = !writeHandler(client);
 			}
 
-			if (client->getHangUp() && !client->getHasOutput())
+			if (client.getHangUp() && !client.getHasOutput())
 				errorFlag = true;
 
 			if (errorFlag) {
@@ -79,9 +79,6 @@ void MultiplexerImpl::multiplex() {
 
 std::unique_ptr<MultiplexedClientSocket> MultiplexerImpl::makeMultiplexed(std::unique_ptr<ClientSocket> clientSocket) {
 	return std::make_unique<MultiplexedClientSocket>(std::move(clientSocket), std::bind(&MultiplexerImpl::interrupt, this));
-	//std::unique_ptr<MultiplexedClientSocket> mul = std::make_unique<MultiplexedClientSocket>(*clientSocket);
-	//return mul;
-	//return std::make_unique<MultiplexedClientSocket>(clientSocket->getImpl(), std::bind(&MultiplexerImpl::interrupt, this));
 };
 
 bool MultiplexerImpl::readHandler(MultiplexedClientSocket &client) {

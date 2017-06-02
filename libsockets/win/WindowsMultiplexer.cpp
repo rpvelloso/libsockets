@@ -7,6 +7,7 @@
 
 #include <iostream>
 
+#include "MultiplexerImpl.h"
 #include "SocketFactory.h"
 #include "WindowsMultiplexer.h"
 #include "WindowsSocket.h"
@@ -68,9 +69,9 @@ void WindowsMultiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSoc
 	interrupt();
 }
 
-std::unordered_map<std::shared_ptr<MultiplexedClientSocket>, std::pair<bool, bool>> WindowsMultiplexer::pollClients() {
-	// <client, <read, write>>, if both read & write false then remove client
-	std::unordered_map<std::shared_ptr<MultiplexedClientSocket>, std::pair<bool, bool>> readyClients;
+std::vector<pollTuple> WindowsMultiplexer::pollClients() {
+	// <client, read, write>, if both read & write false then remove client
+	std::vector<pollTuple> readyClients;
 
 	clientsMutex.lock();
 
@@ -96,12 +97,12 @@ std::unordered_map<std::shared_ptr<MultiplexedClientSocket>, std::pair<bool, boo
 			bool fdError = (c.revents & POLLERR) || (c.revents & POLLHUP) || (c.revents & POLLNVAL);
 			bool readFlag = c.revents & POLLIN;
 			bool writeFlag = c.revents & POLLOUT;
-			auto client = clients[c.fd];
+			auto &client = *clients[c.fd];
 
 			if (fdError)
-				readyClients[client] = std::make_pair(false, false); // mark for deletion
+				readyClients.push_back(std::forward_as_tuple(client, false, false));
 			else if (readFlag || writeFlag)
-				readyClients[client] = std::make_pair(readFlag, writeFlag);
+				readyClients.push_back(std::forward_as_tuple(client, readFlag, writeFlag));
 		}
 	}
 
@@ -113,12 +114,12 @@ size_t WindowsMultiplexer::clientCount() {
 	return clients.size()-1; // self-pipe is always in clients
 }
 
-bool WindowsMultiplexer::selfPipe(std::shared_ptr<MultiplexedClientSocket> clientSocket) {
-	auto impl = static_cast<WindowsSocket &>(clientSocket->getImpl());
+bool WindowsMultiplexer::selfPipe(MultiplexedClientSocket &clientSocket) {
+	auto impl = static_cast<WindowsSocket &>(clientSocket.getImpl());
 	return impl.getFD() == sockOutFD;
 }
 
-void WindowsMultiplexer::removeClientSocket(std::shared_ptr<MultiplexedClientSocket> clientSocket) {
-	clients.erase(static_cast<WindowsSocket &>(clientSocket->getImpl()).getFD());
+void WindowsMultiplexer::removeClientSocket(MultiplexedClientSocket &clientSocket) {
+	clients.erase(static_cast<WindowsSocket &>(clientSocket.getImpl()).getFD());
 }
 

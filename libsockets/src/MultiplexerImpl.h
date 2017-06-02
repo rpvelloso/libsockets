@@ -8,8 +8,9 @@
 #ifndef MULTIPLEXERIMPL_H_
 #define MULTIPLEXERIMPL_H_
 
+#include <tuple>
 #include <memory>
-#include <unordered_map>
+#include <vector>
 #include <mutex>
 #include <functional>
 #include "MultiplexedClientSocket.h"
@@ -17,6 +18,7 @@
 class MultiplexedClientSocket;
 
 using MultiplexerCallback = std::function<void(std::stringstream &inp, std::stringstream &outp, ClientData&)>;
+using pollTuple = std::tuple<MultiplexedClientSocket &, bool, bool>;
 
 class MultiplexerImpl {
 public:
@@ -39,9 +41,9 @@ protected:
 
 	virtual void sendMultiplexerCommand(int cmd);
 
-	virtual std::unordered_map<std::shared_ptr<MultiplexedClientSocket>, std::pair<bool, bool>> pollClients() = 0;
-	virtual void removeClientSocket(std::shared_ptr<MultiplexedClientSocket> clientSocket) = 0;
-	virtual bool selfPipe(std::shared_ptr<MultiplexedClientSocket> clientSocket) = 0;
+	virtual std::vector<pollTuple> pollClients() = 0;
+	virtual void removeClientSocket(MultiplexedClientSocket &clientSocket) = 0;
+	virtual bool selfPipe(MultiplexedClientSocket &clientSocket) = 0;
 
 	/*
 	 * Factory method that wraps a clientSocket with a multiplexing interface

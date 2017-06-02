@@ -9,6 +9,7 @@
 #define WINDOWSMULTIPLEXER_H_
 
 #include <vector>
+#include <unordered_map>
 #include "WindowsSocket.h"
 #include "MultiplexerImpl.h"
 #include "ClientSocket.h"
@@ -22,12 +23,12 @@ public:
 			std::unique_ptr<ClientData> clientData) override;
 	size_t clientCount() override;
 protected:
-	void removeClientSocket(std::shared_ptr<MultiplexedClientSocket> clientSocket) override;
-	bool selfPipe(std::shared_ptr<MultiplexedClientSocket> clientSocket) override;
-	std::unordered_map<std::shared_ptr<MultiplexedClientSocket>, std::pair<bool, bool>> pollClients() override;
+	void removeClientSocket(MultiplexedClientSocket &clientSocket) override;
+	bool selfPipe(MultiplexedClientSocket &clientSocket) override;
+	std::vector<pollTuple> pollClients() override;
 
 private:
-	std::unordered_map<SOCKET, std::shared_ptr<MultiplexedClientSocket>> clients;
+	std::unordered_map<SOCKET, std::unique_ptr<MultiplexedClientSocket>> clients;
 	SOCKET sockOutFD;
 };
 
