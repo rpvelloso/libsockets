@@ -74,7 +74,7 @@ void MultiplexerImpl::multiplex() {
 					removeClientSocket(client);
 				}
 				else
-					throw std::runtime_error("self-pipe error..");
+					throw std::runtime_error("self-pipe error.");
 			}
 		}
 	}
