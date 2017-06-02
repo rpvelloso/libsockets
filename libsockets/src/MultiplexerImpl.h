@@ -16,7 +16,7 @@
 
 class MultiplexedClientSocket;
 
-using MultiplexerCallback = std::function<void(std::stringstream &inp, std::stringstream &outp, std::shared_ptr<ClientData>)>;
+using MultiplexerCallback = std::function<void(std::stringstream &inp, std::stringstream &outp, ClientData&)>;
 
 class MultiplexerImpl {
 public:
@@ -24,7 +24,7 @@ public:
 	virtual ~MultiplexerImpl();
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) = 0;
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-			std::shared_ptr<ClientData> clientData) = 0;
+			std::unique_ptr<ClientData> clientData) = 0;
 	virtual size_t clientCount() = 0;
 
 	virtual void cancel();
@@ -33,7 +33,7 @@ public:
 
 
 protected:
-	std::shared_ptr<ClientSocket> sockIn;
+	std::unique_ptr<ClientSocket> sockIn;
 	std::mutex commandMutex, clientsMutex;
 	MultiplexerCallback callback;
 
@@ -48,8 +48,8 @@ protected:
 	 */
 	std::unique_ptr<MultiplexedClientSocket> makeMultiplexed(std::unique_ptr<ClientSocket> clientSocket);
 
-	bool readHandler(std::shared_ptr<MultiplexedClientSocket> client);
-	bool writeHandler(std::shared_ptr<MultiplexedClientSocket> client);
+	bool readHandler(MultiplexedClientSocket &client);
+	bool writeHandler(MultiplexedClientSocket &client);
 };
 
 #endif /* MULTIPLEXERIMPL_H_ */

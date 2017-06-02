@@ -7,9 +7,9 @@
 
 #include "DisconnectedState.h"
 
-DisconnectedState::DisconnectedState(std::shared_ptr<SocketImpl> impl) : SocketState(impl) {
+DisconnectedState::DisconnectedState(SocketImpl &impl) : SocketState(impl) {
 	setSocketState(SocketStateType::Disconnected);
-	impl->setSocketState(socketState);
+	impl.setSocketState(socketState);
 };
 
 DisconnectedState::~DisconnectedState() {
@@ -25,7 +25,7 @@ int DisconnectedState::sendData(const void *buf, size_t len) {
 };
 
 int DisconnectedState::connectTo(const std::string &host, const std::string &port) {
-	return impl->connectTo(host, port);
+	return impl.connectTo(host, port);
 };
 
 void DisconnectedState::disconnect() {
@@ -33,7 +33,7 @@ void DisconnectedState::disconnect() {
 };
 
 int DisconnectedState::listenForConnections(const std::string &bindAddr, const std::string &port) {
-	return impl->listenForConnections(bindAddr, port);
+	return impl.listenForConnections(bindAddr, port);
 };
 
 std::unique_ptr<ClientSocket> DisconnectedState::acceptConnection() {

@@ -7,7 +7,7 @@
 
 #include "ClientSocket.h"
 
-ClientSocket::ClientSocket(std::shared_ptr<SocketImpl> impl) : Socket(impl) {
+ClientSocket::ClientSocket(SocketImpl *impl) : Socket(impl) {
 	if (impl->getSocketState() == SocketStateType::Connected) {
 		sendBufferSize = state->getSendBufferSize();
 		receiveBufferSize = state->getReceiveBufferSize();
@@ -29,7 +29,7 @@ int ClientSocket::connectTo(const std::string &host, const std::string &port) {
 	int ret;
 
 	if ((ret = state->connectTo(host, port)) == 0) {
-		state.reset(new ConnectedState(impl));
+		state.reset(new ConnectedState(getImpl()));
 		sendBufferSize = state->getSendBufferSize();
 		receiveBufferSize = state->getReceiveBufferSize();
 	}
@@ -39,7 +39,7 @@ int ClientSocket::connectTo(const std::string &host, const std::string &port) {
 
 void ClientSocket::disconnect() {
 	state->disconnect();
-	state.reset(new ClosedState(impl));
+	state.reset(new ClosedState(getImpl()));
 }
 
 size_t ClientSocket::getSendBufferSize() const {

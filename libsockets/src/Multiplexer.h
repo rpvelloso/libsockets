@@ -34,8 +34,8 @@ public:
 		impl->addClientSocket(std::move(clientSocket));
 	};
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-			std::shared_ptr<ClientData> clientData) {
-		impl->addClientSocket(std::move(clientSocket), clientData);
+			std::unique_ptr<ClientData> clientData) {
+		impl->addClientSocket(std::move(clientSocket), std::move(clientData));
 	};
 	virtual void multiplex() {
 		impl->multiplex();
@@ -50,7 +50,7 @@ public:
 		return impl->clientCount();
 	};
 protected:
-	std::shared_ptr<MultiplexerImpl> impl;
+	std::unique_ptr<MultiplexerImpl> impl;
 	std::unique_ptr<std::thread> thread;
 };
 

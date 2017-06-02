@@ -138,8 +138,7 @@ std::unique_ptr<ClientSocket> WindowsSocket::acceptConnection() {
 		throw std::runtime_error("accept() returned an invalid socket. " + std::to_string(WSAGetLastError()));
 	}
 
-	std::shared_ptr<SocketImpl> impl(new WindowsSocket(clientFd));
-	return std::make_unique<ClientSocket>(impl);
+	return std::make_unique<ClientSocket>(new WindowsSocket(clientFd));
 }
 
 int WindowsSocket::setNonBlockingIO(bool status) {

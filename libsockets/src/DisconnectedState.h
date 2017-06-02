@@ -12,7 +12,7 @@
 
 class DisconnectedState : public SocketState {
 public:
-	DisconnectedState(std::shared_ptr<SocketImpl> impl);
+	DisconnectedState(SocketImpl &impl);
 	virtual ~DisconnectedState();
 	int receiveData(void *buf, size_t len) override;
 	int sendData(const void *buf, size_t len) override;

@@ -12,7 +12,7 @@
 
 class ConnectedState : public SocketState {
 public:
-	ConnectedState(std::shared_ptr<SocketImpl> impl);
+	ConnectedState(SocketImpl &impl);
 	virtual ~ConnectedState();
 	int receiveData(void *buf, size_t len) override;
 	int sendData(const void *buf, size_t len) override;

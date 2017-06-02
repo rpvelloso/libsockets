@@ -7,9 +7,9 @@
 
 #include "ClosedState.h"
 
-ClosedState::ClosedState(std::shared_ptr<SocketImpl> impl) : SocketState(impl) {
+ClosedState::ClosedState(SocketImpl &impl) : SocketState(impl) {
 	setSocketState(SocketStateType::Closed);
-	impl->setSocketState(socketState);
+	impl.setSocketState(socketState);
 };
 
 ClosedState::~ClosedState() {

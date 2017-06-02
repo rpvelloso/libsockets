@@ -14,7 +14,7 @@
 
 class ServerSocket : public Socket {
 public:
-	ServerSocket(std::shared_ptr<SocketImpl> impl);
+	ServerSocket(SocketImpl *impl);
 	virtual ~ServerSocket();
 	virtual int listenForConnections(const std::string &bindAddr, const std::string &port);
 	virtual std::unique_ptr<ClientSocket> acceptConnection();

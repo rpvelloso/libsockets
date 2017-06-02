@@ -8,9 +8,9 @@
 #include "ClientSocket.h"
 #include "ListeningState.h"
 
-ListeningState::ListeningState(std::shared_ptr<SocketImpl> impl) : SocketState(impl) {
+ListeningState::ListeningState(SocketImpl &impl) : SocketState(impl) {
 	setSocketState(SocketStateType::Listening);
-	impl->setSocketState(socketState);
+	impl.setSocketState(socketState);
 };
 
 ListeningState::~ListeningState() {
@@ -30,7 +30,7 @@ int ListeningState::connectTo(const std::string &host, const std::string &port) 
 };
 
 void ListeningState::disconnect() {
-	impl->disconnect();
+	impl.disconnect();
 };
 
 int ListeningState::listenForConnections(const std::string &bindAddr, const std::string &port) {
@@ -38,11 +38,11 @@ int ListeningState::listenForConnections(const std::string &bindAddr, const std:
 };
 
 std::unique_ptr<ClientSocket> ListeningState::acceptConnection() {
-	return impl->acceptConnection();
+	return impl.acceptConnection();
 };
 
 std::string ListeningState::getPort() {
-	return impl->getPort();
+	return impl.getPort();
 }
 ;
 

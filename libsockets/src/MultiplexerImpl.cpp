@@ -55,12 +55,12 @@ void MultiplexerImpl::multiplex() {
 						return;
 					}
 				} else {
-					errorFlag = !readHandler(client);
+					errorFlag = !readHandler(*client);
 				}
 			}
 
 			if (writeFlag && !errorFlag && !sp) {
-				errorFlag = !writeHandler(client);
+				errorFlag = !writeHandler(*client);
 			}
 
 			if (client->getHangUp() && !client->getHasOutput())
@@ -78,27 +78,30 @@ void MultiplexerImpl::multiplex() {
 }
 
 std::unique_ptr<MultiplexedClientSocket> MultiplexerImpl::makeMultiplexed(std::unique_ptr<ClientSocket> clientSocket) {
-	return std::make_unique<MultiplexedClientSocket>(clientSocket->getImpl(), std::bind(&MultiplexerImpl::interrupt, this));
+	return std::make_unique<MultiplexedClientSocket>(std::move(clientSocket), std::bind(&MultiplexerImpl::interrupt, this));
+	//std::unique_ptr<MultiplexedClientSocket> mul = std::make_unique<MultiplexedClientSocket>(*clientSocket);
+	//return mul;
+	//return std::make_unique<MultiplexedClientSocket>(clientSocket->getImpl(), std::bind(&MultiplexerImpl::interrupt, this));
 };
 
-bool MultiplexerImpl::readHandler(std::shared_ptr<MultiplexedClientSocket> client) {
-	auto &outputBuffer = client->getOutputBuffer();
-	auto &inputBuffer = client->getInputBuffer();
+bool MultiplexerImpl::readHandler(MultiplexedClientSocket &client) {
+	auto &outputBuffer = client.getOutputBuffer();
+	auto &inputBuffer = client.getInputBuffer();
 
-	auto bufSize = client->getReceiveBufferSize();
+	auto bufSize = client.getReceiveBufferSize();
 	char buf[bufSize+1];
 	int len;
 
 	try {
-		if ((len = client->receiveData(buf, bufSize)) <= 0) {
-			client->setHangUp(true);
+		if ((len = client.receiveData(buf, bufSize)) <= 0) {
+			client.setHangUp(true);
 		} else {
 			buf[len] = 0x00;
 			inputBuffer.write(buf, len);
 
-			callback(inputBuffer, outputBuffer, client->getClientData());
+			callback(inputBuffer, outputBuffer, client.getClientData());
 
-			client->setHasOutput(outputBuffer.rdbuf()->in_avail() > 0);
+			client.setHasOutput(outputBuffer.rdbuf()->in_avail() > 0);
 		}
 	} catch (std::exception &e) {
 		return false;
@@ -107,17 +110,17 @@ bool MultiplexerImpl::readHandler(std::shared_ptr<MultiplexedClientSocket> clien
 	return true;
 }
 
-bool MultiplexerImpl::writeHandler(std::shared_ptr<MultiplexedClientSocket> client) {
-	auto &outputBuffer = client->getOutputBuffer();
+bool MultiplexerImpl::writeHandler(MultiplexedClientSocket &client) {
+	auto &outputBuffer = client.getOutputBuffer();
 
 	while (outputBuffer.rdbuf()->in_avail() > 0) {
-		int bufSize = client->getSendBufferSize();
+		int bufSize = client.getSendBufferSize();
 		char buf[bufSize];
 
 		auto savePos = outputBuffer.tellg();
 		outputBuffer.readsome(buf, bufSize);
 		try {
-			if (client->sendData(buf, outputBuffer.gcount()) <= 0) {
+			if (client.sendData(buf, outputBuffer.gcount()) <= 0) {
 				outputBuffer.clear();
 				outputBuffer.seekg(savePos, outputBuffer.beg);
 				break;
@@ -129,9 +132,9 @@ bool MultiplexerImpl::writeHandler(std::shared_ptr<MultiplexedClientSocket> clie
 
 	if (outputBuffer.rdbuf()->in_avail() == 0) {
 		outputBuffer.str(std::string());
-		client->setHasOutput(false);
+		client.setHasOutput(false);
 	} else
-		client->setHasOutput(true);
+		client.setHasOutput(true);
 
 	return true;
 }

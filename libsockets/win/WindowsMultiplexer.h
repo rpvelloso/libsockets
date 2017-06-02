@@ -19,7 +19,7 @@ public:
 	virtual ~WindowsMultiplexer();
 	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) override;
 	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-			std::shared_ptr<ClientData> clientData) override;
+			std::unique_ptr<ClientData> clientData) override;
 	size_t clientCount() override;
 protected:
 	void removeClientSocket(std::shared_ptr<MultiplexedClientSocket> clientSocket) override;

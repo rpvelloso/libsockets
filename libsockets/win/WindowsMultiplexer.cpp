@@ -26,9 +26,9 @@ WindowsMultiplexer::WindowsMultiplexer(MultiplexerCallback callback) : Multiplex
 	/* encapsulation breach!!! Due to socket FD data type,
 	 * WindowsMultiplexer is coupled with WindowsSocket
 	 */
-	WindowsSocket *impl = static_cast<WindowsSocket *>(sockOut->getImpl().get());
+	auto impl = static_cast<WindowsSocket &>(sockOut->getImpl());
 
-	sockOutFD = impl->getFD();
+	sockOutFD = impl.getFD();
 	addClientSocket(std::move(sockOut));
 }
 
@@ -43,16 +43,16 @@ void WindowsMultiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSoc
 	/* encapsulation breach!!! Due to socket FD data type,
 	 * WindowsMultiplexer is coupled with WindowsSocket
 	 */
-	WindowsSocket *impl = static_cast<WindowsSocket *>(clientSocket->getImpl().get());
-	auto fd = impl->getFD();
+	auto impl = static_cast<WindowsSocket &>(clientSocket->getImpl());
+	auto fd = impl.getFD();
 
 	clients[fd] = makeMultiplexed(std::move(clientSocket));
-	clients[fd]->setClientData(std::make_shared<ClientData>());
+	clients[fd]->setClientData(std::make_unique<ClientData>());
 	interrupt();
 }
 
 void WindowsMultiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-		std::shared_ptr<ClientData> clientData) {
+		std::unique_ptr<ClientData> clientData) {
 	std::lock_guard<std::mutex> lock(clientsMutex);
 
 	clientSocket->setNonBlockingIO(true);
@@ -60,11 +60,11 @@ void WindowsMultiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSoc
 	/* encapsulation breach!!! Due to socket FD data type,
 	 * WindowsMultiplexer is coupled with WindowsSocket
 	 */
-	WindowsSocket *impl = static_cast<WindowsSocket *>(clientSocket->getImpl().get());
-	auto fd = impl->getFD();
+	auto impl = static_cast<WindowsSocket &>(clientSocket->getImpl());
+	auto fd = impl.getFD();
 
 	clients[fd] = makeMultiplexed(std::move(clientSocket));
-	clients[fd]->setClientData(clientData);
+	clients[fd]->setClientData(std::move(clientData));
 	interrupt();
 }
 
@@ -114,11 +114,11 @@ size_t WindowsMultiplexer::clientCount() {
 }
 
 bool WindowsMultiplexer::selfPipe(std::shared_ptr<MultiplexedClientSocket> clientSocket) {
-	WindowsSocket *impl = static_cast<WindowsSocket *>(clientSocket->getImpl().get());
-	return impl->getFD() == sockOutFD;
+	auto impl = static_cast<WindowsSocket &>(clientSocket->getImpl());
+	return impl.getFD() == sockOutFD;
 }
 
 void WindowsMultiplexer::removeClientSocket(std::shared_ptr<MultiplexedClientSocket> clientSocket) {
-	clients.erase(static_cast<WindowsSocket *>(clientSocket->getImpl().get())->getFD());
+	clients.erase(static_cast<WindowsSocket &>(clientSocket->getImpl()).getFD());
 }
 

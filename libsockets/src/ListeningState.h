@@ -12,7 +12,7 @@
 
 class ListeningState : public SocketState {
 public:
-	ListeningState(std::shared_ptr<SocketImpl> impl);
+	ListeningState(SocketImpl &impl);
 	virtual ~ListeningState();
 	int receiveData(void *buf, size_t len) override;
 	int sendData(const void *buf, size_t len) override;

@@ -9,7 +9,7 @@
 #include "WindowsSocket.h"
 #include "WindowsMultiplexer.h"
 
-SocketFactory socketFactory(std::make_unique<WindowsSocketFactory>());
+SocketFactory socketFactory(new WindowsSocketFactory());
 
 WindowsSocketFactory::WindowsSocketFactory() : SocketFactory() {
 }
@@ -18,13 +18,11 @@ WindowsSocketFactory::~WindowsSocketFactory() {
 }
 
 std::unique_ptr<ClientSocket> WindowsSocketFactory::CreateClientSocket() {
-	std::shared_ptr<SocketImpl> impl(new WindowsSocket);
-	return std::make_unique<ClientSocket>(impl);
+	return std::make_unique<ClientSocket>(new WindowsSocket);
 }
 
 std::unique_ptr<ServerSocket> WindowsSocketFactory::CreateServerSocket() {
-	std::shared_ptr<SocketImpl> impl(new WindowsSocket);
-	return std::make_unique<ServerSocket>(impl);
+	return std::make_unique<ServerSocket>(new WindowsSocket());
 }
 
 std::unique_ptr<Multiplexer> WindowsSocketFactory::CreateMultiplexer(MultiplexerCallback callback) {

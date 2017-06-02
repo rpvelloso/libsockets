@@ -12,7 +12,7 @@
 
 class ClosedState : public SocketState {
 public:
-	ClosedState(std::shared_ptr<SocketImpl> impl);
+	ClosedState(SocketImpl &impl);
 	virtual ~ClosedState();
 	int receiveData(void *buf, size_t len) override;
 	int sendData(const void *buf, size_t len) override;

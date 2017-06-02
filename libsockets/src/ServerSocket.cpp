@@ -8,7 +8,9 @@
 #include "ServerSocket.h"
 #include "ClientSocket.h"
 
-ServerSocket::ServerSocket(std::shared_ptr<SocketImpl> impl) : Socket(impl) {
+#include "WindowsSocket.h"
+
+ServerSocket::ServerSocket(SocketImpl *impl) : Socket(impl) {
 }
 
 ServerSocket::~ServerSocket() {
@@ -21,7 +23,7 @@ int ServerSocket::listenForConnections(const std::string &bindAddr, const std::s
 		return ret;
 
 	if ((ret = state->listenForConnections(bindAddr, port)) == 0)
-		state.reset(new ListeningState(impl));
+		state.reset(new ListeningState(getImpl()));
 
 	return ret;
 }
@@ -32,5 +34,5 @@ std::unique_ptr<ClientSocket> ServerSocket::acceptConnection() {
 
 void ServerSocket::disconnect() {
 	state->disconnect();
-	state.reset(new ClosedState(impl));
+	state.reset(new ClosedState(getImpl()));
 }

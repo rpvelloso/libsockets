@@ -7,9 +7,9 @@
 
 #include "ConnectedState.h"
 
-ConnectedState::ConnectedState(std::shared_ptr<SocketImpl> impl) : SocketState(impl) {
+ConnectedState::ConnectedState(SocketImpl& impl) : SocketState(impl) {
 	setSocketState(SocketStateType::Connected);
-	impl->setSocketState(socketState);
+	impl.setSocketState(socketState);
 };
 
 ConnectedState::~ConnectedState() {
@@ -17,11 +17,11 @@ ConnectedState::~ConnectedState() {
 };
 
 int ConnectedState::receiveData(void *buf, size_t len) {
-	return impl->receiveData(buf, len);
+	return impl.receiveData(buf, len);
 };
 
 int ConnectedState::sendData(const void *buf, size_t len) {
-	return impl->sendData(buf, len);
+	return impl.sendData(buf, len);
 };
 
 int ConnectedState::connectTo(const std::string &host, const std::string &port) {
@@ -29,7 +29,7 @@ int ConnectedState::connectTo(const std::string &host, const std::string &port) 
 };
 
 void ConnectedState::disconnect() {
-	impl->disconnect();
+	impl.disconnect();
 };
 
 int ConnectedState::listenForConnections(const std::string &bindAddr, const std::string &port) {
@@ -41,14 +41,14 @@ std::unique_ptr<ClientSocket> ConnectedState::acceptConnection() {
 };
 
 std::string ConnectedState::getPort() {
-	return impl->getPort();
+	return impl.getPort();
 }
 ;
 
 size_t ConnectedState::getSendBufferSize() {
-	return impl->getSendBufferSize();
+	return impl.getSendBufferSize();
 }
 
 size_t ConnectedState::getReceiveBufferSize() {
-	return impl->getReceiveBufferSize();
+	return impl.getReceiveBufferSize();
 }

@@ -19,19 +19,19 @@
 
 class Socket {
 public:
-	Socket(std::shared_ptr<SocketImpl> impl) : impl(impl) {
+	Socket(SocketImpl *impl) : impl(impl) {
 		switch (impl->getSocketState()) {
 		case SocketStateType::Disconnected:
-			state.reset(new DisconnectedState(impl));
+			state.reset(new DisconnectedState(getImpl()));
 			break;
 		case SocketStateType::Connected:
-			state.reset(new ConnectedState(impl));
+			state.reset(new ConnectedState(getImpl()));
 			break;
 		case SocketStateType::Listening:
-			state.reset(new ListeningState(impl));
+			state.reset(new ListeningState(getImpl()));
 			break;
 		case SocketStateType::Closed:
-			state.reset(new ClosedState(impl));
+			state.reset(new ClosedState(getImpl()));
 			break;
 		}
 	};
@@ -42,12 +42,12 @@ public:
 	virtual std::string getPort() {
 		return impl->getPort();
 	}
-	virtual std::shared_ptr<SocketImpl> getImpl() {
-		return impl;
+	virtual SocketImpl &getImpl() {
+		return *impl;
 	};
 protected:
-	std::shared_ptr<SocketImpl> impl;
-	std::shared_ptr<SocketState> state;
+	std::unique_ptr<SocketImpl> impl;
+	std::unique_ptr<SocketState> state;
 };
 
 #endif /* SOCKET_H_ */

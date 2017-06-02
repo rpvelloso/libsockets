@@ -32,7 +32,7 @@ public:
 		while (true) {
 			try {
 				auto clientSocket = serverSocket->acceptConnection();
-				getMultiplexer().addClientSocket(std::move(clientSocket), std::make_shared<ClientDataType>());
+				getMultiplexer().addClientSocket(std::move(clientSocket), std::make_unique<ClientDataType>());
 			} catch (std::exception &e) {
 				std::cerr << e.what() << std::endl;
 				break;
