@@ -5,6 +5,8 @@
  *      Author: rvelloso
  */
 
+//TODO: review all shared/unique ptr
+
 #include <iostream>
 #include <memory>
 #include <thread>
@@ -25,9 +27,6 @@ void testMultiplexer() {
 		size_t count=0;
 	};
 
-/*
- * TODO: refactor linux multiplex
- */
 	MultiplexedServer<EchoData> server("0.0.0.0", "30000", 4,
 	[](std::stringstream &inp, std::stringstream &outp, std::shared_ptr<ClientData> clientData) {
 		auto echoData = std::static_pointer_cast<EchoData>(clientData);
