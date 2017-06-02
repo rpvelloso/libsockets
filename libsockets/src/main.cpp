@@ -41,7 +41,7 @@ void testMultiplexer() {
 		}
 	});
 
-	std::cout << "multiplexing..." << std::endl;
+	std::cout << "listening..." << std::endl;
 	server.listen();
 	std::cout << "exiting..." << std::endl;
 }
