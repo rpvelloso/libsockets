@@ -105,7 +105,7 @@ std::unordered_map<std::shared_ptr<MultiplexedClientSocket>,
 	if (poll(fdarray,nfds,-1) > 0) {
 		std::lock_guard<std::mutex> lock(clientsMutex);
 		for (auto c:fdarray) {
-			bool fdError = (c.revents & POLLERR) || (c.revents & POLLHUP);
+			bool fdError = (c.revents & POLLERR) || (c.revents & POLLHUP) || (c.revents & POLLNVAL);
 			bool readFlag = c.revents & POLLIN;
 			bool writeFlag = c.revents & POLLOUT;
 			auto client = clients[c.fd];
