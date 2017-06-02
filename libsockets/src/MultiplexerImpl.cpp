@@ -47,7 +47,10 @@ void MultiplexerImpl::multiplex() {
 				if (sp) {
 					int cmd;
 
-					client.receiveData(static_cast<void *>(&cmd),sizeof(cmd));
+					while (client.receiveData(static_cast<void *>(&cmd),sizeof(cmd)) > 0)
+						if (cmd == MultiplexerCommand::CANCEL)
+							break;
+
 					switch (cmd) {
 					case MultiplexerCommand::INTERRUPT:
 						break;

@@ -15,7 +15,7 @@
 class MultiplexerImpl;
 
 /*
- * memento class with specific client data/state
+ * memento base class to store specific client data/state
  */
 class ClientData {
 public:
@@ -24,7 +24,7 @@ public:
 };
 
 /*
- * Wrapper/Decorator class. Adds multiplexing capabilities to a ClientSocket.
+ * Wrapper class. Adds multiplexing capabilities to a ClientSocket.
  * Client can signal the multiplexer if there is data to be sent and store client data/state.
  */
 
@@ -42,10 +42,11 @@ public:
 	void setHangUp(bool hangUp) {this->hangUp = hangUp;};
 	std::stringstream &getOutputBuffer() {return outputBuffer;};
 	std::stringstream &getInputBuffer() {return inputBuffer;};
+
 	int receiveData(void *buf, size_t len) {return impl->receiveData(buf, len);};
 	int sendData(const void *buf, size_t len) {return impl->sendData(buf, len);};
-	size_t getSendBufferSize() {return impl->getSendBufferSize();};
-	size_t getReceiveBufferSize() {return impl->getReceiveBufferSize();};
+	size_t getSendBufferSize() const {return impl->getSendBufferSize();};
+	size_t getReceiveBufferSize() const {return impl->getReceiveBufferSize();};
 	SocketImpl &getImpl() {return impl->getImpl();};
 private:
 	std::unique_ptr<ClientSocket> impl;

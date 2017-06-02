@@ -34,7 +34,7 @@ void testMultiplexer() {
 			inp.readsome(buf, bufSize);
 			outp.write(buf, inp.gcount());
 			echoData.count += inp.gcount();
-			//outp << " " << echoData->count;
+			outp << " " << echoData.count;
 		}
 	});
 
