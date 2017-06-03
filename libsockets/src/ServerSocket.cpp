@@ -8,8 +8,6 @@
 #include "ServerSocket.h"
 #include "ClientSocket.h"
 
-#include "WindowsSocket.h"
-
 ServerSocket::ServerSocket(SocketImpl *impl) : Socket(impl) {
 }
 

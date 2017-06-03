@@ -23,14 +23,14 @@ public:
 	virtual ~LinuxMultiplexer();
 	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) override;
 	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-			std::shared_ptr<ClientData> clientData) override;
+			std::unique_ptr<ClientData> clientData) override;
 	size_t clientCount() override;
-	void removeClientSocket(std::shared_ptr<MultiplexedClientSocket> clientSocket) override;
-	bool selfPipe(std::shared_ptr<MultiplexedClientSocket> clientSocket) override;
-	std::unordered_map<std::shared_ptr<MultiplexedClientSocket>, std::pair<bool, bool>> pollClients() override;
+	void removeClientSocket(MultiplexedClientSocket &clientSocket) override;
+	bool selfPipe(MultiplexedClientSocket &clientSocket) override;
+	virtual std::vector<pollTuple> pollClients() override;
 
 private:
-	std::unordered_map<int, std::shared_ptr<MultiplexedClientSocket>> clients;
+	std::unordered_map<int, std::unique_ptr<MultiplexedClientSocket>> clients;
 	int sockOutFD;
 };
 

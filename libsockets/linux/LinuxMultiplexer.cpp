@@ -19,10 +19,8 @@ LinuxMultiplexer::LinuxMultiplexer(MultiplexerCallback callback) : MultiplexerIm
 	 * LinuxMultiplexer is coupled with LinuxSocket
 	 */
 	socketpair(AF_UNIX, SOCK_STREAM, PF_UNSPEC, selfPipe);
-	std::shared_ptr<SocketImpl> implIn(new LinuxSocket(selfPipe[0]));
-	std::shared_ptr<SocketImpl> implOut(new LinuxSocket(selfPipe[1]));
-	sockIn = std::make_unique<ClientSocket>(implIn);
-	auto sockOut = std::make_unique<ClientSocket>(implOut);;
+	sockIn = std::make_unique<ClientSocket>(new LinuxSocket(selfPipe[0]));
+	auto sockOut = std::make_unique<ClientSocket>(new LinuxSocket(selfPipe[1]));;
 	sockOutFD = selfPipe[1];
 	addClientSocket(std::move(sockOut));
 }
@@ -38,16 +36,16 @@ void LinuxMultiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSocke
 	/* encapsulation breach!!! Due to socket FD data type,
 	 * LinuxMultiplexer is coupled with LinuxSocket
 	 */
-	LinuxSocket *impl = static_cast<LinuxSocket *>(clientSocket->getImpl().get());
-	auto fd = impl->getFD();
+	auto impl = static_cast<LinuxSocket &>(clientSocket->getImpl());
+	auto fd = impl.getFD();
 
 	clients[fd] = makeMultiplexed(std::move(clientSocket));
-	clients[fd]->setClientData(std::make_shared<ClientData>());
+	clients[fd]->setClientData(std::make_unique<ClientData>());
 	interrupt();
 }
 
 void LinuxMultiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-		std::shared_ptr<ClientData> clientData) {
+		std::unique_ptr<ClientData> clientData) {
 	std::lock_guard<std::mutex> lock(clientsMutex);
 
 	clientSocket->setNonBlockingIO(true);
@@ -55,11 +53,11 @@ void LinuxMultiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSocke
 	/* encapsulation breach!!! Due to socket FD data type,
 	 * LinuxMultiplexer is coupled with LinuxSocket
 	 */
-	LinuxSocket *impl = static_cast<LinuxSocket *>(clientSocket->getImpl().get());
-	auto fd = impl->getFD();
+	auto impl = static_cast<LinuxSocket &>(clientSocket->getImpl());
+	auto fd = impl.getFD();
 
 	clients[fd] = makeMultiplexed(std::move(clientSocket));
-	clients[fd]->setClientData(clientData);
+	clients[fd]->setClientData(std::move(clientData));
 	interrupt();
 }
 
@@ -68,21 +66,18 @@ size_t LinuxMultiplexer::clientCount() {
 	return clients.size()-1; // self-pipe is always in clients
 }
 
-void LinuxMultiplexer::removeClientSocket(
-		std::shared_ptr<MultiplexedClientSocket> clientSocket) {
-	clients.erase(static_cast<LinuxSocket *>(clientSocket->getImpl().get())->getFD());
+void LinuxMultiplexer::removeClientSocket(MultiplexedClientSocket &clientSocket) {
+	clients.erase(static_cast<LinuxSocket &>(clientSocket.getImpl()).getFD());
 }
 
-bool LinuxMultiplexer::selfPipe(
-		std::shared_ptr<MultiplexedClientSocket> clientSocket) {
-	LinuxSocket *impl = static_cast<LinuxSocket *>(clientSocket->getImpl().get());
-	return impl->getFD() == sockOutFD;
+bool LinuxMultiplexer::selfPipe(MultiplexedClientSocket &clientSocket) {
+	auto impl = static_cast<LinuxSocket &>(clientSocket.getImpl());
+	return impl.getFD() == sockOutFD;
 }
 
-std::unordered_map<std::shared_ptr<MultiplexedClientSocket>,
-		std::pair<bool, bool> > LinuxMultiplexer::pollClients() {
+std::vector<pollTuple> LinuxMultiplexer::pollClients() {
 	// <client, <read, write>>, if both read & write false then remove client
-	std::unordered_map<std::shared_ptr<MultiplexedClientSocket>, std::pair<bool, bool>> readyClients;
+	std::vector<pollTuple> readyClients;
 
 	clientsMutex.lock();
 
@@ -108,12 +103,12 @@ std::unordered_map<std::shared_ptr<MultiplexedClientSocket>,
 			bool fdError = (c.revents & POLLERR) || (c.revents & POLLHUP) || (c.revents & POLLNVAL);
 			bool readFlag = c.revents & POLLIN;
 			bool writeFlag = c.revents & POLLOUT;
-			auto client = clients[c.fd];
+			auto &client = *clients[c.fd];
 
 			if (fdError)
-				readyClients[client] = std::make_pair(false, false); // mark for deletion
+				readyClients.push_back(std::forward_as_tuple(client, false, false));
 			else if (readFlag || writeFlag)
-				readyClients[client] = std::make_pair(readFlag, writeFlag);
+				readyClients.push_back(std::forward_as_tuple(client, readFlag, writeFlag));
 		}
 	}
 

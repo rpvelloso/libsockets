@@ -135,8 +135,7 @@ std::unique_ptr<ClientSocket> LinuxSocket::acceptConnection() {
 		throw std::runtime_error("accept() returned an invalid socket. " + std::to_string(errno));
 	}
 
-	std::shared_ptr<SocketImpl> impl(new LinuxSocket(clientFd));
-	return std::make_unique<ClientSocket>(impl);
+	return std::make_unique<ClientSocket>(new LinuxSocket(clientFd));
 }
 
 int LinuxSocket::setNonBlockingIO(bool status) {
