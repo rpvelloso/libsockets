@@ -29,7 +29,6 @@ int DisconnectedState::connectTo(const std::string &host, const std::string &por
 };
 
 void DisconnectedState::disconnect() {
-	throw std::runtime_error("invalid operation disconnect().");
 };
 
 int DisconnectedState::listenForConnections(const std::string &bindAddr, const std::string &port) {

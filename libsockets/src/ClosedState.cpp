@@ -29,7 +29,6 @@ int ClosedState::connectTo(const std::string &host, const std::string &port) {
 };
 
 void ClosedState::disconnect() {
-	throw std::runtime_error("invalid operation disconnect().");
 };
 
 int ClosedState::listenForConnections(const std::string &bindAddr, const std::string &port) {

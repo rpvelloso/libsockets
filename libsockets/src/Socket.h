@@ -35,7 +35,9 @@ public:
 			break;
 		}
 	};
-	virtual ~Socket() {};
+	virtual ~Socket() {
+		state->disconnect();
+	};
 	virtual int setNonBlockingIO(bool status) {
 		return impl->setNonBlockingIO(status);
 	};

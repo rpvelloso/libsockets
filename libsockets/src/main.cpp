@@ -19,6 +19,7 @@
 #endif
 
 #include "MultiplexedServer.h"
+#include "MultiplexedClients.h"
 
 void testMultiplexer() {
 	struct EchoData : public ClientData {
@@ -34,7 +35,7 @@ void testMultiplexer() {
 			inp.readsome(buf, bufSize);
 			outp.write(buf, inp.gcount());
 			echoData.count += inp.gcount();
-			outp << " " << echoData.count;
+			outp << " " << echoData.count << std::endl;
 		}
 	});
 
@@ -44,10 +45,7 @@ void testMultiplexer() {
 }
 
 void testAsyncClient() {
-	auto clientSocket = socketFactory.CreateClientSocket();
-	clientSocket->connectTo("127.0.0.1","30000");
-
-	auto multiplexer = socketFactory.CreateMultiplexer(
+	MultiplexedClients<ClientData> clients(
 	[](std::stringstream &inp, std::stringstream &outp, ClientData &clientData) {
 		size_t bufSize = 4096;
 		char buf[4096];
@@ -57,14 +55,13 @@ void testAsyncClient() {
 		}
 	});
 
-	multiplexer->addClientSocket(std::move(clientSocket));
-	while (multiplexer->clientCount());
-	multiplexer->cancel();
+	if (clients.CreateClientSocket("127.0.0.1","30000"))
+		getchar();
 }
 
 int main() {
-	winSockInit();
-	//testMultiplexer();
-	testAsyncClient();
-	winSockCleanup();
+	//winSockInit();
+	testMultiplexer();
+	//testAsyncClient();
+	//winSockCleanup();
 }
