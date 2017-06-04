@@ -13,7 +13,7 @@
 #include <iostream>
 #include "SocketFactory.h"
 
-template <class ClientDataType>
+template <class ClientDataType = ClientData>
 class MultiplexedClients {
 public:
 	MultiplexedClients(MultiplexerCallback callback, size_t nthreads = 1) {

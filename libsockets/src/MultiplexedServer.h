@@ -13,7 +13,7 @@
 #include <iostream>
 #include "SocketFactory.h"
 
-template <class ClientDataType>
+template <class ClientDataType = ClientData>
 class MultiplexedServer {
 public:
 	MultiplexedServer(const std::string &bindAddr, const std::string &port,
