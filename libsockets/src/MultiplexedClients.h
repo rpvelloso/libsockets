@@ -25,7 +25,7 @@ public:
 
 	};
 
-	virtual bool CreateClientSocket(const std::string host, const std::string port) {
+	virtual bool CreateClientSocket(const std::string &host, const std::string &port) {
 		auto clientSocket = socketFactory.CreateClientSocket();
 		auto &multiplexer = getMultiplexer();
 		if (clientSocket->connectTo(host, port) == 0) {

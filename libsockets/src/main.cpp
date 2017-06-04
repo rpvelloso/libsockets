@@ -26,17 +26,31 @@ void testMultiplexer() {
 		size_t count=0;
 	};
 
-	MultiplexedServer<EchoData> server("0.0.0.0", "30000", 4,
+	MultiplexedServer<EchoData> server("0.0.0.0", "30000", 1,
 	[](std::stringstream &inp, std::stringstream &outp, ClientData &clientData) {
-		auto &echoData = static_cast<EchoData &>(clientData);
+		/*auto &echoData = static_cast<EchoData &>(clientData);
 		size_t bufSize = 4096;
-		char buf[4096];
-		while (inp.rdbuf()->in_avail() > 0) {
+		char buf[4096];*/
+
+		while (inp) {
+			std::string cmd;
+
+			auto savePos = inp.tellg();
+			std::getline(inp, cmd);
+			if (inp && !inp.eof()) {
+				std::cout << cmd << std::endl;
+			} else {
+				inp.clear();
+				inp.seekg(savePos);
+				break;
+			}
+		}
+		/*while (inp.rdbuf()->in_avail() > 0) {
 			inp.readsome(buf, bufSize);
 			outp.write(buf, inp.gcount());
 			echoData.count += inp.gcount();
 			outp << " " << echoData.count << std::endl;
-		}
+		}*/
 	});
 
 	std::cout << "listening..." << std::endl;
@@ -60,8 +74,8 @@ void testAsyncClient() {
 }
 
 int main() {
-	//winSockInit();
+	winSockInit();
 	testMultiplexer();
 	//testAsyncClient();
-	//winSockCleanup();
+	winSockCleanup();
 }

@@ -31,7 +31,7 @@ public:
 	};
 
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) {
-		impl->addClientSocket(std::move(clientSocket));
+		impl->addClientSocket(std::move(clientSocket), std::make_unique<ClientData>());
 	};
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
 			std::unique_ptr<ClientData> clientData) {

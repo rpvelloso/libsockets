@@ -5,6 +5,8 @@
  *      Author: rvelloso
  */
 
+#include <iostream>
+
 #include "MultiplexerImpl.h"
 
 enum MultiplexerCommand : int {
@@ -45,13 +47,18 @@ void MultiplexerImpl::multiplex() {
 
 			if (readFlag) {
 				if (sp) {
-					int cmd;
+					size_t cmdBufSize = 1024;
+					int cmdBuf[cmdBufSize], len, command;
 
-					while (client.receiveData(static_cast<void *>(&cmd),sizeof(cmd)) > 0)
-						if (cmd == MultiplexerCommand::CANCEL)
+					len = client.receiveData(static_cast<void *>(&cmdBuf),cmdBufSize);
+
+					for (int i = 0; i < (int)(len/sizeof(int)); ++i) {
+						command = cmdBuf[i];
+						if (cmdBuf[i] == MultiplexerCommand::CANCEL)
 							break;
+					}
 
-					switch (cmd) {
+					switch (command) {
 					case MultiplexerCommand::INTERRUPT:
 						break;
 					case MultiplexerCommand::CANCEL:
@@ -132,6 +139,7 @@ bool MultiplexerImpl::writeHandler(MultiplexedClientSocket &client) {
 
 	if (outputBuffer.rdbuf()->in_avail() == 0) {
 		outputBuffer.str(std::string());
+		outputBuffer.clear();
 		client.setHasOutput(false);
 	} else
 		client.setHasOutput(true);

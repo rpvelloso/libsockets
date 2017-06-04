@@ -21,7 +21,6 @@ class LinuxMultiplexer: public MultiplexerImpl {
 public:
 	LinuxMultiplexer(MultiplexerCallback callback);
 	virtual ~LinuxMultiplexer();
-	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) override;
 	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
 			std::unique_ptr<ClientData> clientData) override;
 	size_t clientCount() override;

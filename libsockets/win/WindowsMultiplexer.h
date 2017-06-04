@@ -18,7 +18,6 @@ class WindowsMultiplexer: public MultiplexerImpl {
 public:
 	WindowsMultiplexer(MultiplexerCallback callback);
 	virtual ~WindowsMultiplexer();
-	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) override;
 	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
 			std::unique_ptr<ClientData> clientData) override;
 	size_t clientCount() override;

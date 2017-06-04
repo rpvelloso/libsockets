@@ -142,7 +142,7 @@ std::unique_ptr<ClientSocket> WindowsSocket::acceptConnection() {
 }
 
 int WindowsSocket::setNonBlockingIO(bool status) {
-	u_long mode = status? 1 : 0;
+	unsigned int mode = status? 1 : 0;
 	return ioctlsocket(fd, FIONBIO, &mode);
 }
 

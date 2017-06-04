@@ -30,26 +30,10 @@ WindowsMultiplexer::WindowsMultiplexer(MultiplexerCallback callback) : Multiplex
 	auto impl = static_cast<WindowsSocket &>(sockOut->getImpl());
 
 	sockOutFD = impl.getFD();
-	addClientSocket(std::move(sockOut));
+	addClientSocket(std::move(sockOut), std::make_unique<ClientData>());
 }
 
 WindowsMultiplexer::~WindowsMultiplexer() {
-}
-
-void WindowsMultiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSocket) {
-	std::lock_guard<std::mutex> lock(clientsMutex);
-
-	clientSocket->setNonBlockingIO(true);
-
-	/* encapsulation breach!!! Due to socket FD data type,
-	 * WindowsMultiplexer is coupled with WindowsSocket
-	 */
-	auto impl = static_cast<WindowsSocket &>(clientSocket->getImpl());
-	auto fd = impl.getFD();
-
-	clients[fd] = makeMultiplexed(std::move(clientSocket));
-	clients[fd]->setClientData(std::make_unique<ClientData>());
-	interrupt();
 }
 
 void WindowsMultiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSocket,

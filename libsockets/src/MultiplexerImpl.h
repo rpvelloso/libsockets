@@ -18,13 +18,12 @@
 class MultiplexedClientSocket;
 
 using MultiplexerCallback = std::function<void(std::stringstream &inp, std::stringstream &outp, ClientData&)>;
-using pollTuple = std::tuple<MultiplexedClientSocket &, bool, bool>;
+using pollTuple = std::tuple<MultiplexedClientSocket &, bool, bool>; // <client, read, write>, error = read:false, write:false
 
 class MultiplexerImpl {
 public:
 	MultiplexerImpl(MultiplexerCallback callback);
 	virtual ~MultiplexerImpl();
-	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) = 0;
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
 			std::unique_ptr<ClientData> clientData) = 0;
 	virtual size_t clientCount() = 0;
