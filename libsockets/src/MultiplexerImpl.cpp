@@ -47,7 +47,7 @@ void MultiplexerImpl::multiplex() {
 
 			if (readFlag) {
 				if (sp) {
-					size_t cmdBufSize = 1024;
+					size_t cmdBufSize = 1024*sizeof(int);
 					int cmdBuf[cmdBufSize], len, command;
 
 					len = client.receiveData(static_cast<void *>(&cmdBuf),cmdBufSize);
