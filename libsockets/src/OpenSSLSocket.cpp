@@ -12,10 +12,6 @@
 #include <iostream>
 
 int SSLInit() {
-	OpenSSL_add_all_algorithms();
-	ERR_load_BIO_strings();
-	ERR_load_crypto_strings();
-	SSL_load_error_strings();
 	SSL_load_error_strings();
 	return SSL_library_init();
 }
@@ -55,31 +51,19 @@ int OpenSSLSocket::sendData(const void* buf, size_t len) {
 int OpenSSLSocket::connectTo(const std::string& host, const std::string& port) {
 	int ret;
 	if ((ret = impl->connectTo(host, port)) == 0) {
-
-		std::cout << "conectou" << std::endl;
-
 		sslContext.reset(SSL_CTX_new(TLSv1_2_client_method()));
 		if (sslContext.get() == nullptr)
 			return -1;
-		std::cout << "context" << std::endl;
-		SSL_CTX_set_options(sslContext.get(), SSL_OP_NO_SSLv2);
 
 		sslHandler.reset(SSL_new(sslContext.get()));
 		if (sslHandler.get() == nullptr)
 			return -1;
-		std::cout << "handler" << std::endl;
 
-		if (SSL_set_fd(sslHandler.get(), getFD(*impl) != 1))
+		if (SSL_set_fd(sslHandler.get(), getFD(*impl)) != 1)
 			return -1;
 
-		std::cout << "fd" << std::endl;
-
-		ret=SSL_connect(sslHandler.get());
-		//if (!(ret == 1))
-			//return ret;
-
-		ret = SSL_get_error(sslHandler.get(), ret);
-		std::cout << "ssl " << ret << std::endl;
+		if (SSL_connect(sslHandler.get()) != 1)
+			return -1;
 	}
 	return ret;
 }

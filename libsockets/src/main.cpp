@@ -76,24 +76,21 @@ void testAsyncClient() {
 }
 
 void testSSL(const std::string &host, const std::string &port) {
-	std::cout << "init " << SSLInit() << std::endl;
-	//ClientSocket clientSocket(new WindowsSocket());
-	ClientSocket clientSocket(new OpenSSLSocket(new WindowsSocket()));
+	SSLInit();
+	auto clientSocket = socketFactory.CreateSSLClientSocket();
 
-	int ret;
-	std::cout << (ret = clientSocket.connectTo(host, port)) << std::endl;
-	if (ret == 0) {
+	if (clientSocket->connectTo(host, port) == 0) {
 		std::string request = "GET / HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n";
 		std::cout << "sending request: " << request << "to: " << host << ":" << port << std::endl;
-		clientSocket.sendData(request.c_str(),request.size());
+		clientSocket->sendData(request.c_str(),request.size());
 		std::cout << "request sent. Response: " << std::endl;
 		char buf[4096+1];
-		while ((ret=clientSocket.receiveData(buf, 4096)) > 0) {
-			buf[ret]=0x00;
+		int len;
+		while ((len=clientSocket->receiveData(buf, 4096)) > 0) {
+			buf[len]=0x00;
 			std::cout << buf;
 		}
 	}
-	ERR_print_errors_fp(stderr);
 }
 
 int main(int argc, char **argv) {

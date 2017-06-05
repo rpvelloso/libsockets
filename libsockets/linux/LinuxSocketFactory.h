@@ -15,9 +15,10 @@ class LinuxSocketFactory: public SocketFactory {
 public:
 	LinuxSocketFactory();
 	virtual ~LinuxSocketFactory();
-	std::unique_ptr<ClientSocket> CreateClientSocket();
-	std::unique_ptr<ServerSocket> CreateServerSocket();
-	std::unique_ptr<Multiplexer> CreateMultiplexer(MultiplexerCallback callback);
+	std::unique_ptr<ClientSocket> CreateClientSocket() override;
+	std::unique_ptr<ClientSocket> CreateSSLClientSocket() override;
+	std::unique_ptr<ServerSocket> CreateServerSocket() override;
+	std::unique_ptr<Multiplexer> CreateMultiplexer(MultiplexerCallback callback) override;
 };
 
 #endif /* LINUXSOCKETFACTORY_H_ */

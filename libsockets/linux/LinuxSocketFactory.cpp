@@ -21,6 +21,10 @@ std::unique_ptr<ClientSocket> LinuxSocketFactory::CreateClientSocket() {
 	return std::make_unique<ClientSocket>(new LinuxSocket());
 }
 
+std::unique_ptr<ClientSocket> LinuxSocketFactory::CreateSSLClientSocket() {
+	return std::make_unique<ClientSocket>(new OpenSSLSocket(new LinuxSocket()));
+}
+
 std::unique_ptr<ServerSocket> LinuxSocketFactory::CreateServerSocket() {
 	return std::make_unique<ServerSocket>(new LinuxSocket);
 }

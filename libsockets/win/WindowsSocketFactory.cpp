@@ -5,6 +5,7 @@
  *      Author: rvelloso
  */
 
+#include "OpenSSLSocket.h"
 #include "WindowsSocketFactory.h"
 #include "WindowsSocket.h"
 #include "WindowsMultiplexer.h"
@@ -19,6 +20,10 @@ WindowsSocketFactory::~WindowsSocketFactory() {
 
 std::unique_ptr<ClientSocket> WindowsSocketFactory::CreateClientSocket() {
 	return std::make_unique<ClientSocket>(new WindowsSocket);
+}
+
+std::unique_ptr<ClientSocket> WindowsSocketFactory::CreateSSLClientSocket() {
+	return std::make_unique<ClientSocket>(new OpenSSLSocket( new WindowsSocket()));
 }
 
 std::unique_ptr<ServerSocket> WindowsSocketFactory::CreateServerSocket() {
