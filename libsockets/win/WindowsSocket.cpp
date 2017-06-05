@@ -128,7 +128,7 @@ int WindowsSocket::listenForConnections(const std::string &bindAddr, const std::
 	return listen(fd, 20);
 }
 
-std::unique_ptr<ClientSocket> WindowsSocket::acceptConnection() {
+std::unique_ptr<SocketImpl> WindowsSocket::acceptConnection() {
 	struct sockaddr_storage addr;
 	socklen_t addrlen = sizeof(addr);
 
@@ -138,7 +138,8 @@ std::unique_ptr<ClientSocket> WindowsSocket::acceptConnection() {
 		throw std::runtime_error("accept() returned an invalid socket. " + std::to_string(WSAGetLastError()));
 	}
 
-	return std::make_unique<ClientSocket>(new WindowsSocket(clientFd));
+	std::unique_ptr<SocketImpl> ret(new WindowsSocket(clientFd));
+	return std::move(ret);
 }
 
 int WindowsSocket::setNonBlockingIO(bool status) {

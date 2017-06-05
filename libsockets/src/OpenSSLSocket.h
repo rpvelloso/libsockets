@@ -37,20 +37,21 @@ using SSLHandlerPtr = std::unique_ptr<SSL, FreeSSLHandler>;
 class OpenSSLSocket: public SocketImpl {
 public:
 	OpenSSLSocket(SocketImpl *impl);
-	OpenSSLSocket(SocketImpl *impl, SSL_CTX *sslContext);
 	virtual ~OpenSSLSocket();
 	virtual int receiveData(void *buf, size_t len);
 	virtual int sendData(const void *buf, size_t len);
 	virtual int connectTo(const std::string &host, const std::string &port);
 	virtual void disconnect();
 	virtual int listenForConnections(const std::string &bindAddr, const std::string &port);
-	virtual std::unique_ptr<ClientSocket> acceptConnection();
+	virtual std::unique_ptr<SocketImpl> acceptConnection();
 	virtual int setNonBlockingIO(bool status);
 	virtual int reuseAddress();
 	virtual std::string getPort();
 	virtual size_t getSendBufferSize();
 	virtual size_t getReceiveBufferSize();
 private:
+	OpenSSLSocket(SocketImpl *impl, SSL_CTX *sslContext);
+
 	std::unique_ptr<SocketImpl> impl;
 	SSLCtxPtr sslContext;
 	SSLHandlerPtr sslHandler;

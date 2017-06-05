@@ -36,7 +36,7 @@ int ConnectedState::listenForConnections(const std::string &bindAddr, const std:
 	throw std::runtime_error("invalid operation listenForConnections().");
 };
 
-std::unique_ptr<ClientSocket> ConnectedState::acceptConnection() {
+std::unique_ptr<SocketImpl> ConnectedState::acceptConnection() {
 	throw std::runtime_error("invalid operation listenForConnections().");
 };
 

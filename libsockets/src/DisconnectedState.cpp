@@ -35,7 +35,7 @@ int DisconnectedState::listenForConnections(const std::string &bindAddr, const s
 	return impl.listenForConnections(bindAddr, port);
 };
 
-std::unique_ptr<ClientSocket> DisconnectedState::acceptConnection() {
+std::unique_ptr<SocketImpl> DisconnectedState::acceptConnection() {
 	throw std::runtime_error("invalid operation acceptConnection().");
 };
 

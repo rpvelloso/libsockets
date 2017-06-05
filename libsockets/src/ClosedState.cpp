@@ -35,7 +35,7 @@ int ClosedState::listenForConnections(const std::string &bindAddr, const std::st
 	throw std::runtime_error("invalid operation listenForConnections().");
 };
 
-std::unique_ptr<ClientSocket> ClosedState::acceptConnection() {
+std::unique_ptr<SocketImpl> ClosedState::acceptConnection() {
 	throw std::runtime_error("invalid operation acceptConnection().");
 };
 

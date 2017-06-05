@@ -125,7 +125,7 @@ int LinuxSocket::listenForConnections(const std::string &bindAddr, const std::st
 	return listen(fd, 20);
 }
 
-std::unique_ptr<ClientSocket> LinuxSocket::acceptConnection() {
+std::unique_ptr<SocketImpl> LinuxSocket::acceptConnection() {
 	struct sockaddr_storage addr;
 	socklen_t addrlen = sizeof(addr);
 
@@ -135,7 +135,8 @@ std::unique_ptr<ClientSocket> LinuxSocket::acceptConnection() {
 		throw std::runtime_error("accept() returned an invalid socket. " + std::to_string(errno));
 	}
 
-	return std::make_unique<ClientSocket>(new LinuxSocket(clientFd));
+	std::unique_ptr<SocketImpl> ret(new LinuxSocket(clientFd));
+	return std::move(ret);
 }
 
 int LinuxSocket::setNonBlockingIO(bool status) {

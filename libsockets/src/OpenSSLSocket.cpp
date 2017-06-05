@@ -36,7 +36,6 @@ OpenSSLSocket::OpenSSLSocket(SocketImpl *impl, SSL_CTX *sslContext)  : SocketImp
 	SSL_accept(sslHandler.get());
 };
 
-
 OpenSSLSocket::~OpenSSLSocket() {
 }
 
@@ -102,8 +101,9 @@ int OpenSSLSocket::listenForConnections(const std::string& bindAddr,
 	return ret;
 }
 
-std::unique_ptr<ClientSocket> OpenSSLSocket::acceptConnection() {
-	return impl->acceptConnection();
+std::unique_ptr<SocketImpl> OpenSSLSocket::acceptConnection() {
+	std::unique_ptr<SocketImpl> ret(new OpenSSLSocket(impl->acceptConnection().release(), sslContext.get()));
+	return std::move(ret);
 }
 
 int OpenSSLSocket::setNonBlockingIO(bool status) {

@@ -27,7 +27,7 @@ int ServerSocket::listenForConnections(const std::string &bindAddr, const std::s
 }
 
 std::unique_ptr<ClientSocket> ServerSocket::acceptConnection() {
-	return state->acceptConnection();
+	return std::make_unique<ClientSocket>(state->acceptConnection().release());
 }
 
 void ServerSocket::disconnect() {
