@@ -46,4 +46,8 @@ protected:
 	SocketStateType socketState;
 };
 
+template <class SocketImplType, typename SocketFDType>
+SocketFDType getFDTemplate(SocketImpl &socket) {
+	return static_cast<SocketImplType &>(socket).getFD();
+}
 #endif /* SOCKETIMPL_H_ */

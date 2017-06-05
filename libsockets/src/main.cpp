@@ -5,6 +5,8 @@
  *      Author: rvelloso
  */
 
+#include "OpenSSLSocket.h"
+
 #include <iostream>
 #include <memory>
 #include <thread>
@@ -73,9 +75,31 @@ void testAsyncClient() {
 		getchar();
 }
 
-int main() {
+void testSSL(const std::string &host, const std::string &port) {
+	std::cout << "init " << SSLInit() << std::endl;
+	//ClientSocket clientSocket(new WindowsSocket());
+	ClientSocket clientSocket(new OpenSSLSocket(new WindowsSocket()));
+
+	int ret;
+	std::cout << (ret = clientSocket.connectTo(host, port)) << std::endl;
+	if (ret == 0) {
+		std::string request = "GET / HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n";
+		std::cout << "sending request: " << request << "to: " << host << ":" << port << std::endl;
+		clientSocket.sendData(request.c_str(),request.size());
+		std::cout << "request sent. Response: " << std::endl;
+		char buf[4096+1];
+		while ((ret=clientSocket.receiveData(buf, 4096)) > 0) {
+			buf[ret]=0x00;
+			std::cout << buf;
+		}
+	}
+	ERR_print_errors_fp(stderr);
+}
+
+int main(int argc, char **argv) {
 	winSockInit();
-	testMultiplexer();
+	//testMultiplexer();
 	//testAsyncClient();
+	testSSL(argv[1], argv[2]);
 	winSockCleanup();
 }

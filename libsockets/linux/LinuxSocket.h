@@ -43,4 +43,8 @@ private:
 	LinuxSocket(int); // ctor used by acceptConnections() & LinuxMultiplexer
 };
 
+int getFD(SocketImpl &socket) {
+	return getFD<LinuxSocket, int>(socket);
+}
+
 #endif /* LINUXSOCKET_H_ */
