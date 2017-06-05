@@ -11,6 +11,9 @@
 #include <iostream>
 
 int SSLInit() {
+	OpenSSL_add_all_algorithms();
+	OpenSSL_add_all_ciphers();
+	OpenSSL_add_all_digests();
 	SSL_load_error_strings();
 	return SSL_library_init();
 }
@@ -26,11 +29,10 @@ OpenSSLSocket::OpenSSLSocket(SocketImpl* impl) : SocketImpl(), impl(impl),
  * SSL_CTX *sslContext is owned by the server socket and should not be managed/freed.
  */
 
-OpenSSLSocket::OpenSSLSocket(SocketImpl *impl, SSL_CTX *sslContext)  : SocketImpl(), impl(impl),
+OpenSSLSocket::OpenSSLSocket(SocketFDType fd, SocketImpl *impl, SSL_CTX *sslContext)  : SocketImpl(fd), impl(impl),
 		sslContext(nullptr, FreeSSLContext()),
-		sslHandler(nullptr,FreeSSLHandler()) {
+		sslHandler(SSL_new(sslContext),FreeSSLHandler()) {
 
-	sslHandler.reset(SSL_new(sslContext));
 	std::cout << "HN: " << (sslHandler.get() != nullptr) << std::endl;
 	std::cout << "FD: " << getFD() << " " << SSL_set_fd(sslHandler.get(), (int)getFD())  << std::endl;
 	std::cout << "AC: " << SSL_accept(sslHandler.get())  << std::endl;
@@ -51,7 +53,7 @@ int OpenSSLSocket::sendData(const void* buf, size_t len) {
 int OpenSSLSocket::connectTo(const std::string& host, const std::string& port) {
 	int ret;
 	if ((ret = impl->connectTo(host, port)) == 0) {
-		sslContext.reset(SSL_CTX_new(TLSv1_2_client_method()));
+		sslContext.reset(SSL_CTX_new(SSLv23_client_method()));
 		if (sslContext.get() == nullptr)
 			return -1;
 
@@ -83,7 +85,7 @@ int OpenSSLSocket::listenForConnections(const std::string& bindAddr,
 
 	if ((ret = impl->listenForConnections(bindAddr, port)) == 0) {
 
-		sslContext.reset(SSL_CTX_new(TLSv1_2_server_method()));
+		sslContext.reset(SSL_CTX_new(SSLv23_server_method()));
 		if (sslContext.get() == nullptr)
 			return -1;
 
@@ -107,7 +109,7 @@ int OpenSSLSocket::listenForConnections(const std::string& bindAddr,
 }
 
 std::unique_ptr<SocketImpl> OpenSSLSocket::acceptConnection() {
-	std::unique_ptr<SocketImpl> ret(new OpenSSLSocket(impl->acceptConnection().release(), sslContext.get()));
+	std::unique_ptr<SocketImpl> ret(new OpenSSLSocket(impl->getFD(), impl->acceptConnection().release(), sslContext.get()));
 	return std::move(ret);
 }
 

@@ -52,7 +52,7 @@ public:
 	void setSocketState(SocketStateType socketState) override;
 	SocketFDType getFD() override;
 private:
-	OpenSSLSocket(SocketImpl *impl, SSL_CTX *sslContext);
+	OpenSSLSocket(SocketFDType fd, SocketImpl *impl, SSL_CTX *sslContext);
 
 	std::unique_ptr<SocketImpl> impl;
 	SSLCtxPtr sslContext;

@@ -112,8 +112,8 @@ void testSSL(const std::string &host, const std::string &port) {
 
 int main(int argc, char **argv) {
 	winSockInit();
-	testMultiplexer();
+	//testMultiplexer();
 	//testAsyncClient();
-	//testSSL(argv[1], argv[2]);
+	testSSL(argv[1], argv[2]);
 	winSockCleanup();
 }
