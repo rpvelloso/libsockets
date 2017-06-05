@@ -21,6 +21,7 @@ public:
 	virtual std::unique_ptr<ClientSocket> CreateClientSocket() {return impl->CreateClientSocket();};
 	virtual std::unique_ptr<ClientSocket> CreateSSLClientSocket() {return impl->CreateSSLClientSocket();};
 	virtual std::unique_ptr<ServerSocket> CreateServerSocket() {return impl->CreateServerSocket();};
+	virtual std::unique_ptr<ServerSocket> CreateSSLServerSocket() {return impl->CreateSSLServerSocket();};
 	virtual std::unique_ptr<Multiplexer> CreateMultiplexer(MultiplexerCallback callback) {
 		return impl->CreateMultiplexer(callback);
 	};

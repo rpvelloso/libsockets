@@ -25,8 +25,8 @@ public:
 
 	};
 
-	virtual bool CreateClientSocket(const std::string &host, const std::string &port) {
-		auto clientSocket = socketFactory.CreateClientSocket();
+	virtual bool CreateClientSocket(const std::string &host, const std::string &port, bool secure) {
+		auto clientSocket = secure?socketFactory.CreateSSLClientSocket():socketFactory.CreateClientSocket();
 		auto &multiplexer = getMultiplexer();
 		if (clientSocket->connectTo(host, port) == 0) {
 			multiplexer.addClientSocket(std::move(clientSocket));

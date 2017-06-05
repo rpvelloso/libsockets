@@ -30,6 +30,10 @@ std::unique_ptr<ServerSocket> WindowsSocketFactory::CreateServerSocket() {
 	return std::make_unique<ServerSocket>(new WindowsSocket());
 }
 
+std::unique_ptr<ServerSocket> WindowsSocketFactory::CreateSSLServerSocket() {
+	return std::make_unique<ServerSocket>(new OpenSSLSocket( new WindowsSocket()));
+}
+
 std::unique_ptr<Multiplexer> WindowsSocketFactory::CreateMultiplexer(MultiplexerCallback callback) {
 	return std::make_unique<Multiplexer>(new WindowsMultiplexer(callback));
 }

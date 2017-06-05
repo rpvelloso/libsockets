@@ -27,8 +27,8 @@ protected:
 	std::vector<pollTuple> pollClients() override;
 
 private:
-	std::unordered_map<SOCKET, std::unique_ptr<MultiplexedClientSocket>> clients;
-	SOCKET sockOutFD;
+	std::unordered_map<SocketFDType, std::unique_ptr<MultiplexedClientSocket>> clients;
+	SocketFDType sockOutFD;
 };
 
 #endif /* WINDOWSMULTIPLEXER_H_ */

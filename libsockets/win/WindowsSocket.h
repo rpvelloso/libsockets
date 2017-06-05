@@ -8,6 +8,7 @@
 #ifndef WINDOWSSOCKET_H_
 #define WINDOWSSOCKET_H_
 
+#include "defs.h"
 #include "Socket.h"
 #include "SocketImpl.h"
 
@@ -31,14 +32,8 @@ public:
 	std::string getPort() override;
 	size_t getSendBufferSize() override;
 	size_t getReceiveBufferSize() override;
-
-	/* Implementation specific!!! FD data type changes from one OS to another.
-	 * the FD is needed by multiplexer class.
-	 * */
-	SOCKET getFD();
 private:
-	WindowsSocket(SOCKET); // ctor used by acceptConnections()
-	SOCKET fd;
+	WindowsSocket(SocketFDType); // ctor used by acceptConnections()
 	std::string port = "";
 };
 

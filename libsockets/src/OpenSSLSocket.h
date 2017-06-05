@@ -8,9 +8,8 @@
 #ifndef SRC_OPENSSLSOCKET_H_
 #define SRC_OPENSSLSOCKET_H_
 
-#define OPENSSL_NO_SHA
+//#define OPENSSL_NO_SHA
 #include <openssl/ssl.h>
-#include <openssl/err.h>
 #include "ClientSocket.h"
 #include "SocketImpl.h"
 
@@ -38,17 +37,20 @@ class OpenSSLSocket: public SocketImpl {
 public:
 	OpenSSLSocket(SocketImpl *impl);
 	virtual ~OpenSSLSocket();
-	virtual int receiveData(void *buf, size_t len);
-	virtual int sendData(const void *buf, size_t len);
-	virtual int connectTo(const std::string &host, const std::string &port);
-	virtual void disconnect();
-	virtual int listenForConnections(const std::string &bindAddr, const std::string &port);
-	virtual std::unique_ptr<SocketImpl> acceptConnection();
-	virtual int setNonBlockingIO(bool status);
-	virtual int reuseAddress();
-	virtual std::string getPort();
-	virtual size_t getSendBufferSize();
-	virtual size_t getReceiveBufferSize();
+	int receiveData(void *buf, size_t len) override;
+	int sendData(const void *buf, size_t len) override;
+	int connectTo(const std::string &host, const std::string &port) override;
+	void disconnect() override;
+	int listenForConnections(const std::string &bindAddr, const std::string &port) override;
+	std::unique_ptr<SocketImpl> acceptConnection() override;
+	int setNonBlockingIO(bool status) override;
+	int reuseAddress() override;
+	std::string getPort() override;
+	size_t getSendBufferSize() override;
+	size_t getReceiveBufferSize() override;
+	SocketStateType getSocketState() override;
+	void setSocketState(SocketStateType socketState) override;
+	SocketFDType getFD() override;
 private:
 	OpenSSLSocket(SocketImpl *impl, SSL_CTX *sslContext);
 

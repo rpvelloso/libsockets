@@ -17,6 +17,7 @@ public:
 	std::unique_ptr<ClientSocket> CreateClientSocket() override;
 	std::unique_ptr<ClientSocket> CreateSSLClientSocket() override;
 	std::unique_ptr<ServerSocket> CreateServerSocket() override;
+	std::unique_ptr<ServerSocket> CreateSSLServerSocket() override;
 	std::unique_ptr<Multiplexer> CreateMultiplexer(MultiplexerCallback callback) override;
 };
 

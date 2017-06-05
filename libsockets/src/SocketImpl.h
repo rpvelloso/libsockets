@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <string>
 #include <memory>
+#include "defs.h"
 
 class ClientSocket;
 
@@ -42,7 +43,12 @@ public:
 	virtual void setSocketState(SocketStateType socketState) {
 		this->socketState = socketState;
 	};
+	virtual SocketFDType getFD() {
+		return fd;
+	}
 protected:
+	SocketImpl(SocketFDType fd) : fd(fd), socketState(SocketStateType::Connected) {};
+	SocketFDType fd;
 	SocketStateType socketState;
 };
 

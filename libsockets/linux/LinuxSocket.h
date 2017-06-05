@@ -12,6 +12,7 @@
 #include <sys/types.h>
 #include "Socket.h"
 #include "SocketImpl.h"
+#include "defs.h"
 
 class LinuxMultiplexer;
 
@@ -31,16 +32,10 @@ public:
 	std::string getPort() override;
 	size_t getSendBufferSize() override;
 	size_t getReceiveBufferSize() override;
-
-	/* Implementation specific!!! FD data type changes from one OS to another.
-	 * the FD is needed by multiplexer class.
-	 * */
-	int getFD();
 private:
-	int fd;
 	std::string port = "";
 
-	LinuxSocket(int); // ctor used by acceptConnections() & LinuxMultiplexer
+	LinuxSocket(SocketFDType); // ctor used by acceptConnections() & LinuxMultiplexer
 };
 
 int getFD(SocketImpl &socket) {

@@ -5,10 +5,9 @@
  *      Author: Benutzer
  */
 
+#include <defs.h>
 #include "OpenSSLSocket.h"
 #include "SocketFactory.h"
-#include "Util.h"
-
 #include <iostream>
 
 int SSLInit() {
@@ -32,8 +31,10 @@ OpenSSLSocket::OpenSSLSocket(SocketImpl *impl, SSL_CTX *sslContext)  : SocketImp
 		sslHandler(nullptr,FreeSSLHandler()) {
 
 	sslHandler.reset(SSL_new(sslContext));
-	SSL_set_fd(sslHandler.get(), getFD(*this->impl));
-	SSL_accept(sslHandler.get());
+	std::cout << "HN: " << (sslHandler.get() != nullptr) << std::endl;
+	std::cout << "FD: " << getFD() << " " << SSL_set_fd(sslHandler.get(), (int)getFD())  << std::endl;
+	std::cout << "AC: " << SSL_accept(sslHandler.get())  << std::endl;
+	std::cout << "ST: " << (int)getSocketState()  << std::endl;
 };
 
 OpenSSLSocket::~OpenSSLSocket() {
@@ -58,7 +59,7 @@ int OpenSSLSocket::connectTo(const std::string& host, const std::string& port) {
 		if (sslHandler.get() == nullptr)
 			return -1;
 
-		if (SSL_set_fd(sslHandler.get(), getFD(*impl)) != 1)
+		if (SSL_set_fd(sslHandler.get(), (int)getFD()) != 1)
 			return -1;
 
 		if (SSL_connect(sslHandler.get()) != 1)
@@ -86,18 +87,22 @@ int OpenSSLSocket::listenForConnections(const std::string& bindAddr,
 		if (sslContext.get() == nullptr)
 			return -1;
 
-		if ((ret = SSL_CTX_use_certificate_file(sslContext.get(),socketFactory.getSSLCertificateFile().c_str(),SSL_FILETYPE_PEM)) <= 0) {
-			ERR_print_errors_fp(stderr);
-			return ret;
-		}
-		if ((ret = SSL_CTX_use_PrivateKey_file(sslContext.get(),socketFactory.getSSLKeyFile().c_str(),SSL_FILETYPE_PEM)) <= 0) {
-			ERR_print_errors_fp(stderr);
-			return ret;
-		}
-		if (!SSL_CTX_check_private_key(sslContext.get())) {
+		if (SSL_CTX_use_certificate_file(
+				sslContext.get(),
+				socketFactory.getSSLCertificateFile().c_str(),
+				SSL_FILETYPE_PEM) != 1)
+			return -1;
+
+		if (SSL_CTX_use_PrivateKey_file(
+				sslContext.get(),
+				socketFactory.getSSLKeyFile().c_str(),
+				SSL_FILETYPE_PEM) != 1)
+			return -1;
+
+		if (SSL_CTX_check_private_key(sslContext.get()) != 1)
 			throw std::runtime_error("SSL_CTX_check_private_key()");
-		}
 	}
+
 	return ret;
 }
 
@@ -124,4 +129,16 @@ size_t OpenSSLSocket::getSendBufferSize() {
 
 size_t OpenSSLSocket::getReceiveBufferSize() {
 	return impl->getReceiveBufferSize();
+}
+
+SocketStateType OpenSSLSocket::getSocketState() {
+	return impl->getSocketState();
+}
+
+void OpenSSLSocket::setSocketState(SocketStateType socketState) {
+	impl->setSocketState(socketState);
+}
+
+SocketFDType OpenSSLSocket::getFD() {
+	return impl->getFD();
 }

@@ -24,10 +24,6 @@ WindowsSocket::WindowsSocket() : SocketImpl() {
 	fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 }
 
-SOCKET WindowsSocket::getFD() {
-	return fd;
-}
-
 std::string WindowsSocket::getPort() {
 	return port;
 }
@@ -56,8 +52,7 @@ size_t WindowsSocket::getReceiveBufferSize() {
 	return 0;
 }
 
-WindowsSocket::WindowsSocket(SOCKET fd) : SocketImpl(), fd(fd) {
-	setSocketState(SocketStateType::Connected);
+WindowsSocket::WindowsSocket(SocketFDType fd) : SocketImpl(fd) {
 }
 
 WindowsSocket::~WindowsSocket() {

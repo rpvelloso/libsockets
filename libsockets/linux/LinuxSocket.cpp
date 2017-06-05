@@ -23,16 +23,11 @@ LinuxSocket::LinuxSocket() : SocketImpl() {
 	fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 }
 
-int LinuxSocket::getFD() {
-	return fd;
-}
-
 std::string LinuxSocket::getPort() {
 	return port;
 }
 
-LinuxSocket::LinuxSocket(int fd) : SocketImpl(), fd(fd) {
-	setSocketState(SocketStateType::Connected);
+LinuxSocket::LinuxSocket(SocketFDType fd) : SocketImpl(fd) {
 }
 
 size_t LinuxSocket::getSendBufferSize() {

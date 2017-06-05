@@ -29,8 +29,8 @@ public:
 	virtual std::vector<pollTuple> pollClients() override;
 
 private:
-	std::unordered_map<int, std::unique_ptr<MultiplexedClientSocket>> clients;
-	int sockOutFD;
+	std::unordered_map<SocketFDType, std::unique_ptr<MultiplexedClientSocket>> clients;
+	SocketFDType sockOutFD;
 };
 
 #endif /* LINUXMULTIPLEXER_H_ */
