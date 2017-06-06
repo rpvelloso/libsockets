@@ -26,7 +26,7 @@ public:
 		return impl->CreateMultiplexer(callback);
 	};
 	/* Command to generate test files 'key.pem' and 'cert.pem':
-	 * openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365
+	 * openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
 	 */
 	virtual std::string getSSLKeyFile() {
 		return "key.pem";

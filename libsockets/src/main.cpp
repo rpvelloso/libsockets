@@ -5,15 +5,15 @@
  *      Author: rvelloso
  */
 
-#include "OpenSSLSocket.h"
 
 #include <iostream>
 #include <memory>
 #include <thread>
 #include <sstream>
 #include <algorithm>
+#include "defs.h"
 #include "Socket.h"
-
+#include "OpenSSLSocket.h"
 #include "SocketFactory.h"
 
 #ifdef _WIN32
@@ -23,12 +23,12 @@
 #include "MultiplexedServer.h"
 #include "MultiplexedClients.h"
 
-void testMultiplexer() {
+void testMultiplexer(bool secure) {
 	struct EchoData : public ClientData {
 		size_t count=0;
 	};
 
-	MultiplexedServer<EchoData> server("0.0.0.0", "30000", 1, false,
+	MultiplexedServer<EchoData> server("0.0.0.0", "30000", 1, secure,
 	[](std::stringstream &inp, std::stringstream &outp, ClientData &clientData) {
 		/*auto &echoData = static_cast<EchoData &>(clientData);
 		size_t bufSize = 4096;
@@ -61,6 +61,7 @@ void testMultiplexer() {
 }
 
 void testAsyncClient() {
+	SSLInit();
 	MultiplexedClients<ClientData> clients(
 	[](std::stringstream &inp, std::stringstream &outp, ClientData &clientData) {
 		size_t bufSize = 4096;
@@ -78,42 +79,29 @@ void testAsyncClient() {
 void testSSL(const std::string &host, const std::string &port) {
 	try {
 		SSLInit();
-		auto serverSocket = socketFactory.CreateSSLServerSocket();
-		std::cout << "listen: " << serverSocket->listenForConnections(host, port) << std::endl;
-		auto clientSocketB = serverSocket->acceptConnection();
-		std::cout << "accept" << std::endl;
-		//while (true) {
-		int len, siz = clientSocketB->getReceiveBufferSize();
-		char buf[siz+1];
-		std::cout << "recv: " << (len = clientSocketB->receiveData(buf, siz)) << std::endl;
-		if (len >= 0) {
-			buf[len]=0x00;
-			std::cout << buf;
+		auto clientSocket = socketFactory.CreateSSLClientSocket();
+		if (clientSocket->connectTo(host, port) == 0) {
+			std::string request = "GET / HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n";
+			std::cout << "sending request: " << request << "to: " << host << ":" << port << std::endl;
+			clientSocket->sendData(request.c_str(),request.size());
+			std::cout << "request sent. Response: " << std::endl;
+			char buf[4096+1];
+			int len;
+			while ((len=clientSocket->receiveData(buf, 4096)) > 0) {
+				buf[len]=0x00;
+				std::cout << buf;
+			}
+			std::cout << "done." << std::endl;
 		}
-		//}
-		//getchar();
 	} catch (std::exception &e) {
 		std::cout << e.what() << std::endl;
 	}
-
-	/*if (clientSocketA->connectTo(host, port) == 0) {
-		std::string request = "GET / HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n";
-		std::cout << "sending request: " << request << "to: " << host << ":" << port << std::endl;
-		clientSocketA->sendData(request.c_str(),request.size());
-		std::cout << "request sent. Response: " << std::endl;
-		char buf[4096+1];
-		int len;
-		while ((len=clientSocketA->receiveData(buf, 4096)) > 0) {
-			buf[len]=0x00;
-			std::cout << buf;
-		}
-	}*/
 }
 
 int main(int argc, char **argv) {
 	winSockInit();
-	//testMultiplexer();
+	testMultiplexer(std::string(argv[1]) == "ssl");
 	//testAsyncClient();
-	testSSL(argv[1], argv[2]);
+	//testSSL(argv[1], argv[2]);
 	winSockCleanup();
 }

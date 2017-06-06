@@ -5,15 +5,12 @@
  *      Author: Benutzer
  */
 
-#include <defs.h>
+#include "defs.h"
 #include "OpenSSLSocket.h"
 #include "SocketFactory.h"
 #include <iostream>
 
 int SSLInit() {
-	OpenSSL_add_all_algorithms();
-	OpenSSL_add_all_ciphers();
-	OpenSSL_add_all_digests();
 	SSL_load_error_strings();
 	return SSL_library_init();
 }
@@ -33,10 +30,8 @@ OpenSSLSocket::OpenSSLSocket(SocketFDType fd, SocketImpl *impl, SSL_CTX *sslCont
 		sslContext(nullptr, FreeSSLContext()),
 		sslHandler(SSL_new(sslContext),FreeSSLHandler()) {
 
-	std::cout << "HN: " << (sslHandler.get() != nullptr) << std::endl;
-	std::cout << "FD: " << getFD() << " " << SSL_set_fd(sslHandler.get(), (int)getFD())  << std::endl;
-	std::cout << "AC: " << SSL_accept(sslHandler.get())  << std::endl;
-	std::cout << "ST: " << (int)getSocketState()  << std::endl;
+	SSL_set_fd(sslHandler.get(), (int)getFD());
+	SSL_accept(sslHandler.get());
 };
 
 OpenSSLSocket::~OpenSSLSocket() {
@@ -84,7 +79,6 @@ int OpenSSLSocket::listenForConnections(const std::string& bindAddr,
 	int ret;
 
 	if ((ret = impl->listenForConnections(bindAddr, port)) == 0) {
-
 		sslContext.reset(SSL_CTX_new(SSLv23_server_method()));
 		if (sslContext.get() == nullptr)
 			return -1;
@@ -114,7 +108,7 @@ std::unique_ptr<SocketImpl> OpenSSLSocket::acceptConnection() {
 }
 
 int OpenSSLSocket::setNonBlockingIO(bool status) {
-	return setNonBlockingIO(status);
+	return impl->setNonBlockingIO(status);
 }
 
 int OpenSSLSocket::reuseAddress() {

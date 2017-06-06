@@ -8,12 +8,10 @@
 #ifndef WINDOWSSOCKET_H_
 #define WINDOWSSOCKET_H_
 
-#include "defs.h"
 #include "Socket.h"
 #include "SocketImpl.h"
 
-#include <winsock2.h>
-#include <windows.h>
+#include "defs.h"
 #include <winsock.h>
 #include <ws2tcpip.h>
 

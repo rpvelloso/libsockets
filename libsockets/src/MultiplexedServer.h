@@ -17,22 +17,26 @@ template <class ClientDataType = ClientData>
 class MultiplexedServer {
 public:
 	MultiplexedServer(const std::string &bindAddr, const std::string &port,
-			size_t nthreads, bool secure, MultiplexerCallback callback) : bindAddr(bindAddr), port(port) {
+			size_t nthreads, bool secure, MultiplexerCallback callback) : bindAddr(bindAddr), port(port), secure(secure) {
 		nthreads = std::max((size_t) 1, nthreads);
 		for (size_t i = 0; i < nthreads; ++i)
 			multiplexers.emplace_back(socketFactory.CreateMultiplexer(callback));
 
 		if (secure)
-			serverSocket = socketFactory.CreateSSLServerSocket();
-		else
-			serverSocket = socketFactory.CreateServerSocket();
+			SSLInit();
 	};
+
 	virtual ~MultiplexedServer() {
 
 	};
 
 	void listen() {
-		serverSocket->listenForConnections(bindAddr,port);
+		auto serverSocket = secure?
+				socketFactory.CreateSSLServerSocket():
+				socketFactory.CreateServerSocket();
+
+		serverSocket->listenForConnections(bindAddr, port);
+
 		while (true) {
 			try {
 				auto clientSocket = serverSocket->acceptConnection();
@@ -46,7 +50,7 @@ public:
 private:
 	std::vector<std::unique_ptr<Multiplexer>> multiplexers;
 	std::string bindAddr, port;
-	std::unique_ptr<ServerSocket> serverSocket;
+	bool secure;
 
 	Multiplexer &getMultiplexer() {
 		size_t pos = 0;

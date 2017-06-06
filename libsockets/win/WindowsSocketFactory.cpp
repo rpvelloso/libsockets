@@ -5,9 +5,10 @@
  *      Author: rvelloso
  */
 
+#include "defs.h"
+#include "WindowsSocket.h"
 #include "OpenSSLSocket.h"
 #include "WindowsSocketFactory.h"
-#include "WindowsSocket.h"
 #include "WindowsMultiplexer.h"
 
 SocketFactory socketFactory(new WindowsSocketFactory());
