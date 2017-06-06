@@ -35,7 +35,4 @@ private:
 	std::string port = "";
 };
 
-extern int winSockInit();
-extern void winSockCleanup();
-
 #endif /* WINDOWSSOCKET_H_ */

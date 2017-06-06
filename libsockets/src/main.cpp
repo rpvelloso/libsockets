@@ -5,7 +5,14 @@
  *      Author: rvelloso
  */
 
-
+/*
+ * TODO: standardize multiplexedClients/Server and put inside SocketFactory
+ * TODO: check how SSL works in a threaded environment (need to use 'lock' callbacks)
+ * TODO: do more tests with OpenSSLSocket
+ * TODO: better refactoring of win/linux classes (specially multiplexer)
+ * TODO: simple threaded server (one thread per client)
+ * TODO: standalone streaming client socket
+ */
 #include <iostream>
 #include <memory>
 #include <thread>
@@ -15,11 +22,6 @@
 #include "Socket.h"
 #include "OpenSSLSocket.h"
 #include "SocketFactory.h"
-
-#ifdef _WIN32
-#include "WindowsSocket.h"
-#endif
-
 #include "MultiplexedServer.h"
 #include "MultiplexedClients.h"
 
@@ -99,9 +101,9 @@ void testSSL(const std::string &host, const std::string &port) {
 }
 
 int main(int argc, char **argv) {
-	//winSockInit();
+	winSockInit();
 	testMultiplexer(std::string(argv[1]) == "ssl");
 	//testAsyncClient();
 	//testSSL(argv[1], argv[2]);
-	//winSockCleanup();
+	winSockCleanup();
 }
