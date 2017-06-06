@@ -6,13 +6,18 @@
  */
 
 /*
- * TODO: standardize multiplexedClients/Server and put inside SocketFactory
  * TODO: check how SSL works in a threaded environment (need to use 'lock' callbacks)
  * TODO: do more tests with OpenSSLSocket
+ * TODO: standardize multiplexedClients/Server and put inside SocketFactory
+ * TODO: implement an FTP and HTTP servers as sample/examples
+ * TODO: create client ID's in server and allow recovering by ID (factory method do create new ID)
+ *       this is needed for chat servers and alike
  * TODO: better refactoring of win/linux classes (specially multiplexer)
  * TODO: simple threaded server (one thread per client)
  * TODO: standalone streaming client socket
+ * TODO: SSL context sharing per site (inside socketFactory)
  */
+
 #include <iostream>
 #include <memory>
 #include <thread>
