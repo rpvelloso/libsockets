@@ -12,6 +12,7 @@
  * TODO: implement an FTP and HTTP servers as sample/examples
  * TODO: create client ID's in server and allow recovering by ID (factory method do create new ID)
  *       this is needed for chat servers and alike
+ * TODO: turn ClientData into a prototype factory???
  * TODO: better refactoring of win/linux classes (specially multiplexer)
  * TODO: simple threaded server (one thread per client)
  * TODO: standalone streaming client socket
