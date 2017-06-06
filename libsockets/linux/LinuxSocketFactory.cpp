@@ -8,6 +8,7 @@
 #include "LinuxSocketFactory.h"
 #include "LinuxSocket.h"
 #include "LinuxMultiplexer.h"
+#include "OpenSSLSocket.h"
 
 SocketFactory socketFactory(new LinuxSocketFactory());
 
@@ -27,6 +28,10 @@ std::unique_ptr<ClientSocket> LinuxSocketFactory::CreateSSLClientSocket() {
 
 std::unique_ptr<ServerSocket> LinuxSocketFactory::CreateServerSocket() {
 	return std::make_unique<ServerSocket>(new LinuxSocket);
+}
+
+std::unique_ptr<ServerSocket> LinuxSocketFactory::CreateSSLServerSocket() {
+	return std::make_unique<ServerSocket>(new OpenSSLSocket(new LinuxSocket));
 }
 
 std::unique_ptr<Multiplexer> LinuxSocketFactory::CreateMultiplexer(MultiplexerCallback callback) {

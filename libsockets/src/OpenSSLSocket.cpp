@@ -48,7 +48,7 @@ int OpenSSLSocket::sendData(const void* buf, size_t len) {
 int OpenSSLSocket::connectTo(const std::string& host, const std::string& port) {
 	int ret;
 	if ((ret = impl->connectTo(host, port)) == 0) {
-		sslContext.reset(SSL_CTX_new(SSLv23_client_method()));
+		sslContext.reset(SSL_CTX_new(ClientMethod()));
 		if (sslContext.get() == nullptr)
 			return -1;
 
@@ -79,7 +79,7 @@ int OpenSSLSocket::listenForConnections(const std::string& bindAddr,
 	int ret;
 
 	if ((ret = impl->listenForConnections(bindAddr, port)) == 0) {
-		sslContext.reset(SSL_CTX_new(SSLv23_server_method()));
+		sslContext.reset(SSL_CTX_new(ServerMethod()));
 		if (sslContext.get() == nullptr)
 			return -1;
 

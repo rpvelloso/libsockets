@@ -14,5 +14,6 @@
 #include <ws2tcpip.h>
 */
 typedef SOCKET SocketFDType;
+const SocketFDType InvalidSocketFD = INVALID_SOCKET;
 
 #endif /* WIN_DEFS_H_ */

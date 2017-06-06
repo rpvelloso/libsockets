@@ -9,5 +9,6 @@
 #define LINUX_UTIL_H_
 
 typedef int SocketFDType;
+const SocketFDType InvalidSocketFD = -1;
 
 #endif /* LINUX_UTIL_H_ */

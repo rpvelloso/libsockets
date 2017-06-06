@@ -29,6 +29,7 @@ struct FreeSSLHandler {
 	}
 };
 
+using SSLMethodType = std::function<decltype(TLSv1_2_server_method)>;
 using SSLCtxPtr = std::unique_ptr<SSL_CTX, FreeSSLContext>;
 using SSLHandlerPtr = std::unique_ptr<SSL, FreeSSLHandler>;
 
@@ -56,6 +57,8 @@ private:
 	std::unique_ptr<SocketImpl> impl;
 	SSLCtxPtr sslContext;
 	SSLHandlerPtr sslHandler;
+	SSLMethodType ServerMethod = TLSv1_2_server_method;
+	SSLMethodType ClientMethod = TLSv1_2_client_method;
 };
 
 #endif /* SRC_OPENSSLSOCKET_H_ */

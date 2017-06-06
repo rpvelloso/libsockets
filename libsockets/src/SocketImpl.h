@@ -48,12 +48,8 @@ public:
 	}
 protected:
 	SocketImpl(SocketFDType fd) : fd(fd), socketState(SocketStateType::Connected) {};
-	SocketFDType fd;
+	SocketFDType fd = InvalidSocketFD;
 	SocketStateType socketState;
 };
 
-template <class SocketImplType, typename SocketFDType>
-SocketFDType getFDTemplate(SocketImpl &socket) {
-	return static_cast<SocketImplType &>(socket).getFD();
-}
 #endif /* SOCKETIMPL_H_ */
