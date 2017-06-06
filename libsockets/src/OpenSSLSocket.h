@@ -8,6 +8,7 @@
 #ifndef SRC_OPENSSLSOCKET_H_
 #define SRC_OPENSSLSOCKET_H_
 
+#include <functional>
 #include <openssl/ssl.h>
 #include "ClientSocket.h"
 #include "SocketImpl.h"
