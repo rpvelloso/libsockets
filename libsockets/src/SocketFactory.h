@@ -27,6 +27,7 @@ public:
 	};
 	/* Command to generate test files 'key.pem' and 'cert.pem':
 	 * openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
+	 * TODO: move this methods to OpenSSL class.
 	 */
 	virtual std::string getSSLKeyFile() {
 		return "key.pem";

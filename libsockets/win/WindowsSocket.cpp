@@ -127,7 +127,7 @@ std::unique_ptr<SocketImpl> WindowsSocket::acceptConnection() {
 	struct sockaddr_storage addr;
 	socklen_t addrlen = sizeof(addr);
 
-	SOCKET clientFd = accept(fd, (struct sockaddr *)&addr, &addrlen);
+	SocketFDType clientFd = accept(fd, (struct sockaddr *)&addr, &addrlen);
 
 	if (clientFd == INVALID_SOCKET) {
 		throw std::runtime_error("accept() returned an invalid socket. " + std::to_string(WSAGetLastError()));

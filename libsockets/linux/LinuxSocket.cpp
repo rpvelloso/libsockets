@@ -124,7 +124,7 @@ std::unique_ptr<SocketImpl> LinuxSocket::acceptConnection() {
 	struct sockaddr_storage addr;
 	socklen_t addrlen = sizeof(addr);
 
-	int clientFd = accept(fd, (struct sockaddr *)&addr, &addrlen);
+	SocketFDType clientFd = accept(fd, (struct sockaddr *)&addr, &addrlen);
 
 	if (clientFd < 0) {
 		throw std::runtime_error("accept() returned an invalid socket. " + std::to_string(errno));
