@@ -38,19 +38,11 @@ OpenSSLSocket::~OpenSSLSocket() {
 }
 
 int OpenSSLSocket::receiveData(void* buf, size_t len) {
-	auto ret = SSL_read(sslHandler.get(), buf, len);
-	if (SSL_get_error (sslHandler.get(), ret) == SSL_ERROR_WANT_READ)
-		return 0;
-	else
-		return ret;
+	return SSL_read(sslHandler.get(), buf, len);
 }
 
 int OpenSSLSocket::sendData(const void* buf, size_t len) {
-	auto ret = SSL_write(sslHandler.get(), buf, len);
-	if (SSL_get_error (sslHandler.get(), ret) == SSL_ERROR_WANT_WRITE)
-		return 0;
-	else
-		return ret;
+	return SSL_write(sslHandler.get(), buf, len);
 }
 
 int OpenSSLSocket::connectTo(const std::string& host, const std::string& port) {
@@ -64,18 +56,17 @@ int OpenSSLSocket::connectTo(const std::string& host, const std::string& port) {
 		if (sslHandler.get() == nullptr)
 			return -1;
 
-		if (SSL_set_fd(sslHandler.get(), (int)getFD()) != 1)
-			return -1;
-
-		if (SSL_connect(sslHandler.get()) != 1)
-			return -1;
-
 		SSL_set_mode(sslHandler.get(),
 				SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER|
 				SSL_MODE_ENABLE_PARTIAL_WRITE|
 				SSL_MODE_RELEASE_BUFFERS|
 				SSL_MODE_AUTO_RETRY);
 
+		if (SSL_set_fd(sslHandler.get(), (int)getFD()) != 1)
+			return -1;
+
+		if (SSL_connect(sslHandler.get()) != 1)
+			return -1;
 	}
 	return ret;
 }

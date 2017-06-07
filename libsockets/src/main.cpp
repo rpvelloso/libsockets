@@ -6,15 +6,15 @@
  */
 
 /*
- * TODO: check how SSL works in a threaded environment (need to use 'lock' callbacks)
- * TODO: do more tests with OpenSSLSocket
+ * TODO: wrap OpenSSL class inside C++ classes for resource managment
+ * TODO: do more tests with OpenSSLSocket - currently it does not work with non blocking I/O
  * TODO: standardize multiplexedClients/Server and put inside SocketFactory
  * TODO: implement an FTP and HTTP servers as sample/examples
  * TODO: create client ID's in server and allow recovering by ID (factory method do create new ID)
  *       this is needed for chat servers and alike
  * TODO: turn ClientData into a prototype factory???
  * TODO: better refactoring of win/linux classes (specially multiplexer)
- * TODO: simple threaded server (one thread per client)
+ * TODO: Create class for simple threaded server and clients (one thread per client)
  * TODO: standalone streaming client socket
  * TODO: SSL context sharing per site (inside socketFactory)
  */
@@ -103,9 +103,9 @@ void testAsyncClient(const std::string &host, const std::string &port, bool secu
 	}
 }
 
-void testSSL(const std::string &host, const std::string &port) {
+void testClient(const std::string &host, const std::string &port, bool secure) {
 	try {
-		auto clientSocket = socketFactory.CreateSSLClientSocket();
+		auto clientSocket = secure?socketFactory.CreateSSLClientSocket():socketFactory.CreateClientSocket();
 		if (clientSocket->connectTo(host, port) == 0) {
 			std::string request = "GET / HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n";
 			std::cout << "sending request: " << request << "to: " << host << ":" << port << std::endl;
@@ -126,8 +126,12 @@ void testSSL(const std::string &host, const std::string &port) {
 
 int main(int argc, char **argv) {
 	winSockInit();
-	//testMultiplexer(std::string(argv[1]) == "ssl");
-	testAsyncClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
-	//testSSL(argv[1], argv[2]);
+	try {
+		//testMultiplexer(std::string(argv[1]) == "ssl");
+		//testAsyncClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
+		testClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
+	} catch (std::exception &e) {
+		std::cout << e.what() << std::endl;
+	}
 	winSockCleanup();
 }
