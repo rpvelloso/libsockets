@@ -100,7 +100,7 @@ bool MultiplexerImpl::readHandler(MultiplexedClientSocket &client) {
 	int len;
 
 	try {
-		if ((len = client.receiveData(buf, bufSize)) <= 0) {
+		if ((len = client.receiveData(buf, bufSize)) < 0) {
 			client.setHangUp(true);
 		} else {
 			buf[len] = 0x00;

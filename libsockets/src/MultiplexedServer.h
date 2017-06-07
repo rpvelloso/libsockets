@@ -21,9 +21,6 @@ public:
 		nthreads = std::max((size_t) 1, nthreads);
 		for (size_t i = 0; i < nthreads; ++i)
 			multiplexers.emplace_back(socketFactory.CreateMultiplexer(callback));
-
-		if (secure)
-			SSLInit();
 	};
 
 	virtual ~MultiplexedServer() {

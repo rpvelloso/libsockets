@@ -13,8 +13,6 @@
 #include "ClientSocket.h"
 #include "SocketImpl.h"
 
-int SSLInit();
-
 struct FreeSSLContext {
 	void operator()(SSL_CTX* sslContext) const {
 		if (sslContext != nullptr) SSL_CTX_free(sslContext);

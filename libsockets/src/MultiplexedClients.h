@@ -13,13 +13,15 @@
 #include <iostream>
 #include "SocketFactory.h"
 
+using ConnectCallbackType = std::function<void(ClientSocket &)>;
+
 template <class ClientDataType = ClientData>
 class MultiplexedClients {
 public:
-	MultiplexedClients(MultiplexerCallback callback, size_t nthreads = 1) {
+	MultiplexedClients(MultiplexerCallback readCallback, ConnectCallbackType connectCallback, size_t nthreads = 1) : connectCallback(connectCallback) {
 		nthreads = std::max((size_t) 1, nthreads);
 		for (size_t i = 0; i < nthreads; ++i)
-			multiplexers.emplace_back(socketFactory.CreateMultiplexer(callback));
+			multiplexers.emplace_back(socketFactory.CreateMultiplexer(readCallback));
 	};
 	virtual ~MultiplexedClients() {
 
@@ -29,6 +31,7 @@ public:
 		auto clientSocket = secure?socketFactory.CreateSSLClientSocket():socketFactory.CreateClientSocket();
 		auto &multiplexer = getMultiplexer();
 		if (clientSocket->connectTo(host, port) == 0) {
+			connectCallback(*clientSocket);
 			multiplexer.addClientSocket(std::move(clientSocket));
 			return true;
 		}
@@ -36,6 +39,7 @@ public:
 	}
 private:
 	std::vector<std::unique_ptr<Multiplexer>> multiplexers;
+	ConnectCallbackType connectCallback;
 
 	Multiplexer &getMultiplexer() {
 		size_t pos = 0;

@@ -32,8 +32,6 @@
 #include "MultiplexedServer.h"
 #include "MultiplexedClients.h"
 
-OpenSSL openSSL;
-
 void testMultiplexer(bool secure) {
 	struct EchoData : public ClientData {
 		size_t count=0;
@@ -71,25 +69,42 @@ void testMultiplexer(bool secure) {
 	std::cout << "exiting..." << std::endl;
 }
 
-void testAsyncClient() {
-	SSLInit();
+void testAsyncClient(const std::string &host, const std::string &port, bool secure) {
 	MultiplexedClients<ClientData> clients(
 	[](std::stringstream &inp, std::stringstream &outp, ClientData &clientData) {
-		size_t bufSize = 4096;
+		/*size_t bufSize = 4096;
 		char buf[4096];
 		while (inp.rdbuf()->in_avail() > 0) {
 			inp.readsome(buf, bufSize);
 			outp.write(buf, inp.gcount());
+		}*/
+		while (inp) {
+			std::string cmd;
+
+			auto savePos = inp.tellg();
+			std::getline(inp, cmd);
+			if (inp && !inp.eof()) {
+				std::cout << cmd << std::endl;
+			} else {
+				inp.clear();
+				inp.seekg(savePos);
+				break;
+			}
 		}
+
+	},
+	[host](ClientSocket &clientSocket){
+		std::string request = "GET / HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n";
+		clientSocket.sendData(request.c_str(),request.size());
 	});
 
-	if (clients.CreateClientSocket("127.0.0.1","30000", false))
+	if (clients.CreateClientSocket(host, port, secure)) {
 		getchar();
+	}
 }
 
 void testSSL(const std::string &host, const std::string &port) {
 	try {
-		SSLInit();
 		auto clientSocket = socketFactory.CreateSSLClientSocket();
 		if (clientSocket->connectTo(host, port) == 0) {
 			std::string request = "GET / HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n";
@@ -112,7 +127,7 @@ void testSSL(const std::string &host, const std::string &port) {
 int main(int argc, char **argv) {
 	winSockInit();
 	//testMultiplexer(std::string(argv[1]) == "ssl");
-	//testAsyncClient();
-	testSSL(argv[1], argv[2]);
+	testAsyncClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
+	//testSSL(argv[1], argv[2]);
 	winSockCleanup();
 }
