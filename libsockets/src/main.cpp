@@ -125,7 +125,6 @@ void testClient(const std::string &host, const std::string &port, bool secure) {
 }
 
 int main(int argc, char **argv) {
-	winSockInit();
 	try {
 		//testMultiplexer(std::string(argv[1]) == "ssl");
 		//testAsyncClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
@@ -133,5 +132,4 @@ int main(int argc, char **argv) {
 	} catch (std::exception &e) {
 		std::cout << e.what() << std::endl;
 	}
-	winSockCleanup();
 }

@@ -16,7 +16,4 @@
 typedef SOCKET SocketFDType;
 const SocketFDType InvalidSocketFD = INVALID_SOCKET;
 
-extern int winSockInit();
-extern void winSockCleanup();
-
 #endif /* WIN_DEFS_H_ */

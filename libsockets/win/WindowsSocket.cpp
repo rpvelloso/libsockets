@@ -11,14 +11,19 @@
 
 using ResPtr = std::unique_ptr<struct addrinfo, decltype(&freeaddrinfo)>;
 
-int winSockInit() {
-	WSADATA wsaData;
-	return WSAStartup(MAKEWORD(2, 2), &wsaData);
-}
+class WinSock {
+public:
+	WinSock() {
+		WSADATA wsaData;
+		WSAStartup(MAKEWORD(2, 2), &wsaData);
+	};
+	virtual ~WinSock() {
+		WSACleanup();
+	};
+private:
+};
 
-void winSockCleanup() {
-	WSACleanup();
-}
+WinSock winSock;
 
 WindowsSocket::WindowsSocket() : SocketImpl() {
 	fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
