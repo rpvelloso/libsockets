@@ -6,13 +6,3 @@
  */
 
 #include "OpenSSL.h"
-
-OpenSSL::OpenSSL() {
-	// TODO Auto-generated constructor stub
-
-}
-
-OpenSSL::~OpenSSL() {
-	// TODO Auto-generated destructor stub
-}
-

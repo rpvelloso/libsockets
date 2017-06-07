@@ -26,10 +26,13 @@
 #include <algorithm>
 #include "defs.h"
 #include "Socket.h"
+#include "OpenSSL.h"
 #include "OpenSSLSocket.h"
 #include "SocketFactory.h"
 #include "MultiplexedServer.h"
 #include "MultiplexedClients.h"
+
+OpenSSL openSSL;
 
 void testMultiplexer(bool secure) {
 	struct EchoData : public ClientData {
