@@ -9,12 +9,14 @@
 
 #include "MultiplexerImpl.h"
 
+MultiplexerCallback defaultCallback = [](std::istream &inp, std::ostream &outp, ClientData&){};
+
 enum MultiplexerCommand : int {
 	CANCEL = 0x00,
 	INTERRUPT = 0x01
 };
 
-MultiplexerImpl::MultiplexerImpl(MultiplexerCallback callback) : callback(callback) {
+MultiplexerImpl::MultiplexerImpl(MultiplexerCallback callback) : readCallback(callback) {
 }
 
 MultiplexerImpl::~MultiplexerImpl() {
@@ -106,7 +108,7 @@ bool MultiplexerImpl::readHandler(MultiplexedClientSocket &client) {
 			buf[len] = 0x00;
 			inputBuffer.write(buf, len);
 
-			callback(inputBuffer, outputBuffer, client.getClientData());
+			readCallback(inputBuffer, outputBuffer, client.getClientData());
 
 			client.setHasOutput(outputBuffer.rdbuf()->in_avail() > 0);
 		}
