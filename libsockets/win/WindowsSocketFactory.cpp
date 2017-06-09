@@ -35,6 +35,14 @@ std::unique_ptr<ServerSocket> WindowsSocketFactory::CreateSSLServerSocket() {
 	return std::make_unique<ServerSocket>(new OpenSSLSocket( new WindowsSocket()));
 }
 
-std::unique_ptr<Multiplexer> WindowsSocketFactory::CreateMultiplexer(MultiplexerCallback callback) {
-	return std::make_unique<Multiplexer>(new WindowsMultiplexer(callback));
+std::unique_ptr<Multiplexer> WindowsSocketFactory::CreateMultiplexer(
+		MultiplexerCallback readCallback,
+		MultiplexerCallback connectCallback = defaultCallback,
+		MultiplexerCallback disconnectCallback = defaultCallback,
+		MultiplexerCallback writeCallback = defaultCallback) {
+	return std::make_unique<Multiplexer>(new WindowsMultiplexer(
+			readCallback,
+			connectCallback,
+			disconnectCallback,
+			writeCallback));
 }

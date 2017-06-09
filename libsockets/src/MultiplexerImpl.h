@@ -24,7 +24,11 @@ extern MultiplexerCallback defaultCallback;
 
 class MultiplexerImpl {
 public:
-	MultiplexerImpl(MultiplexerCallback readCallback);
+	MultiplexerImpl(
+			MultiplexerCallback readCallback,
+			MultiplexerCallback connectCallback,
+			MultiplexerCallback disconnectCallback,
+			MultiplexerCallback writeCallback);
 	virtual ~MultiplexerImpl();
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
 			std::unique_ptr<ClientData> clientData) = 0;
@@ -38,7 +42,7 @@ public:
 protected:
 	std::unique_ptr<ClientSocket> sockIn;
 	std::mutex commandMutex, clientsMutex;
-	MultiplexerCallback readCallback, writeCallback, connectCallback, disconnectCallback;
+	MultiplexerCallback readCallback, connectCallback, disconnectCallback, writeCallback;
 
 	virtual void sendMultiplexerCommand(int cmd);
 
@@ -49,7 +53,9 @@ protected:
 	/*
 	 * Factory method that wraps a clientSocket with a multiplexing interface
 	 */
-	std::unique_ptr<MultiplexedClientSocket> makeMultiplexed(std::unique_ptr<ClientSocket> clientSocket);
+	std::unique_ptr<MultiplexedClientSocket> makeMultiplexed(
+			std::unique_ptr<ClientSocket> clientSocket,
+			std::unique_ptr<ClientData> clientData);
 
 	bool readHandler(MultiplexedClientSocket &client);
 	bool writeHandler(MultiplexedClientSocket &client);

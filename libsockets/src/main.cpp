@@ -67,8 +67,19 @@ void testMultiplexer(bool secure) {
 }
 
 void testAsyncClient(const std::string &host, const std::string &port, bool secure) {
-	MultiplexedClients<ClientData> clients(
+	struct MyClient : public ClientData {
+		bool started = false;
+	};
+
+	MultiplexedClients<MyClient> clients(1,
 	[](std::istream &inp, std::ostream &outp, ClientData &clientData) {
+		auto &myData = static_cast<MyClient &>(clientData);
+
+		if (!myData.started) {
+			std::cout << "receiving response ..." << std::endl;
+			myData.started = true;
+		}
+
 		/*size_t bufSize = 4096;
 		char buf[4096];
 		while (inp.rdbuf()->in_avail() > 0) {
@@ -90,14 +101,19 @@ void testAsyncClient(const std::string &host, const std::string &port, bool secu
 		}
 
 	},
-	[host](ClientSocket &clientSocket){
+	[host](std::istream &inp, std::ostream &outp, ClientData &clientData){
 		std::string request = "GET / HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n";
-		clientSocket.sendData(request.c_str(),request.size());
+		std::cout << "sending request 123" << std::endl;
+		outp.write(request.c_str(), request.size());
+	},
+	[](std::istream &inp, std::ostream &outp, ClientData &clientData){
+		std::cout << std::endl << "transaction ended." << std::endl;
 	});
 
 	if (clients.CreateClientSocket(host, port, secure)) {
 		getchar();
-	}
+	} else
+		std::cout << "error connecting to " << host << ":" << port << std::endl;
 }
 
 void testClient(const std::string &host, const std::string &port, bool secure) {

@@ -12,7 +12,15 @@
 #include "WindowsMultiplexer.h"
 #include "WindowsSocket.h"
 
-WindowsMultiplexer::WindowsMultiplexer(MultiplexerCallback callback) : MultiplexerImpl(callback) {
+WindowsMultiplexer::WindowsMultiplexer(
+		MultiplexerCallback readCallback,
+		MultiplexerCallback connectCallback = defaultCallback,
+		MultiplexerCallback disconnectCallback = defaultCallback,
+		MultiplexerCallback writeCallback = defaultCallback) :
+		MultiplexerImpl(readCallback,
+				connectCallback,
+				disconnectCallback,
+				writeCallback) {
 	/**
 	 * Self-pipe trick to interrupt poll/select.
 	 * Windows alternative to socketpair()
@@ -48,8 +56,7 @@ void WindowsMultiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSoc
 	auto impl = static_cast<WindowsSocket &>(clientSocket->getImpl());
 	auto fd = impl.getFD();
 
-	clients[fd] = makeMultiplexed(std::move(clientSocket));
-	clients[fd]->setClientData(std::move(clientData));
+	clients[fd] = makeMultiplexed(std::move(clientSocket), std::move(clientData));
 	interrupt();
 }
 
@@ -73,7 +80,7 @@ std::vector<pollTuple> WindowsMultiplexer::pollClients() {
 
 	clientsMutex.unlock();
 
-	std::cout << "# " << nfds << std::endl;
+	//std::cout << "# " << nfds << std::endl;
 
 	if (WSAPoll(fdarray,nfds,-1) > 0) {
 		std::lock_guard<std::mutex> lock(clientsMutex);

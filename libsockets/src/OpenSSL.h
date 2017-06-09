@@ -44,6 +44,17 @@ public:
 
 		ERR_free_strings();
 	};
+	/* Command to generate test files 'key.pem' and 'cert.pem':
+	 * openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
+	 */
+	virtual std::string getSSLKeyFile() {
+		return "key.pem";
+	};
+	virtual std::string getSSLCertificateFile() {
+		return "cert.pem";
+	};
 };
+
+extern OpenSSL openSSL;
 
 #endif /* OPENSSL_H_ */

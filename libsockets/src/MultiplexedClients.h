@@ -13,15 +13,21 @@
 #include <iostream>
 #include "SocketFactory.h"
 
-using ConnectCallbackType = std::function<void(ClientSocket &)>;
-
 template <class ClientDataType = ClientData>
 class MultiplexedClients {
 public:
-	MultiplexedClients(MultiplexerCallback readCallback, ConnectCallbackType connectCallback, size_t nthreads = 1) : connectCallback(connectCallback) {
+	MultiplexedClients(size_t nthreads,
+			MultiplexerCallback readCallback,
+			MultiplexerCallback connectCallback = defaultCallback,
+			MultiplexerCallback disconnectCallback = defaultCallback,
+			MultiplexerCallback writeCallback = defaultCallback) {
 		nthreads = std::max((size_t) 1, nthreads);
 		for (size_t i = 0; i < nthreads; ++i)
-			multiplexers.emplace_back(socketFactory.CreateMultiplexer(readCallback));
+			multiplexers.emplace_back(socketFactory.CreateMultiplexer(
+					readCallback,
+					connectCallback,
+					disconnectCallback,
+					writeCallback));
 	};
 	virtual ~MultiplexedClients() {
 
@@ -31,7 +37,6 @@ public:
 		auto clientSocket = secure?socketFactory.CreateSSLClientSocket():socketFactory.CreateClientSocket();
 		auto &multiplexer = getMultiplexer();
 		if (clientSocket->connectTo(host, port) == 0) {
-			connectCallback(*clientSocket);
 			multiplexer.addClientSocket(std::move(clientSocket));
 			return true;
 		}
@@ -39,7 +44,6 @@ public:
 	}
 private:
 	std::vector<std::unique_ptr<Multiplexer>> multiplexers;
-	ConnectCallbackType connectCallback;
 
 	Multiplexer &getMultiplexer() {
 		size_t pos = 0;

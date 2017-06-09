@@ -8,6 +8,8 @@
 #ifndef MULTIPLEXEDCLIENTSOCKET_H_
 #define MULTIPLEXEDCLIENTSOCKET_H_
 
+#include <iostream>
+
 #include <sstream>
 #include "ClientSocket.h"
 #include "MultiplexerImpl.h"
@@ -30,14 +32,17 @@ public:
 
 class MultiplexedClientSocket {
 public:
-	MultiplexedClientSocket(std::unique_ptr<ClientSocket> impl,
-			std::function<void()> interruptFunc) : impl(std::move(impl)), interruptFunc(interruptFunc) {};
+	MultiplexedClientSocket(
+			std::unique_ptr<ClientSocket> impl,
+			std::unique_ptr<ClientData> clientData,
+			std::function<void()> interruptFunc) :
+				impl(std::move(impl)),
+				clientData(std::move(clientData)),
+				interruptFunc(interruptFunc) {};
 	virtual ~MultiplexedClientSocket() {};
-	bool getHasOutput() { return hasOutput; };
-	void setHasOutput(bool hasOutput) { this->hasOutput = hasOutput; };
+	bool getHasOutput() { return outputBuffer.rdbuf()->in_avail() > 0; };
 	void interrupt() { interruptFunc(); };
 	ClientData &getClientData() {return *clientData;};
-	void setClientData(std::unique_ptr<ClientData> clientData) {this->clientData.reset(clientData.release());};
 	bool getHangUp() {return hangUp;};
 	void setHangUp(bool hangUp) {this->hangUp = hangUp;};
 	std::stringstream &getOutputBuffer() {return outputBuffer;};
@@ -50,9 +55,9 @@ public:
 	SocketImpl &getImpl() {return impl->getImpl();};
 private:
 	std::unique_ptr<ClientSocket> impl;
-	bool hasOutput = false;
-	std::function<void()> interruptFunc;
 	std::unique_ptr<ClientData> clientData;
+	std::function<void()> interruptFunc;
+	bool hasOutput = false;
 	bool hangUp = false;
 	std::stringstream outputBuffer;
 	std::stringstream inputBuffer;

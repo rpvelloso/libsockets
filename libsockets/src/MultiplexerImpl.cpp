@@ -9,14 +9,22 @@
 
 #include "MultiplexerImpl.h"
 
-MultiplexerCallback defaultCallback = [](std::istream &inp, std::ostream &outp, ClientData&){};
+MultiplexerCallback defaultCallback = [](std::istream &inp, std::ostream &outp, ClientData&){}; // noop()
 
 enum MultiplexerCommand : int {
 	CANCEL = 0x00,
 	INTERRUPT = 0x01
 };
 
-MultiplexerImpl::MultiplexerImpl(MultiplexerCallback callback) : readCallback(callback) {
+MultiplexerImpl::MultiplexerImpl(
+		MultiplexerCallback readCallback,
+		MultiplexerCallback connectCallback = defaultCallback,
+		MultiplexerCallback disconnectCallback = defaultCallback,
+		MultiplexerCallback writeCallback = defaultCallback) :
+				readCallback(readCallback),
+				connectCallback(connectCallback),
+				disconnectCallback(disconnectCallback),
+				writeCallback(writeCallback) {
 }
 
 MultiplexerImpl::~MultiplexerImpl() {
@@ -80,6 +88,10 @@ void MultiplexerImpl::multiplex() {
 
 			if (errorFlag) {
 				if (!sp) {
+					auto &inp = client.getInputBuffer();
+					auto &outp = client.getInputBuffer();
+					auto &cliData = client.getClientData();
+					disconnectCallback(inp, outp, cliData);
 					removeClientSocket(client);
 				}
 				else
@@ -89,28 +101,41 @@ void MultiplexerImpl::multiplex() {
 	}
 }
 
-std::unique_ptr<MultiplexedClientSocket> MultiplexerImpl::makeMultiplexed(std::unique_ptr<ClientSocket> clientSocket) {
-	return std::make_unique<MultiplexedClientSocket>(std::move(clientSocket), std::bind(&MultiplexerImpl::interrupt, this));
+std::unique_ptr<MultiplexedClientSocket> MultiplexerImpl::makeMultiplexed(
+		std::unique_ptr<ClientSocket> clientSocket,
+		std::unique_ptr<ClientData> clientData) {
+	auto mCli = std::make_unique<MultiplexedClientSocket>(
+			std::move(clientSocket),
+			std::move(clientData),
+			std::bind(&MultiplexerImpl::interrupt, this));
+
+	if (!selfPipe(*mCli)) {
+		auto &inp = mCli->getInputBuffer();
+		auto &outp = mCli->getOutputBuffer();
+		auto &cliData = mCli->getClientData();
+		connectCallback(inp, outp, cliData);
+	}
+
+	return std::move(mCli);
 };
 
-bool MultiplexerImpl::readHandler(MultiplexedClientSocket &client) {
-	auto &outputBuffer = client.getOutputBuffer();
-	auto &inputBuffer = client.getInputBuffer();
+bool MultiplexerImpl::readHandler(MultiplexedClientSocket &clientSocket) {
+	auto &outp = clientSocket.getOutputBuffer();
+	auto &inp = clientSocket.getInputBuffer();
 
-	auto bufSize = client.getReceiveBufferSize();
+	auto bufSize = clientSocket.getReceiveBufferSize();
 	char buf[bufSize+1];
 	int len;
 
 	try {
-		if ((len = client.receiveData(buf, bufSize)) < 0) {
-			client.setHangUp(true);
+		if ((len = clientSocket.receiveData(buf, bufSize)) <= 0) {
+			clientSocket.setHangUp(true);
 		} else {
 			buf[len] = 0x00;
-			inputBuffer.write(buf, len);
+			inp.write(buf, len);
 
-			readCallback(inputBuffer, outputBuffer, client.getClientData());
-
-			client.setHasOutput(outputBuffer.rdbuf()->in_avail() > 0);
+			if (!selfPipe(clientSocket))
+				readCallback(inp, outp, clientSocket.getClientData());
 		}
 	} catch (std::exception &e) {
 		return false;
@@ -119,19 +144,22 @@ bool MultiplexerImpl::readHandler(MultiplexedClientSocket &client) {
 	return true;
 }
 
-bool MultiplexerImpl::writeHandler(MultiplexedClientSocket &client) {
-	auto &outputBuffer = client.getOutputBuffer();
+bool MultiplexerImpl::writeHandler(MultiplexedClientSocket &clientSocket) {
+	auto &outp = clientSocket.getOutputBuffer();
+	auto &inp = clientSocket.getInputBuffer();
 
-	while (outputBuffer.rdbuf()->in_avail() > 0) {
-		int bufSize = client.getSendBufferSize();
+	writeCallback(inp, outp, clientSocket.getClientData());
+
+	while (outp.rdbuf()->in_avail() > 0) {
+		int bufSize = clientSocket.getSendBufferSize();
 		char buf[bufSize];
 
-		auto savePos = outputBuffer.tellg();
-		outputBuffer.readsome(buf, bufSize);
+		auto savePos = outp.tellg();
+		outp.readsome(buf, bufSize);
 		try {
-			if (client.sendData(buf, outputBuffer.gcount()) <= 0) {
-				outputBuffer.clear();
-				outputBuffer.seekg(savePos, outputBuffer.beg);
+			if (clientSocket.sendData(buf, outp.gcount()) <= 0) {
+				outp.clear();
+				outp.seekg(savePos, outp.beg);
 				break;
 			}
 		} catch (std::exception &e) {
@@ -139,12 +167,10 @@ bool MultiplexerImpl::writeHandler(MultiplexedClientSocket &client) {
 		}
 	}
 
-	if (outputBuffer.rdbuf()->in_avail() == 0) {
-		outputBuffer.str(std::string());
-		outputBuffer.clear();
-		client.setHasOutput(false);
-	} else
-		client.setHasOutput(true);
+	if (!clientSocket.getHasOutput()) {
+		outp.clear();
+		outp.str(std::string());
+	}
 
 	return true;
 }

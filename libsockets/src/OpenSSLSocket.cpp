@@ -6,6 +6,7 @@
  */
 
 #include "defs.h"
+#include "OpenSSL.h"
 #include "OpenSSLSocket.h"
 #include "SocketFactory.h"
 #include <iostream>
@@ -91,13 +92,13 @@ int OpenSSLSocket::listenForConnections(const std::string& bindAddr,
 
 		if (SSL_CTX_use_certificate_file(
 				sslContext.get(),
-				socketFactory.getSSLCertificateFile().c_str(),
+				openSSL.getSSLCertificateFile().c_str(),
 				SSL_FILETYPE_PEM) != 1)
 			return -1;
 
 		if (SSL_CTX_use_PrivateKey_file(
 				sslContext.get(),
-				socketFactory.getSSLKeyFile().c_str(),
+				openSSL.getSSLKeyFile().c_str(),
 				SSL_FILETYPE_PEM) != 1)
 			return -1;
 
