@@ -21,6 +21,7 @@
 #include <thread>
 #include <sstream>
 #include <algorithm>
+#include <fstream>
 #include "defs.h"
 #include "Socket.h"
 #include "OpenSSL.h"
@@ -66,54 +67,64 @@ void testMultiplexer(bool secure) {
 	std::cout << "exiting..." << std::endl;
 }
 
-void testAsyncClient(const std::string &host, const std::string &port, bool secure) {
-	struct MyClient : public ClientData {
+void testAsyncClient(const std::string &host, const std::string &port, const std::string &url, bool secure) {
+	class MyClient : public ClientData {
+	public:
 		bool started = false;
+		std::stringstream headers;
+		std::stringstream body;
 	};
 
 	MultiplexedClients<MyClient> clients(1,
 	[](std::istream &inp, std::ostream &outp, ClientData &clientData) {
 		auto &myData = static_cast<MyClient &>(clientData);
 
-		if (!myData.started) {
-			std::cout << "receiving response ..." << std::endl;
-			myData.started = true;
-		}
-
-		/*size_t bufSize = 4096;
-		char buf[4096];
 		while (inp.rdbuf()->in_avail() > 0) {
-			inp.readsome(buf, bufSize);
-			outp.write(buf, inp.gcount());
-		}*/
-		while (inp) {
-			std::string cmd;
 
-			auto savePos = inp.tellg();
-			std::getline(inp, cmd);
-			if (inp && !inp.eof()) {
-				std::cout << cmd << std::endl;
+			if (!myData.started) {
+				std::string line;
+				auto savePos = inp.tellg();
+
+				std::getline(inp, line);
+				if (inp && !inp.eof()) {
+					myData.headers << line << "\n";// << std::endl;
+					if (line == "\r")
+						myData.started = true;
+				} else {
+					inp.clear();
+					inp.seekg(savePos);
+					break;
+				}
 			} else {
-				inp.clear();
-				inp.seekg(savePos);
-				break;
+				size_t bufSize = 4096;
+				char buf[bufSize];
+
+				inp.readsome(buf, bufSize);
+				auto siz = inp.gcount();
+				myData.body.write(buf, siz);
 			}
 		}
-
 	},
-	[host](std::istream &inp, std::ostream &outp, ClientData &clientData){
-		std::string request = "GET / HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n";
-		std::cout << "sending request 123" << std::endl;
-		outp.write(request.c_str(), request.size());
+	[host, url](std::istream &inp, std::ostream &outp, ClientData &clientData){
+		std::string request = "GET " + url + " HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n";
+		std::cerr << "sending request" << std::endl;
+		outp << request;
 	},
 	[](std::istream &inp, std::ostream &outp, ClientData &clientData){
-		std::cout << std::endl << "transaction ended." << std::endl;
+		auto &myData = static_cast<MyClient &>(clientData);
+		std::cerr << std::endl << "transaction ended." << std::endl;
+		std::cerr << "HDR: " << myData.headers.str().size() << " bytes" << std::endl;
+		std::cerr << "BDY: " << myData.body.str().size() << " bytes" << std::endl  << std::endl;
+		std::cerr << myData.headers.str();
+		std::fstream outf("img.jpeg", std::ios_base::trunc|std::ios_base::out|std::ios_base::binary);
+		outf << myData.body.rdbuf();
+		outf.close();
 	});
 
 	if (clients.CreateClientSocket(host, port, secure)) {
 		getchar();
 	} else
-		std::cout << "error connecting to " << host << ":" << port << std::endl;
+		std::cerr << "error connecting to " << host << ":" << port << std::endl;
 }
 
 void testClient(const std::string &host, const std::string &port, bool secure) {
@@ -140,7 +151,7 @@ void testClient(const std::string &host, const std::string &port, bool secure) {
 int main(int argc, char **argv) {
 	try {
 		//testMultiplexer(std::string(argv[1]) == "ssl");
-		testAsyncClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
+		testAsyncClient(argv[1], argv[2], argv[3], std::string(argv[4]) == "ssl");
 		//testClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
 	} catch (std::exception &e) {
 		std::cout << e.what() << std::endl;

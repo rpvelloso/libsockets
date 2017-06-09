@@ -88,10 +88,10 @@ void MultiplexerImpl::multiplex() {
 
 			if (errorFlag) {
 				if (!sp) {
-					auto &inp = client.getInputBuffer();
-					auto &outp = client.getInputBuffer();
-					auto &cliData = client.getClientData();
-					disconnectCallback(inp, outp, cliData);
+					disconnectCallback(
+							client.getInputBuffer(),
+							client.getInputBuffer(),
+							client.getClientData());
 					removeClientSocket(client);
 				}
 				else
@@ -109,33 +109,31 @@ std::unique_ptr<MultiplexedClientSocket> MultiplexerImpl::makeMultiplexed(
 			std::move(clientData),
 			std::bind(&MultiplexerImpl::interrupt, this));
 
-	if (!selfPipe(*mCli)) {
-		auto &inp = mCli->getInputBuffer();
-		auto &outp = mCli->getOutputBuffer();
-		auto &cliData = mCli->getClientData();
-		connectCallback(inp, outp, cliData);
-	}
+	if (!selfPipe(*mCli))
+		connectCallback(
+				mCli->getInputBuffer(),
+				mCli->getOutputBuffer(),
+				mCli->getClientData());
 
 	return std::move(mCli);
 };
 
 bool MultiplexerImpl::readHandler(MultiplexedClientSocket &clientSocket) {
-	auto &outp = clientSocket.getOutputBuffer();
-	auto &inp = clientSocket.getInputBuffer();
-
 	auto bufSize = clientSocket.getReceiveBufferSize();
-	char buf[bufSize+1];
+	char buf[bufSize];
 	int len;
 
 	try {
 		if ((len = clientSocket.receiveData(buf, bufSize)) <= 0) {
 			clientSocket.setHangUp(true);
 		} else {
-			buf[len] = 0x00;
-			inp.write(buf, len);
+			clientSocket.getInputBuffer().write(buf, len);
 
 			if (!selfPipe(clientSocket))
-				readCallback(inp, outp, clientSocket.getClientData());
+				readCallback(
+						clientSocket.getInputBuffer(),
+						clientSocket.getOutputBuffer(),
+						clientSocket.getClientData());
 		}
 	} catch (std::exception &e) {
 		return false;

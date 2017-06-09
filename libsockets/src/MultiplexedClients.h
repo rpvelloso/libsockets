@@ -37,7 +37,8 @@ public:
 		auto clientSocket = secure?socketFactory.CreateSSLClientSocket():socketFactory.CreateClientSocket();
 		auto &multiplexer = getMultiplexer();
 		if (clientSocket->connectTo(host, port) == 0) {
-			multiplexer.addClientSocket(std::move(clientSocket));
+			std::unique_ptr<ClientData> cliData(new ClientDataType());
+			multiplexer.addClientSocket(std::move(clientSocket),std::move(cliData));
 			return true;
 		}
 		return false;

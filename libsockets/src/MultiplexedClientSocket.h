@@ -41,6 +41,7 @@ public:
 				interruptFunc(interruptFunc) {};
 	virtual ~MultiplexedClientSocket() {};
 	bool getHasOutput() { return outputBuffer.rdbuf()->in_avail() > 0; };
+	bool getHasInput() { return inputBuffer.rdbuf()->in_avail() > 0; };
 	void interrupt() { interruptFunc(); };
 	ClientData &getClientData() {return *clientData;};
 	bool getHangUp() {return hangUp;};
