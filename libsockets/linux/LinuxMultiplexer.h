@@ -19,18 +19,14 @@
 
 class LinuxMultiplexer: public MultiplexerImpl {
 public:
-	LinuxMultiplexer(MultiplexerCallback callback);
+	LinuxMultiplexer(
+			MultiplexerCallback readCallback,
+			MultiplexerCallback connectCallback,
+			MultiplexerCallback disconnectCallback,
+			MultiplexerCallback writeCallback);
 	virtual ~LinuxMultiplexer();
-	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-			std::unique_ptr<ClientData> clientData) override;
-	size_t clientCount() override;
-	void removeClientSocket(MultiplexedClientSocket &clientSocket) override;
-	bool selfPipe(MultiplexedClientSocket &clientSocket) override;
-	virtual std::vector<pollTuple> pollClients() override;
-
-private:
-	std::unordered_map<SocketFDType, std::unique_ptr<MultiplexedClientSocket>> clients;
-	SocketFDType sockOutFD;
+protected:
+	std::vector<pollTuple> pollClients() override;
 };
 
 #endif /* LINUXMULTIPLEXER_H_ */

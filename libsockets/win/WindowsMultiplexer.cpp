@@ -32,32 +32,11 @@ WindowsMultiplexer::WindowsMultiplexer(
 	sockIn->setNonBlockingIO(true);
 	auto sockOut = server->acceptConnection();
 
-	/* encapsulation breach!!! Due to socket FD data type,
-	 * WindowsMultiplexer is coupled with WindowsSocket
-	 */
-	auto impl = static_cast<WindowsSocket &>(sockOut->getImpl());
-
-	sockOutFD = impl.getFD();
+	sockOutFD = sockOut->getImpl().getFD();
 	addClientSocket(std::move(sockOut), std::make_unique<ClientData>());
 }
 
 WindowsMultiplexer::~WindowsMultiplexer() {
-}
-
-void WindowsMultiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-		std::unique_ptr<ClientData> clientData) {
-	std::lock_guard<std::mutex> lock(clientsMutex);
-
-	clientSocket->setNonBlockingIO(true);
-
-	/* encapsulation breach!!! Due to socket FD data type,
-	 * WindowsMultiplexer is coupled with WindowsSocket
-	 */
-	auto impl = static_cast<WindowsSocket &>(clientSocket->getImpl());
-	auto fd = impl.getFD();
-
-	clients[fd] = makeMultiplexed(std::move(clientSocket), std::move(clientData));
-	interrupt();
 }
 
 std::vector<pollTuple> WindowsMultiplexer::pollClients() {
@@ -101,18 +80,3 @@ std::vector<pollTuple> WindowsMultiplexer::pollClients() {
 
 	return readyClients;
 }
-
-size_t WindowsMultiplexer::clientCount() {
-	std::lock_guard<std::mutex> lock(clientsMutex);
-	return clients.size()-1; // self-pipe is always in clients
-}
-
-bool WindowsMultiplexer::selfPipe(MultiplexedClientSocket &clientSocket) {
-	auto impl = static_cast<WindowsSocket &>(clientSocket.getImpl());
-	return impl.getFD() == sockOutFD;
-}
-
-void WindowsMultiplexer::removeClientSocket(MultiplexedClientSocket &clientSocket) {
-	clients.erase(static_cast<WindowsSocket &>(clientSocket.getImpl()).getFD());
-}
-

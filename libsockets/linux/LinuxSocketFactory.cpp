@@ -34,6 +34,14 @@ std::unique_ptr<ServerSocket> LinuxSocketFactory::CreateSSLServerSocket() {
 	return std::make_unique<ServerSocket>(new OpenSSLSocket(new LinuxSocket));
 }
 
-std::unique_ptr<Multiplexer> LinuxSocketFactory::CreateMultiplexer(MultiplexerCallback callback) {
-	return std::make_unique<Multiplexer>(new LinuxMultiplexer(callback));
+std::unique_ptr<Multiplexer> LinuxSocketFactory::CreateMultiplexer(
+		MultiplexerCallback readCallback,
+		MultiplexerCallback connectCallback = defaultCallback,
+		MultiplexerCallback disconnectCallback = defaultCallback,
+		MultiplexerCallback writeCallback = defaultCallback) {
+	return std::make_unique<Multiplexer>(new LinuxMultiplexer(
+			readCallback,
+			connectCallback,
+			disconnectCallback,
+			writeCallback));
 }

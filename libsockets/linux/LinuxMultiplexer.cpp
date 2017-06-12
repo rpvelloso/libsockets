@@ -12,12 +12,17 @@
 #include "LinuxMultiplexer.h"
 #include "LinuxSocket.h"
 
-LinuxMultiplexer::LinuxMultiplexer(MultiplexerCallback callback) : MultiplexerImpl(callback) {
+LinuxMultiplexer::LinuxMultiplexer(
+		MultiplexerCallback readCallback,
+		MultiplexerCallback connectCallback = defaultCallback,
+		MultiplexerCallback disconnectCallback = defaultCallback,
+		MultiplexerCallback writeCallback = defaultCallback) :
+		MultiplexerImpl(readCallback,
+				connectCallback,
+				disconnectCallback,
+				writeCallback) {
 	int selfPipe[2];
 
-	/* encapsulation breach!!! Due to socket FD data type,
-	 * LinuxMultiplexer is coupled with LinuxSocket
-	 */
 	socketpair(AF_UNIX, SOCK_STREAM, PF_UNSPEC, selfPipe);
 	sockIn = std::make_unique<ClientSocket>(new LinuxSocket(selfPipe[0]));
 	auto sockOut = std::make_unique<ClientSocket>(new LinuxSocket(selfPipe[1]));;
@@ -26,37 +31,6 @@ LinuxMultiplexer::LinuxMultiplexer(MultiplexerCallback callback) : MultiplexerIm
 }
 
 LinuxMultiplexer::~LinuxMultiplexer() {
-}
-
-void LinuxMultiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-		std::unique_ptr<ClientData> clientData) {
-	std::lock_guard<std::mutex> lock(clientsMutex);
-
-	clientSocket->setNonBlockingIO(true);
-
-	/* encapsulation breach!!! Due to socket FD data type,
-	 * LinuxMultiplexer is coupled with LinuxSocket
-	 */
-	auto impl = static_cast<LinuxSocket &>(clientSocket->getImpl());
-	auto fd = impl.getFD();
-
-	clients[fd] = makeMultiplexed(std::move(clientSocket));
-	clients[fd]->setClientData(std::move(clientData));
-	interrupt();
-}
-
-size_t LinuxMultiplexer::clientCount() {
-	std::lock_guard<std::mutex> lock(clientsMutex);
-	return clients.size()-1; // self-pipe is always in clients
-}
-
-void LinuxMultiplexer::removeClientSocket(MultiplexedClientSocket &clientSocket) {
-	clients.erase(static_cast<LinuxSocket &>(clientSocket.getImpl()).getFD());
-}
-
-bool LinuxMultiplexer::selfPipe(MultiplexedClientSocket &clientSocket) {
-	auto impl = static_cast<LinuxSocket &>(clientSocket.getImpl());
-	return impl.getFD() == sockOutFD;
 }
 
 std::vector<pollTuple> LinuxMultiplexer::pollClients() {

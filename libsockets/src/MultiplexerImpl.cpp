@@ -30,6 +30,31 @@ MultiplexerImpl::MultiplexerImpl(
 MultiplexerImpl::~MultiplexerImpl() {
 }
 
+void MultiplexerImpl::addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
+		std::unique_ptr<ClientData> clientData) {
+	std::lock_guard<std::mutex> lock(clientsMutex);
+
+	clientSocket->setNonBlockingIO(true);
+
+	auto fd = clientSocket->getImpl().getFD();
+
+	clients[fd] = makeMultiplexed(std::move(clientSocket), std::move(clientData));
+	interrupt();
+}
+
+void MultiplexerImpl::removeClientSocket(MultiplexedClientSocket &clientSocket) {
+	clients.erase(clientSocket.getImpl().getFD());
+}
+
+size_t MultiplexerImpl::clientCount() {
+	std::lock_guard<std::mutex> lock(clientsMutex);
+	return clients.size()-1; // self-pipe is always in clients
+}
+
+bool MultiplexerImpl::selfPipe(MultiplexedClientSocket &clientSocket) {
+	return clientSocket.getImpl().getFD() == sockOutFD;
+}
+
 void MultiplexerImpl::interrupt() {
 	sendMultiplexerCommand(MultiplexerCommand::INTERRUPT);
 }

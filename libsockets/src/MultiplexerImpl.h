@@ -13,6 +13,7 @@
 #include <vector>
 #include <mutex>
 #include <functional>
+#include <unordered_map>
 #include "MultiplexedClientSocket.h"
 
 class MultiplexedClientSocket;
@@ -31,8 +32,8 @@ public:
 			MultiplexerCallback writeCallback);
 	virtual ~MultiplexerImpl();
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-			std::unique_ptr<ClientData> clientData) = 0;
-	virtual size_t clientCount() = 0;
+			std::unique_ptr<ClientData> clientData);
+	virtual size_t clientCount();
 
 	virtual void cancel();
 	virtual void interrupt();
@@ -43,12 +44,14 @@ protected:
 	std::unique_ptr<ClientSocket> sockIn;
 	std::mutex commandMutex, clientsMutex;
 	MultiplexerCallback readCallback, connectCallback, disconnectCallback, writeCallback;
+	std::unordered_map<SocketFDType, std::unique_ptr<MultiplexedClientSocket>> clients;
+	SocketFDType sockOutFD = InvalidSocketFD;
 
 	virtual void sendMultiplexerCommand(int cmd);
 
 	virtual std::vector<pollTuple> pollClients() = 0;
-	virtual void removeClientSocket(MultiplexedClientSocket &clientSocket) = 0;
-	virtual bool selfPipe(MultiplexedClientSocket &clientSocket) = 0;
+	virtual void removeClientSocket(MultiplexedClientSocket &clientSocket);
+	virtual bool selfPipe(MultiplexedClientSocket &clientSocket);
 
 	/*
 	 * Factory method that wraps a clientSocket with a multiplexing interface
