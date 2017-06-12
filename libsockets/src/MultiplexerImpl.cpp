@@ -146,8 +146,6 @@ bool MultiplexerImpl::writeHandler(MultiplexedClientSocket &clientSocket) {
 	auto &outp = clientSocket.getOutputBuffer();
 	auto &inp = clientSocket.getInputBuffer();
 
-	writeCallback(inp, outp, clientSocket.getClientData());
-
 	while (outp.rdbuf()->in_avail() > 0) {
 		int bufSize = clientSocket.getSendBufferSize();
 		char buf[bufSize];
@@ -169,6 +167,8 @@ bool MultiplexerImpl::writeHandler(MultiplexedClientSocket &clientSocket) {
 		outp.clear();
 		outp.str(std::string());
 	}
+
+	writeCallback(inp, outp, clientSocket.getClientData());
 
 	return true;
 }

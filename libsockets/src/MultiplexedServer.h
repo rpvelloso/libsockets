@@ -17,10 +17,18 @@ template <class ClientDataType = ClientData>
 class MultiplexedServer {
 public:
 	MultiplexedServer(const std::string &bindAddr, const std::string &port,
-			size_t nthreads, bool secure, MultiplexerCallback callback) : bindAddr(bindAddr), port(port), secure(secure) {
+			size_t nthreads, bool secure, 			MultiplexerCallback readCallback,
+			MultiplexerCallback connectCallback = defaultCallback,
+			MultiplexerCallback disconnectCallback = defaultCallback,
+			MultiplexerCallback writeCallback = defaultCallback)
+ 	 	 	 : bindAddr(bindAddr), port(port), secure(secure) {
 		nthreads = std::max((size_t) 1, nthreads);
 		for (size_t i = 0; i < nthreads; ++i)
-			multiplexers.emplace_back(socketFactory.CreateMultiplexer(callback));
+			multiplexers.emplace_back(socketFactory.createMultiplexer(
+					readCallback,
+					connectCallback,
+					disconnectCallback,
+					writeCallback));
 	};
 
 	virtual ~MultiplexedServer() {
@@ -29,15 +37,16 @@ public:
 
 	void listen() {
 		auto serverSocket = secure?
-				socketFactory.CreateSSLServerSocket():
-				socketFactory.CreateServerSocket();
+				socketFactory.createSSLServerSocket():
+				socketFactory.createServerSocket();
 
 		serverSocket->listenForConnections(bindAddr, port);
 
 		while (true) {
 			try {
 				auto clientSocket = serverSocket->acceptConnection();
-				getMultiplexer().addClientSocket(std::move(clientSocket), std::make_unique<ClientDataType>());
+				std::unique_ptr<ClientData> cliData(new ClientDataType());
+				getMultiplexer().addClientSocket(std::move(clientSocket), std::move(cliData));
 			} catch (std::exception &e) {
 				std::cerr << e.what() << std::endl;
 				break;

@@ -19,23 +19,23 @@ WindowsSocketFactory::WindowsSocketFactory() : SocketFactory() {
 WindowsSocketFactory::~WindowsSocketFactory() {
 }
 
-std::unique_ptr<ClientSocket> WindowsSocketFactory::CreateClientSocket() {
+std::unique_ptr<ClientSocket> WindowsSocketFactory::createClientSocket() {
 	return std::make_unique<ClientSocket>(new WindowsSocket);
 }
 
-std::unique_ptr<ClientSocket> WindowsSocketFactory::CreateSSLClientSocket() {
+std::unique_ptr<ClientSocket> WindowsSocketFactory::createSSLClientSocket() {
 	return std::make_unique<ClientSocket>(new OpenSSLSocket( new WindowsSocket()));
 }
 
-std::unique_ptr<ServerSocket> WindowsSocketFactory::CreateServerSocket() {
+std::unique_ptr<ServerSocket> WindowsSocketFactory::createServerSocket() {
 	return std::make_unique<ServerSocket>(new WindowsSocket());
 }
 
-std::unique_ptr<ServerSocket> WindowsSocketFactory::CreateSSLServerSocket() {
+std::unique_ptr<ServerSocket> WindowsSocketFactory::createSSLServerSocket() {
 	return std::make_unique<ServerSocket>(new OpenSSLSocket( new WindowsSocket()));
 }
 
-std::unique_ptr<Multiplexer> WindowsSocketFactory::CreateMultiplexer(
+std::unique_ptr<Multiplexer> WindowsSocketFactory::createMultiplexer(
 		MultiplexerCallback readCallback,
 		MultiplexerCallback connectCallback = defaultCallback,
 		MultiplexerCallback disconnectCallback = defaultCallback,

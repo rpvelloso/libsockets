@@ -25,8 +25,8 @@ WindowsMultiplexer::WindowsMultiplexer(
 	 * Self-pipe trick to interrupt poll/select.
 	 * Windows alternative to socketpair()
 	 */
-	auto server = socketFactory.CreateServerSocket();
-	sockIn = socketFactory.CreateClientSocket();
+	auto server = socketFactory.createServerSocket();
+	sockIn = socketFactory.createClientSocket();
 	server->listenForConnections("127.0.0.1",""); // listen on a random free port
 	sockIn->connectTo("127.0.0.1",server->getPort());
 	sockIn->setNonBlockingIO(true);

@@ -14,11 +14,11 @@ class WindowsSocketFactory: public SocketFactory {
 public:
 	WindowsSocketFactory();
 	virtual ~WindowsSocketFactory();
-	std::unique_ptr<ClientSocket> CreateClientSocket() override;
-	std::unique_ptr<ClientSocket> CreateSSLClientSocket() override;
-	std::unique_ptr<ServerSocket> CreateServerSocket() override;
-	std::unique_ptr<ServerSocket> CreateSSLServerSocket() override;
-	std::unique_ptr<Multiplexer> CreateMultiplexer(
+	std::unique_ptr<ClientSocket> createClientSocket() override;
+	std::unique_ptr<ClientSocket> createSSLClientSocket() override;
+	std::unique_ptr<ServerSocket> createServerSocket() override;
+	std::unique_ptr<ServerSocket> createSSLServerSocket() override;
+	std::unique_ptr<Multiplexer> createMultiplexer(
 			MultiplexerCallback readCallback,
 			MultiplexerCallback connectCallback,
 			MultiplexerCallback disconnectCallback,

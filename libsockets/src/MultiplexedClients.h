@@ -23,7 +23,7 @@ public:
 			MultiplexerCallback writeCallback = defaultCallback) {
 		nthreads = std::max((size_t) 1, nthreads);
 		for (size_t i = 0; i < nthreads; ++i)
-			multiplexers.emplace_back(socketFactory.CreateMultiplexer(
+			multiplexers.emplace_back(socketFactory.createMultiplexer(
 					readCallback,
 					connectCallback,
 					disconnectCallback,
@@ -34,11 +34,10 @@ public:
 	};
 
 	virtual bool CreateClientSocket(const std::string &host, const std::string &port, bool secure) {
-		auto clientSocket = secure?socketFactory.CreateSSLClientSocket():socketFactory.CreateClientSocket();
-		auto &multiplexer = getMultiplexer();
+		auto clientSocket = secure?socketFactory.createSSLClientSocket():socketFactory.createClientSocket();
 		if (clientSocket->connectTo(host, port) == 0) {
 			std::unique_ptr<ClientData> cliData(new ClientDataType());
-			multiplexer.addClientSocket(std::move(clientSocket),std::move(cliData));
+			getMultiplexer().addClientSocket(std::move(clientSocket),std::move(cliData));
 			return true;
 		}
 		return false;

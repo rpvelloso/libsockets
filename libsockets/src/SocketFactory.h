@@ -9,6 +9,7 @@
 #define SOCKETFACTORY_H_
 
 #include <memory>
+#include <atomic>
 #include "ServerSocket.h"
 #include "ClientSocket.h"
 #include "Multiplexer.h"
@@ -18,21 +19,26 @@ public:
 	SocketFactory() {};
 	SocketFactory(SocketFactory *impl) : impl(impl) {};
 	virtual ~SocketFactory() {};
-	virtual std::unique_ptr<ClientSocket> CreateClientSocket() {return impl->CreateClientSocket();};
-	virtual std::unique_ptr<ClientSocket> CreateSSLClientSocket() {return impl->CreateSSLClientSocket();};
-	virtual std::unique_ptr<ServerSocket> CreateServerSocket() {return impl->CreateServerSocket();};
-	virtual std::unique_ptr<ServerSocket> CreateSSLServerSocket() {return impl->CreateSSLServerSocket();};
-	virtual std::unique_ptr<Multiplexer> CreateMultiplexer(
+	virtual std::unique_ptr<ClientSocket> createClientSocket() {return impl->createClientSocket();};
+	virtual std::unique_ptr<ClientSocket> createSSLClientSocket() {return impl->createSSLClientSocket();};
+	virtual std::unique_ptr<ServerSocket> createServerSocket() {return impl->createServerSocket();};
+	virtual std::unique_ptr<ServerSocket> createSSLServerSocket() {return impl->createSSLServerSocket();};
+	virtual std::unique_ptr<Multiplexer> createMultiplexer(
 			MultiplexerCallback readCallback,
 			MultiplexerCallback connectCallback = defaultCallback,
 			MultiplexerCallback disconnectCallback = defaultCallback,
 			MultiplexerCallback writeCallback = defaultCallback) {
-		return impl->CreateMultiplexer(
+		return impl->createMultiplexer(
 				readCallback,
 				connectCallback,
 				disconnectCallback,
 				writeCallback);
 	};
+	static size_t createID() {
+		static std::atomic<std::size_t> id(0);
+
+		return ++id;
+	}
 private:
 	std::unique_ptr<SocketFactory> impl;
 };
