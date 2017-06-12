@@ -101,14 +101,15 @@ void testAsyncClient(const std::string &host, const std::string &port, const std
 
 				inp.readsome(buf, bufSize);
 				auto siz = inp.gcount();
+				std::cout << siz << std::endl;
 				myData.body.write(buf, siz);
 			}
 		}
 	},
 	[host, url](std::istream &inp, std::ostream &outp, ClientData &clientData){
 		std::string request = "GET " + url + " HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n";
-		std::cerr << "sending request" << std::endl;
-		outp << request;
+		std::cerr << "sending request" << std::endl << request << std::endl;
+		outp.write(request.c_str(), request.size());
 	},
 	[](std::istream &inp, std::ostream &outp, ClientData &clientData){
 		auto &myData = static_cast<MyClient &>(clientData);
@@ -119,6 +120,8 @@ void testAsyncClient(const std::string &host, const std::string &port, const std
 		std::fstream outf("img.jpeg", std::ios_base::trunc|std::ios_base::out|std::ios_base::binary);
 		outf << myData.body.rdbuf();
 		outf.close();
+		/*std::cout << myData.body.rdbuf();
+		std::cout.flush();*/
 	});
 
 	if (clients.CreateClientSocket(host, port, secure)) {
