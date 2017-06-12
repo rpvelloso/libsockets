@@ -34,6 +34,10 @@ public:
 				disconnectCallback,
 				writeCallback);
 	};
+	virtual std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > createSocketPair() {
+		return impl->createSocketPair();
+	};
+
 	static size_t createID() {
 		static std::atomic<std::size_t> id(0);
 

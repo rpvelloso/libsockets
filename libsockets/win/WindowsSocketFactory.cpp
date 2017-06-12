@@ -9,7 +9,8 @@
 #include "WindowsSocket.h"
 #include "OpenSSLSocket.h"
 #include "WindowsSocketFactory.h"
-#include "WindowsMultiplexer.h"
+#include "MultiplexerImpl.h"
+#include "WindowsPoll.h"
 
 SocketFactory socketFactory(new WindowsSocketFactory());
 
@@ -40,9 +41,23 @@ std::unique_ptr<Multiplexer> WindowsSocketFactory::createMultiplexer(
 		MultiplexerCallback connectCallback = defaultCallback,
 		MultiplexerCallback disconnectCallback = defaultCallback,
 		MultiplexerCallback writeCallback = defaultCallback) {
-	return std::make_unique<Multiplexer>(new WindowsMultiplexer(
+	return std::make_unique<Multiplexer>(new MultiplexerImpl(new WindowsPoll(),
 			readCallback,
 			connectCallback,
 			disconnectCallback,
 			writeCallback));
+}
+
+std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > WindowsSocketFactory::createSocketPair() {
+	/**
+	 * Windows alternative to socketpair()
+	 */
+	auto server = socketFactory.createServerSocket();
+	auto sockIn = socketFactory.createClientSocket();
+	server->listenForConnections("127.0.0.1",""); // listen on a random free port
+	sockIn->connectTo("127.0.0.1",server->getPort());
+	sockIn->setNonBlockingIO(true);
+	auto sockOut = server->acceptConnection();
+
+	return std::make_pair(std::move(sockIn), std::move(sockOut));
 }

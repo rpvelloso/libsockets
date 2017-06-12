@@ -16,16 +16,17 @@
 #include <unordered_map>
 #include "MultiplexedClientSocket.h"
 
+class Poll;
 class MultiplexedClientSocket;
 
 using MultiplexerCallback = std::function<void(std::istream &inp, std::ostream &outp, ClientData&)>;
-using pollTuple = std::tuple<MultiplexedClientSocket &, bool, bool>; // <client, read, write>, error = read:false, write:false
+using ClientListType = std::unordered_map<SocketFDType, std::unique_ptr<MultiplexedClientSocket>>;
 
 extern MultiplexerCallback defaultCallback;
 
 class MultiplexerImpl {
 public:
-	MultiplexerImpl(
+	MultiplexerImpl(Poll *pollStrategy,
 			MultiplexerCallback readCallback,
 			MultiplexerCallback connectCallback,
 			MultiplexerCallback disconnectCallback,
@@ -38,18 +39,15 @@ public:
 	virtual void cancel();
 	virtual void interrupt();
 	virtual void multiplex();
-
-
 protected:
+	std::unique_ptr<Poll> pollStrategy;
 	std::unique_ptr<ClientSocket> sockIn;
 	std::mutex commandMutex, clientsMutex;
 	MultiplexerCallback readCallback, connectCallback, disconnectCallback, writeCallback;
-	std::unordered_map<SocketFDType, std::unique_ptr<MultiplexedClientSocket>> clients;
+	ClientListType clients;
 	SocketFDType sockOutFD = InvalidSocketFD;
 
 	virtual void sendMultiplexerCommand(int cmd);
-
-	virtual std::vector<pollTuple> pollClients() = 0;
 	virtual void removeClientSocket(MultiplexedClientSocket &clientSocket);
 	virtual bool selfPipe(MultiplexedClientSocket &clientSocket);
 

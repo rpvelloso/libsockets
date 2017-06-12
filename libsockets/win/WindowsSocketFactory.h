@@ -23,6 +23,7 @@ public:
 			MultiplexerCallback connectCallback,
 			MultiplexerCallback disconnectCallback,
 			MultiplexerCallback writeCallback) override;
+	std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > createSocketPair() override;
 };
 
 #endif /* WINDOWSSOCKETFACTORY_H_ */

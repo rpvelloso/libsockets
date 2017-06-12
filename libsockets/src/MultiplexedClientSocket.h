@@ -27,7 +27,7 @@ public:
 
 /*
  * Wrapper class. Adds multiplexing capabilities to a ClientSocket.
- * Client can signal the multiplexer if there is data to be sent and store client data/state.
+ * Signals the multiplexer if there is data to be sent and store client data/state.
  */
 
 class MultiplexedClientSocket {

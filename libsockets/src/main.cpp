@@ -10,7 +10,7 @@
  * TODO: do more tests with OpenSSLSocket - currently it does not work with non blocking I/O
  * TODO: standardize multiplexedClients/Server and put inside SocketFactory
  * TODO: implement an FTP and HTTP servers as sample/examples
- * TODO: better refactoring of win/linux classes (specially multiplexer)
+ * TODO: change poll() into a strategy/impl/DepInj inside multiplexer class
  * TODO: Create class for simple threaded server and clients (one thread per client)
  * TODO: standalone streaming client socket
  * TODO: SSL context sharing per site (inside socketFactory)

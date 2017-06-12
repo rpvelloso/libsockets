@@ -8,6 +8,8 @@
 #include <iostream>
 
 #include "MultiplexerImpl.h"
+#include "SocketFactory.h"
+#include "Poll.h"
 
 MultiplexerCallback defaultCallback = [](std::istream &inp, std::ostream &outp, ClientData&){}; // noop()
 
@@ -16,15 +18,21 @@ enum MultiplexerCommand : int {
 	INTERRUPT = 0x01
 };
 
-MultiplexerImpl::MultiplexerImpl(
+MultiplexerImpl::MultiplexerImpl(Poll *pollStrategy,
 		MultiplexerCallback readCallback,
 		MultiplexerCallback connectCallback = defaultCallback,
 		MultiplexerCallback disconnectCallback = defaultCallback,
 		MultiplexerCallback writeCallback = defaultCallback) :
+				pollStrategy(pollStrategy),
 				readCallback(readCallback),
 				connectCallback(connectCallback),
 				disconnectCallback(disconnectCallback),
 				writeCallback(writeCallback) {
+
+	auto socketPair = socketFactory.createSocketPair();
+	sockIn = std::move(socketPair.first);
+	sockOutFD = socketPair.second->getImpl().getFD();
+	addClientSocket(std::move(socketPair.second), std::make_unique<ClientData>());
 }
 
 MultiplexerImpl::~MultiplexerImpl() {
@@ -35,9 +43,7 @@ void MultiplexerImpl::addClientSocket(std::unique_ptr<ClientSocket> clientSocket
 	std::lock_guard<std::mutex> lock(clientsMutex);
 
 	clientSocket->setNonBlockingIO(true);
-
 	auto fd = clientSocket->getImpl().getFD();
-
 	clients[fd] = makeMultiplexed(std::move(clientSocket), std::move(clientData));
 	interrupt();
 }
@@ -70,7 +76,7 @@ void MultiplexerImpl::sendMultiplexerCommand(int cmd) {
 
 void MultiplexerImpl::multiplex() {
 	while (true) {
-		auto readyClients = pollClients();
+		auto readyClients = pollStrategy->poll(clients, clientsMutex);
 
 		std::lock_guard<std::mutex> lock(clientsMutex);
 		for (auto rc:readyClients) {
