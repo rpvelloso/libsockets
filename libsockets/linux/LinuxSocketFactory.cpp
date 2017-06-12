@@ -39,9 +39,18 @@ std::unique_ptr<Multiplexer> LinuxSocketFactory::CreateMultiplexer(
 		MultiplexerCallback connectCallback = defaultCallback,
 		MultiplexerCallback disconnectCallback = defaultCallback,
 		MultiplexerCallback writeCallback = defaultCallback) {
-	return std::make_unique<Multiplexer>(new LinuxMultiplexer(
+	return std::make_unique<Multiplexer>(new MultiplexerImpl( new LinuxPoll(),
 			readCallback,
 			connectCallback,
 			disconnectCallback,
 			writeCallback));
+}
+
+std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > LinuxSocketFactory::createSocketPair() {
+	int selfPipe[2];
+
+	socketpair(AF_UNIX, SOCK_STREAM, PF_UNSPEC, selfPipe);
+	auto sockIn = std::make_unique<ClientSocket>(new LinuxSocket(selfPipe[0]));
+	auto sockOut = std::make_unique<ClientSocket>(new LinuxSocket(selfPipe[1]));
+	return std::make_pair(sockIn, sockOut);
 }
