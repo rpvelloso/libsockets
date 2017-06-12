@@ -68,60 +68,46 @@ void testMultiplexer(bool secure) {
 }
 
 void testAsyncClient(const std::string &host, const std::string &port, const std::string &url, bool secure) {
-	class MyClient : public ClientData {
+	class HTTPContext : public ClientData {
 	public:
-		bool started = false;
+		bool hdr = true;
 		std::stringstream headers;
-		std::stringstream body;
 	};
 
-	MultiplexedClients<MyClient> clients(1,
+	MultiplexedClients<HTTPContext> clients(1,
 	[](std::istream &inp, std::ostream &outp, ClientData &clientData) {
-		auto &myData = static_cast<MyClient &>(clientData);
+		auto &ctx = static_cast<HTTPContext &>(clientData);
 
 		while (inp.rdbuf()->in_avail() > 0) {
-
-			if (!myData.started) {
+			if (ctx.hdr) {
 				std::string line;
 				auto savePos = inp.tellg();
 
 				std::getline(inp, line);
 				if (inp && !inp.eof()) {
-					myData.headers << line << "\n";// << std::endl;
+					ctx.headers << line << "\n";
 					if (line == "\r")
-						myData.started = true;
+						ctx.hdr = false;
 				} else {
 					inp.clear();
 					inp.seekg(savePos);
 					break;
 				}
-			} else {
-				size_t bufSize = 4096;
-				char buf[bufSize];
-
-				inp.readsome(buf, bufSize);
-				auto siz = inp.gcount();
-				std::cout << siz << std::endl;
-				myData.body.write(buf, siz);
-			}
+			} else
+				break;
 		}
 	},
 	[host, url](std::istream &inp, std::ostream &outp, ClientData &clientData){
 		std::string request = "GET " + url + " HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n";
 		std::cerr << "sending request" << std::endl << request << std::endl;
-		outp.write(request.c_str(), request.size());
+		outp << request;
 	},
 	[](std::istream &inp, std::ostream &outp, ClientData &clientData){
-		auto &myData = static_cast<MyClient &>(clientData);
+		auto &ctx = static_cast<HTTPContext &>(clientData);
 		std::cerr << std::endl << "transaction ended." << std::endl;
-		std::cerr << "HDR: " << myData.headers.str().size() << " bytes" << std::endl;
-		std::cerr << "BDY: " << myData.body.str().size() << " bytes" << std::endl  << std::endl;
-		std::cerr << myData.headers.str();
-		std::fstream outf("img.jpeg", std::ios_base::trunc|std::ios_base::out|std::ios_base::binary);
-		outf << myData.body.rdbuf();
-		outf.close();
-		/*std::cout << myData.body.rdbuf();
-		std::cout.flush();*/
+		std::cerr << "HDR: " << ctx.headers.str().size() << " bytes" << std::endl;
+		std::cerr << ctx.headers.str();
+		std::cout << inp.rdbuf();
 	});
 
 	if (clients.CreateClientSocket(host, port, secure)) {
