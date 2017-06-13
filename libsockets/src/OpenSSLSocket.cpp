@@ -115,7 +115,7 @@ std::unique_ptr<SocketImpl> OpenSSLSocket::acceptConnection() {
 }
 
 int OpenSSLSocket::setNonBlockingIO(bool status) {
-	return impl->setNonBlockingIO(status);
+	return 0; //impl->setNonBlockingIO(status);
 }
 
 int OpenSSLSocket::reuseAddress() {
