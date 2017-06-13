@@ -12,8 +12,6 @@
 #include <mutex>
 #include "MultiplexerImpl.h"
 
-//class MultiplexedClientSocket;
-
 // <client, read, write>, error: read=false, write=false
 using pollTuple = std::tuple<MultiplexedClientSocket &, bool, bool>;
 

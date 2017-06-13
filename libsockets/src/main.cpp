@@ -21,13 +21,7 @@
 #include <sstream>
 #include <algorithm>
 #include <fstream>
-#include "defs.h"
-#include "Socket.h"
-#include "OpenSSL.h"
-#include "OpenSSLSocket.h"
-#include "SocketFactory.h"
-#include "MultiplexedServer.h"
-#include "MultiplexedClients.h"
+#include "libsockets.h"
 
 void testMultiplexer(bool secure) {
 	struct EchoData : public ClientData {
