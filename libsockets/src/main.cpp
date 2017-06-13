@@ -21,6 +21,7 @@
 #include <sstream>
 #include <algorithm>
 #include <fstream>
+#include <regex>
 #include "libsockets.h"
 
 void testMultiplexer(bool secure) {
@@ -130,12 +131,62 @@ void testClient(const std::string &host, const std::string &port, bool secure) {
 	}
 }
 
+class URL {
+public:
+	URL(const std::string &url) {
+		std::regex regex(
+				//TODO: add user:pass@host syntax to regex
+		/*   protocol://         host      :port              /path/to    ?query */
+			"(([[:alpha:]]+)://)?([^/ :]+)(:([1-9][0-9]+))?(((/[^ #?]*)(\\x3f?([^ #]*)#?([^ ]*)|$))|$)"
+		);
+		std::smatch matchs;
+
+		if (std::regex_match(url, matchs, regex)) {
+			/*int i = 0;
+			for (auto m:matchs)
+				std::cout << i++ << ": " << m << std::endl;*/
+
+			protocol = matchs[2];
+			host = matchs[3];
+			port = matchs[5];
+			path = matchs[8];
+			query = matchs[10];
+		} else
+			valid = false;
+	};
+
+	virtual ~URL() {};
+
+	bool isValid() {return valid;};
+	std::string getProtocol() const {return protocol;}
+	std::string getHost() const {return host;}
+	std::string getPort() const {return port;}
+	std::string getPath() const {return path;}
+	std::string getQuery() const {return query;}
+private:
+	bool valid = true;
+	std::string protocol, host, port, path, query;
+};
+
 int main(int argc, char **argv) {
-	try {
+
+	URL url(argv[1]);
+
+	if (url.isValid()) {
+		std::cout << "protocol: " << url.getProtocol() << std::endl;
+		std::cout << "host: " << url.getHost() << std::endl;
+		std::cout << "port: " << url.getPort() << std::endl;
+		std::cout << "path: " << url.getPath() << std::endl;
+		std::cout << "query: " << url.getQuery() << std::endl;
+	} else
+		std::cout << "invalid URL." << std::endl;
+	/* protocol :// host : port / uri ? vars */
+
+	/*try {
 		//testMultiplexer(std::string(argv[1]) == "ssl");
 		testAsyncClient(argv[1], argv[2], argv[3], std::string(argv[4]) == "ssl");
 		//testClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
 	} catch (std::exception &e) {
 		std::cout << e.what() << std::endl;
-	}
+	}*/
 }
