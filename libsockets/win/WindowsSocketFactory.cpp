@@ -11,6 +11,7 @@
 #include "WindowsSocketFactory.h"
 #include "MultiplexerImpl.h"
 #include "WindowsPoll.h"
+#include "WindowsSelect.h"
 
 SocketFactory socketFactory(new WindowsSocketFactory());
 
