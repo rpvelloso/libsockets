@@ -9,6 +9,7 @@
 #include "LinuxSocket.h"
 #include "OpenSSLSocket.h"
 #include "LinuxPoll.h"
+#include "LinuxSelect.h"
 
 SocketFactory socketFactory(new LinuxSocketFactory());
 
