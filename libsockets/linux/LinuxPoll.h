@@ -14,7 +14,7 @@ class LinuxPoll: public Poll {
 public:
 	LinuxPoll();
 	virtual ~LinuxPoll();
-	std::vector<pollTuple> poll(ClientListType &clients, std::mutex &clientsMutex) override;
+	std::vector<pollTuple> pollClients(ClientListType &clients, std::mutex &clientsMutex) override;
 };
 
 #endif /* LINUX_LINUXPOLL_H_ */

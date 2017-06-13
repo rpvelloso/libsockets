@@ -21,7 +21,7 @@ class Poll {
 public:
 	Poll() {};
 	virtual ~Poll() {};
-	virtual std::vector<pollTuple> poll(ClientListType &clients, std::mutex &clientsMutex) = 0;
+	virtual std::vector<pollTuple> pollClients(ClientListType &clients, std::mutex &clientsMutex) = 0;
 };
 
 #endif /* SRC_POLL_H_ */

@@ -17,7 +17,7 @@
 class LinuxMultiplexer;
 
 class LinuxSocket: public SocketImpl {
-	friend class LinuxMultiplexer;
+	friend class LinuxSocketFactory;
 public:
 	LinuxSocket();
 	virtual ~LinuxSocket();

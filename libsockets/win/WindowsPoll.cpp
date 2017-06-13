@@ -13,7 +13,7 @@ WindowsPoll::WindowsPoll() {
 WindowsPoll::~WindowsPoll() {
 }
 
-std::vector<pollTuple> WindowsPoll::poll(ClientListType &clients, std::mutex &clientsMutex) {
+std::vector<pollTuple> WindowsPoll::pollClients(ClientListType &clients, std::mutex &clientsMutex) {
 	std::vector<pollTuple> readyClients;
 
 	clientsMutex.lock();

@@ -76,7 +76,7 @@ void MultiplexerImpl::sendMultiplexerCommand(int cmd) {
 
 void MultiplexerImpl::multiplex() {
 	while (true) {
-		auto readyClients = pollStrategy->poll(clients, clientsMutex);
+		auto readyClients = pollStrategy->pollClients(clients, clientsMutex);
 
 		std::lock_guard<std::mutex> lock(clientsMutex);
 		for (auto rc:readyClients) {

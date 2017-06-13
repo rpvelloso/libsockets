@@ -14,7 +14,7 @@ LinuxPoll::LinuxPoll() {
 LinuxPoll::~LinuxPoll() {
 }
 
-std::vector<pollTuple> LinuxPoll::poll(ClientListType& clients,
+std::vector<pollTuple> LinuxPoll::pollClients(ClientListType& clients,
 		std::mutex& clientsMutex) {
 	std::vector<pollTuple> readyClients;
 

@@ -10,7 +10,6 @@
  * TODO: do more tests with OpenSSLSocket - currently it does not work with non blocking I/O
  * TODO: standardize multiplexedClients/Server and put inside SocketFactory
  * TODO: implement an FTP and HTTP servers as sample/examples
- * TODO: change poll() into a strategy/impl/DepInj inside multiplexer class
  * TODO: Create class for simple threaded server and clients (one thread per client)
  * TODO: standalone streaming client socket
  * TODO: SSL context sharing per site (inside socketFactory)
@@ -139,8 +138,8 @@ void testClient(const std::string &host, const std::string &port, bool secure) {
 
 int main(int argc, char **argv) {
 	try {
-		testMultiplexer(std::string(argv[1]) == "ssl");
-		//testAsyncClient(argv[1], argv[2], argv[3], std::string(argv[4]) == "ssl");
+		//testMultiplexer(std::string(argv[1]) == "ssl");
+		testAsyncClient(argv[1], argv[2], argv[3], std::string(argv[4]) == "ssl");
 		//testClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
 	} catch (std::exception &e) {
 		std::cout << e.what() << std::endl;

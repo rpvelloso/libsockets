@@ -7,8 +7,8 @@
 
 #include "LinuxSocketFactory.h"
 #include "LinuxSocket.h"
-#include "LinuxMultiplexer.h"
 #include "OpenSSLSocket.h"
+#include "LinuxPoll.h"
 
 SocketFactory socketFactory(new LinuxSocketFactory());
 
@@ -18,28 +18,29 @@ LinuxSocketFactory::LinuxSocketFactory() {
 LinuxSocketFactory::~LinuxSocketFactory() {
 }
 
-std::unique_ptr<ClientSocket> LinuxSocketFactory::CreateClientSocket() {
+std::unique_ptr<ClientSocket> LinuxSocketFactory::createClientSocket() {
 	return std::make_unique<ClientSocket>(new LinuxSocket());
 }
 
-std::unique_ptr<ClientSocket> LinuxSocketFactory::CreateSSLClientSocket() {
+std::unique_ptr<ClientSocket> LinuxSocketFactory::createSSLClientSocket() {
 	return std::make_unique<ClientSocket>(new OpenSSLSocket(new LinuxSocket()));
 }
 
-std::unique_ptr<ServerSocket> LinuxSocketFactory::CreateServerSocket() {
+std::unique_ptr<ServerSocket> LinuxSocketFactory::createServerSocket() {
 	return std::make_unique<ServerSocket>(new LinuxSocket);
 }
 
-std::unique_ptr<ServerSocket> LinuxSocketFactory::CreateSSLServerSocket() {
+std::unique_ptr<ServerSocket> LinuxSocketFactory::createSSLServerSocket() {
 	return std::make_unique<ServerSocket>(new OpenSSLSocket(new LinuxSocket));
 }
 
-std::unique_ptr<Multiplexer> LinuxSocketFactory::CreateMultiplexer(
+std::unique_ptr<Multiplexer> LinuxSocketFactory::createMultiplexer(
 		MultiplexerCallback readCallback,
 		MultiplexerCallback connectCallback = defaultCallback,
 		MultiplexerCallback disconnectCallback = defaultCallback,
 		MultiplexerCallback writeCallback = defaultCallback) {
-	return std::make_unique<Multiplexer>(new MultiplexerImpl( new LinuxPoll(),
+	return std::make_unique<Multiplexer>(new MultiplexerImpl(
+			new LinuxPoll(),
 			readCallback,
 			connectCallback,
 			disconnectCallback,
@@ -52,5 +53,5 @@ std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > LinuxSo
 	socketpair(AF_UNIX, SOCK_STREAM, PF_UNSPEC, selfPipe);
 	auto sockIn = std::make_unique<ClientSocket>(new LinuxSocket(selfPipe[0]));
 	auto sockOut = std::make_unique<ClientSocket>(new LinuxSocket(selfPipe[1]));
-	return std::make_pair(sockIn, sockOut);
+	return std::make_pair(std::move(sockIn), std::move(sockOut));
 }
