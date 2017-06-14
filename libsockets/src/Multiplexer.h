@@ -12,6 +12,7 @@
 #include <memory>
 #include "ClientSocket.h"
 #include "MultiplexerImpl.h"
+#include "OpenSSL.h"
 
 /*
  * AKA Reactor Pattern - https://en.wikipedia.org/wiki/Reactor_pattern
@@ -22,6 +23,7 @@ public:
 	Multiplexer(MultiplexerImpl *impl) : impl(impl) {
 		thread.reset(new std::thread([this](){
 			this->impl->multiplex();
+			openSSL.threadCleanup();
 		}));
 	};
 

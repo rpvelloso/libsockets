@@ -6,7 +6,6 @@
  */
 
 /*
- * TODO: wrap OpenSSL class inside C++ classes for resource managment
  * TODO: do more tests with OpenSSLSocket - currently it does not work with non blocking I/O
  * TODO: standardize multiplexedClients/Server and put inside SocketFactory
  * TODO: implement an FTP and HTTP servers as sample/examples
@@ -131,25 +130,11 @@ void testClient(const std::string &host, const std::string &port, bool secure) {
 }
 
 int main(int argc, char **argv) {
-
-	URL url(argv[1]);
-
-	if (url.isValid()) {
-		std::cout << "protocol: " << url.getProtocol() << std::endl;
-		std::cout << "user: " << url.getUser() << std::endl;
-		std::cout << "password: " << url.getPassword() << std::endl;
-		std::cout << "host: " << url.getHost() << std::endl;
-		std::cout << "port: " << url.getPort() << std::endl;
-		std::cout << "path: " << url.getPath() << std::endl;
-		std::cout << "query: " << url.getQuery() << std::endl;
-	} else
-		std::cout << "invalid URL." << std::endl;
-
-	/*try {
-		//testMultiplexer(std::string(argv[1]) == "ssl");
-		testAsyncClient(argv[1], argv[2], argv[3], std::string(argv[4]) == "ssl");
+	try {
+		testMultiplexer(std::string(argv[1]) == "ssl");
+		//testAsyncClient(argv[1], argv[2], argv[3], std::string(argv[4]) == "ssl");
 		//testClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
 	} catch (std::exception &e) {
 		std::cout << e.what() << std::endl;
-	}*/
+	}
 }
