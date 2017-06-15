@@ -41,11 +41,8 @@ public:
 				interruptFunc(interruptFunc) {};
 	virtual ~MultiplexedClientSocket() {};
 	bool getHasOutput() { return outputBuffer.rdbuf()->in_avail() > 0; };
-	bool getHasInput() { return inputBuffer.rdbuf()->in_avail() > 0; };
 	void interrupt() { interruptFunc(); };
 	ClientData &getClientData() {return *clientData;};
-	bool getHangUp() {return hangUp;};
-	void setHangUp(bool hangUp) {this->hangUp = hangUp;};
 	std::stringstream &getOutputBuffer() {return outputBuffer;};
 	std::stringstream &getInputBuffer() {return inputBuffer;};
 
@@ -58,8 +55,6 @@ private:
 	std::unique_ptr<ClientSocket> impl;
 	std::unique_ptr<ClientData> clientData;
 	std::function<void()> interruptFunc;
-	bool hasOutput = false;
-	bool hangUp = false;
 	std::stringstream outputBuffer;
 	std::stringstream inputBuffer;
 };

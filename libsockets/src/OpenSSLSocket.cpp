@@ -39,11 +39,39 @@ OpenSSLSocket::~OpenSSLSocket() {
 }
 
 int OpenSSLSocket::receiveData(void* buf, size_t len) {
-	return SSL_read(sslHandler.get(), buf, len);
+	auto ret = SSL_read(sslHandler.get(), buf, len);
+	if (ret <= 0) {
+		auto error = SSL_get_error(sslHandler.get(), ret);
+		switch (error) {
+		case SSL_ERROR_WANT_READ:
+		case SSL_ERROR_WANT_WRITE:
+		case SSL_ERROR_WANT_X509_LOOKUP:
+		case SSL_ERROR_WANT_ACCEPT:
+		case SSL_ERROR_WANT_CONNECT:
+			return 0;
+		default:
+			return -1;
+		}
+	}
+	return ret;
 }
 
 int OpenSSLSocket::sendData(const void* buf, size_t len) {
-	return SSL_write(sslHandler.get(), buf, len);
+	auto ret = SSL_write(sslHandler.get(), buf, len);
+	if (ret <= 0) {
+		auto error = SSL_get_error(sslHandler.get(), ret);
+		switch (error) {
+		case SSL_ERROR_WANT_READ:
+		case SSL_ERROR_WANT_WRITE:
+		case SSL_ERROR_WANT_X509_LOOKUP:
+		case SSL_ERROR_WANT_ACCEPT:
+		case SSL_ERROR_WANT_CONNECT:
+			return 0;
+		default:
+			return -1;
+		}
+	}
+	return ret;
 }
 
 int OpenSSLSocket::connectTo(const std::string& host, const std::string& port) {
@@ -57,17 +85,17 @@ int OpenSSLSocket::connectTo(const std::string& host, const std::string& port) {
 		if (sslHandler.get() == nullptr)
 			return -1;
 
-		SSL_set_mode(sslHandler.get(),
-				SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER|
-				SSL_MODE_ENABLE_PARTIAL_WRITE|
-				SSL_MODE_RELEASE_BUFFERS|
-				SSL_MODE_AUTO_RETRY);
-
 		if (SSL_set_fd(sslHandler.get(), (int)getFD()) != 1)
 			return -1;
 
 		if (SSL_connect(sslHandler.get()) != 1)
 			return -1;
+
+		SSL_set_mode(sslHandler.get(),
+				SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER|
+				SSL_MODE_ENABLE_PARTIAL_WRITE|
+				SSL_MODE_RELEASE_BUFFERS|
+				SSL_MODE_AUTO_RETRY);
 	}
 	return ret;
 }
@@ -116,7 +144,7 @@ std::unique_ptr<SocketImpl> OpenSSLSocket::acceptConnection() {
 
 int OpenSSLSocket::setNonBlockingIO(bool status) {
 	// TODO: implement proper SSL non-blocking I/O
-	return 0; //impl->setNonBlockingIO(status);
+	return impl->setNonBlockingIO(status);
 }
 
 int OpenSSLSocket::reuseAddress() {

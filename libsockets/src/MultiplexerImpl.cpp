@@ -114,9 +114,6 @@ void MultiplexerImpl::multiplex() {
 				errorFlag = !writeHandler(client);
 			}
 
-			if (client.getHangUp() && !client.getHasOutput())
-				errorFlag = true;
-
 			if (errorFlag) {
 				if (!sp) {
 					disconnectCallback(
@@ -155,9 +152,7 @@ bool MultiplexerImpl::readHandler(MultiplexedClientSocket &clientSocket) {
 	int len;
 
 	try {
-		if ((len = clientSocket.receiveData(buf, bufSize)) <= 0) {
-			clientSocket.setHangUp(true);
-		} else {
+		if ((len = clientSocket.receiveData(buf, bufSize)) > 0) {
 			clientSocket.getInputBuffer().write(buf, len);
 
 			if (!selfPipe(clientSocket))
