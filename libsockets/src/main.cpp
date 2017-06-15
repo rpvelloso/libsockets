@@ -6,6 +6,7 @@
  */
 
 /*
+ * TODO: create socks:: namespace
  * TODO: standardize multiplexedClients/Server interfaces and put them inside SocketFactory
  * TODO: implement an FTP and HTTP servers as sample/examples
  * TODO: Create class for simple threaded server and clients (one thread per client)
