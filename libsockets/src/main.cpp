@@ -6,11 +6,12 @@
  */
 
 /*
- * TODO: do some more testing with OpenSSLSocket
  * TODO: standardize multiplexedClients/Server interfaces and put them inside SocketFactory
  * TODO: implement an FTP and HTTP servers as sample/examples
  * TODO: Create class for simple threaded server and clients (one thread per client)
  * TODO: standalone streaming client socket
+ * TODO: do some more testing with OpenSSLSocket
+ * TODO: review locking, make sure no deadlocks are possible
  * TODO: SSL context sharing per site (inside socketFactory)
  */
 

@@ -143,7 +143,6 @@ std::unique_ptr<SocketImpl> OpenSSLSocket::acceptConnection() {
 }
 
 int OpenSSLSocket::setNonBlockingIO(bool status) {
-	// TODO: implement proper SSL non-blocking I/O
 	return impl->setNonBlockingIO(status);
 }
 

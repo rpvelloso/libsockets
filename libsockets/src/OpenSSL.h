@@ -37,10 +37,7 @@ public:
 		ENGINE_cleanup();
 		CONF_modules_unload(1);
 		EVP_cleanup();
-
-		CRYPTO_cleanup_all_ex_data();
-		ERR_remove_state(0);
-
+		threadCleanup();
 		ERR_free_strings();
 	};
 	/* Command to generate test files 'key.pem' and 'cert.pem':
