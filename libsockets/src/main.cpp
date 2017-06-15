@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <fstream>
 #include "libsockets.h"
+#include "HTTPResponse.h"
 
 void testMultiplexer(bool secure) {
 	struct EchoData : public ClientData {
@@ -64,7 +65,7 @@ void testAsyncClient(const std::string &host, const std::string &port, const std
 	class HTTPContext : public ClientData {
 	public:
 		bool hdr = true;
-		std::stringstream headers;
+		std::unique_ptr<HTTPResponse> response;
 	};
 
 	MultiplexedClients<HTTPContext> clients(1,
@@ -78,9 +79,16 @@ void testAsyncClient(const std::string &host, const std::string &port, const std
 
 				std::getline(inp, line);
 				if (inp && !inp.eof()) {
-					ctx.headers << line << "\n";
-					if (line == "\r")
+					if (line.back() == '\r')
+						line.pop_back();
+					if (line == "")
 						ctx.hdr = false;
+					else {
+						if (ctx.response.get() == nullptr)
+							ctx.response.reset(new HTTPResponse(line));
+						else
+							ctx.response->addHeader(std::make_unique<HTTPHeader>(line));
+					}
 				} else {
 					inp.clear();
 					inp.seekg(savePos);
@@ -98,8 +106,8 @@ void testAsyncClient(const std::string &host, const std::string &port, const std
 	[](std::istream &inp, std::ostream &outp, ClientData &clientData){
 		auto &ctx = static_cast<HTTPContext &>(clientData);
 		std::cerr << std::endl << "transaction ended." << std::endl;
-		std::cerr << "HDR: " << ctx.headers.str().size() << " bytes" << std::endl;
-		std::cerr << ctx.headers.str();
+		for (auto h = ctx.response->begin(); h != ctx.response->end(); ++h)
+			std::cout << "\'" << h->first << "\' = \'" << h->second->getValue() << "\'" << std::endl;
 		std::cout << inp.rdbuf();
 	});
 

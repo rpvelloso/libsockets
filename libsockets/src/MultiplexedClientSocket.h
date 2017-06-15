@@ -26,7 +26,7 @@ public:
 };
 
 /*
- * Wrapper class. Adds multiplexing capabilities to a ClientSocket.
+ * Wrapper class. Adds multiplexing and buffering capabilities to a ClientSocket.
  * Signals the multiplexer if there is data to be sent and store client data/state.
  */
 
