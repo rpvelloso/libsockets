@@ -6,7 +6,6 @@
  */
 
 /*
- * TODO: create socks:: namespace
  * TODO: standardize multiplexedClients/Server interfaces and put them inside SocketFactory
  * TODO: implement an FTP and HTTP servers as sample/examples
  * TODO: Create class for simple threaded server and clients (one thread per client)
@@ -23,7 +22,9 @@
 #include <algorithm>
 #include <fstream>
 #include "libsockets.h"
-#include "HTTPResponse.h"
+//#include "HTTPResponse.h"
+
+using namespace socks;
 
 void testMultiplexer(bool secure) {
 	struct EchoData : public ClientData {
@@ -62,6 +63,7 @@ void testMultiplexer(bool secure) {
 	std::cout << "exiting..." << std::endl;
 }
 
+/*
 void testAsyncClient(const std::string &host, const std::string &port, const std::string &url, bool secure) {
 	class HTTPContext : public ClientData {
 	public:
@@ -117,7 +119,7 @@ void testAsyncClient(const std::string &host, const std::string &port, const std
 	} else
 		std::cerr << "error connecting to " << host << ":" << port << std::endl;
 }
-
+*/
 void testClient(const std::string &host, const std::string &port, bool secure) {
 	try {
 		auto clientSocket = secure?socketFactory.createSSLClientSocket():socketFactory.createClientSocket();
@@ -142,8 +144,8 @@ void testClient(const std::string &host, const std::string &port, bool secure) {
 int main(int argc, char **argv) {
 	try {
 		//testMultiplexer(std::string(argv[1]) == "ssl");
-		testAsyncClient(argv[1], argv[2], argv[3], std::string(argv[4]) == "ssl");
-		//testClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
+		//testAsyncClient(argv[1], argv[2], argv[3], std::string(argv[4]) == "ssl");
+		testClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
 	} catch (std::exception &e) {
 		std::cout << e.what() << std::endl;
 	}

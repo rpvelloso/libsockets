@@ -9,6 +9,8 @@
 #include "ClientSocket.h"
 #include "WindowsSocket.h"
 
+namespace socks {
+
 using ResPtr = std::unique_ptr<struct addrinfo, decltype(&freeaddrinfo)>;
 
 class WinSock {
@@ -150,4 +152,6 @@ int WindowsSocket::setNonBlockingIO(bool status) {
 int WindowsSocket::reuseAddress() {
 	char reuse = 1;
 	return setsockopt(fd,SOL_SOCKET,SO_REUSEADDR,(char *)&reuse,sizeof(reuse));
+}
+
 }

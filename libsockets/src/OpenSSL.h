@@ -19,6 +19,8 @@
 #include <openssl/err.h>
 #include <pthread.h>
 
+namespace socks {
+
 extern void CRYPTO_thread_setup();
 extern void CRYPTO_thread_cleanup();
 
@@ -59,4 +61,5 @@ public:
 
 extern OpenSSL openSSL;
 
+}
 #endif /* OPENSSL_H_ */

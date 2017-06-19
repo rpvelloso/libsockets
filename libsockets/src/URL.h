@@ -10,6 +10,8 @@
 
 #include <regex>
 
+namespace socks {
+
 class URL {
 public:
 	URL(const std::string &url) {
@@ -54,4 +56,5 @@ private:
 	std::string protocol, user, password, host, port, path, query;
 };
 
+}
 #endif /* SRC_URL_H_ */

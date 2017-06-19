@@ -7,6 +7,8 @@
 
 #include "OpenSSL.h"
 
+namespace socks {
+
 /*
  * Code extracted from OpenSSL th-lock.c example
  * TODO: wrap all this in C++ resource managing classes (malloc's and all)
@@ -78,4 +80,6 @@ unsigned long pthreads_thread_id(void)
 
     ret = (unsigned long)pthread_self();
     return (ret);
+}
+
 }

@@ -13,6 +13,8 @@
 #include <iostream>
 #include "SocketFactory.h"
 
+namespace socks {
+
 template <class ClientDataType = ClientData>
 class MultiplexedClients {
 public:
@@ -60,7 +62,6 @@ private:
 	}
 };
 
-
-
+}
 
 #endif /* MULTIPLEXEDCLIENTS_H_ */

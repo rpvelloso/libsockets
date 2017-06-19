@@ -8,6 +8,8 @@
 #include <poll.h>
 #include "LinuxPoll.h"
 
+namespace socks {
+
 LinuxPoll::LinuxPoll() {
 }
 
@@ -52,4 +54,6 @@ std::vector<pollTuple> LinuxPoll::pollClients(ClientListType& clients,
 	}
 
 	return readyClients;
+}
+
 }

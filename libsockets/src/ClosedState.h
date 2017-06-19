@@ -10,6 +10,8 @@
 
 #include "SocketState.h"
 
+namespace socks {
+
 class ClosedState : public SocketState {
 public:
 	ClosedState(SocketImpl &impl);
@@ -24,5 +26,7 @@ public:
 	size_t getSendBufferSize() override;
 	size_t getReceiveBufferSize() override;
 };
+
+}
 
 #endif /* CLOSEDSTATE_H_ */

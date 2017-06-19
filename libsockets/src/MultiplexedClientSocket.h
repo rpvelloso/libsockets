@@ -14,6 +14,8 @@
 #include "ClientSocket.h"
 #include "MultiplexerImpl.h"
 
+namespace socks {
+
 class MultiplexerImpl;
 
 /*
@@ -59,4 +61,5 @@ private:
 	std::stringstream inputBuffer;
 };
 
+}
 #endif /* MULTIPLEXEDCLIENTSOCKET_H_ */

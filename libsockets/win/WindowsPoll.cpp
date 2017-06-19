@@ -7,6 +7,8 @@
 
 #include "WindowsPoll.h"
 
+namespace socks {
+
 WindowsPoll::WindowsPoll() {
 }
 
@@ -52,4 +54,6 @@ std::vector<pollTuple> WindowsPoll::pollClients(ClientListType &clients, std::mu
 	}
 
 	return readyClients;
+}
+
 }

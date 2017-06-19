@@ -14,6 +14,8 @@
 #include "SocketImpl.h"
 #include "defs.h"
 
+namespace socks {
+
 class LinuxMultiplexer;
 
 class LinuxSocket: public SocketImpl {
@@ -38,4 +40,5 @@ private:
 	LinuxSocket(SocketFDType); // ctor used by acceptConnections() & LinuxMultiplexer
 };
 
+}
 #endif /* LINUXSOCKET_H_ */

@@ -14,6 +14,7 @@
 #include "MultiplexerImpl.h"
 #include "OpenSSL.h"
 
+namespace socks {
 /*
  * AKA Reactor Pattern - https://en.wikipedia.org/wiki/Reactor_pattern
  */
@@ -56,4 +57,5 @@ protected:
 	std::unique_ptr<std::thread> thread;
 };
 
+}
 #endif /* MULTIPLEXER_H_ */

@@ -7,6 +7,8 @@
 
 #include "DisconnectedState.h"
 
+namespace socks {
+
 DisconnectedState::DisconnectedState(SocketImpl &impl) : SocketState(impl) {
 	setSocketState(SocketStateType::Disconnected);
 	impl.setSocketState(socketState);
@@ -50,4 +52,6 @@ size_t DisconnectedState::getSendBufferSize() {
 
 size_t DisconnectedState::getReceiveBufferSize() {
 	throw std::runtime_error("invalid operation getReceiveBufferSize().");
+}
+
 }

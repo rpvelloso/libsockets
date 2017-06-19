@@ -11,6 +11,8 @@
 #include "SocketFactory.h"
 #include <iostream>
 
+namespace socks {
+
 OpenSSLSocket::OpenSSLSocket(SocketImpl* impl) : SocketImpl(), impl(impl),
 		sslContext(nullptr, FreeSSLContext()),
 		sslHandler(nullptr,FreeSSLHandler()) {
@@ -172,4 +174,6 @@ void OpenSSLSocket::setSocketState(SocketStateType socketState) {
 
 SocketFDType OpenSSLSocket::getFD() {
 	return impl->getFD();
+}
+
 }

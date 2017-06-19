@@ -16,6 +16,8 @@
 #include <unordered_map>
 #include "MultiplexedClientSocket.h"
 
+namespace socks {
+
 class Poll;
 class MultiplexedClientSocket;
 
@@ -62,4 +64,5 @@ protected:
 	bool writeHandler(MultiplexedClientSocket &client);
 };
 
+}
 #endif /* MULTIPLEXERIMPL_H_ */

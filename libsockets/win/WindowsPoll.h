@@ -10,6 +10,8 @@
 
 #include "Poll.h"
 
+namespace socks {
+
 class WindowsPoll: public Poll {
 public:
 	WindowsPoll();
@@ -17,4 +19,5 @@ public:
 	std::vector<pollTuple> pollClients(ClientListType &clients, std::mutex &clientsMutex) override;
 };
 
+}
 #endif /* WIN_WINDOWSPOLL_H_ */

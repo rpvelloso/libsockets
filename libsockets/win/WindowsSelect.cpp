@@ -7,6 +7,8 @@
 
 #include "WindowsSelect.h"
 
+namespace socks {
+
 WindowsSelect::WindowsSelect() {
 }
 
@@ -57,4 +59,5 @@ std::vector<pollTuple> WindowsSelect::pollClients(ClientListType& clients,
 	}
 
 	return readyClients;
+}
 }

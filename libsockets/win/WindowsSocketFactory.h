@@ -10,6 +10,8 @@
 
 #include "SocketFactory.h"
 
+namespace socks {
+
 class WindowsSocketFactory: public SocketFactory {
 public:
 	WindowsSocketFactory();
@@ -26,4 +28,5 @@ public:
 	std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > createSocketPair() override;
 };
 
+}
 #endif /* WINDOWSSOCKETFACTORY_H_ */

@@ -12,6 +12,8 @@
 #include <mutex>
 #include "MultiplexerImpl.h"
 
+namespace socks {
+
 // <client, read, write>, error: read=false, write=false
 using pollTuple = std::tuple<MultiplexedClientSocket &, bool, bool>;
 
@@ -22,4 +24,5 @@ public:
 	virtual std::vector<pollTuple> pollClients(ClientListType &clients, std::mutex &clientsMutex) = 0;
 };
 
+}
 #endif /* SRC_POLL_H_ */

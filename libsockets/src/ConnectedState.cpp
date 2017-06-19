@@ -7,6 +7,8 @@
 
 #include "ConnectedState.h"
 
+namespace socks {
+
 ConnectedState::ConnectedState(SocketImpl& impl) : SocketState(impl) {
 	setSocketState(SocketStateType::Connected);
 	impl.setSocketState(socketState);
@@ -51,4 +53,6 @@ size_t ConnectedState::getSendBufferSize() {
 
 size_t ConnectedState::getReceiveBufferSize() {
 	return impl.getReceiveBufferSize();
+}
+
 }

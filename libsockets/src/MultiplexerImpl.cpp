@@ -11,6 +11,8 @@
 #include "SocketFactory.h"
 #include "Poll.h"
 
+namespace socks {
+
 MultiplexerCallback defaultCallback = [](std::istream &inp, std::ostream &outp, ClientData&){}; // noop()
 
 enum MultiplexerCommand : int {
@@ -197,4 +199,6 @@ bool MultiplexerImpl::writeHandler(MultiplexedClientSocket &clientSocket) {
 	writeCallback(inp, outp, clientSocket.getClientData());
 
 	return true;
+}
+
 }

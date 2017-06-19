@@ -8,6 +8,8 @@
 #include <sys/select.h>
 #include "LinuxSelect.h"
 
+namespace socks {
+
 LinuxSelect::LinuxSelect() {
 }
 
@@ -58,4 +60,5 @@ std::vector<pollTuple> LinuxSelect::pollClients(ClientListType& clients,
 	}
 
 	return readyClients;
+}
 }

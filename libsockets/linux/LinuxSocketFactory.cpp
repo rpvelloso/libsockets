@@ -11,6 +11,8 @@
 #include "LinuxPoll.h"
 #include "LinuxSelect.h"
 
+namespace socks {
+
 SocketFactory socketFactory(new LinuxSocketFactory());
 
 LinuxSocketFactory::LinuxSocketFactory() {
@@ -55,4 +57,5 @@ std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > LinuxSo
 	auto sockIn = std::make_unique<ClientSocket>(new LinuxSocket(selfPipe[0]));
 	auto sockOut = std::make_unique<ClientSocket>(new LinuxSocket(selfPipe[1]));
 	return std::make_pair(std::move(sockIn), std::move(sockOut));
+}
 }

@@ -13,6 +13,8 @@
 #include <memory>
 #include "defs.h"
 
+namespace socks {
+
 class ClientSocket;
 
 enum class SocketStateType {
@@ -52,4 +54,5 @@ protected:
 	SocketStateType socketState;
 };
 
+}
 #endif /* SOCKETIMPL_H_ */

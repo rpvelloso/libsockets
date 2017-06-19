@@ -13,6 +13,8 @@
 #include "WindowsPoll.h"
 #include "WindowsSelect.h"
 
+namespace socks {
+
 SocketFactory socketFactory(new WindowsSocketFactory());
 
 WindowsSocketFactory::WindowsSocketFactory() : SocketFactory() {
@@ -61,4 +63,5 @@ std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > Windows
 	auto sockOut = server->acceptConnection();
 
 	return std::make_pair(std::move(sockIn), std::move(sockOut));
+}
 }

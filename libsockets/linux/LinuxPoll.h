@@ -10,6 +10,8 @@
 
 #include "Poll.h"
 
+namespace socks {
+
 class LinuxPoll: public Poll {
 public:
 	LinuxPoll();
@@ -17,4 +19,5 @@ public:
 	std::vector<pollTuple> pollClients(ClientListType &clients, std::mutex &clientsMutex) override;
 };
 
+}
 #endif /* LINUX_LINUXPOLL_H_ */

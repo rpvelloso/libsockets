@@ -14,6 +14,8 @@
 #include "ClientSocket.h"
 #include "Multiplexer.h"
 
+namespace socks {
+
 class SocketFactory {
 public:
 	SocketFactory() {};
@@ -49,4 +51,5 @@ private:
 
 extern SocketFactory socketFactory;
 
+}
 #endif /* SOCKETFACTORY_H_ */

@@ -12,6 +12,8 @@
 #include "Socket.h"
 #include "SocketImpl.h"
 
+namespace socks {
+
 class ServerSocket : public Socket {
 public:
 	ServerSocket(SocketImpl *impl);
@@ -21,4 +23,5 @@ public:
 	virtual void disconnect();
 };
 
+}
 #endif /* SERVERSOCKET_H_ */

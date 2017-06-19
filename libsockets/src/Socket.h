@@ -17,6 +17,8 @@
 #include "ListeningState.h"
 #include "ClosedState.h"
 
+namespace socks {
+
 class Socket {
 public:
 	Socket(SocketImpl *impl) : impl(impl) {
@@ -51,5 +53,7 @@ protected:
 	std::unique_ptr<SocketImpl> impl;
 	std::unique_ptr<SocketState> state;
 };
+
+}
 
 #endif /* SOCKET_H_ */

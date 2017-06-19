@@ -12,6 +12,8 @@
 #include "SocketImpl.h"
 #include "Socket.h"
 
+namespace socks {
+
 class ClientSocket : public Socket {
 public:
 	ClientSocket(SocketImpl *impl);
@@ -28,4 +30,5 @@ private:
 	size_t receiveBufferSize = 0;
 };
 
+}
 #endif /* CLIENTSOCKET_H_ */

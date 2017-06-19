@@ -10,6 +10,8 @@
 
 #include "SocketState.h"
 
+namespace socks {
+
 class ConnectedState : public SocketState {
 public:
 	ConnectedState(SocketImpl &impl);
@@ -24,5 +26,7 @@ public:
 	size_t getSendBufferSize() override;
 	size_t getReceiveBufferSize() override;
 };
+
+}
 
 #endif /* SRC_CONNECTEDSTATE_H_ */

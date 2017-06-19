@@ -7,6 +7,8 @@
 
 #include "ClientSocket.h"
 
+namespace socks {
+
 ClientSocket::ClientSocket(SocketImpl *impl) : Socket(impl) {
 	if (impl->getSocketState() == SocketStateType::Connected) {
 		sendBufferSize = state->getSendBufferSize();
@@ -48,4 +50,6 @@ size_t ClientSocket::getSendBufferSize() const {
 
 size_t ClientSocket::getReceiveBufferSize() const {
 	return receiveBufferSize;
+}
+
 }

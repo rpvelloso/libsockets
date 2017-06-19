@@ -17,6 +17,8 @@
 #include <string.h>
 #include <fcntl.h>
 
+namespace socks {
+
 using ResPtr = std::unique_ptr<struct addrinfo, decltype(&freeaddrinfo)>;
 
 LinuxSocket::LinuxSocket() : SocketImpl() {
@@ -145,4 +147,5 @@ int LinuxSocket::setNonBlockingIO(bool status) {
 int LinuxSocket::reuseAddress() {
 	int reuse = 1;
 	return setsockopt(fd,SOL_SOCKET,SO_REUSEADDR,(int *)&reuse,sizeof(reuse));
+}
 }

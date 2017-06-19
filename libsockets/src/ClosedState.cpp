@@ -7,6 +7,8 @@
 
 #include "ClosedState.h"
 
+namespace socks {
+
 ClosedState::ClosedState(SocketImpl &impl) : SocketState(impl) {
 	setSocketState(SocketStateType::Closed);
 	impl.setSocketState(socketState);
@@ -50,4 +52,5 @@ size_t ClosedState::getSendBufferSize() {
 
 size_t ClosedState::getReceiveBufferSize() {
 	throw std::runtime_error("invalid operation getReceiveBufferSize().");
+}
 }

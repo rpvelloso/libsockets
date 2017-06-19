@@ -11,6 +11,8 @@
 #include "SocketFactory.h"
 #include "Multiplexer.h"
 
+namespace socks {
+
 class LinuxSocketFactory: public SocketFactory {
 public:
 	LinuxSocketFactory();
@@ -27,4 +29,5 @@ public:
 	std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > createSocketPair() override;
 };
 
+}
 #endif /* LINUXSOCKETFACTORY_H_ */

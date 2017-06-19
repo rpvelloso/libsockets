@@ -11,6 +11,8 @@
 #include <exception>
 #include "SocketImpl.h"
 
+namespace socks {
+
 class SocketState : public SocketImpl {
 public:
 	SocketState(SocketImpl &impl) : SocketImpl(), impl(impl) {};
@@ -25,4 +27,5 @@ protected:
 	SocketImpl &impl;
 };
 
+}
 #endif /* SRC_SOCKETSTATE_H_ */

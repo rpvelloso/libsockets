@@ -8,6 +8,8 @@
 #include "ServerSocket.h"
 #include "ClientSocket.h"
 
+namespace socks {
+
 ServerSocket::ServerSocket(SocketImpl *impl) : Socket(impl) {
 }
 
@@ -33,4 +35,6 @@ std::unique_ptr<ClientSocket> ServerSocket::acceptConnection() {
 void ServerSocket::disconnect() {
 	state->disconnect();
 	state.reset(new ClosedState(getImpl()));
+}
+
 }

@@ -10,7 +10,10 @@
 
 #include <winsock2.h>
 
+namespace socks {
+
 typedef SOCKET SocketFDType;
 const SocketFDType InvalidSocketFD = INVALID_SOCKET;
 
+}
 #endif /* WIN_DEFS_H_ */

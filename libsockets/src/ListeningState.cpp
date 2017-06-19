@@ -8,6 +8,8 @@
 #include "ClientSocket.h"
 #include "ListeningState.h"
 
+namespace socks {
+
 ListeningState::ListeningState(SocketImpl &impl) : SocketState(impl) {
 	setSocketState(SocketStateType::Listening);
 	impl.setSocketState(socketState);
@@ -52,4 +54,6 @@ size_t ListeningState::getSendBufferSize() {
 
 size_t ListeningState::getReceiveBufferSize() {
 	throw std::runtime_error("invalid operation getReceiveBufferSize().");
+}
+
 }

@@ -15,6 +15,8 @@
 #include <winsock.h>
 #include <ws2tcpip.h>
 
+namespace socks {
+
 class WindowsSocket: public SocketImpl {
 public:
 	WindowsSocket();
@@ -35,4 +37,5 @@ private:
 	std::string port = "";
 };
 
+}
 #endif /* WINDOWSSOCKET_H_ */

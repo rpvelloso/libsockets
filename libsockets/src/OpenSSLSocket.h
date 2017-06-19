@@ -13,6 +13,8 @@
 #include "ClientSocket.h"
 #include "SocketImpl.h"
 
+namespace socks {
+
 struct FreeSSLContext {
 	void operator()(SSL_CTX* sslContext) const {
 		if (sslContext != nullptr) SSL_CTX_free(sslContext);
@@ -60,4 +62,5 @@ private:
 	SSLMethodType ClientMethod = TLSv1_2_client_method;
 };
 
+}
 #endif /* SRC_OPENSSLSOCKET_H_ */
