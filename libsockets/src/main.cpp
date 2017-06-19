@@ -12,6 +12,8 @@
  * TODO: standalone streaming client socket
  * TODO: do some more testing with OpenSSLSocket
  * TODO: review locking, make sure no deadlocks are possible
+ * 		https://stackoverflow.com/questions/17113619/whats-the-best-way-to-lock-multiple-stdmutexes
+ * 		https://www.securecoding.cert.org/confluence/display/c/POS51-C.+Avoid+deadlock+with+POSIX+threads+by+locking+in+predefined+order
  * TODO: SSL context sharing per site (inside socketFactory)
  */
 
@@ -24,15 +26,13 @@
 #include "libsockets.h"
 //#include "HTTPResponse.h"
 
-using namespace socks;
-
 void testMultiplexer(bool secure) {
-	struct EchoData : public ClientData {
+	struct EchoData : public socks::ClientData {
 		size_t count=0;
 	};
 
-	MultiplexedServer<EchoData> server("0.0.0.0", "30000", 1, secure,
-	[](std::istream &inp, std::ostream &outp, ClientData &clientData) {
+	socks::MultiplexedServer<EchoData> server("0.0.0.0", "30000", 1, secure,
+	[](std::istream &inp, std::ostream &outp, socks::ClientData &clientData) {
 		/*auto &echoData = static_cast<EchoData &>(clientData);
 		size_t bufSize = 4096;
 		char buf[4096];*/
@@ -43,6 +43,16 @@ void testMultiplexer(bool secure) {
 			auto savePos = inp.tellg();
 			std::getline(inp, cmd);
 			if (inp && !inp.eof()) {
+				if (cmd.back() == '\r')
+					cmd.pop_back();
+
+				if (cmd != "") {
+					std::fstream file(cmd);
+					if (file) {
+						std::cout << "file " << cmd << " opened" << std::endl;
+						outp << file.rdbuf();
+					}
+				}
 				std::cout << cmd << std::endl;
 			} else {
 				inp.clear();
@@ -122,7 +132,10 @@ void testAsyncClient(const std::string &host, const std::string &port, const std
 */
 void testClient(const std::string &host, const std::string &port, bool secure) {
 	try {
-		auto clientSocket = secure?socketFactory.createSSLClientSocket():socketFactory.createClientSocket();
+		auto clientSocket = secure?
+				socks::socketFactory.createSSLClientSocket():
+				socks::socketFactory.createClientSocket();
+
 		if (clientSocket->connectTo(host, port) == 0) {
 			std::string request = "GET / HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n";
 			std::cout << "sending request: " << request << "to: " << host << ":" << port << std::endl;
@@ -143,9 +156,9 @@ void testClient(const std::string &host, const std::string &port, bool secure) {
 
 int main(int argc, char **argv) {
 	try {
-		//testMultiplexer(std::string(argv[1]) == "ssl");
+		testMultiplexer(std::string(argv[1]) == "ssl");
 		//testAsyncClient(argv[1], argv[2], argv[3], std::string(argv[4]) == "ssl");
-		testClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
+		//testClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
 	} catch (std::exception &e) {
 		std::cout << e.what() << std::endl;
 	}
