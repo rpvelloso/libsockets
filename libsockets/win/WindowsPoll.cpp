@@ -15,10 +15,8 @@ WindowsPoll::WindowsPoll() {
 WindowsPoll::~WindowsPoll() {
 }
 
-std::vector<pollTuple> WindowsPoll::pollClients(ClientListType &clients, std::mutex &clientsMutex) {
+std::vector<pollTuple> WindowsPoll::pollClients(ClientListType &clients) {
 	std::vector<pollTuple> readyClients;
-
-	clientsMutex.lock();
 
 	auto nfds = clients.size();
 	WSAPOLLFD fdarray[nfds];
@@ -31,13 +29,9 @@ std::vector<pollTuple> WindowsPoll::pollClients(ClientListType &clients, std::mu
 			fdarray[i].events |= POLLOUT;
 		}
 	}
-
-	clientsMutex.unlock();
-
 	//std::cout << "# " << nfds << std::endl;
 
 	if (WSAPoll(fdarray,nfds,-1) > 0) {
-		std::lock_guard<std::mutex> lock(clientsMutex);
 		for (auto c:fdarray) {
 			bool fdError = false;
 			bool readFlag = c.revents & POLLIN;

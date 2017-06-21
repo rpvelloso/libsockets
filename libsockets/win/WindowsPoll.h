@@ -16,7 +16,7 @@ class WindowsPoll: public Poll {
 public:
 	WindowsPoll();
 	virtual ~WindowsPoll();
-	std::vector<pollTuple> pollClients(ClientListType &clients, std::mutex &clientsMutex) override;
+	std::vector<pollTuple> pollClients(ClientListType &clients) override;
 };
 
 }

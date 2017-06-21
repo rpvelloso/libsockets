@@ -42,11 +42,10 @@ MultiplexerImpl::~MultiplexerImpl() {
 
 void MultiplexerImpl::addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
 		std::unique_ptr<ClientData> clientData) {
-	std::lock_guard<std::mutex> lock(clientsMutex);
+	std::lock_guard<std::mutex> lock(incomingClientsMutex);
 
 	clientSocket->setNonBlockingIO(true);
-	auto fd = clientSocket->getImpl().getFD();
-	clients[fd] = makeMultiplexed(std::move(clientSocket), std::move(clientData));
+	incomingClients.push_back(makeMultiplexed(std::move(clientSocket), std::move(clientData)));
 	interrupt();
 }
 
@@ -55,7 +54,6 @@ void MultiplexerImpl::removeClientSocket(MultiplexedClientSocket &clientSocket) 
 }
 
 size_t MultiplexerImpl::clientCount() {
-	std::lock_guard<std::mutex> lock(clientsMutex);
 	return clients.size()-1; // self-pipe is always in clients
 }
 
@@ -78,9 +76,8 @@ void MultiplexerImpl::sendMultiplexerCommand(int cmd) {
 
 void MultiplexerImpl::multiplex() {
 	while (true) {
-		auto readyClients = pollStrategy->pollClients(clients, clientsMutex);
+		auto readyClients = pollStrategy->pollClients(clients);
 
-		std::lock_guard<std::mutex> lock(clientsMutex);
 		for (auto rc:readyClients) {
 			auto &client = std::get<0>(rc);
 			auto readFlag = std::get<1>(rc);
@@ -127,6 +124,16 @@ void MultiplexerImpl::multiplex() {
 				else
 					throw std::runtime_error("self-pipe error.");
 			}
+		}
+
+		{ // process incoming clients
+			std::lock_guard<std::mutex> lock(incomingClientsMutex);
+
+			for (size_t i = 0; i < incomingClients.size(); ++i) {
+				auto ic = std::move(incomingClients[i]);
+				clients[ic->getImpl().getFD()] = std::move(ic);
+			}
+			incomingClients.clear();
 		}
 	}
 }

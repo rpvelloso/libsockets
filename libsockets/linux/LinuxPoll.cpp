@@ -16,11 +16,8 @@ LinuxPoll::LinuxPoll() {
 LinuxPoll::~LinuxPoll() {
 }
 
-std::vector<pollTuple> LinuxPoll::pollClients(ClientListType& clients,
-		std::mutex& clientsMutex) {
+std::vector<pollTuple> LinuxPoll::pollClients(ClientListType& clients) {
 	std::vector<pollTuple> readyClients;
-
-	clientsMutex.lock();
 
 	auto nfds = clients.size();
 	struct pollfd fdarray[nfds];
@@ -34,10 +31,7 @@ std::vector<pollTuple> LinuxPoll::pollClients(ClientListType& clients,
 		}
 	}
 
-	clientsMutex.unlock();
-
 	if (poll(fdarray,nfds,-1) > 0) {
-		std::lock_guard<std::mutex> lock(clientsMutex);
 		for (auto c:fdarray) {
 			bool fdError = false;
 			bool readFlag = c.revents & POLLIN;

@@ -9,7 +9,6 @@
 #define SRC_POLL_H_
 
 #include <vector>
-#include <mutex>
 #include "MultiplexerImpl.h"
 
 namespace socks {
@@ -21,7 +20,7 @@ class Poll {
 public:
 	Poll() {};
 	virtual ~Poll() {};
-	virtual std::vector<pollTuple> pollClients(ClientListType &clients, std::mutex &clientsMutex) = 0;
+	virtual std::vector<pollTuple> pollClients(ClientListType &clients) = 0;
 };
 
 }

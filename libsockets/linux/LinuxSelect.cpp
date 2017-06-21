@@ -16,11 +16,8 @@ LinuxSelect::LinuxSelect() {
 LinuxSelect::~LinuxSelect() {
 }
 
-std::vector<pollTuple> LinuxSelect::pollClients(ClientListType& clients,
-		std::mutex& clientsMutex) {
+std::vector<pollTuple> LinuxSelect::pollClients(ClientListType& clients) {
 	std::vector<pollTuple> readyClients;
-
-	clientsMutex.lock();
 
 	int nfds = 0;
 	fd_set readfds;
@@ -40,10 +37,7 @@ std::vector<pollTuple> LinuxSelect::pollClients(ClientListType& clients,
 	}
 	++nfds;
 
-	clientsMutex.unlock();
-
 	if (select(nfds, &readfds, &writefds, &exceptfds, NULL) > 0) {
-		std::lock_guard<std::mutex> lock(clientsMutex);
 		for (auto clientIt = clients.begin(); clientIt != clients.end(); ++clientIt) {
 			bool fdError = false;
 			bool readFlag = FD_ISSET(clientIt->first, &readfds);

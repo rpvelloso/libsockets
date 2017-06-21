@@ -11,9 +11,6 @@
  * TODO: Create class for simple threaded server and clients (one thread per client)
  * TODO: standalone streaming client socket
  * TODO: do some more testing with OpenSSLSocket
- * TODO: review locking, make sure no deadlocks are possible
- * 		https://stackoverflow.com/questions/17113619/whats-the-best-way-to-lock-multiple-stdmutexes
- * 		https://www.securecoding.cert.org/confluence/display/c/POS51-C.+Avoid+deadlock+with+POSIX+threads+by+locking+in+predefined+order
  * TODO: SSL context sharing per site (inside socketFactory)
  */
 

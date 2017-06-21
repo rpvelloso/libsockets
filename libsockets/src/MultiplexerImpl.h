@@ -44,9 +44,10 @@ public:
 protected:
 	std::unique_ptr<Poll> pollStrategy;
 	std::unique_ptr<ClientSocket> sockIn;
-	std::mutex commandMutex, clientsMutex;
+	std::mutex commandMutex, incomingClientsMutex;
 	MultiplexerCallback readCallback, connectCallback, disconnectCallback, writeCallback;
 	ClientListType clients;
+	std::vector<std::unique_ptr<MultiplexedClientSocket>> incomingClients;
 	SocketFDType sockOutFD = InvalidSocketFD;
 
 	virtual void sendMultiplexerCommand(int cmd);

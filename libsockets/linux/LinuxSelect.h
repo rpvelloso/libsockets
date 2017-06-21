@@ -16,7 +16,7 @@ class LinuxSelect: public Poll {
 public:
 	LinuxSelect();
 	virtual ~LinuxSelect();
-	std::vector<pollTuple> pollClients(ClientListType &clients, std::mutex &clientsMutex) override;
+	std::vector<pollTuple> pollClients(ClientListType &clients) override;
 };
 
 }
