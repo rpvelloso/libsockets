@@ -12,6 +12,7 @@
 #include <memory>
 #include <vector>
 #include <mutex>
+#include <atomic>
 #include <functional>
 #include <unordered_map>
 #include "MultiplexedClientSocket.h"
@@ -36,7 +37,7 @@ public:
 	virtual ~MultiplexerImpl();
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
 			std::unique_ptr<ClientData> clientData);
-	virtual size_t clientCount();
+	virtual size_t getClientCount();
 
 	virtual void cancel();
 	virtual void interrupt();
@@ -47,6 +48,7 @@ protected:
 	std::mutex commandMutex, incomingClientsMutex;
 	MultiplexerCallback readCallback, connectCallback, disconnectCallback, writeCallback;
 	ClientListType clients;
+	std::atomic<size_t> clientCount;
 	std::vector<std::unique_ptr<MultiplexedClientSocket>> incomingClients;
 	SocketFDType sockOutFD = InvalidSocketFD;
 

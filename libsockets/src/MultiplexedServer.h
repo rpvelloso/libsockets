@@ -62,10 +62,10 @@ private:
 
 	Multiplexer &getMultiplexer() {
 		size_t pos = 0;
-		size_t min = multiplexers[0]->clientCount();
+		size_t min = multiplexers[0]->getClientCount();
 
 		for (size_t i = 1; i < multiplexers.size(); ++i) {
-			auto count = multiplexers[i]->clientCount();
+			auto count = multiplexers[i]->getClientCount();
 			if (count < min) {
 				min = count;
 				pos = i;

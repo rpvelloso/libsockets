@@ -49,8 +49,8 @@ public:
 	virtual void interrupt() {
 		impl->interrupt();
 	};
-	virtual size_t clientCount() {
-		return impl->clientCount();
+	virtual size_t getClientCount() {
+		return impl->getClientCount();
 	};
 protected:
 	std::unique_ptr<MultiplexerImpl> impl;

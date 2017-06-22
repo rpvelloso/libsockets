@@ -29,7 +29,8 @@ MultiplexerImpl::MultiplexerImpl(Poll *pollStrategy,
 				readCallback(readCallback),
 				connectCallback(connectCallback),
 				disconnectCallback(disconnectCallback),
-				writeCallback(writeCallback) {
+				writeCallback(writeCallback),
+				clientCount(0) {
 
 	auto socketPair = socketFactory.createSocketPair();
 	sockIn = std::move(socketPair.first);
@@ -53,8 +54,8 @@ void MultiplexerImpl::removeClientSocket(MultiplexedClientSocket &clientSocket) 
 	clients.erase(clientSocket.getImpl().getFD());
 }
 
-size_t MultiplexerImpl::clientCount() {
-	return clients.size()-1; // self-pipe is always in clients
+size_t MultiplexerImpl::getClientCount() {
+	return clientCount;
 }
 
 bool MultiplexerImpl::selfPipe(MultiplexedClientSocket &clientSocket) {
@@ -135,6 +136,9 @@ void MultiplexerImpl::multiplex() {
 			}
 			incomingClients.clear();
 		}
+
+		// update client count
+		clientCount = clients.size() - 1; // subtract self-pipe from count
 	}
 }
 
