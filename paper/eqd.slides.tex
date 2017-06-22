@@ -2,8 +2,11 @@
 \usepackage[brazil]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{graphicx}
 \usepackage{array}
 \usepackage{listings}
+\usepackage{url}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -76,7 +79,7 @@
 \usetheme{Laughlin}
 
 \begin{document}
-\title{Seminário de Andamento de Doutorado - Extração de Dados Estruturados}
+\title{Exame de Qualificação de Doutorado - Extração de Dados Estruturados}
 %\author[Roberto Panerai Velloso]{Orientando: Roberto Panerai Velloso \\
 %Orientadora: Carina F. Dorneles \\ \{rvelloso, dorneles\}@gmail.com }
 \author[Roberto Panerai Velloso]{Roberto Panerai Velloso, Carina F. Dorneles \\ 
@@ -134,12 +137,12 @@ pessoas, não por máquinas.
 \frame{\frametitle{Extração de Dados Estruturados}
 \begin{itemize} 
 	\item Extração a partir de fontes semiestruturadas;
-	\item Utilização de informação sintática;
+	\item Utilização de informação sintática (escopo da pesquisa);
 	\item Requisitos de escalabilidade:
 	\begin{itemize}
 	  \item nível de supervisão;
 	  \item generalidade;
-	  \item precisão vs \textit{recall}. 
+	  \item precisão vs \textit{recall}.
 \end{itemize}
 \end{itemize}
 }
@@ -161,20 +164,22 @@ etc.);
 \item desenvolver um método de estruturação da informação semiestruturada
 identificada (\textit{e.g.} \textbf{alinhamento} de registros);
 \item desenvolver um \textbf{\textit{framework}} de extração estruturada;
-\item criar \textbf{\textit{datasets}} com ampla cobertura para avaliação de
-métodos de extração;
 \end{itemize}
 }
 
 \subsection{Contribuições}
 \frame{\frametitle{Contribuições}
 \begin{itemize}
-  \item desenvolvimento de um novo método de extração estruturada;
-  \item criação de \textit{datasets} com ampla cobertura para avaliação de
-  métodos de extração estruturada;
-  \item proposição de novas métricas;
-  \item publicação dos resultados da pesquisa em eventos e periódicos;
-  \item desenvolvimento de um \textit{framework} de extração estruturada. 
+  \item uma nova forma de ver a estrutura das páginas web;
+  \item uma nova técnica de segmentação de documentos HTML;
+  \item um novo critério para determinar se um segmento (\textit{i.e.}, região)
+  é estruturada ou não, antes de extraí-lo efetivamente;
+  \item uma técnica de extração com eficiência computacional superior ao estado
+  da arte (linear);
+  \item uma nova técnica de alinhamento de registros, específica para o
+  problema de extração estruturada da web;
+  \item desenvolvimento de um \textit{framework} de extração estruturada
+  (auxilia nas comparações e elimina variabilidade dos testes).
 \end{itemize}
 }
 
@@ -262,7 +267,8 @@ descritos por sequências de \textit{tag paths} semelhantes sendo, portanto, reg
 \begin{figure}[H]
   \caption{Construção da sequência de $tag$ $paths$ (TPS) a partir do HTML.}
   \centering
-    \zoombox{\includegraphics[scale=0.45]{img/example1-pt.jpg}}
+    \zoombox{\includegraphics[clip, trim={1.1cm 1.9cm 1.5cm 1.65cm},
+    width=1.00\textwidth]{img/tree2seq.pdf}}
 \end{figure}
 }
 \frame{\frametitle{$Tag$ $paths$}
@@ -320,33 +326,20 @@ que se encontra do centro da sequência completa;
 }
 
 \subsection{Subdivisão em Registros}
-\frame{\frametitle{Estimando tamanho e quantidade de registros}
+\frame{\frametitle{Detecção do tamanho e quantidade de registros}
 \begin{figure}[H]
-  \caption{a) TPS e regressão linear da região; b) autocorrelação; c) Espectro
-  de potência e estimativas de quantidade e tamanho dos registros.}
+  \caption{a) TPS e regressão linear da região; b) PSD.}
   \centering
-    \zoombox{\includegraphics[scale=0.25]{img/fftxcorr-pt.jpg}}
+    \zoombox{\includegraphics[clip, trim={2cm 6cm 0.5cm 6.8cm},
+    width=0.8\textwidth]{img/fftreg.pdf}}
 \end{figure}
-}
-
-\frame{\frametitle{Identificação dos Registros}
-\begin{small}
-\begin{equation}\label{eq:scoreSize}
-score_{tamanho} = \frac{min(tamanhoMedio, periodoEstimado)}{max(tamanhoMedio,
-periodoEstimado)}
-\end{equation}
-\begin{equation}\label{eq:scoreCount}
-score_{quantidade} = \frac{min(quantidade, frequenciaEstimada)}{max(quantidade,
-frequenciaEstimada)}
-\end{equation}
-\begin{equation}\label{eq:scoreCoverage}
-score_{cobertura}=\frac{posicaoRegistro_n - posicaoRegistro_1}{tamanhoTotalRegiao}
-\end{equation}
-\begin{equation}\label{eq:scoreTotal}
-score_{total}=\frac{score_{tamanho}+score_{quantidade}+score_{cobertura}}{3}
-\end{equation}
-\end{small}
-}
+} \frame{\frametitle{Detecção do tamanho e quantidade de registros - reduzindo a
+complexidade computacional} Transformada de Fourier possui complexidade
+$O(nlogn)$ e calcula todo o espectro do sinal. Nesta aplicação, especificamente,
+apenas uma faixa do espectro é necessária. Uma alternativa, para reduzir a
+complexidade, é o algoritmo de Goertzel que calcula apenas um coeficiente em
+tempo linear. Outra medida (alternativa ao Z-Score) deve ser encontrada para
+avaliar se um coeficiente é significativo ou não (relação de Parseval). }
 
 \subsection{Alinhamento dos Registros}
 \frame{\frametitle{Center Star}
@@ -357,10 +350,48 @@ alternativas aproximadas, com complexidade polinomial, devem ser empregadas.
 \item Características do algoritmo \textit{Center Star}:
 \begin{itemize}
   \item Não encontra necessariamente a solução ótima;
-  \item Tem complexidade computacional polinomial $O(N^2\cdot n)$;
+  \item Tem complexidade computacional polinomial $O(k^2\cdot n^2)$ (porém
+  elevada);
   \item Garante um erro máximo com relação à solução ótima.
 \end{itemize}
 \end{itemize}
+}
+
+\frame{\frametitle{Solução de alinhamento específica para o problema}
+As restrições do problema geral de alinhamento de múltiplas sequências não
+precisam ser aplicadas, obrigatoriamente, ao problema específico de alinhamento
+de múltiplos registros. Por exemplo, a ordem dos campos pode ser flexibilizada.
+Soluções mais eficientes podem ser elaboradas relaxando o problema.
+}
+
+\section{Resultados}
+\subsection{Precision, Recall \& F-Score}
+
+\frame{\frametitle{Precision, Recall \& F-Score}
+Resultados obtidos com dataset contendo $1466$ registros de $46$
+websites, de diversos domínios, das maiores empresas da internet:
+\url{https://en.wikipedia.org/wiki/List_of_largest_Internet_companies}.
+
+\begin{table}[h]
+\centering
+\begin{tabular}
+{| c| c| c|}\hline
+	Precision	& Recall	& F-Score\\ \hline
+	98.95\% & 89.77\% & 94.13\% \\ \hline
+\end{tabular}
+\end{table}
+
+}
+
+\subsection{Tempo de execução}
+\frame{\frametitle{Tempo de execução}
+\begin{figure}[h]
+  \centering
+     \includegraphics[clip, trim={2.0cm 7.0cm 2.0cm 7.3cm}, width=1.0\textwidth
+     ]{img/runtime.pdf}
+  \label{fig:runtime}
+\end{figure}
+
 }
 
 \section{Cronograma}
@@ -368,15 +399,14 @@ alternativas aproximadas, com complexidade polinomial, devem ser empregadas.
 \begin{enumerate}
   \item \textbf{levantamento bibliográfico}: leitura de publicações para
   levantamento do estado da arte \textbf{(até 12/2018)};
-  \item \textbf{realização de experimentos}: realização de testes e experimentos com a
-  abordagem proposta utilizando \textit{datasets} disponíveis publicamente
-  para comparação com as demais abordagens existentes \textbf{(até 12/2016)};
+  \item \textbf{realização de experimentos}: realização de mais testes e
+  experimentos com a abordagem proposta utilizando \textit{datasets} disponíveis publicamente
+  para comparação com as demais abordagens existentes \textbf{(até 06/2018)};
   \item \textbf{publicação dos artigos}: escrita e publicação de artigos em
-  congressos e periódicos \textbf{(até 12/2017)};
+  congressos e periódicos \textbf{(até 12/2018)} (mais um artigo sobre
+  alinhamento e outro com a redução da complexidade para $O(n)$);
   \item \textbf{disponibilização do \textit{framework}}: finalização da codificação do
-  \textit{framework} C++/Lua, documentação da API e disponibilização pública
-  \textbf{(até 12/2017)};
-  \item \textbf{qualificação}: exame de qualificação \textbf{(até 6/2017)};
+  \textit{framework} C++/Lua e documentação da API \textbf{(até 12/2018)};
   \item \textbf{defesa}: escrita da tese e defesa final \textbf{(até 12/2018)}.
 \end{enumerate}
 }
