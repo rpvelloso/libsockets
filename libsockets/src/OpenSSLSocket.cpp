@@ -80,11 +80,11 @@ int OpenSSLSocket::connectTo(const std::string& host, const std::string& port) {
 	int ret;
 	if ((ret = impl->connectTo(host, port)) == 0) {
 		sslContext.reset(SSL_CTX_new(ClientMethod()));
-		if (sslContext.get() == nullptr)
+		if (!sslContext)
 			return -1;
 
 		sslHandler.reset(SSL_new(sslContext.get()));
-		if (sslHandler.get() == nullptr)
+		if (!sslHandler)
 			return -1;
 
 		if (SSL_set_fd(sslHandler.get(), (int)getFD()) != 1)
@@ -103,12 +103,15 @@ int OpenSSLSocket::connectTo(const std::string& host, const std::string& port) {
 }
 
 void OpenSSLSocket::disconnect() {
-	return impl->disconnect();
-	if (sslHandler.get() != nullptr)
+	if (sslHandler) {
+		SSL_shutdown(sslHandler.get());
 		sslHandler.reset(nullptr);
+	}
 
-	if (sslContext.get() != nullptr)
+	if (sslContext)
 		sslContext.reset(nullptr);
+
+	impl->disconnect();
 }
 
 int OpenSSLSocket::listenForConnections(const std::string& bindAddr,
@@ -117,7 +120,7 @@ int OpenSSLSocket::listenForConnections(const std::string& bindAddr,
 
 	if ((ret = impl->listenForConnections(bindAddr, port)) == 0) {
 		sslContext.reset(SSL_CTX_new(ServerMethod()));
-		if (sslContext.get() == nullptr)
+		if (!sslContext)
 			return -1;
 
 		if (SSL_CTX_use_certificate_file(
