@@ -265,6 +265,15 @@ descritos por sequências de \textit{tag paths} semelhantes sendo, portanto, reg
 \end{enumerate} 
 }
 
+
+\subsection{Diagrama da abordagem}
+\frame{\frametitle{Diagrama da abordagem}
+\begin{figure}[H]
+  \centering
+    \zoombox{\includegraphics[width=1.00\textwidth]{img/proposal.jpg}}
+\end{figure}
+}
+
 \subsection{Tag Paths}
 \frame{\frametitle{$Tag$ $paths$}
 \begin{figure}[H]
@@ -371,7 +380,7 @@ Soluções mais eficientes podem ser elaboradas relaxando o problema.
 \subsection{Precision, Recall \& F-Score}
 
 \frame{\frametitle{Precision, Recall \& F-Score}
-Resultados obtidos com dataset contendo $1466$ registros de $46$
+Resultados obtidos com dataset próprio contendo $1466$ registros de $46$
 websites, de diversos domínios, das maiores empresas da internet:
 \url{https://en.wikipedia.org/wiki/List_of_largest_Internet_companies}.
 
@@ -383,6 +392,22 @@ websites, de diversos domínios, das maiores empresas da internet:
 	98.95\% & 89.77\% & 94.13\% \\ \hline
 \end{tabular}
 \end{table}
+
+Comparativo com outras técnicas estado da arte.
+\begin{table}[h]
+%\begin{small}
+\begin{tabular}
+{|c| c| c| c|}\hline
+	& Precision	& Recall	& F-Score\\ \hline
+MDR &	59,80\%	& 61,80\%	& 60,78\%\\ \hline
+TPC	& 90,40\%	& 93,10\%	& 91,73\%\\ \hline
+ClustVX &	99.81\% & 99.52\% & 99.66\%\\ \hline
+Ours &	92,02\%	& 94,11\%	& 93,05\% \\ \hline
+\end{tabular}
+%\end{small}
+%}
+\end{table}
+
 
 }
 
@@ -396,6 +421,14 @@ websites, de diversos domínios, das maiores empresas da internet:
 \end{figure}
 
 }
+%\frame{\frametitle{Tempo de execução}
+%\begin{figure}[h]
+%  \centering
+%     \includegraphics[width=1.0\textwidth]{img/goertzel.png}
+%  \label{fig:runtime}
+%\end{figure}
+
+%}
 
 \section{Cronograma}
 \frame{\frametitle{Cronograma da pesquisa}
