@@ -33,6 +33,10 @@ int DisconnectedState::connectTo(const std::string &host, const std::string &por
 void DisconnectedState::disconnect() {
 };
 
+int DisconnectedState::bindSocket(const std::string &bindAddr, const std::string &port) {
+	return impl.bindSocket(bindAddr, port);
+};
+
 int DisconnectedState::listenForConnections(const std::string &bindAddr, const std::string &port) {
 	return impl.listenForConnections(bindAddr, port);
 };

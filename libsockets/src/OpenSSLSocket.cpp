@@ -114,6 +114,11 @@ void OpenSSLSocket::disconnect() {
 	impl->disconnect();
 }
 
+int OpenSSLSocket::bindSocket(const std::string& bindAddr,
+		const std::string& port) {
+	return impl->bindSocket(bindAddr, port);
+}
+
 int OpenSSLSocket::listenForConnections(const std::string& bindAddr,
 		const std::string& port) {
 	int ret;

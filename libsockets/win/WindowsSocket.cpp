@@ -105,7 +105,7 @@ void WindowsSocket::disconnect() {
 	closesocket(fd);
 }
 
-int WindowsSocket::listenForConnections(const std::string &bindAddr, const std::string &port) {
+int WindowsSocket::bindSocket(const std::string &bindAddr, const std::string &port) {
 	struct addrinfo hints, *res;
 
 	memset(&hints, 0, sizeof hints);
@@ -126,6 +126,15 @@ int WindowsSocket::listenForConnections(const std::string &bindAddr, const std::
 	int len = res->ai_addrlen;
 	getsockname(fd, res->ai_addr, &len);
 	this->port = std::to_string(htons(((struct sockaddr_in *)res->ai_addr)->sin_port));
+
+	return 0;
+}
+
+int WindowsSocket::listenForConnections(const std::string &bindAddr, const std::string &port) {
+	int ret;
+
+	if ((ret = bindSocket(bindAddr, port)) != 0)
+		return ret;
 
 	return listen(fd, 20);
 }

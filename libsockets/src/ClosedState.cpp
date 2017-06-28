@@ -33,6 +33,10 @@ int ClosedState::connectTo(const std::string &host, const std::string &port) {
 void ClosedState::disconnect() {
 };
 
+int ClosedState::bindSocket(const std::string &bindAddr, const std::string &port) {
+	throw std::runtime_error("invalid operation bindSocket().");
+};
+
 int ClosedState::listenForConnections(const std::string &bindAddr, const std::string &port) {
 	throw std::runtime_error("invalid operation listenForConnections().");
 };

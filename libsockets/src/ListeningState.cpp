@@ -35,6 +35,10 @@ void ListeningState::disconnect() {
 	impl.disconnect();
 };
 
+int ListeningState::bindSocket(const std::string &bindAddr, const std::string &port) {
+	throw std::runtime_error("invalid operation bindSocket().");
+};
+
 int ListeningState::listenForConnections(const std::string &bindAddr, const std::string &port) {
 	throw std::runtime_error("invalid operation listenForConnections().");
 };
