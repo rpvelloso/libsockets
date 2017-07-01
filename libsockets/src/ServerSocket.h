@@ -16,6 +16,7 @@ namespace socks {
 
 class ServerSocket : public Socket {
 public:
+	ServerSocket(ServerSocket &&) = default;
 	ServerSocket(SocketImpl *impl);
 	virtual ~ServerSocket();
 	virtual int listenForConnections(const std::string &bindAddr, const std::string &port);

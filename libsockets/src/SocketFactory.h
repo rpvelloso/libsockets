@@ -21,16 +21,20 @@ public:
 	SocketFactory() {};
 	SocketFactory(SocketFactory *impl) : impl(impl) {};
 	virtual ~SocketFactory() {};
-	virtual std::unique_ptr<ClientSocket> createClientSocket() {return impl->createClientSocket();};
-	virtual std::unique_ptr<ClientSocket> createSSLClientSocket() {return impl->createSSLClientSocket();};
-	virtual std::unique_ptr<ServerSocket> createServerSocket() {return impl->createServerSocket();};
-	virtual std::unique_ptr<ServerSocket> createSSLServerSocket() {return impl->createSSLServerSocket();};
-	virtual std::unique_ptr<Multiplexer> createMultiplexer(
+	virtual ClientSocket createClientSocket() {return impl->createClientSocket();};
+	virtual ClientSocket createSSLClientSocket() {return impl->createSSLClientSocket();};
+	virtual ServerSocket createServerSocket() {return impl->createServerSocket();};
+	virtual ServerSocket createSSLServerSocket() {return impl->createSSLServerSocket();};
+	virtual std::unique_ptr<ClientSocket> createClientSocketPtr() {return impl->createClientSocketPtr();};
+	virtual std::unique_ptr<ClientSocket> createSSLClientSocketPtr() {return impl->createSSLClientSocketPtr();};
+	virtual std::unique_ptr<ServerSocket> createServerSocketPtr() {return impl->createServerSocketPtr();};
+	virtual std::unique_ptr<ServerSocket> createSSLServerSocketPtr() {return impl->createSSLServerSocketPtr();};
+	virtual std::unique_ptr<Multiplexer> createMultiplexerPtr(
 			MultiplexerCallback readCallback,
 			MultiplexerCallback connectCallback = defaultCallback,
 			MultiplexerCallback disconnectCallback = defaultCallback,
 			MultiplexerCallback writeCallback = defaultCallback) {
-		return impl->createMultiplexer(
+		return impl->createMultiplexerPtr(
 				readCallback,
 				connectCallback,
 				disconnectCallback,

@@ -26,7 +26,7 @@ public:
  	 	 	 : bindAddr(bindAddr), port(port), secure(secure) {
 		nthreads = std::max((size_t) 1, nthreads);
 		for (size_t i = 0; i < nthreads; ++i)
-			multiplexers.emplace_back(socketFactory.createMultiplexer(
+			multiplexers.emplace_back(socketFactory.createMultiplexerPtr(
 					readCallback,
 					connectCallback,
 					disconnectCallback,
@@ -39,8 +39,8 @@ public:
 
 	void listen() {
 		auto serverSocket = secure?
-				socketFactory.createSSLServerSocket():
-				socketFactory.createServerSocket();
+				socketFactory.createSSLServerSocketPtr():
+				socketFactory.createServerSocketPtr();
 
 		serverSocket->listenForConnections(bindAddr, port);
 

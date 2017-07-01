@@ -6,12 +6,11 @@
  */
 
 /*
+ * TODO: refactor: where possible replace unique_ptr<Socket> by move semantics
+ * TODO: decide callback format: one for each client or one for the multiplexer
+ * TODO: Create class for simple threaded server and clients (one thread per client)
  * TODO: standardize multiplexedClients/Server interfaces and put them inside SocketFactory
  * TODO: implement an FTP and HTTP servers as sample/examples
- * TODO: Create class for simple threaded server and clients (one thread per client)
- * TODO: standalone streaming client socket
- * TODO: do some more testing with OpenSSLSocket
- * TODO: SSL context sharing per site (inside socketFactory)
  */
 
 #include <iostream>
@@ -133,14 +132,14 @@ void testClient(const std::string &host, const std::string &port, bool secure) {
 				socks::socketFactory.createSSLClientSocket():
 				socks::socketFactory.createClientSocket();
 
-		if (clientSocket->connectTo(host, port) == 0) {
+		if (clientSocket.connectTo(host, port) == 0) {
 			std::string request = "GET / HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n";
 			std::cout << "sending request: " << request << "to: " << host << ":" << port << std::endl;
-			clientSocket->sendData(request.c_str(),request.size());
+			clientSocket.sendData(request.c_str(),request.size());
 			std::cout << "request sent. Response: " << std::endl;
 			char buf[4096+1];
 			int len;
-			while ((len=clientSocket->receiveData(buf, 4096)) > 0) {
+			while ((len=clientSocket.receiveData(buf, 4096)) > 0) {
 				buf[len]=0x00;
 				std::cout << buf;
 			}
@@ -153,9 +152,9 @@ void testClient(const std::string &host, const std::string &port, bool secure) {
 
 int main(int argc, char **argv) {
 	try {
-		testMultiplexer(std::string(argv[1]) == "ssl");
-		//testAsyncClient(argv[1], argv[2], argv[3], std::string(argv[4]) == "ssl");
-		//testClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
+//		testMultiplexer(std::string(argv[1]) == "ssl");
+//		testAsyncClient(argv[1], argv[2], argv[3], std::string(argv[4]) == "ssl");
+		testClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
 	} catch (std::exception &e) {
 		std::cout << e.what() << std::endl;
 	}

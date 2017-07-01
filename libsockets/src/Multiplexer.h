@@ -29,8 +29,10 @@ public:
 	};
 
 	virtual ~Multiplexer() {
-		impl->cancel();
-		thread->join();
+		if (impl) {
+			impl->cancel();
+			thread->join();
+		}
 	};
 
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) {

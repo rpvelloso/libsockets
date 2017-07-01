@@ -16,6 +16,7 @@ namespace socks {
 
 class ClientSocket : public Socket {
 public:
+	ClientSocket(ClientSocket &&) = default;
 	ClientSocket(SocketImpl *impl);
 	virtual ~ClientSocket();
 	virtual int receiveData(void *buf, size_t len);

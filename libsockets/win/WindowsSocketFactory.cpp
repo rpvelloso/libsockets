@@ -23,23 +23,40 @@ WindowsSocketFactory::WindowsSocketFactory() : SocketFactory() {
 WindowsSocketFactory::~WindowsSocketFactory() {
 }
 
-std::unique_ptr<ClientSocket> WindowsSocketFactory::createClientSocket() {
+ClientSocket WindowsSocketFactory::createClientSocket() {
+	return ClientSocket(new WindowsSocket);
+}
+
+ClientSocket WindowsSocketFactory::createSSLClientSocket() {
+	return ClientSocket(new OpenSSLSocket( new WindowsSocket()));
+}
+
+ServerSocket WindowsSocketFactory::createServerSocket() {
+	return ServerSocket(new WindowsSocket());
+}
+
+ServerSocket WindowsSocketFactory::createSSLServerSocket() {
+	return ServerSocket(new OpenSSLSocket(new WindowsSocket()));
+}
+
+
+std::unique_ptr<ClientSocket> WindowsSocketFactory::createClientSocketPtr() {
 	return std::make_unique<ClientSocket>(new WindowsSocket);
 }
 
-std::unique_ptr<ClientSocket> WindowsSocketFactory::createSSLClientSocket() {
+std::unique_ptr<ClientSocket> WindowsSocketFactory::createSSLClientSocketPtr() {
 	return std::make_unique<ClientSocket>(new OpenSSLSocket( new WindowsSocket()));
 }
 
-std::unique_ptr<ServerSocket> WindowsSocketFactory::createServerSocket() {
+std::unique_ptr<ServerSocket> WindowsSocketFactory::createServerSocketPtr() {
 	return std::make_unique<ServerSocket>(new WindowsSocket());
 }
 
-std::unique_ptr<ServerSocket> WindowsSocketFactory::createSSLServerSocket() {
-	return std::make_unique<ServerSocket>(new OpenSSLSocket( new WindowsSocket()));
+std::unique_ptr<ServerSocket> WindowsSocketFactory::createSSLServerSocketPtr() {
+	return std::make_unique<ServerSocket>(new OpenSSLSocket(new WindowsSocket()));
 }
 
-std::unique_ptr<Multiplexer> WindowsSocketFactory::createMultiplexer(
+std::unique_ptr<Multiplexer> WindowsSocketFactory::createMultiplexerPtr(
 		MultiplexerCallback readCallback,
 		MultiplexerCallback connectCallback = defaultCallback,
 		MultiplexerCallback disconnectCallback = defaultCallback,
@@ -56,11 +73,11 @@ std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > Windows
 	 * Windows alternative to socketpair()
 	 */
 	auto server = socketFactory.createServerSocket();
-	auto sockIn = socketFactory.createClientSocket();
-	server->listenForConnections("127.0.0.1",""); // listen on a random free port
-	sockIn->connectTo("127.0.0.1",server->getPort());
+	auto sockIn = socketFactory.createClientSocketPtr();
+	server.listenForConnections("127.0.0.1",""); // listen on a random free port
+	sockIn->connectTo("127.0.0.1",server.getPort());
 	sockIn->setNonBlockingIO(true);
-	auto sockOut = server->acceptConnection();
+	auto sockOut = server.acceptConnection();
 
 	return std::make_pair(std::move(sockIn), std::move(sockOut));
 }

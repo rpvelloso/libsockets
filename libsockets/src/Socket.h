@@ -21,6 +21,7 @@ namespace socks {
 
 class Socket {
 public:
+	Socket(Socket &&) = default;
 	Socket(SocketImpl *impl) : impl(impl) {
 		switch (impl->getSocketState()) {
 		case SocketStateType::Disconnected:
@@ -38,7 +39,8 @@ public:
 		}
 	};
 	virtual ~Socket() {
-		state->disconnect();
+		if (state)
+			state->disconnect();
 	};
 	virtual int setNonBlockingIO(bool status) {
 		return impl->setNonBlockingIO(status);

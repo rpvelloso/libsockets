@@ -17,11 +17,11 @@ class LinuxSocketFactory: public SocketFactory {
 public:
 	LinuxSocketFactory();
 	virtual ~LinuxSocketFactory();
-	std::unique_ptr<ClientSocket> createClientSocket() override;
-	std::unique_ptr<ClientSocket> createSSLClientSocket() override;
-	std::unique_ptr<ServerSocket> createServerSocket() override;
-	std::unique_ptr<ServerSocket> createSSLServerSocket() override;
-	std::unique_ptr<Multiplexer> createMultiplexer(
+	std::unique_ptr<ClientSocket> createClientSocketPtr() override;
+	std::unique_ptr<ClientSocket> createSSLClientSocketPtr() override;
+	std::unique_ptr<ServerSocket> createServerSocketPtr() override;
+	std::unique_ptr<ServerSocket> createSSLServerSocketPtr() override;
+	std::unique_ptr<Multiplexer> createMultiplexerPtr(
 			MultiplexerCallback readCallback,
 			MultiplexerCallback connectCallback,
 			MultiplexerCallback disconnectCallback,
