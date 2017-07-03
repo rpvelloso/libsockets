@@ -21,7 +21,7 @@ class LinuxMultiplexer;
 class LinuxSocket: public SocketImpl {
 	friend class LinuxSocketFactory;
 public:
-	LinuxSocket();
+	LinuxSocket(FDFactory &fdFactory = TCPFDFactory);
 	virtual ~LinuxSocket();
 	int receiveData(void *buf, size_t len) override;
 	int sendData(const void *buf, size_t len) override;

@@ -151,6 +151,23 @@ void testClient(const std::string &host, const std::string &port, bool secure) {
 }
 
 int main(int argc, char **argv) {
+	auto udpSocket = socks::socketFactory.createUDPClientSocket();
+	udpSocket.connectTo(argv[1], argv[2]);
+	while (true) {
+		char buf[1024];
+		udpSocket.sendData("hello\r\n.", 7);
+		auto len = udpSocket.receiveData(buf, 1024);
+		if (len > 0) {
+			buf[len] = 0;
+			std::cout << buf << std::endl;
+		}
+		auto c = getchar();
+		if (c == 'x')
+			break;
+	}
+	return 0;
+
+
 	try {
 //		testMultiplexer(std::string(argv[1]) == "ssl");
 //		testAsyncClient(argv[1], argv[2], argv[3], std::string(argv[4]) == "ssl");

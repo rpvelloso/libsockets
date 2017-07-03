@@ -21,6 +21,26 @@ LinuxSocketFactory::LinuxSocketFactory() {
 LinuxSocketFactory::~LinuxSocketFactory() {
 }
 
+ClientSocket LinuxSocketFactory::createClientSocket() {
+	return ClientSocket(new LinuxSocket());
+}
+
+ClientSocket LinuxSocketFactory::createUDPClientSocket() {
+	return ClientSocket(new LinuxSocket(UDPFDFactory));
+}
+
+ClientSocket LinuxSocketFactory::createSSLClientSocket() {
+	return ClientSocket(new OpenSSLSocket( new LinuxSocket()));
+}
+
+ServerSocket LinuxSocketFactory::createServerSocket() {
+	return ServerSocket(new LinuxSocket());
+}
+
+ServerSocket LinuxSocketFactory::createSSLServerSocket() {
+	return ServerSocket(new OpenSSLSocket(new LinuxSocket()));
+}
+
 std::unique_ptr<ClientSocket> LinuxSocketFactory::createClientSocketPtr() {
 	return std::make_unique<ClientSocket>(new LinuxSocket());
 }

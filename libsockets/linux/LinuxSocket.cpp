@@ -21,8 +21,8 @@ namespace socks {
 
 using ResPtr = std::unique_ptr<struct addrinfo, decltype(&freeaddrinfo)>;
 
-LinuxSocket::LinuxSocket() : SocketImpl() {
-	fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+LinuxSocket::LinuxSocket(FDFactory &fdFactory) : SocketImpl() {
+	fd = fdFactory();
 }
 
 std::string LinuxSocket::getPort() {

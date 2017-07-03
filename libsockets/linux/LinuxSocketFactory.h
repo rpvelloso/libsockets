@@ -17,6 +17,11 @@ class LinuxSocketFactory: public SocketFactory {
 public:
 	LinuxSocketFactory();
 	virtual ~LinuxSocketFactory();
+	ClientSocket createClientSocket() override;
+	ClientSocket createUDPClientSocket() override;
+	ClientSocket createSSLClientSocket() override;
+	ServerSocket createServerSocket() override;
+	ServerSocket createSSLServerSocket() override;
 	std::unique_ptr<ClientSocket> createClientSocketPtr() override;
 	std::unique_ptr<ClientSocket> createSSLClientSocketPtr() override;
 	std::unique_ptr<ServerSocket> createServerSocketPtr() override;

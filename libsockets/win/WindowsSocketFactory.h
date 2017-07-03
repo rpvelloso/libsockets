@@ -16,7 +16,8 @@ class WindowsSocketFactory: public SocketFactory {
 public:
 	WindowsSocketFactory();
 	virtual ~WindowsSocketFactory();
-	ClientSocket createClientSocket();
+	ClientSocket createClientSocket() override;
+	ClientSocket createUDPClientSocket() override;
 	ClientSocket createSSLClientSocket() override;
 	ServerSocket createServerSocket() override;
 	ServerSocket createSSLServerSocket() override;

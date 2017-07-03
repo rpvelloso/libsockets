@@ -22,6 +22,7 @@ public:
 	SocketFactory(SocketFactory *impl) : impl(impl) {};
 	virtual ~SocketFactory() {};
 	virtual ClientSocket createClientSocket() {return impl->createClientSocket();};
+	virtual ClientSocket createUDPClientSocket() {return impl->createUDPClientSocket();};
 	virtual ClientSocket createSSLClientSocket() {return impl->createSSLClientSocket();};
 	virtual ServerSocket createServerSocket() {return impl->createServerSocket();};
 	virtual ServerSocket createSSLServerSocket() {return impl->createSSLServerSocket();};

@@ -27,8 +27,8 @@ private:
 
 WinSock winSock;
 
-WindowsSocket::WindowsSocket() : SocketImpl() {
-	fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+WindowsSocket::WindowsSocket(FDFactory &fdFactory) : SocketImpl() {
+	fd = fdFactory();
 }
 
 std::string WindowsSocket::getPort() {

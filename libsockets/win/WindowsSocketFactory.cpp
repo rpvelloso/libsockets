@@ -24,7 +24,11 @@ WindowsSocketFactory::~WindowsSocketFactory() {
 }
 
 ClientSocket WindowsSocketFactory::createClientSocket() {
-	return ClientSocket(new WindowsSocket);
+	return ClientSocket(new WindowsSocket());
+}
+
+ClientSocket WindowsSocketFactory::createUDPClientSocket() {
+	return ClientSocket(new WindowsSocket(UDPFDFactory));
 }
 
 ClientSocket WindowsSocketFactory::createSSLClientSocket() {
@@ -38,7 +42,6 @@ ServerSocket WindowsSocketFactory::createServerSocket() {
 ServerSocket WindowsSocketFactory::createSSLServerSocket() {
 	return ServerSocket(new OpenSSLSocket(new WindowsSocket()));
 }
-
 
 std::unique_ptr<ClientSocket> WindowsSocketFactory::createClientSocketPtr() {
 	return std::make_unique<ClientSocket>(new WindowsSocket);

@@ -10,6 +10,7 @@
 
 #include "Socket.h"
 #include "SocketImpl.h"
+#include "FDFactory.h"
 
 #include "defs.h"
 #include <winsock.h>
@@ -19,7 +20,7 @@ namespace socks {
 
 class WindowsSocket: public SocketImpl {
 public:
-	WindowsSocket();
+	WindowsSocket(FDFactory &fdFactory = TCPFDFactory);
 	virtual ~WindowsSocket();
 	int receiveData(void *buf, size_t len) override;
 	int sendData(const void *buf, size_t len) override;
