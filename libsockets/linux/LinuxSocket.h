@@ -10,8 +10,10 @@
 
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <netdb.h>
 #include "Socket.h"
 #include "SocketImpl.h"
+#include "FDFactory.h"
 #include "defs.h"
 
 namespace socks {
