@@ -168,7 +168,76 @@ void testUDP(const std::string &host, const std::string &port) {
 	}
 }
 
+class SocketStreamBuf : public std::streambuf {
+public:
+	SocketStreamBuf(socks::ClientSocket *clientSocket) : std::streambuf(), clientSocket(clientSocket) {
+		setp(outp, outp + buffSize - 1);
+		setg(inp, inp, inp);
+	};
+	virtual ~SocketStreamBuf() {};
+protected:
+    virtual int_type underflow() override {
+    	auto received = clientSocket->receiveData(inp, buffSize);
+
+    	if (received <= 0)
+    		return traits_type::eof();
+
+    	setg(inp, inp, inp + received);
+    	return *gptr();
+    };
+
+    virtual int_type overflow(int_type __c  = traits_type::eof()) override {
+    	if (__c != traits_type::eof()) {
+    		*pptr() = __c;
+    		pbump(1);
+    	}
+
+    	return transmit()==traits_type::eof()?traits_type::eof():__c;
+    };
+
+    virtual int sync() {
+    	if (transmit() == traits_type::eof())
+    		return -1;
+    	return 0;
+    }
+
+private:
+    static constexpr size_t buffSize = 4096;
+    char inp[buffSize], outp[buffSize];
+    std::unique_ptr<socks::ClientSocket> clientSocket;
+
+    int_type transmit() {
+    	auto len = pptr() - pbase();
+    	if (len > 0) {
+			auto sent = clientSocket->sendData(outp, len);
+			// transmit
+			if (sent > 0) {
+				pbump(-sent);
+				return sent;
+			}
+    	}
+    	return traits_type::eof();
+    }
+};
+
+#include "ClientSocket.h"
+#include "WindowsSocket.h"
+
 int main(int argc, char **argv) {
+	auto clientSocket = new socks::ClientSocket(new socks::WindowsSocket());
+	clientSocket->connectTo(argv[1], argv[2]);
+	SocketStreamBuf socketStreamBuf(clientSocket);
+
+	std::iostream sockStream(&socketStreamBuf);
+
+	while (!sockStream.eof()) {
+		sockStream << "hello!" << std::endl;
+		std::string inp;
+		sockStream >> inp;
+		std::cout << inp;
+	}
+	return 0;
+
 	try {
 //		testMultiplexer(std::string(argv[1]) == "ssl");
 //		testAsyncClient(argv[1], argv[2], argv[3], std::string(argv[4]) == "ssl");
