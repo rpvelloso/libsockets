@@ -151,9 +151,9 @@ void testClient(const std::string &host, const std::string &port, bool secure) {
 	}
 }
 
-int main(int argc, char **argv) {
+void testUDP(const std::string &host, const std::string &port) {
 	auto udpSocket = socks::socketFactory.createUDPClientSocket();
-	udpSocket.connectTo(argv[1], argv[2]);
+	udpSocket.connectTo(host, port);
 	while (true) {
 		char buf[1024];
 		udpSocket.sendData("hello\r\n.", 7);
@@ -166,13 +166,14 @@ int main(int argc, char **argv) {
 		if (c == 'x')
 			break;
 	}
-	return 0;
+}
 
-
+int main(int argc, char **argv) {
 	try {
 //		testMultiplexer(std::string(argv[1]) == "ssl");
 //		testAsyncClient(argv[1], argv[2], argv[3], std::string(argv[4]) == "ssl");
-		testClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
+//		testClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
+		testUDP(argv[1], argv[2]);
 	} catch (std::exception &e) {
 		std::cout << e.what() << std::endl;
 	}
