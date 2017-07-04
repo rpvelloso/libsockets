@@ -170,19 +170,25 @@ void testUDP(const std::string &host, const std::string &port) {
 
 class SocketStreamBuf : public std::streambuf {
 public:
-	SocketStreamBuf(socks::ClientSocket *clientSocket) : std::streambuf(), clientSocket(clientSocket) {
-		setp(outp, outp + buffSize - 1);
-		setg(inp, inp, inp);
+	SocketStreamBuf(socks::ClientSocket *clientSocket) :
+		std::streambuf(),
+		inp(new char[buffSize]),
+		outp(new char[buffSize]),
+		clientSocket(clientSocket) {
+
+		setp(outp.get(), outp.get() + buffSize - 1);
+		setg(inp.get(), inp.get(), inp.get());
 	};
+
 	virtual ~SocketStreamBuf() {};
 protected:
     virtual int_type underflow() override {
-    	auto received = clientSocket->receiveData(inp, buffSize);
+    	auto received = clientSocket->receiveData(inp.get(), buffSize);
 
     	if (received <= 0)
     		return traits_type::eof();
 
-    	setg(inp, inp, inp + received);
+    	setg(inp.get(), inp.get(), inp.get() + received);
     	return *gptr();
     };
 
@@ -203,13 +209,13 @@ protected:
 
 private:
     static constexpr size_t buffSize = 4096;
-    char inp[buffSize], outp[buffSize];
+    std::unique_ptr<char> inp, outp;
     std::unique_ptr<socks::ClientSocket> clientSocket;
 
     int_type transmit() {
     	auto len = pptr() - pbase();
     	if (len > 0) {
-			auto sent = clientSocket->sendData(outp, len);
+			auto sent = clientSocket->sendData(outp.get(), len);
 			// transmit
 			if (sent > 0) {
 				pbump(-sent);
@@ -220,20 +226,28 @@ private:
     }
 };
 
+class SocketStream : public std::iostream {
+public:
+	SocketStream(socks::ClientSocket *clientSocket) : std::iostream(), socketStreamBuf(clientSocket) {
+		rdbuf(&socketStreamBuf);
+	};
+private:
+	SocketStreamBuf socketStreamBuf;
+};
+
 #include "ClientSocket.h"
 #include "WindowsSocket.h"
 
 int main(int argc, char **argv) {
 	auto clientSocket = new socks::ClientSocket(new socks::WindowsSocket());
 	clientSocket->connectTo(argv[1], argv[2]);
-	SocketStreamBuf socketStreamBuf(clientSocket);
 
-	std::iostream sockStream(&socketStreamBuf);
+	SocketStream socketStream(clientSocket);
 
-	while (!sockStream.eof()) {
-		sockStream << "hello!" << std::endl;
+	while (!socketStream.eof()) {
+		socketStream << "hello!" << std::endl;
 		std::string inp;
-		sockStream >> inp;
+		socketStream >> inp;
 		std::cout << inp;
 	}
 	return 0;
