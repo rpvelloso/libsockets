@@ -182,7 +182,7 @@ public:
 
 	virtual ~SocketStreamBuf() {};
 protected:
-    virtual int_type underflow() override {
+    int_type underflow() override {
     	auto received = clientSocket->receiveData(inp.get(), buffSize);
 
     	if (received <= 0)
@@ -192,7 +192,7 @@ protected:
     	return *gptr();
     };
 
-    virtual int_type overflow(int_type __c  = traits_type::eof()) override {
+    int_type overflow(int_type __c  = traits_type::eof()) override {
     	if (__c != traits_type::eof()) {
     		*pptr() = __c;
     		pbump(1);
@@ -201,7 +201,7 @@ protected:
     	return transmit()==traits_type::eof()?traits_type::eof():__c;
     };
 
-    virtual int sync() {
+    int sync() override {
     	if (transmit() == traits_type::eof())
     		return -1;
     	return 0;
@@ -209,7 +209,7 @@ protected:
 
 private:
     static constexpr size_t buffSize = 4096;
-    std::unique_ptr<char> inp, outp;
+    std::unique_ptr<char []> inp, outp;
     std::unique_ptr<socks::ClientSocket> clientSocket;
 
     int_type transmit() {
@@ -239,10 +239,10 @@ private:
 #include "WindowsSocket.h"
 
 int main(int argc, char **argv) {
-	auto clientSocket = new socks::ClientSocket(new socks::WindowsSocket());
+	auto clientSocket = socks::socketFactory.createClientSocketPtr();
 	clientSocket->connectTo(argv[1], argv[2]);
 
-	SocketStream socketStream(clientSocket);
+	SocketStream socketStream(clientSocket.release());
 
 	while (!socketStream.eof()) {
 		socketStream << "hello!" << std::endl;
