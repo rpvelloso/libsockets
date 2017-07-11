@@ -16,7 +16,7 @@ namespace socks {
 
 class SocketStreamBuf : public std::streambuf {
 public:
-	SocketStreamBuf(socks::ClientSocket *clientSocket);
+	SocketStreamBuf(std::unique_ptr<ClientSocket> clientSocket);
 	virtual ~SocketStreamBuf();
 protected:
     int_type underflow() override;
@@ -25,16 +25,17 @@ protected:
 private:
     static constexpr size_t buffSize = 4096;
     std::unique_ptr<char []> inp, outp;
-    std::unique_ptr<socks::ClientSocket> clientSocket;
+    std::unique_ptr<ClientSocket> clientSocket;
 
     int_type transmit();
 };
 
 class SocketStream : public std::iostream {
 public:
-	SocketStream(socks::ClientSocket *clientSocket);
+	SocketStream(std::unique_ptr<ClientSocket> clientSocket);
+	SocketStream(SocketStream &&);
 private:
-	SocketStreamBuf socketStreamBuf;
+	std::unique_ptr<SocketStreamBuf> socketStreamBuf;
 };
 
 } /* namespace socks */

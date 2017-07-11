@@ -12,6 +12,7 @@
 #include <atomic>
 #include "ServerSocket.h"
 #include "ClientSocket.h"
+#include "SocketStream.h"
 #include "Multiplexer.h"
 
 namespace socks {
@@ -50,6 +51,14 @@ public:
 
 		return ++id;
 	}
+
+	SocketStream createSocketStream(const std::string &host, const std::string &port) {
+		auto clientSocket = impl->createClientSocketPtr();
+		clientSocket->connectTo(host, port);
+		SocketStream socketStream(std::move(clientSocket));
+		return socketStream;
+	};
+
 private:
 	std::unique_ptr<SocketFactory> impl;
 };

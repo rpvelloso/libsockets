@@ -9,11 +9,11 @@
 
 namespace socks {
 
-SocketStreamBuf::SocketStreamBuf(socks::ClientSocket *clientSocket) :
+SocketStreamBuf::SocketStreamBuf(std::unique_ptr<ClientSocket> clientSocket) :
 		std::streambuf(),
 		inp(new char[buffSize]),
 		outp(new char[buffSize]),
-		clientSocket(clientSocket) {
+		clientSocket(std::move(clientSocket)) {
 
 		setp(outp.get(), outp.get() + buffSize - 1);
 		setg(inp.get(), inp.get(), inp.get());
@@ -59,10 +59,14 @@ std::streambuf::int_type SocketStreamBuf::transmit() {
 	return traits_type::eof();
 }
 
-SocketStream::SocketStream(ClientSocket *clientSocket) :
+SocketStream::SocketStream(std::unique_ptr<ClientSocket> clientSocket) :
 		std::iostream(),
-		socketStreamBuf(clientSocket) {
-	rdbuf(&socketStreamBuf);
+		socketStreamBuf(new SocketStreamBuf(std::move(clientSocket))) {
+	rdbuf(socketStreamBuf.get());
+}
+
+SocketStream::SocketStream(SocketStream &&rhs) : std::iostream(std::move(rhs)) {
+	socketStreamBuf.swap(rhs.socketStreamBuf);
 }
 
 } /* namespace socks */
