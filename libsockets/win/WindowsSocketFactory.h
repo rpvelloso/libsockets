@@ -22,6 +22,7 @@ public:
 	ServerSocket createServerSocket() override;
 	ServerSocket createSSLServerSocket() override;
 	std::unique_ptr<ClientSocket> createClientSocketPtr() override;
+	std::unique_ptr<ClientSocket> createUDPClientSocketPtr() override;
 	std::unique_ptr<ClientSocket> createSSLClientSocketPtr() override;
 	std::unique_ptr<ServerSocket> createServerSocketPtr() override;
 	std::unique_ptr<ServerSocket> createSSLServerSocketPtr() override;

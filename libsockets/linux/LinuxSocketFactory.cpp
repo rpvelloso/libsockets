@@ -45,6 +45,10 @@ std::unique_ptr<ClientSocket> LinuxSocketFactory::createClientSocketPtr() {
 	return std::make_unique<ClientSocket>(new LinuxSocket());
 }
 
+std::unique_ptr<ClientSocket> LinuxSocketFactory::createUDPClientSocketPtr() {
+	return std::make_unique<ClientSocket>(new LinuxSocket(UDPFDFactory));
+}
+
 std::unique_ptr<ClientSocket> LinuxSocketFactory::createSSLClientSocketPtr() {
 	return std::make_unique<ClientSocket>(new OpenSSLSocket(new LinuxSocket()));
 }

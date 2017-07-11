@@ -169,7 +169,7 @@ void testUDP(const std::string &host, const std::string &port) {
 }
 
 int main(int argc, char **argv) {
-	auto socketStream = socks::socketFactory.createSocketStream(argv[1], argv[2]);
+	auto socketStream = socks::socketFactory.createUDPSocketStream(argv[1], argv[2]);
 
 	while (!socketStream.eof()) {
 		socketStream << "hello!" << std::endl;

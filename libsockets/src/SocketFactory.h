@@ -28,6 +28,7 @@ public:
 	virtual ServerSocket createServerSocket() {return impl->createServerSocket();};
 	virtual ServerSocket createSSLServerSocket() {return impl->createSSLServerSocket();};
 	virtual std::unique_ptr<ClientSocket> createClientSocketPtr() {return impl->createClientSocketPtr();};
+	virtual std::unique_ptr<ClientSocket> createUDPClientSocketPtr() {return impl->createUDPClientSocketPtr();};
 	virtual std::unique_ptr<ClientSocket> createSSLClientSocketPtr() {return impl->createSSLClientSocketPtr();};
 	virtual std::unique_ptr<ServerSocket> createServerSocketPtr() {return impl->createServerSocketPtr();};
 	virtual std::unique_ptr<ServerSocket> createSSLServerSocketPtr() {return impl->createSSLServerSocketPtr();};
@@ -54,6 +55,20 @@ public:
 
 	SocketStream createSocketStream(const std::string &host, const std::string &port) {
 		auto clientSocket = impl->createClientSocketPtr();
+		clientSocket->connectTo(host, port);
+		SocketStream socketStream(std::move(clientSocket));
+		return socketStream;
+	};
+
+	SocketStream createSSLSocketStream(const std::string &host, const std::string &port) {
+		auto clientSocket = impl->createSSLClientSocketPtr();
+		clientSocket->connectTo(host, port);
+		SocketStream socketStream(std::move(clientSocket));
+		return socketStream;
+	};
+
+	SocketStream createUDPSocketStream(const std::string &host, const std::string &port) {
+		auto clientSocket = impl->createUDPClientSocketPtr();
 		clientSocket->connectTo(host, port);
 		SocketStream socketStream(std::move(clientSocket));
 		return socketStream;

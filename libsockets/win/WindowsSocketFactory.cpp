@@ -47,8 +47,12 @@ std::unique_ptr<ClientSocket> WindowsSocketFactory::createClientSocketPtr() {
 	return std::make_unique<ClientSocket>(new WindowsSocket);
 }
 
+std::unique_ptr<ClientSocket> WindowsSocketFactory::createUDPClientSocketPtr() {
+	return std::make_unique<ClientSocket>(new WindowsSocket(UDPFDFactory));
+}
+
 std::unique_ptr<ClientSocket> WindowsSocketFactory::createSSLClientSocketPtr() {
-	return std::make_unique<ClientSocket>(new OpenSSLSocket( new WindowsSocket()));
+	return std::make_unique<ClientSocket>(new OpenSSLSocket(new WindowsSocket()));
 }
 
 std::unique_ptr<ServerSocket> WindowsSocketFactory::createServerSocketPtr() {
