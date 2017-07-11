@@ -12,6 +12,5 @@
 #include "SocketFactory.h"
 #include "MultiplexedServer.h"
 #include "MultiplexedClients.h"
-#include "SocketStream.h"
 
 #endif /* SRC_LIBSOCKETS_H_ */
