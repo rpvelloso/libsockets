@@ -15,10 +15,6 @@
  */
 
 #include <iostream>
-#include <memory>
-#include <thread>
-#include <sstream>
-#include <algorithm>
 #include <fstream>
 #include "libsockets.h"
 //#include "HTTPResponse.h"
