@@ -43,6 +43,17 @@ public:
 				disconnectCallback,
 				writeCallback);
 	};
+	virtual Multiplexer createMultiplexer(
+			MultiplexerCallback readCallback,
+			MultiplexerCallback connectCallback = defaultCallback,
+			MultiplexerCallback disconnectCallback = defaultCallback,
+			MultiplexerCallback writeCallback = defaultCallback) {
+		return impl->createMultiplexer(
+				readCallback,
+				connectCallback,
+				disconnectCallback,
+				writeCallback);
+	};
 	virtual std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > createSocketPair() {
 		return impl->createSocketPair();
 	};

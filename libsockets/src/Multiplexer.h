@@ -21,18 +21,21 @@ namespace socks {
 
 class Multiplexer {
 public:
+	Multiplexer(Multiplexer &&) = default;
 	Multiplexer(MultiplexerImpl *impl) : impl(impl) {
-		thread.reset(new std::thread([this](){
-			this->impl->multiplex();
+		thread.reset(new std::thread([](MultiplexerImpl &multiplexer){
+			multiplexer.multiplex();
 			openSSL.threadCleanup();
-		}));
+		},
+		std::ref(*(this->impl)) ));
 	};
 
 	virtual ~Multiplexer() {
-		if (impl) {
+		if (impl)
 			impl->cancel();
+
+		if (thread)
 			thread->join();
-		}
 	};
 
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) {

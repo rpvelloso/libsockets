@@ -26,11 +26,13 @@ public:
  	 	 	 : bindAddr(bindAddr), port(port), secure(secure) {
 		nthreads = std::max((size_t) 1, nthreads);
 		for (size_t i = 0; i < nthreads; ++i)
-			multiplexers.emplace_back(socketFactory.createMultiplexerPtr(
+			multiplexers.emplace_back(
+					socketFactory.createMultiplexer(
 					readCallback,
 					connectCallback,
 					disconnectCallback,
-					writeCallback));
+					writeCallback)
+					);
 	};
 
 	virtual ~MultiplexedServer() {
@@ -39,14 +41,14 @@ public:
 
 	void listen() {
 		auto serverSocket = secure?
-				socketFactory.createSSLServerSocketPtr():
-				socketFactory.createServerSocketPtr();
+				socketFactory.createSSLServerSocket():
+				socketFactory.createServerSocket();
 
-		serverSocket->listenForConnections(bindAddr, port);
+		serverSocket.listenForConnections(bindAddr, port);
 
 		while (true) {
 			try {
-				auto clientSocket = serverSocket->acceptConnection();
+				auto clientSocket = serverSocket.acceptConnection();
 				std::unique_ptr<ClientData> cliData(new ClientDataType());
 				getMultiplexer().addClientSocket(std::move(clientSocket), std::move(cliData));
 			} catch (std::exception &e) {
@@ -56,22 +58,22 @@ public:
 		}
 	};
 private:
-	std::vector<std::unique_ptr<Multiplexer>> multiplexers;
+	std::vector<Multiplexer> multiplexers;
 	std::string bindAddr, port;
 	bool secure;
 
 	Multiplexer &getMultiplexer() {
 		size_t pos = 0;
-		size_t min = multiplexers[0]->getClientCount();
+		size_t min = multiplexers[0].getClientCount();
 
 		for (size_t i = 1; i < multiplexers.size(); ++i) {
-			auto count = multiplexers[i]->getClientCount();
+			auto count = multiplexers[i].getClientCount();
 			if (count < min) {
 				min = count;
 				pos = i;
 			}
 		}
-		return *multiplexers[pos];
+		return multiplexers[pos];
 	}
 };
 

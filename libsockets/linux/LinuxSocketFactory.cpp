@@ -74,6 +74,19 @@ std::unique_ptr<Multiplexer> LinuxSocketFactory::createMultiplexerPtr(
 			writeCallback));
 }
 
+Multiplexer LinuxSocketFactory::createMultiplexer(
+		MultiplexerCallback readCallback,
+		MultiplexerCallback connectCallback = defaultCallback,
+		MultiplexerCallback disconnectCallback = defaultCallback,
+		MultiplexerCallback writeCallback = defaultCallback) {
+	return Multiplexer(new MultiplexerImpl(
+			new LinuxPoll(),
+			readCallback,
+			connectCallback,
+			disconnectCallback,
+			writeCallback));
+}
+
 std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > LinuxSocketFactory::createSocketPair() {
 	int selfPipe[2];
 

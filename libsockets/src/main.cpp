@@ -164,8 +164,10 @@ void testUDP(const std::string &host, const std::string &port) {
 	}
 }
 
-int main(int argc, char **argv) {
-	auto socketStream = socks::socketFactory.createUDPSocketStream(argv[1], argv[2]);
+void testSocketStream(const std::string &host, const std::string &port, bool udp) {
+	auto socketStream = udp?
+			socks::socketFactory.createUDPSocketStream(host, port):
+			socks::socketFactory.createSocketStream(host, port);;
 
 	while (!socketStream.eof()) {
 		socketStream << "hello!" << std::endl;
@@ -173,13 +175,15 @@ int main(int argc, char **argv) {
 		socketStream >> inp;
 		std::cout << inp;
 	}
-	return 0;
+}
 
+int main(int argc, char **argv) {
 	try {
-//		testMultiplexer(std::string(argv[1]) == "ssl");
+		testMultiplexer(std::string(argv[1]) == "ssl");
 //		testAsyncClient(argv[1], argv[2], argv[3], std::string(argv[4]) == "ssl");
 //		testClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
-		testUDP(argv[1], argv[2]);
+//		testUDP(argv[1], argv[2]);
+//		testSocketStream(argv[1], argv[2], std::string(argv[3]) == "udp");
 	} catch (std::exception &e) {
 		std::cout << e.what() << std::endl;
 	}
