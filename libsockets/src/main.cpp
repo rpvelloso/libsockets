@@ -16,6 +16,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include <string>
 #include "libsockets.h"
 //#include "HTTPResponse.h"
 
@@ -177,7 +179,140 @@ void testSocketStream(const std::string &host, const std::string &port, bool udp
 	}
 }
 
+#include <getopt.h>
+
+class Netcat {
+public:
+	Netcat(int argc, char **argv) {
+		if (parseOptions(argc, argv) != 0)
+			return;
+
+		if (verbose) {
+			std::cerr << "Parameters: " << std::endl;
+			std::cerr << "  host: " << host << ", port: " << port << std::endl;
+			std::cerr << "  udp = " << boolString[udp] << std::endl;
+			std::cerr << "  secure = " << boolString[secure] << std::endl;
+			std::cerr << "  listen = " << boolString[listen] << std::endl;
+			std::cerr << "  verbose = " << boolString[verbose] << std::endl;
+		}
+
+		if (!listen)
+			client();
+		else
+			server();
+	};
+private:
+	void server() {
+		// TODO: implement!
+	}
+
+	void client() {
+		auto factory = std::bind(
+				udp?&socks::socketFactory.createUDPClientSocket:
+				secure?&socks::socketFactory.createSSLClientSocket:
+				&socks::socketFactory.createClientSocket, &socks::socketFactory);
+
+		auto clientSocket = factory();
+		if (clientSocket.connectTo(host, port) == 0) {
+			if (verbose)
+				std::cerr << "connected to " << host << ":" << port << std::endl;
+
+			std::thread transmitter([](socks::ClientSocket &clientSocket){
+				while (true) {
+					std::string inp;
+					std::getline(std::cin, inp);
+					inp.push_back('\r');
+					inp.push_back('\n');
+					if (clientSocket.sendData(inp.c_str(), inp.size()) <= 0)
+						break;
+				}
+			}, std::ref(clientSocket));
+			transmitter.detach();
+
+			// receiver
+			char buffer[bufferSize];
+			int len;
+
+			while ((len = clientSocket.receiveData(buffer, bufferSize)) > 0) {
+				buffer[len] = 0x00;
+				std::cout << buffer;
+			}
+
+			if (verbose)
+				std::cerr << std::endl << "connection terminated." << std::endl;
+
+		} else {
+			std::cerr << "error connecting to " << host << ":" << port << std::endl;
+			return;
+		}
+	};
+
+	int parseOptions(int argc, char **argv) {
+		int c;
+		while ((c = getopt(argc, argv, "vuslp:h:")) != -1) {
+			switch (c) {
+			case 'p':
+				port = optarg;
+				break;
+			case 'h':
+				host = optarg;
+				break;
+			case 'u':
+				udp = true;
+				break;
+			case 's':
+				secure = true;
+				break;
+			case 'l':
+				listen = true;
+				break;
+			case 'v':
+				verbose = true;
+				break;
+			default:
+				usage(argv[0]);
+				return -1;
+			}
+		}
+
+		if (listen && host == "")
+			host = "127.0.0.1";
+
+		if ((udp && secure) || (port == "" && !listen) || (host == "")) {
+			usage(argv[0]);
+			return -1;
+		}
+		return 0;
+	};
+
+	void usage(const std::string &program) {
+		std::cout << "Usage:" << std::endl;
+		std::cout <<  program << "[-h host] [-p port] [-u] [-s] [-l]" << std::endl;
+		std::cout << "-u UDP socket" << std::endl;
+		std::cout << "-s SSL socket" << std::endl;
+		std::cout << "-l server socket" << std::endl;
+		std::cout << "-v verbose (stderr)" << std::endl;
+
+		std::cout << std::endl;
+		std::cout << "(*) -u and -s are mutually exclusive" << std::endl;
+	};
+
+	static constexpr size_t bufferSize = 4096;
+	static const std::vector<std::string> boolString;
+	std::string host = "", port = "";
+	bool
+		secure = false,
+		udp = false,
+		listen = false,
+		verbose = false;
+};
+
+const std::vector<std::string> Netcat::boolString = {"false", "true"};
+
 int main(int argc, char **argv) {
+	Netcat netcat(argc, argv);
+	return 0;
+
 	try {
 		testMultiplexer(std::string(argv[1]) == "ssl");
 //		testAsyncClient(argv[1], argv[2], argv[3], std::string(argv[4]) == "ssl");
