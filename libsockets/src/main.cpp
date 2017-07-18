@@ -203,7 +203,26 @@ public:
 	};
 private:
 	void server() {
-		// TODO: implement!
+		// UDP server not implemented yet
+		auto factory = std::bind(
+				secure?&socks::socketFactory.createSSLServerSocket:
+				&socks::socketFactory.createServerSocket, &socks::socketFactory);
+
+		auto serverSocket = factory();
+		if (serverSocket.listenForConnections(host, port) == 0) {
+			if (verbose)
+				std::cerr << "listening for connections on address "
+				<< host << ":"
+				<< serverSocket.getPort()
+				<< std::endl;
+
+			auto clientSocket = serverSocket.acceptConnection();
+
+			if (verbose)
+				std::cerr << "connection received." << std::endl;
+
+			sendAndReceive(std::move(*clientSocket));
+		}
 	}
 
 	void client() {
@@ -216,35 +235,35 @@ private:
 		if (clientSocket.connectTo(host, port) == 0) {
 			if (verbose)
 				std::cerr << "connected to " << host << ":" << port << std::endl;
-
-			std::thread transmitter([](socks::ClientSocket &clientSocket){
-				while (true) {
-					std::string inp;
-					std::getline(std::cin, inp);
-					inp.push_back('\r');
-					inp.push_back('\n');
-					if (clientSocket.sendData(inp.c_str(), inp.size()) <= 0)
-						break;
-				}
-			}, std::ref(clientSocket));
-			transmitter.detach();
-
-			// receiver
-			char buffer[bufferSize];
-			int len;
-
-			while ((len = clientSocket.receiveData(buffer, bufferSize)) > 0) {
-				buffer[len] = 0x00;
-				std::cout << buffer;
-			}
-
-			if (verbose)
-				std::cerr << std::endl << "connection terminated." << std::endl;
-
-		} else {
+			sendAndReceive(std::move(clientSocket));
+		} else
 			std::cerr << "error connecting to " << host << ":" << port << std::endl;
-			return;
+	}
+
+	void sendAndReceive(socks::ClientSocket clientSocket) {
+		std::thread transmitter([](socks::ClientSocket &clientSocket){
+			while (true) {
+				std::string inp;
+				std::getline(std::cin, inp);
+				inp.push_back('\r');
+				inp.push_back('\n');
+				if (clientSocket.sendData(inp.c_str(), inp.size()) <= 0)
+					break;
+			}
+		}, std::ref(clientSocket));
+		transmitter.detach();
+
+		// receiver
+		char buffer[bufferSize];
+		int len;
+
+		while ((len = clientSocket.receiveData(buffer, bufferSize)) > 0) {
+			buffer[len] = 0x00;
+			std::cout << buffer;
 		}
+
+		if (verbose)
+			std::cerr << std::endl << "connection terminated." << std::endl;
 	};
 
 	int parseOptions(int argc, char **argv) {
