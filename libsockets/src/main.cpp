@@ -294,6 +294,11 @@ private:
 			}
 		}
 
+		if (listen && udp) {
+			std::cerr << "unimplemented!" << std::endl;
+			return -1;
+		}
+
 		if (listen && host == "")
 			host = "127.0.0.1";
 
