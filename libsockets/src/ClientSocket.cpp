@@ -9,6 +9,13 @@
 
 namespace socks {
 
+ClientSocket& ClientSocket::operator =(ClientSocket&& rhs) {
+	Socket::operator =(std::move(rhs));
+	this->receiveBufferSize = rhs.receiveBufferSize;
+	this->sendBufferSize = rhs.sendBufferSize;
+	return *this;
+}
+
 ClientSocket::ClientSocket(SocketImpl *impl) : Socket(impl) {
 	if (impl->getSocketState() == SocketStateType::Connected) {
 		sendBufferSize = state->getSendBufferSize();

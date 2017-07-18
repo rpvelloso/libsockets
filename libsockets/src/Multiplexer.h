@@ -22,6 +22,8 @@ namespace socks {
 class Multiplexer {
 public:
 	Multiplexer(Multiplexer &&) = default;
+	Multiplexer &operator=(Multiplexer &&) = default;
+
 	Multiplexer(MultiplexerImpl *impl) : impl(impl) {
 		thread.reset(new std::thread([](MultiplexerImpl &multiplexer){
 			multiplexer.multiplex();
