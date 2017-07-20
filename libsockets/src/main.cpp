@@ -217,6 +217,7 @@ private:
 				<< std::endl;
 
 			auto clientSocket = serverSocket.acceptConnection();
+			serverSocket.disconnect();
 
 			if (verbose)
 				std::cerr << "connection received." << std::endl;
@@ -245,7 +246,6 @@ private:
 			while (true) {
 				std::string inp;
 				std::getline(std::cin, inp);
-				inp.push_back('\r');
 				inp.push_back('\n');
 				if (clientSocket.sendData(inp.c_str(), inp.size()) <= 0)
 					break;
