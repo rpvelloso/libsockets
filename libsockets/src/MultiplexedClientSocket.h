@@ -41,7 +41,7 @@ public:
 				impl(std::move(impl)),
 				clientData(std::move(clientData)),
 				interruptFunc(interruptFunc) {};
-	virtual ~MultiplexedClientSocket() {};
+	//virtual ~MultiplexedClientSocket() {};
 	bool getHasOutput() { return outputBuffer.rdbuf()->in_avail() > 0; };
 	void interrupt() { interruptFunc(); };
 	ClientData &getClientData() {return *clientData;};

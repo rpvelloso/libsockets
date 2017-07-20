@@ -223,7 +223,9 @@ private:
 				std::cerr << "connection received." << std::endl;
 
 			sendAndReceive(std::move(clientSocket));
-		}
+		} else
+			std::cerr << "error listening for connections on "
+				<< host << ":" << port << std::endl;
 	}
 
 	void client() {
