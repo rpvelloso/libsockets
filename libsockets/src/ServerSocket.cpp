@@ -28,8 +28,8 @@ int ServerSocket::listenForConnections(const std::string &bindAddr, const std::s
 	return ret;
 }
 
-std::unique_ptr<ClientSocket> ServerSocket::acceptConnection() {
-	return std::make_unique<ClientSocket>(state->acceptConnection().release());
+ClientSocket ServerSocket::acceptConnection() {
+	return ClientSocket(state->acceptConnection().release());
 }
 
 void ServerSocket::disconnect() {

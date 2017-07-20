@@ -27,22 +27,6 @@ public:
 	virtual ClientSocket createSSLClientSocket() {return impl->createSSLClientSocket();};
 	virtual ServerSocket createServerSocket() {return impl->createServerSocket();};
 	virtual ServerSocket createSSLServerSocket() {return impl->createSSLServerSocket();};
-	virtual std::unique_ptr<ClientSocket> createClientSocketPtr() {return impl->createClientSocketPtr();};
-	virtual std::unique_ptr<ClientSocket> createUDPClientSocketPtr() {return impl->createUDPClientSocketPtr();};
-	virtual std::unique_ptr<ClientSocket> createSSLClientSocketPtr() {return impl->createSSLClientSocketPtr();};
-	virtual std::unique_ptr<ServerSocket> createServerSocketPtr() {return impl->createServerSocketPtr();};
-	virtual std::unique_ptr<ServerSocket> createSSLServerSocketPtr() {return impl->createSSLServerSocketPtr();};
-	virtual std::unique_ptr<Multiplexer> createMultiplexerPtr(
-			MultiplexerCallback readCallback,
-			MultiplexerCallback connectCallback = defaultCallback,
-			MultiplexerCallback disconnectCallback = defaultCallback,
-			MultiplexerCallback writeCallback = defaultCallback) {
-		return impl->createMultiplexerPtr(
-				readCallback,
-				connectCallback,
-				disconnectCallback,
-				writeCallback);
-	};
 	virtual Multiplexer createMultiplexer(
 			MultiplexerCallback readCallback,
 			MultiplexerCallback connectCallback = defaultCallback,
@@ -65,21 +49,21 @@ public:
 	}
 
 	SocketStream createSocketStream(const std::string &host, const std::string &port) {
-		auto clientSocket = impl->createClientSocketPtr();
+		auto clientSocket = std::make_unique<ClientSocket>(impl->createClientSocket());
 		clientSocket->connectTo(host, port);
 		SocketStream socketStream(std::move(clientSocket));
 		return socketStream;
 	};
 
 	SocketStream createSSLSocketStream(const std::string &host, const std::string &port) {
-		auto clientSocket = impl->createSSLClientSocketPtr();
+		auto clientSocket = std::make_unique<ClientSocket>(impl->createSSLClientSocket());
 		clientSocket->connectTo(host, port);
 		SocketStream socketStream(std::move(clientSocket));
 		return socketStream;
 	};
 
 	SocketStream createUDPSocketStream(const std::string &host, const std::string &port) {
-		auto clientSocket = impl->createUDPClientSocketPtr();
+		auto clientSocket = std::make_unique<ClientSocket>(impl->createUDPClientSocket());
 		clientSocket->connectTo(host, port);
 		SocketStream socketStream(std::move(clientSocket));
 		return socketStream;

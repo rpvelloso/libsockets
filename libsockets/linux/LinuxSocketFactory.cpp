@@ -41,39 +41,6 @@ ServerSocket LinuxSocketFactory::createSSLServerSocket() {
 	return ServerSocket(new OpenSSLSocket(new LinuxSocket()));
 }
 
-std::unique_ptr<ClientSocket> LinuxSocketFactory::createClientSocketPtr() {
-	return std::make_unique<ClientSocket>(new LinuxSocket());
-}
-
-std::unique_ptr<ClientSocket> LinuxSocketFactory::createUDPClientSocketPtr() {
-	return std::make_unique<ClientSocket>(new LinuxSocket(UDPFDFactory));
-}
-
-std::unique_ptr<ClientSocket> LinuxSocketFactory::createSSLClientSocketPtr() {
-	return std::make_unique<ClientSocket>(new OpenSSLSocket(new LinuxSocket()));
-}
-
-std::unique_ptr<ServerSocket> LinuxSocketFactory::createServerSocketPtr() {
-	return std::make_unique<ServerSocket>(new LinuxSocket);
-}
-
-std::unique_ptr<ServerSocket> LinuxSocketFactory::createSSLServerSocketPtr() {
-	return std::make_unique<ServerSocket>(new OpenSSLSocket(new LinuxSocket));
-}
-
-std::unique_ptr<Multiplexer> LinuxSocketFactory::createMultiplexerPtr(
-		MultiplexerCallback readCallback,
-		MultiplexerCallback connectCallback = defaultCallback,
-		MultiplexerCallback disconnectCallback = defaultCallback,
-		MultiplexerCallback writeCallback = defaultCallback) {
-	return std::make_unique<Multiplexer>(new MultiplexerImpl(
-			new LinuxPoll(),
-			readCallback,
-			connectCallback,
-			disconnectCallback,
-			writeCallback));
-}
-
 Multiplexer LinuxSocketFactory::createMultiplexer(
 		MultiplexerCallback readCallback,
 		MultiplexerCallback connectCallback = defaultCallback,

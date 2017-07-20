@@ -21,16 +21,6 @@ public:
 	ClientSocket createSSLClientSocket() override;
 	ServerSocket createServerSocket() override;
 	ServerSocket createSSLServerSocket() override;
-	std::unique_ptr<ClientSocket> createClientSocketPtr() override;
-	std::unique_ptr<ClientSocket> createUDPClientSocketPtr() override;
-	std::unique_ptr<ClientSocket> createSSLClientSocketPtr() override;
-	std::unique_ptr<ServerSocket> createServerSocketPtr() override;
-	std::unique_ptr<ServerSocket> createSSLServerSocketPtr() override;
-	std::unique_ptr<Multiplexer> createMultiplexerPtr(
-			MultiplexerCallback readCallback,
-			MultiplexerCallback connectCallback,
-			MultiplexerCallback disconnectCallback,
-			MultiplexerCallback writeCallback) override;
 	Multiplexer createMultiplexer(
 			MultiplexerCallback readCallback,
 			MultiplexerCallback connectCallback,

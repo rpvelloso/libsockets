@@ -221,7 +221,7 @@ private:
 			if (verbose)
 				std::cerr << "connection received." << std::endl;
 
-			sendAndReceive(std::move(*clientSocket));
+			sendAndReceive(std::move(clientSocket));
 		}
 	}
 
