@@ -21,10 +21,10 @@ public:
 
 	ClientSocket(SocketImpl *impl);
 	virtual ~ClientSocket();
-	virtual int receiveData(void *buf, size_t len);
-	virtual int sendData(const void *buf, size_t len);
-	virtual int connectTo(const std::string &host, const std::string &port);
-	virtual void disconnect();
+	int receiveData(void *buf, size_t len);
+	int sendData(const void *buf, size_t len);
+	int connectTo(const std::string &host, const std::string &port);
+	void disconnect();
 	size_t getSendBufferSize() const;
 	size_t getReceiveBufferSize() const;
 

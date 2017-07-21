@@ -166,6 +166,37 @@ void testUDP(const std::string &host, const std::string &port) {
 	}
 }
 
+void testDatagram(const std::string &host, const std::string &port) {
+	auto dgSocket = socks::socketFactory.createDatagramSocket();
+	auto addr = socks::socketFactory.createAddress(host, port);
+
+	dgSocket.bindSocket("0.0.0.0", "");
+
+	std::cout << "starting transmitter..." << std::endl;
+	std::thread transmitter([](socks::DatagramSocket &dgSocket, socks::SocketAddress &addr){
+		while (true) {
+			std::string inp;
+			std::getline(std::cin, inp);
+			inp.push_back('\n');
+			if (dgSocket.sendTo(addr, inp.c_str(), inp.size()) <= 0)
+				break;
+		}
+	}, std::ref(dgSocket), std::ref(addr));
+	transmitter.detach();
+
+	std::cout << "starting receiver on port " << dgSocket.getPort() << " ..." << std::endl;
+	char buf[4096];
+	while (true) {
+		auto ret = dgSocket.receiveFrom(buf, 4096);
+		if (ret.first <= 0)
+			break;
+
+		buf[ret.first] = 0x00;
+		std::cout << "received " << ret.first << ": " << buf << std::endl;
+	}
+
+}
+
 void testSocketStream(const std::string &host, const std::string &port, bool udp) {
 	auto socketStream = udp?
 			socks::socketFactory.createUDPSocketStream(host, port):
@@ -340,7 +371,8 @@ int main(int argc, char **argv) {
 	return 0;
 
 	try {
-		testMultiplexer(std::string(argv[1]) == "ssl");
+//		testDatagram(argv[1], argv[2]);
+//		testMultiplexer(std::string(argv[1]) == "ssl");
 //		testAsyncClient(argv[1], argv[2], argv[3], std::string(argv[4]) == "ssl");
 //		testClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
 //		testUDP(argv[1], argv[2]);

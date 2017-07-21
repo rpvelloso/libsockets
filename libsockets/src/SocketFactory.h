@@ -14,6 +14,8 @@
 #include "ClientSocket.h"
 #include "SocketStream.h"
 #include "Multiplexer.h"
+#include "SocketAddress.h"
+#include "DatagramSocket.h"
 
 namespace socks {
 
@@ -40,6 +42,17 @@ public:
 	};
 	virtual std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > createSocketPair() {
 		return impl->createSocketPair();
+	};
+
+	virtual SocketAddress createAddress(
+			const std::string &host,
+			const std::string &port,
+			SocketProtocol protocol = SocketProtocol::UDP) {
+		return impl->createAddress(host, port, protocol);
+	};
+
+	virtual DatagramSocket createDatagramSocket() {
+		return impl->createDatagramSocket();
 	};
 
 	static size_t createID() {

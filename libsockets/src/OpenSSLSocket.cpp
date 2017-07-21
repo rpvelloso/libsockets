@@ -76,6 +76,14 @@ int OpenSSLSocket::sendData(const void* buf, size_t len) {
 	return ret;
 }
 
+std::pair<int, SocketAddress> OpenSSLSocket::receiveFrom(void *buf, size_t len) {
+	throw std::runtime_error("invalid operation receiveFrom().");
+};
+
+int OpenSSLSocket::sendTo(const SocketAddress &addr, const void *buf, size_t len) {
+	throw std::runtime_error("invalid operation sendTo().");
+};
+
 int OpenSSLSocket::connectTo(const std::string& host, const std::string& port) {
 	int ret;
 	if ((ret = impl->connectTo(host, port)) == 0) {

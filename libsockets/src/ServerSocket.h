@@ -19,9 +19,9 @@ public:
 	ServerSocket(ServerSocket &&) = default;
 	ServerSocket(SocketImpl *impl);
 	virtual ~ServerSocket();
-	virtual int listenForConnections(const std::string &bindAddr, const std::string &port);
-	virtual ClientSocket acceptConnection();
-	virtual void disconnect();
+	int listenForConnections(const std::string &bindAddr, const std::string &port);
+	ClientSocket acceptConnection();
+	void disconnect();
 };
 
 }

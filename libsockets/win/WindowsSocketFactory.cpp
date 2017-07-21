@@ -12,6 +12,7 @@
 #include "MultiplexerImpl.h"
 #include "WindowsPoll.h"
 #include "WindowsSelect.h"
+#include "WindowsSocketAddress.h"
 
 namespace socks {
 
@@ -68,4 +69,16 @@ std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > Windows
 
 	return std::make_pair(std::move(sockIn), std::move(sockOut));
 }
+
+SocketAddress WindowsSocketFactory::createAddress(
+		const std::string& host,
+		const std::string& port,
+		SocketProtocol protocol) {
+	return SocketAddress(new WindowsSocketAddress(host, port, protocol));
+}
+
+DatagramSocket WindowsSocketFactory::createDatagramSocket() {
+	return DatagramSocket(new WindowsSocket(UDPFDFactory));
+}
+
 }

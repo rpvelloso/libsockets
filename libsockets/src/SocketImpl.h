@@ -12,6 +12,7 @@
 #include <string>
 #include <memory>
 #include "defs.h"
+#include "SocketAddress.h"
 
 namespace socks {
 
@@ -30,6 +31,8 @@ public:
 	virtual ~SocketImpl() {};
 	virtual int receiveData(void *buf, size_t len) = 0;
 	virtual int sendData(const void *buf, size_t len) = 0;
+	virtual std::pair<int, SocketAddress> receiveFrom(void *buf, size_t len) = 0;
+	virtual int sendTo(const SocketAddress &addr, const void *buf, size_t len) = 0;
 	virtual int connectTo(const std::string &host, const std::string &port) = 0;
 	virtual void disconnect() = 0;
 	virtual int bindSocket(const std::string &bindAddr, const std::string &port) = 0;

@@ -26,6 +26,14 @@ int ClosedState::sendData(const void *buf, size_t len) {
 	throw std::runtime_error("invalid operation sendData().");
 };
 
+std::pair<int, SocketAddress> ClosedState::receiveFrom(void *buf, size_t len) {
+	throw std::runtime_error("invalid operation receiveFrom().");
+};
+
+int ClosedState::sendTo(const SocketAddress &addr, const void *buf, size_t len) {
+	throw std::runtime_error("invalid operation sendTo().");
+};
+
 int ClosedState::connectTo(const std::string &host, const std::string &port) {
 	throw std::runtime_error("invalid operation connectTo().");
 };

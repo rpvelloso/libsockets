@@ -26,6 +26,16 @@ int DisconnectedState::sendData(const void *buf, size_t len) {
 	throw std::runtime_error("invalid operation sendData().");
 };
 
+std::pair<int, SocketAddress> DisconnectedState::receiveFrom(void* buf,
+		size_t len) {
+	return impl.receiveFrom(buf, len);
+};
+
+int DisconnectedState::sendTo(const SocketAddress& addr, const void* buf,
+		size_t len) {
+	return impl.sendTo(addr, buf, len);
+};
+
 int DisconnectedState::connectTo(const std::string &host, const std::string &port) {
 	return impl.connectTo(host, port);
 };
@@ -59,3 +69,4 @@ size_t DisconnectedState::getReceiveBufferSize() {
 }
 
 }
+

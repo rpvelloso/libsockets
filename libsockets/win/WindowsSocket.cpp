@@ -8,10 +8,9 @@
 #include <memory>
 #include "ClientSocket.h"
 #include "WindowsSocket.h"
+#include "WindowsSocketAddress.h"
 
 namespace socks {
-
-using ResPtr = std::unique_ptr<struct addrinfo, decltype(&freeaddrinfo)>;
 
 class WinSock {
 public:
@@ -66,19 +65,47 @@ WindowsSocket::~WindowsSocket() {
 }
 
 int WindowsSocket::receiveData(void *buf, size_t len) {
-	return recv(fd, static_cast<char *>(buf), len, 0);
+	return recv(fd, reinterpret_cast<char *>(buf), len, 0);
 }
 
 int WindowsSocket::sendData(const void *buf, size_t len) {
 	int ret;
 
-	if ((ret = send(fd, static_cast<const char *>(buf), len, 0)) == -1) {
+	if ((ret = send(fd, reinterpret_cast<const char *>(buf), len, 0)) == -1) {
 		auto err = WSAGetLastError();
 		if (err != WSAEWOULDBLOCK)
 			throw std::runtime_error("sendData() error: " + std::to_string(err) + ".");
 	}
 	return ret;
 }
+
+std::pair<int, SocketAddress> WindowsSocket::receiveFrom(void *buf, size_t len) {
+	struct sockaddr_storage saddr;
+	int saddrSize = sizeof(saddr);
+
+	auto ret = recvfrom(
+			fd,
+			reinterpret_cast<char *>(buf),
+			len,
+			0,
+			reinterpret_cast<struct sockaddr*>(&saddr),
+			&saddrSize);
+
+	return std::make_pair(ret, SocketAddress(new WindowsSocketAddress(reinterpret_cast<struct sockaddr*>(&saddr), saddrSize)));
+};
+
+int WindowsSocket::sendTo(const SocketAddress &addr, const void *buf, size_t len) {
+	auto saddr = addr.getSocketAddress();
+	auto saddrSize = addr.getSocketAddressSize();
+	return sendto(
+			fd,
+			reinterpret_cast<const char *>(buf),
+			len,
+			0,
+			reinterpret_cast<struct sockaddr*>(saddr),
+			saddrSize);
+};
+
 
 int WindowsSocket::connectTo(const std::string &host, const std::string &port) {
 	struct addrinfo hints, *res;
@@ -92,7 +119,7 @@ int WindowsSocket::connectTo(const std::string &host, const std::string &port) {
 	if ((ret = getaddrinfo(host.c_str(), port.c_str(), &hints, &res)) != 0)
 		return ret;
 
-	ResPtr resPtr(res, freeaddrinfo);
+	AddrResPtr resPtr(res, freeaddrinfo);
 
 	if ((ret = connect(fd, res->ai_addr, res->ai_addrlen)) == 0)
 		this->port = port;
@@ -117,7 +144,7 @@ int WindowsSocket::bindSocket(const std::string &bindAddr, const std::string &po
 	if ((ret = getaddrinfo(bindAddr.c_str(), port.c_str(), &hints, &res)) != 0)
 		return ret;
 
-	ResPtr resPtr(res,freeaddrinfo);
+	AddrResPtr resPtr(res,freeaddrinfo);
 
 
 	if ((ret = bind(fd, res->ai_addr, res->ai_addrlen)) != 0)

@@ -27,6 +27,11 @@ public:
 			MultiplexerCallback disconnectCallback,
 			MultiplexerCallback writeCallback) override;
 	std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > createSocketPair() override;
+	SocketAddress createAddress(
+			const std::string &host,
+			const std::string &port,
+			SocketProtocol protocol) override;
+	DatagramSocket createDatagramSocket() override;
 };
 
 }

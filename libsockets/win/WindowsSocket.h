@@ -24,6 +24,8 @@ public:
 	virtual ~WindowsSocket();
 	int receiveData(void *buf, size_t len) override;
 	int sendData(const void *buf, size_t len) override;
+	std::pair<int, SocketAddress> receiveFrom(void *buf, size_t len) override;
+	int sendTo(const SocketAddress &addr, const void *buf, size_t len) override;
 	int connectTo(const std::string &host, const std::string &port) override;
 	void disconnect() override;
 	int bindSocket(const std::string &bindAddr, const std::string &port) override;
@@ -38,6 +40,8 @@ private:
 	WindowsSocket(SocketFDType); // ctor used by acceptConnections()
 	std::string port = "";
 };
+
+using AddrResPtr = std::unique_ptr<struct addrinfo, decltype(&freeaddrinfo)>;
 
 }
 #endif /* WINDOWSSOCKET_H_ */

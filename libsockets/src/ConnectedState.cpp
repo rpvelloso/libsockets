@@ -26,6 +26,16 @@ int ConnectedState::sendData(const void *buf, size_t len) {
 	return impl.sendData(buf, len);
 };
 
+std::pair<int, SocketAddress> ConnectedState::receiveFrom(void* buf,
+		size_t len) {
+	return impl.receiveFrom(buf, len);
+};
+
+int ConnectedState::sendTo(const SocketAddress& addr, const void* buf,
+		size_t len) {
+	return impl.sendTo(addr, buf, len);
+};
+
 int ConnectedState::connectTo(const std::string &host, const std::string &port) {
 	throw std::runtime_error("invalid operation connectTo().");
 };
