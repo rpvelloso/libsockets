@@ -27,6 +27,7 @@ public:
 	void *getSocketAddress() const override;
 	void setSocketAddressSize(int saSize) override;
 	int getSocketAddressSize() const override;
+	bool operator==(const SocketAddress &rhs) override;
 private:
 	WindowsSocketAddress() = delete;
 

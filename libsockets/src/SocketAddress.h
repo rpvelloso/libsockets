@@ -26,6 +26,7 @@ public:
 	virtual void *getSocketAddress() const { return impl->getSocketAddress(); };
 	virtual void setSocketAddressSize(int saSize) { impl->setSocketAddressSize(saSize); };
 	virtual int getSocketAddressSize() const { return impl->getSocketAddressSize(); };
+	virtual bool operator==(const SocketAddress &rhs) { return impl->operator==(rhs); };
 protected:
 	SocketAddress() {};
 	std::unique_ptr<SocketAddress> impl;

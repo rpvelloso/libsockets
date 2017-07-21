@@ -227,19 +227,26 @@ public:
 			std::cerr << "  verbose = " << boolString[verbose] << std::endl;
 		}
 
-		if (!listen)
-			client();
-		else
-			server();
+		if (!listen) {
+			if (secure)
+				client(socks::socketFactory.createSSLClientSocket());
+			else if (udp)
+				client(socks::socketFactory.createUDPClientSocket());
+			else
+				client(socks::socketFactory.createClientSocket());
+		} else {
+			if (udp)
+				datagramServer();
+			else {
+				if (secure)
+					server(socks::socketFactory.createSSLServerSocket());
+				else
+					server(socks::socketFactory.createServerSocket());
+			}
+		}
 	};
 private:
-	void server() {
-		// UDP server not implemented yet
-		auto factory = std::bind(
-				secure?&socks::socketFactory.createSSLServerSocket:
-				&socks::socketFactory.createServerSocket, &socks::socketFactory);
-
-		auto serverSocket = factory();
+	void server(socks::ServerSocket serverSocket) {
 		if (serverSocket.listenForConnections(host, port) == 0) {
 			if (verbose)
 				std::cerr << "listening for connections on address "
@@ -259,13 +266,49 @@ private:
 				<< host << ":" << port << std::endl;
 	}
 
-	void client() {
-		auto factory = std::bind(
-				udp?&socks::socketFactory.createUDPClientSocket:
-				secure?&socks::socketFactory.createSSLClientSocket:
-				&socks::socketFactory.createClientSocket, &socks::socketFactory);
+	void datagramServer() {
+		auto datagramSocket = socks::socketFactory.createDatagramSocket();
+		datagramSocket.bindSocket(host, port);
+		char buffer[bufferSize];
 
-		auto clientSocket = factory();
+		auto datagram = datagramSocket.receiveFrom(buffer, bufferSize);
+		auto peer = std::move(datagram.second);
+
+		if (datagram.first <= 0) {
+			if (verbose)
+				std::cerr << "error receiving datagram." << std::endl;
+			return;
+		}
+
+		buffer[datagram.first] = 0x00;
+		std::cout << buffer;
+
+		std::thread transmitter([](socks::DatagramSocket &datagramSocket, socks::SocketAddress &peer){
+			while (true) {
+				std::string inp;
+				std::getline(std::cin, inp);
+				inp.push_back('\n');
+				if (datagramSocket.sendTo(peer, inp.c_str(), inp.size()) <= 0)
+					break;
+			}
+		}, std::ref(datagramSocket), std::ref(peer));
+		transmitter.detach();
+
+		// receiver
+		while ((datagram = datagramSocket.receiveFrom(buffer, bufferSize)).first > 0) {
+			if (datagram.second == peer) {
+				buffer[datagram.first] = 0x00;
+				std::cout << buffer;
+			} else
+				if (verbose)
+					std::cerr << "received data from another peer." << std::endl;
+		}
+
+		if (verbose)
+			std::cerr << std::endl << "connection terminated." << std::endl;
+	};
+
+	void client(socks::ClientSocket clientSocket) {
 		if (clientSocket.connectTo(host, port) == 0) {
 			if (verbose)
 				std::cerr << "connected to " << host << ":" << port << std::endl;
@@ -325,11 +368,6 @@ private:
 				usage(argv[0]);
 				return -1;
 			}
-		}
-
-		if (listen && udp) {
-			std::cerr << "unimplemented!" << std::endl;
-			return -1;
 		}
 
 		if (listen && host == "")

@@ -53,4 +53,11 @@ void WindowsSocketAddress::setSocketAddress(struct sockaddr* addr,
 	sockAddrSize = addrSize;
 }
 
+bool WindowsSocketAddress::operator==(const SocketAddress &rhs) {
+	if (rhs.getSocketAddressSize() == getSocketAddressSize()) {
+		return memcmp(rhs.getSocketAddress(), getSocketAddress(), getSocketAddressSize()) == 0;
+	}
+	return false;
+}
+
 } /* namespace socks */
