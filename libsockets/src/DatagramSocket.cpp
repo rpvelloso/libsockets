@@ -30,4 +30,9 @@ int DatagramSocket::bindSocket(const std::string& bindAddr,
 	return state->bindSocket(bindAddr, port);
 }
 
+ClientSocket DatagramSocket::makeClientSocket() {
+	state.reset();
+	return ClientSocket(impl.release());
+}
+
 } /* namespace socks */

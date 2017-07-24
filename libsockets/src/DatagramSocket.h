@@ -10,6 +10,7 @@
 
 #include "Socket.h"
 #include "SocketImpl.h"
+#include "ClientSocket.h"
 
 namespace socks {
 
@@ -21,6 +22,7 @@ public:
 	std::pair<int, SocketAddress> receiveFrom(void *buf, size_t len);
 	int sendTo(const SocketAddress &addr, const void *buf, size_t len);
 	int bindSocket(const std::string &bindAddr, const std::string &port);
+	ClientSocket makeClientSocket();
 };
 
 } /* namespace socks */

@@ -28,6 +28,8 @@ public:
 	void setSocketAddressSize(int saSize) override;
 	int getSocketAddressSize() const override;
 	bool operator==(const SocketAddress &rhs) override;
+	std::string getHostname() override;
+	std::string getPort() override;
 private:
 	WindowsSocketAddress() = delete;
 
@@ -35,6 +37,7 @@ private:
 
 	std::unique_ptr<struct sockaddr_storage> sockAddrPtr;
 	int sockAddrSize = sizeof(struct sockaddr_storage);
+	std::string hostname, port;
 };
 
 } /* namespace socks */

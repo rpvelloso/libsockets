@@ -47,10 +47,24 @@ int WindowsSocketAddress::getSocketAddressSize() const {
 	return sockAddrSize;
 }
 
+std::string WindowsSocketAddress::getHostname() {
+	return hostname;
+}
+
+std::string WindowsSocketAddress::getPort() {
+	return port;
+}
+
 void WindowsSocketAddress::setSocketAddress(struct sockaddr* addr,
 		size_t addrSize) {
+
+	char addrStr[INET_ADDRSTRLEN];
+
 	memcpy(reinterpret_cast<void *>(sockAddrPtr.get()), addr, addrSize);
 	sockAddrSize = addrSize;
+	inet_ntop(AF_INET, &reinterpret_cast<struct sockaddr_in *>(addr)->sin_addr, addrStr, INET_ADDRSTRLEN);
+	hostname = addrStr;
+	port = std::to_string(htons(reinterpret_cast<struct sockaddr_in *>(addr)->sin_port));
 }
 
 bool WindowsSocketAddress::operator==(const SocketAddress &rhs) {

@@ -278,34 +278,21 @@ private:
 			if (verbose)
 				std::cerr << "error receiving datagram." << std::endl;
 			return;
+		} else {
+			if (verbose)
+				std::cerr
+					<< "connection received from "
+					<< peer.getHostname() << ":"
+					<< peer.getPort() << std::endl;
+
+			buffer[datagram.first] = 0x00;
+			std::cout << buffer;
 		}
 
-		buffer[datagram.first] = 0x00;
-		std::cout << buffer;
+		auto clientSocket = datagramSocket.makeClientSocket();
+		clientSocket.connectTo(peer.getHostname(), peer.getPort());
 
-		std::thread transmitter([](socks::DatagramSocket &datagramSocket, socks::SocketAddress &peer){
-			while (true) {
-				std::string inp;
-				std::getline(std::cin, inp);
-				inp.push_back('\n');
-				if (datagramSocket.sendTo(peer, inp.c_str(), inp.size()) <= 0)
-					break;
-			}
-		}, std::ref(datagramSocket), std::ref(peer));
-		transmitter.detach();
-
-		// receiver
-		while ((datagram = datagramSocket.receiveFrom(buffer, bufferSize)).first > 0) {
-			if (datagram.second == peer) {
-				buffer[datagram.first] = 0x00;
-				std::cout << buffer;
-			} else
-				if (verbose)
-					std::cerr << "received data from another peer." << std::endl;
-		}
-
-		if (verbose)
-			std::cerr << std::endl << "connection terminated." << std::endl;
+		sendAndReceive(std::move(clientSocket));
 	};
 
 	void client(socks::ClientSocket clientSocket) {
