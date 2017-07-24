@@ -28,8 +28,8 @@ public:
 	void setSocketAddressSize(int saSize) override;
 	int getSocketAddressSize() const override;
 	bool operator==(const SocketAddress &rhs) override;
-	std::string getHostname() override;
-	std::string getPort() override;
+	std::string getHostname() const override;
+	std::string getPort() const override;
 private:
 	WindowsSocketAddress() = delete;
 

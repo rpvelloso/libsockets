@@ -289,10 +289,7 @@ private:
 			std::cout << buffer;
 		}
 
-		auto clientSocket = datagramSocket.makeClientSocket();
-		clientSocket.connectTo(peer.getHostname(), peer.getPort());
-
-		sendAndReceive(std::move(clientSocket));
+		sendAndReceive(datagramSocket.makeClientSocket(peer));
 	};
 
 	void client(socks::ClientSocket clientSocket) {

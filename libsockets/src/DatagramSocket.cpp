@@ -30,9 +30,18 @@ int DatagramSocket::bindSocket(const std::string& bindAddr,
 	return state->bindSocket(bindAddr, port);
 }
 
-ClientSocket DatagramSocket::makeClientSocket() {
-	state.reset();
-	return ClientSocket(impl.release());
+ClientSocket DatagramSocket::makeClientSocket(const SocketAddress &addr) {
+	return makeClientSocket(addr.getHostname(), addr.getPort());
+}
+
+ClientSocket DatagramSocket::makeClientSocket(const std::string &host, const std::string &port) {
+	if (impl) {
+		state.reset();
+		auto clientSocket = ClientSocket(impl.release());
+		clientSocket.connectTo(host, port);
+		return std::move(clientSocket);
+	} else
+		throw std::runtime_error("invalid operation makeClientSocket()");
 }
 
 } /* namespace socks */

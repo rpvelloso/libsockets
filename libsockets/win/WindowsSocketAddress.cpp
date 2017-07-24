@@ -47,11 +47,11 @@ int WindowsSocketAddress::getSocketAddressSize() const {
 	return sockAddrSize;
 }
 
-std::string WindowsSocketAddress::getHostname() {
+std::string WindowsSocketAddress::getHostname() const {
 	return hostname;
 }
 
-std::string WindowsSocketAddress::getPort() {
+std::string WindowsSocketAddress::getPort() const {
 	return port;
 }
 
