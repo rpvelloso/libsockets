@@ -33,26 +33,6 @@ SocketImpl *LinuxSocketFactory::createSSLSocketImpl() {
 	return new OpenSSLSocket(createSocketImpl());
 }
 
-ClientSocket LinuxSocketFactory::createClientSocket() {
-	return ClientSocket(createSocketImpl());
-}
-
-ClientSocket LinuxSocketFactory::createUDPClientSocket() {
-	return ClientSocket(createUDPSocketImpl());
-}
-
-ClientSocket LinuxSocketFactory::createSSLClientSocket() {
-	return ClientSocket(createSSLSocketImpl());
-}
-
-ServerSocket LinuxSocketFactory::createServerSocket() {
-	return ServerSocket(createSocketImpl());
-}
-
-ServerSocket LinuxSocketFactory::createSSLServerSocket() {
-	return ServerSocket(createSSLSocketImpl());
-}
-
 Multiplexer LinuxSocketFactory::createMultiplexer(
 		MultiplexerCallback readCallback,
 		MultiplexerCallback connectCallback = defaultCallback,
@@ -74,4 +54,12 @@ std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > LinuxSo
 	auto sockOut = std::make_unique<ClientSocket>(new LinuxSocket(selfPipe[1]));
 	return std::make_pair(std::move(sockIn), std::move(sockOut));
 }
+
+SocketAddress LinuxSocketFactory::createAddress(
+		const std::string& host,
+		const std::string& port,
+		SocketProtocol protocol) {
+	return SocketAddress(new LinuxSocketAddress(host, port, protocol));
+}
+
 }

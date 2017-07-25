@@ -18,7 +18,7 @@ namespace socks {
 
 SocketFactory socketFactory(new WindowsSocketFactory());
 
-WindowsSocketFactory::WindowsSocketFactory() : SocketFactory() {
+WindowsSocketFactory::WindowsSocketFactory() : SocketFactoryImpl() {
 }
 
 WindowsSocketFactory::~WindowsSocketFactory() {
@@ -34,26 +34,6 @@ SocketImpl *WindowsSocketFactory::createUDPSocketImpl() {
 
 SocketImpl *WindowsSocketFactory::createSSLSocketImpl() {
 	return new OpenSSLSocket(createSocketImpl());
-}
-
-ClientSocket WindowsSocketFactory::createClientSocket() {
-	return ClientSocket(createSocketImpl());
-}
-
-ClientSocket WindowsSocketFactory::createUDPClientSocket() {
-	return ClientSocket(createUDPSocketImpl());
-}
-
-ClientSocket WindowsSocketFactory::createSSLClientSocket() {
-	return ClientSocket(createSSLSocketImpl());
-}
-
-ServerSocket WindowsSocketFactory::createServerSocket() {
-	return ServerSocket(createSocketImpl());
-}
-
-ServerSocket WindowsSocketFactory::createSSLServerSocket() {
-	return ServerSocket(createSSLSocketImpl());
 }
 
 Multiplexer WindowsSocketFactory::createMultiplexer(
@@ -87,10 +67,6 @@ SocketAddress WindowsSocketFactory::createAddress(
 		const std::string& port,
 		SocketProtocol protocol) {
 	return SocketAddress(new WindowsSocketAddress(host, port, protocol));
-}
-
-DatagramSocket WindowsSocketFactory::createDatagramSocket() {
-	return DatagramSocket();
 }
 
 }

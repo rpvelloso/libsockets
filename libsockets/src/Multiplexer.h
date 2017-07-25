@@ -21,6 +21,7 @@ namespace socks {
 
 class Multiplexer {
 public:
+	Multiplexer() = delete;
 	Multiplexer(Multiplexer &&) = default;
 	Multiplexer &operator=(Multiplexer &&) = default;
 

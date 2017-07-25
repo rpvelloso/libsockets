@@ -13,18 +13,13 @@
 
 namespace socks {
 
-class LinuxSocketFactory: public SocketFactory {
+class LinuxSocketFactory: public SocketFactoryImpl {
 public:
 	LinuxSocketFactory();
 	virtual ~LinuxSocketFactory();
 	SocketImpl *createSocketImpl() override;
 	SocketImpl *createUDPSocketImpl() override;
 	SocketImpl *createSSLSocketImpl() override;
-	ClientSocket createClientSocket() override;
-	ClientSocket createUDPClientSocket() override;
-	ClientSocket createSSLClientSocket() override;
-	ServerSocket createServerSocket() override;
-	ServerSocket createSSLServerSocket() override;
 	Multiplexer createMultiplexer(
 			MultiplexerCallback readCallback,
 			MultiplexerCallback connectCallback,
@@ -32,6 +27,10 @@ public:
 			MultiplexerCallback writeCallback) override;
 	std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> >
 		createSocketPair() override;
+	SocketAddress createAddress(
+			const std::string &host,
+			const std::string &port,
+			SocketProtocol protocol) override;
 };
 
 }

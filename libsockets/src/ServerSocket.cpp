@@ -14,7 +14,7 @@ namespace socks {
 ServerSocket::ServerSocket(SocketImpl *impl) : Socket(impl) {
 }
 
-ServerSocket::ServerSocket() : Socket(socketFactory.createSocketImpl()) {
+ServerSocket::ServerSocket() : Socket(socketFactory.getImpl().createSocketImpl()) {
 }
 
 ServerSocket::~ServerSocket() {

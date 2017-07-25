@@ -24,7 +24,7 @@ ClientSocket::ClientSocket(SocketImpl *impl) : Socket(impl) {
 	}
 }
 
-ClientSocket::ClientSocket() : Socket(socketFactory.createSocketImpl()) {
+ClientSocket::ClientSocket() : Socket(socketFactory.getImpl().createSocketImpl()) {
 
 }
 

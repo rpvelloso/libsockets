@@ -13,7 +13,7 @@ namespace socks {
 DatagramSocket::DatagramSocket(SocketImpl *impl) : Socket(impl) {
 }
 
-DatagramSocket::DatagramSocket() : Socket(socketFactory.createUDPSocketImpl()) {
+DatagramSocket::DatagramSocket() : Socket(socketFactory.getImpl().createUDPSocketImpl()) {
 }
 
 DatagramSocket::~DatagramSocket() {

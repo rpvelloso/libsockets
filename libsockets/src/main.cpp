@@ -167,7 +167,7 @@ void testUDP(const std::string &host, const std::string &port) {
 }
 
 void testDatagram(const std::string &host, const std::string &port) {
-	auto dgSocket = socks::socketFactory.createDatagramSocket();
+	socks::DatagramSocket dgSocket;
 	auto addr = socks::socketFactory.createAddress(host, port);
 
 	dgSocket.bindSocket("0.0.0.0", "");
@@ -199,14 +199,16 @@ void testDatagram(const std::string &host, const std::string &port) {
 
 void testSocketStream(const std::string &host, const std::string &port, bool udp) {
 	auto socketStream = udp?
-			socks::socketFactory.createUDPSocketStream(host, port):
-			socks::socketFactory.createSocketStream(host, port);;
+			socks::socketFactory.createUDPSocketStream():
+			socks::socketFactory.createSocketStream();
 
-	while (!socketStream.eof()) {
-		socketStream << "hello!" << std::endl;
-		std::string inp;
-		socketStream >> inp;
-		std::cout << inp;
+	if (socketStream.connectTo(host, port) == 0) {
+		while (!socketStream.eof()) {
+			socketStream << "hello!" << std::endl;
+			std::string inp;
+			socketStream >> inp;
+			std::cout << inp;
+		}
 	}
 }
 

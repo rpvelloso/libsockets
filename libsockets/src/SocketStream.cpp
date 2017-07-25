@@ -19,7 +19,19 @@ SocketStreamBuf::SocketStreamBuf(std::unique_ptr<ClientSocket> clientSocket) :
 		setg(inp.get(), inp.get(), inp.get());
 	};
 
+SocketStreamBuf::SocketStreamBuf() :
+				std::streambuf(),
+				inp(new char[buffSize]),
+				outp(new char[buffSize]),
+				clientSocket(std::make_unique<ClientSocket>(ClientSocket())) {
+
+};
+
 SocketStreamBuf::~SocketStreamBuf() {};
+
+ClientSocket &SocketStreamBuf::getClientSocket() {
+	return *clientSocket;
+};
 
 std::streambuf::int_type SocketStreamBuf::underflow() {
 	auto received = clientSocket->receiveData(inp.get(), buffSize);
@@ -65,8 +77,18 @@ SocketStream::SocketStream(std::unique_ptr<ClientSocket> clientSocket) :
 	rdbuf(socketStreamBuf.get());
 }
 
+SocketStream::SocketStream() :
+		std::iostream(),
+		socketStreamBuf(new SocketStreamBuf(std::make_unique<ClientSocket>(ClientSocket()))) {
+	rdbuf(socketStreamBuf.get());
+};
+
 SocketStream::SocketStream(SocketStream &&rhs) : std::iostream(std::move(rhs)) {
 	socketStreamBuf.swap(rhs.socketStreamBuf);
 }
+
+int SocketStream::connectTo(const std::string &host, const std::string &port) {
+	return socketStreamBuf->getClientSocket().connectTo(host, port);
+};
 
 } /* namespace socks */

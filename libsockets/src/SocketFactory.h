@@ -19,20 +19,38 @@
 
 namespace socks {
 
-class SocketFactory {
+class SocketFactoryImpl {
 public:
-	SocketFactory() {};
-	SocketFactory(SocketFactory *impl) : impl(impl) {};
-	virtual ~SocketFactory() {};
-	virtual SocketImpl *createSocketImpl() {return impl->createSocketImpl();};
-	virtual SocketImpl *createUDPSocketImpl() {return impl->createUDPSocketImpl();};
-	virtual SocketImpl *createSSLSocketImpl() {return impl->createSSLSocketImpl();};
-	virtual ClientSocket createClientSocket() {return impl->createClientSocket();};
-	virtual ClientSocket createUDPClientSocket() {return impl->createUDPClientSocket();};
-	virtual ClientSocket createSSLClientSocket() {return impl->createSSLClientSocket();};
-	virtual ServerSocket createServerSocket() {return impl->createServerSocket();};
-	virtual ServerSocket createSSLServerSocket() {return impl->createSSLServerSocket();};
+	SocketFactoryImpl() {};
+	virtual ~SocketFactoryImpl() {};
+	virtual SocketImpl *createSocketImpl() = 0;
+	virtual SocketImpl *createUDPSocketImpl() = 0;
+	virtual SocketImpl *createSSLSocketImpl() = 0;
 	virtual Multiplexer createMultiplexer(
+			MultiplexerCallback readCallback,
+			MultiplexerCallback connectCallback = defaultCallback,
+			MultiplexerCallback disconnectCallback = defaultCallback,
+			MultiplexerCallback writeCallback = defaultCallback) = 0;
+	virtual std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > createSocketPair() = 0;
+	virtual SocketAddress createAddress(
+			const std::string &host,
+			const std::string &port,
+			SocketProtocol protocol = SocketProtocol::UDP) = 0;
+};
+
+class SocketFactory {
+	friend class ClientSocket;
+	friend class ServerSocket;
+	friend class DatagramSocket;
+public:
+	SocketFactory() = delete;
+	SocketFactory(SocketFactoryImpl *impl) : impl(impl) {};
+	ClientSocket createClientSocket() {return ClientSocket();};
+	ClientSocket createUDPClientSocket() {return ClientSocket(impl->createUDPSocketImpl());};
+	ClientSocket createSSLClientSocket() {return ClientSocket(impl->createSSLSocketImpl());};
+	ServerSocket createServerSocket() {return ServerSocket();};
+	ServerSocket createSSLServerSocket() {return ServerSocket(impl->createSSLSocketImpl());};
+	Multiplexer createMultiplexer(
 			MultiplexerCallback readCallback,
 			MultiplexerCallback connectCallback = defaultCallback,
 			MultiplexerCallback disconnectCallback = defaultCallback,
@@ -43,19 +61,19 @@ public:
 				disconnectCallback,
 				writeCallback);
 	};
-	virtual std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > createSocketPair() {
+	std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > createSocketPair() {
 		return impl->createSocketPair();
 	};
 
-	virtual SocketAddress createAddress(
+	SocketAddress createAddress(
 			const std::string &host,
 			const std::string &port,
 			SocketProtocol protocol = SocketProtocol::UDP) {
 		return impl->createAddress(host, port, protocol);
 	};
 
-	virtual DatagramSocket createDatagramSocket() {
-		return impl->createDatagramSocket();
+	DatagramSocket createDatagramSocket() {
+		return DatagramSocket();
 	};
 
 	static size_t createID() {
@@ -64,29 +82,24 @@ public:
 		return ++id;
 	}
 
-	SocketStream createSocketStream(const std::string &host, const std::string &port) {
-		auto clientSocket = std::make_unique<ClientSocket>(impl->createClientSocket());
-		clientSocket->connectTo(host, port);
-		SocketStream socketStream(std::move(clientSocket));
-		return socketStream;
+	SocketStream createSocketStream() {
+		return SocketStream();
 	};
 
-	SocketStream createSSLSocketStream(const std::string &host, const std::string &port) {
-		auto clientSocket = std::make_unique<ClientSocket>(impl->createSSLClientSocket());
-		clientSocket->connectTo(host, port);
-		SocketStream socketStream(std::move(clientSocket));
-		return socketStream;
+	SocketStream createSSLSocketStream() {
+		return SocketStream(std::make_unique<ClientSocket>(createSSLClientSocket()));
 	};
 
-	SocketStream createUDPSocketStream(const std::string &host, const std::string &port) {
-		auto clientSocket = std::make_unique<ClientSocket>(impl->createUDPClientSocket());
-		clientSocket->connectTo(host, port);
-		SocketStream socketStream(std::move(clientSocket));
-		return socketStream;
+	SocketStream createUDPSocketStream() {
+		return SocketStream(std::make_unique<ClientSocket>(createUDPClientSocket()));
 	};
 
 private:
-	std::unique_ptr<SocketFactory> impl;
+	SocketFactoryImpl &getImpl() {
+		return *impl;
+	};
+
+	std::unique_ptr<SocketFactoryImpl> impl;
 };
 
 extern SocketFactory socketFactory;

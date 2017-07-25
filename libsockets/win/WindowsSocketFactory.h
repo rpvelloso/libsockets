@@ -12,18 +12,13 @@
 
 namespace socks {
 
-class WindowsSocketFactory: public SocketFactory {
+class WindowsSocketFactory: public SocketFactoryImpl {
 public:
 	WindowsSocketFactory();
 	virtual ~WindowsSocketFactory();
 	SocketImpl *createSocketImpl() override;
 	SocketImpl *createUDPSocketImpl() override;
 	SocketImpl *createSSLSocketImpl() override;
-	ClientSocket createClientSocket() override;
-	ClientSocket createUDPClientSocket() override;
-	ClientSocket createSSLClientSocket() override;
-	ServerSocket createServerSocket() override;
-	ServerSocket createSSLServerSocket() override;
 	Multiplexer createMultiplexer(
 			MultiplexerCallback readCallback,
 			MultiplexerCallback connectCallback,
@@ -34,7 +29,6 @@ public:
 			const std::string &host,
 			const std::string &port,
 			SocketProtocol protocol) override;
-	DatagramSocket createDatagramSocket() override;
 };
 
 }
