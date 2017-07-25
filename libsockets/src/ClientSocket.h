@@ -20,6 +20,7 @@ public:
 	ClientSocket &operator=(ClientSocket &&);
 
 	ClientSocket(SocketImpl *impl);
+	ClientSocket();
 	virtual ~ClientSocket();
 	int receiveData(void *buf, size_t len);
 	int sendData(const void *buf, size_t len);

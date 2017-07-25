@@ -6,10 +6,14 @@
  */
 
 #include "DatagramSocket.h"
+#include "SocketFactory.h"
 
 namespace socks {
 
 DatagramSocket::DatagramSocket(SocketImpl *impl) : Socket(impl) {
+}
+
+DatagramSocket::DatagramSocket() : Socket(socketFactory.createUDPSocketImpl()) {
 }
 
 DatagramSocket::~DatagramSocket() {

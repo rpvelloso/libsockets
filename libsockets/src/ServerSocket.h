@@ -18,6 +18,7 @@ class ServerSocket : public Socket {
 public:
 	ServerSocket(ServerSocket &&) = default;
 	ServerSocket(SocketImpl *impl);
+	ServerSocket();
 	virtual ~ServerSocket();
 	int listenForConnections(const std::string &bindAddr, const std::string &port);
 	ClientSocket acceptConnection();

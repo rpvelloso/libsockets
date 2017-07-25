@@ -7,10 +7,14 @@
 
 #include "ServerSocket.h"
 #include "ClientSocket.h"
+#include "SocketFactory.h"
 
 namespace socks {
 
 ServerSocket::ServerSocket(SocketImpl *impl) : Socket(impl) {
+}
+
+ServerSocket::ServerSocket() : Socket(socketFactory.createSocketImpl()) {
 }
 
 ServerSocket::~ServerSocket() {

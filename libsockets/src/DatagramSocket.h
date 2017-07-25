@@ -18,6 +18,7 @@ class DatagramSocket: public Socket {
 public:
 	DatagramSocket(DatagramSocket &&) = default;
 	DatagramSocket(SocketImpl *impl);
+	DatagramSocket();
 	virtual ~DatagramSocket();
 	std::pair<int, SocketAddress> receiveFrom(void *buf, size_t len);
 	int sendTo(const SocketAddress &addr, const void *buf, size_t len);

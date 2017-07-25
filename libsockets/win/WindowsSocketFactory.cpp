@@ -24,16 +24,28 @@ WindowsSocketFactory::WindowsSocketFactory() : SocketFactory() {
 WindowsSocketFactory::~WindowsSocketFactory() {
 }
 
+SocketImpl *WindowsSocketFactory::createSocketImpl() {
+	return new WindowsSocket();
+}
+
+SocketImpl *WindowsSocketFactory::createUDPSocketImpl() {
+	return new WindowsSocket(UDPFDFactory);
+}
+
+SocketImpl *WindowsSocketFactory::createSSLSocketImpl() {
+	return new OpenSSLSocket(new WindowsSocket());
+}
+
 ClientSocket WindowsSocketFactory::createClientSocket() {
-	return ClientSocket(new WindowsSocket());
+	return ClientSocket(createSocketImpl());
 }
 
 ClientSocket WindowsSocketFactory::createUDPClientSocket() {
-	return ClientSocket(new WindowsSocket(UDPFDFactory));
+	return ClientSocket(createUDPSocketImpl());
 }
 
 ClientSocket WindowsSocketFactory::createSSLClientSocket() {
-	return ClientSocket(new OpenSSLSocket( new WindowsSocket()));
+	return ClientSocket(createSSLSocketImpl());
 }
 
 ServerSocket WindowsSocketFactory::createServerSocket() {

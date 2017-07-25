@@ -24,6 +24,9 @@ public:
 	SocketFactory() {};
 	SocketFactory(SocketFactory *impl) : impl(impl) {};
 	virtual ~SocketFactory() {};
+	virtual SocketImpl *createSocketImpl() {return impl->createSocketImpl();};
+	virtual SocketImpl *createUDPSocketImpl() {return impl->createUDPSocketImpl();};
+	virtual SocketImpl *createSSLSocketImpl() {return impl->createSSLSocketImpl();};
 	virtual ClientSocket createClientSocket() {return impl->createClientSocket();};
 	virtual ClientSocket createUDPClientSocket() {return impl->createUDPClientSocket();};
 	virtual ClientSocket createSSLClientSocket() {return impl->createSSLClientSocket();};

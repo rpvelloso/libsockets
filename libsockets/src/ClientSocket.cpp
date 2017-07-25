@@ -6,6 +6,7 @@
  */
 
 #include "ClientSocket.h"
+#include "SocketFactory.h"
 
 namespace socks {
 
@@ -21,6 +22,10 @@ ClientSocket::ClientSocket(SocketImpl *impl) : Socket(impl) {
 		sendBufferSize = state->getSendBufferSize();
 		receiveBufferSize = state->getReceiveBufferSize();
 	}
+}
+
+ClientSocket::ClientSocket() : Socket(socketFactory.createSocketImpl()) {
+
 }
 
 ClientSocket::~ClientSocket() {

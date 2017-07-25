@@ -267,7 +267,8 @@ private:
 	}
 
 	void datagramServer() {
-		auto datagramSocket = socks::socketFactory.createDatagramSocket();
+		socks::DatagramSocket datagramSocket;
+
 		datagramSocket.bindSocket(host, port);
 		char buffer[bufferSize];
 
