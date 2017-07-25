@@ -27,6 +27,8 @@ public:
 	virtual ~LinuxSocket();
 	int receiveData(void *buf, size_t len) override;
 	int sendData(const void *buf, size_t len) override;
+	std::pair<int, SocketAddress> receiveFrom(void *buf, size_t len);
+	int sendTo(const SocketAddress &addr, const void *buf, size_t len);
 	int connectTo(const std::string &host, const std::string &port) override;
 	void disconnect() override;
 	int bindSocket(const std::string &bindAddr, const std::string &port) override;
@@ -42,6 +44,8 @@ private:
 
 	LinuxSocket(SocketFDType); // ctor used by acceptConnections() & LinuxMultiplexer
 };
+
+using AddrResPtr = std::unique_ptr<struct addrinfo, decltype(&freeaddrinfo)>;
 
 }
 #endif /* LINUXSOCKET_H_ */

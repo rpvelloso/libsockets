@@ -10,6 +10,7 @@
 #include <exception>
 #include "ClientSocket.h"
 #include "LinuxSocket.h"
+#include "LinuxSocketAddress.h"
 
 #include <string.h>
 #include <fcntl.h>
@@ -69,6 +70,33 @@ int LinuxSocket::sendData(const void *buf, size_t len) {
 
 	return ret;
 }
+
+std::pair<int, SocketAddress> LinuxSocket::receiveFrom(void *buf, size_t len) {
+	struct sockaddr_storage saddr;
+	socklen_t saddrSize = sizeof(saddr);
+
+	auto ret = recvfrom(
+			fd,
+			reinterpret_cast<char *>(buf),
+			len,
+			0,
+			reinterpret_cast<struct sockaddr*>(&saddr),
+			&saddrSize);
+
+	return std::make_pair(ret, SocketAddress(new LinuxSocketAddress(reinterpret_cast<struct sockaddr*>(&saddr), saddrSize)));
+};
+
+int LinuxSocket::sendTo(const SocketAddress &addr, const void *buf, size_t len) {
+	auto saddr = addr.getSocketAddress();
+	auto saddrSize = addr.getSocketAddressSize();
+	return sendto(
+			fd,
+			reinterpret_cast<const char *>(buf),
+			len,
+			0,
+			reinterpret_cast<struct sockaddr*>(saddr),
+			saddrSize);
+};
 
 int LinuxSocket::connectTo(const std::string &host, const std::string &port) {
 	struct addrinfo hints, *res;
