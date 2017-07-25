@@ -17,6 +17,9 @@ class LinuxSocketFactory: public SocketFactory {
 public:
 	LinuxSocketFactory();
 	virtual ~LinuxSocketFactory();
+	SocketImpl *createSocketImpl() override;
+	SocketImpl *createUDPSocketImpl() override;
+	SocketImpl *createSSLSocketImpl() override;
 	ClientSocket createClientSocket() override;
 	ClientSocket createUDPClientSocket() override;
 	ClientSocket createSSLClientSocket() override;

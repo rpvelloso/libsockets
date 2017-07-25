@@ -33,7 +33,7 @@ SocketImpl *WindowsSocketFactory::createUDPSocketImpl() {
 }
 
 SocketImpl *WindowsSocketFactory::createSSLSocketImpl() {
-	return new OpenSSLSocket(new WindowsSocket());
+	return new OpenSSLSocket(createSocketImpl());
 }
 
 ClientSocket WindowsSocketFactory::createClientSocket() {
@@ -49,11 +49,11 @@ ClientSocket WindowsSocketFactory::createSSLClientSocket() {
 }
 
 ServerSocket WindowsSocketFactory::createServerSocket() {
-	return ServerSocket(new WindowsSocket());
+	return ServerSocket(createSocketImpl());
 }
 
 ServerSocket WindowsSocketFactory::createSSLServerSocket() {
-	return ServerSocket(new OpenSSLSocket(new WindowsSocket()));
+	return ServerSocket(createSSLSocketImpl());
 }
 
 Multiplexer WindowsSocketFactory::createMultiplexer(
@@ -72,8 +72,8 @@ std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > Windows
 	/**
 	 * Windows alternative to socketpair()
 	 */
-	auto server = socketFactory.createServerSocket();
-	auto sockIn = std::make_unique<ClientSocket>(socketFactory.createClientSocket());
+	ServerSocket server;
+	auto sockIn = std::make_unique<ClientSocket>(ClientSocket());
 	server.listenForConnections("127.0.0.1",""); // listen on a random free port
 	sockIn->connectTo("127.0.0.1",server.getPort());
 	sockIn->setNonBlockingIO(true);
@@ -90,7 +90,7 @@ SocketAddress WindowsSocketFactory::createAddress(
 }
 
 DatagramSocket WindowsSocketFactory::createDatagramSocket() {
-	return DatagramSocket(new WindowsSocket(UDPFDFactory));
+	return DatagramSocket();
 }
 
 }

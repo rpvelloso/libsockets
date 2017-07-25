@@ -21,24 +21,36 @@ LinuxSocketFactory::LinuxSocketFactory() {
 LinuxSocketFactory::~LinuxSocketFactory() {
 }
 
+SocketImpl *LinuxSocketFactory::createSocketImpl() {
+	return new LinuxSocket();
+}
+
+SocketImpl *LinuxSocketFactory::createUDPSocketImpl() {
+	return new LinuxSocket(UDPFDFactory);
+}
+
+SocketImpl *LinuxSocketFactory::createSSLSocketImpl() {
+	return new OpenSSLSocket(createSocketImpl());
+}
+
 ClientSocket LinuxSocketFactory::createClientSocket() {
-	return ClientSocket(new LinuxSocket());
+	return ClientSocket(createSocketImpl());
 }
 
 ClientSocket LinuxSocketFactory::createUDPClientSocket() {
-	return ClientSocket(new LinuxSocket(UDPFDFactory));
+	return ClientSocket(createUDPSocketImpl());
 }
 
 ClientSocket LinuxSocketFactory::createSSLClientSocket() {
-	return ClientSocket(new OpenSSLSocket( new LinuxSocket()));
+	return ClientSocket(createSSLSocketImpl());
 }
 
 ServerSocket LinuxSocketFactory::createServerSocket() {
-	return ServerSocket(new LinuxSocket());
+	return ServerSocket(createSocketImpl());
 }
 
 ServerSocket LinuxSocketFactory::createSSLServerSocket() {
-	return ServerSocket(new OpenSSLSocket(new LinuxSocket()));
+	return ServerSocket(createSSLSocketImpl());
 }
 
 Multiplexer LinuxSocketFactory::createMultiplexer(
