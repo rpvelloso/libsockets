@@ -10,6 +10,7 @@
 #include "OpenSSLSocket.h"
 #include "LinuxPoll.h"
 #include "LinuxSelect.h"
+#include "LinuxSocketAddress.h"
 
 namespace socks {
 
