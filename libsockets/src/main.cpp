@@ -6,7 +6,6 @@
  */
 
 /*
- * TODO: UDPSocket interface and sendto, recvfrom impl
  * TODO: refactor: where possible replace unique_ptr<Socket> by move semantics
  * TODO: decide callback format: one for each client or one for the multiplexer
  * TODO: Create class for simple threaded server and clients (one thread per client)
