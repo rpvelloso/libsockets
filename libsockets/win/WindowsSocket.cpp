@@ -6,6 +6,7 @@
  */
 
 #include <memory>
+#include <exception>
 #include "ClientSocket.h"
 #include "WindowsSocket.h"
 #include "WindowsSocketAddress.h"
@@ -16,7 +17,9 @@ class WinSock {
 public:
 	WinSock() {
 		WSADATA wsaData;
-		WSAStartup(MAKEWORD(2, 2), &wsaData);
+		if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
+			throw std::runtime_error("error initializing WinSock(): " + std::to_string(WSAGetLastError()));
+		}
 	};
 	virtual ~WinSock() {
 		WSACleanup();
