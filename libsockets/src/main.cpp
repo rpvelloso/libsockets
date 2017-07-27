@@ -229,25 +229,27 @@ public:
 		}
 
 		if (!listen) {
-			if (secure)
-				client(socks::socketFactory.createSSLClientSocket());
-			else if (udp)
-				client(socks::socketFactory.createUDPClientSocket());
-			else
-				client(socks::socketFactory.createClientSocket());
+			auto factory =
+					secure?std::bind(&socks::socketFactory.createSSLClientSocket, &socks::socketFactory):
+					udp?std::bind(&socks::socketFactory.createUDPClientSocket, &socks::socketFactory):
+					std::bind(&socks::socketFactory.createClientSocket, &socks::socketFactory);
+
+			auto clientSocket = factory();
+			client(clientSocket);
 		} else {
 			if (udp)
 				datagramServer();
 			else {
-				if (secure)
-					server(socks::socketFactory.createSSLServerSocket());
-				else
-					server(socks::socketFactory.createServerSocket());
+				auto factory =
+					secure?std::bind(&socks::socketFactory.createSSLServerSocket, &socks::socketFactory):
+					std::bind(&socks::socketFactory.createServerSocket, &socks::socketFactory);
+				auto serverSocket = factory();
+				server(serverSocket);
 			}
 		}
 	};
 private:
-	void server(socks::ServerSocket serverSocket) {
+	void server(socks::ServerSocket &serverSocket) {
 		if (serverSocket.listenForConnections(host, port) == 0) {
 			if (verbose)
 				std::cerr << "listening for connections on address "
@@ -261,7 +263,7 @@ private:
 			if (verbose)
 				std::cerr << "connection received." << std::endl;
 
-			sendAndReceive(std::move(clientSocket));
+			sendAndReceive(clientSocket);
 		} else
 			std::cerr << "error listening for connections on "
 				<< host << ":" << port << std::endl;
@@ -291,19 +293,20 @@ private:
 			std::cout << buffer;
 		}
 
-		sendAndReceive(datagramSocket.makeClientSocket(peer));
+		auto clientSocket = datagramSocket.makeClientSocket(peer);
+		sendAndReceive(clientSocket);
 	};
 
-	void client(socks::ClientSocket clientSocket) {
+	void client(socks::ClientSocket &clientSocket) {
 		if (clientSocket.connectTo(host, port) == 0) {
 			if (verbose)
 				std::cerr << "connected to " << host << ":" << port << std::endl;
-			sendAndReceive(std::move(clientSocket));
+			sendAndReceive(clientSocket);
 		} else
 			std::cerr << "error connecting to " << host << ":" << port << std::endl;
 	}
 
-	void sendAndReceive(socks::ClientSocket clientSocket) {
+	void sendAndReceive(socks::ClientSocket &clientSocket) {
 		std::thread transmitter([](socks::ClientSocket &clientSocket){
 			while (true) {
 				std::string inp;
