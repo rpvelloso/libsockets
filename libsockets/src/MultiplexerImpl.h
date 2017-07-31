@@ -22,7 +22,6 @@ namespace socks {
 class Poll;
 class MultiplexedClientSocket;
 
-using MultiplexerCallback = std::function<void(std::istream &inp, std::ostream &outp, ClientData&)>;
 using ClientListType = std::unordered_map<SocketFDType, std::unique_ptr<MultiplexedClientSocket>>;
 
 extern MultiplexerCallback defaultCallback;
@@ -30,13 +29,19 @@ extern MultiplexerCallback defaultCallback;
 class MultiplexerImpl {
 public:
 	MultiplexerImpl(Poll *pollStrategy,
-			MultiplexerCallback readCallback,
-			MultiplexerCallback connectCallback,
-			MultiplexerCallback disconnectCallback,
-			MultiplexerCallback writeCallback);
+			MultiplexerCallback readCallbackFunc = defaultCallback,
+			MultiplexerCallback connectCallbackFunc = defaultCallback,
+			MultiplexerCallback disconnectCallbackFunc = defaultCallback,
+			MultiplexerCallback writeCallbackFunc = defaultCallback);
 	virtual ~MultiplexerImpl();
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
 			std::unique_ptr<ClientData> clientData);
+	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
+			std::unique_ptr<ClientData> clientData,
+			MultiplexerCallback readCallbackFunc,
+			MultiplexerCallback connectCallbackFunc = defaultCallback,
+			MultiplexerCallback disconnectCallbackFunc = defaultCallback,
+			MultiplexerCallback writeCallbackFunc = defaultCallback);
 	virtual size_t getClientCount();
 
 	virtual void cancel();
@@ -46,7 +51,7 @@ protected:
 	std::unique_ptr<Poll> pollStrategy;
 	std::unique_ptr<ClientSocket> sockIn;
 	std::mutex commandMutex, incomingClientsMutex;
-	MultiplexerCallback readCallback, connectCallback, disconnectCallback, writeCallback;
+	MultiplexerCallback readCallbackFunc, connectCallbackFunc, disconnectCallbackFunc, writeCallbackFunc;
 	ClientListType clients;
 	std::atomic<size_t> clientCount;
 	std::vector<std::unique_ptr<MultiplexedClientSocket>> incomingClients;
@@ -61,7 +66,11 @@ protected:
 	 */
 	std::unique_ptr<MultiplexedClientSocket> makeMultiplexed(
 			std::unique_ptr<ClientSocket> clientSocket,
-			std::unique_ptr<ClientData> clientData);
+			std::unique_ptr<ClientData> clientData,
+			MultiplexerCallback readCallbackFunc,
+			MultiplexerCallback connectCallbackFunc,
+			MultiplexerCallback disconnectCallbackFunc,
+			MultiplexerCallback writeCallbackFunc);
 
 	bool readHandler(MultiplexedClientSocket &client);
 	bool writeHandler(MultiplexedClientSocket &client);

@@ -32,15 +32,27 @@ public:
  * Signals the multiplexer if there is data to be sent and store client data/state.
  */
 
+using MultiplexerCallback = std::function<void(std::istream &, std::ostream &, ClientData&)>;
+
 class MultiplexedClientSocket {
 public:
 	MultiplexedClientSocket(
 			std::unique_ptr<ClientSocket> impl,
 			std::unique_ptr<ClientData> clientData,
-			std::function<void()> interruptFunc) :
+			std::function<void()> interruptFunc,
+			MultiplexerCallback readCallbackFunc,
+			MultiplexerCallback connectCallbackFunc,
+			MultiplexerCallback disconnectCallbackFunc,
+			MultiplexerCallback writeCallbackFunc
+			) :	readCallbackFunc(readCallbackFunc),
+				connectCallbackFunc(connectCallbackFunc),
+				disconnectCallbackFunc(disconnectCallbackFunc),
+				writeCallbackFunc(writeCallbackFunc),
 				impl(std::move(impl)),
 				clientData(std::move(clientData)),
-				interruptFunc(interruptFunc) {};
+				interruptFunc(interruptFunc) {
+
+	};
 	//virtual ~MultiplexedClientSocket() {};
 	bool getHasOutput() { return outputBuffer.rdbuf()->in_avail() > 0; };
 	void interrupt() { interruptFunc(); };
@@ -53,7 +65,12 @@ public:
 	size_t getSendBufferSize() const {return impl->getSendBufferSize();};
 	size_t getReceiveBufferSize() const {return impl->getReceiveBufferSize();};
 	SocketImpl &getImpl() {return impl->getImpl();};
+	void readCallback() {readCallbackFunc(inputBuffer, outputBuffer, *clientData);};
+	void connectCallback() {connectCallbackFunc(inputBuffer, outputBuffer, *clientData);};
+	void disconnectCallback() {disconnectCallbackFunc(inputBuffer, outputBuffer, *clientData);};
+	void writeCallback() {writeCallbackFunc(inputBuffer, outputBuffer, *clientData);};
 private:
+	MultiplexerCallback readCallbackFunc, connectCallbackFunc, disconnectCallbackFunc, writeCallbackFunc;
 	std::unique_ptr<ClientSocket> impl;
 	std::unique_ptr<ClientData> clientData;
 	std::function<void()> interruptFunc;
