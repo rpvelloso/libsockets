@@ -333,12 +333,18 @@ sequence representation, region identification, record identification and record
 alignment. Each step is detailed in Subsections \ref{ss:seq}, \ref{ss:regi},
 \ref{ss:reci} and \ref{ss:reca} respectively.
 
+%The whole process is based on the observation that the structured content of a
+%document is organized and formatted in a clear and consistent way.
+% reviewer #2 suggested to change this phrase 
+
 The whole process is based on the observation that the structured content of a
-document is organized and formatted in a clear and consistent way. In other
-words, the records are laid out so that it is obvious to the human reader that
-they are related to each other and they refer to same subject (or entity). Such
-an organization necessarily reflects on the structure of the DOM tree and its
-style definition and, consequently, on its tag path sequence representation.
+document must have at least some structural consistency, even in the presence of
+noise, so that it looks somewhat organized to the reader. 
+In other words, the records are laid out so that it is obvious to the human
+reader that they are related to each other and they refer to same subject (or
+entity). Such an organization necessarily reflects on the structure of the DOM
+tree and its style definition and, consequently, on its tag path sequence
+representation.
 
 Figure \ref{fig:overall} depicts the entire process of record extraction
 proposed here. First the HTML document is parsed into a DOM tree using
