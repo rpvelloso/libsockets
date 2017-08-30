@@ -1,0 +1,47 @@
+/*
+ * WindowsSocket.h
+ *
+ *  Created on: 24 de mai de 2017
+ *      Author: rvelloso
+ */
+
+#ifndef WINDOWSSOCKET_H_
+#define WINDOWSSOCKET_H_
+
+#include "Socket.h"
+#include "SocketImpl.h"
+#include "FDFactory.h"
+
+#include "defs.h"
+#include <winsock.h>
+#include <ws2tcpip.h>
+
+namespace socks {
+
+class WindowsSocket: public SocketImpl {
+public:
+	WindowsSocket(FDFactory &fdFactory = TCPFDFactory);
+	virtual ~WindowsSocket();
+	int receiveData(void *buf, size_t len) override;
+	int sendData(const void *buf, size_t len) override;
+	std::pair<int, SocketAddress> receiveFrom(void *buf, size_t len) override;
+	int sendTo(const SocketAddress &addr, const void *buf, size_t len) override;
+	int connectTo(const std::string &host, const std::string &port) override;
+	void disconnect() override;
+	int bindSocket(const std::string &bindAddr, const std::string &port) override;
+	int listenForConnections(const std::string &bindAddr, const std::string &port) override;
+	std::unique_ptr<SocketImpl> acceptConnection() override;
+	int setNonBlockingIO(bool status) override;
+	int reuseAddress() override;
+	std::string getPort() override;
+	size_t getSendBufferSize() override;
+	size_t getReceiveBufferSize() override;
+private:
+	WindowsSocket(SocketFDType); // ctor used by acceptConnections()
+	std::string port = "";
+};
+
+using AddrResPtr = std::unique_ptr<struct addrinfo, decltype(&freeaddrinfo)>;
+
+}
+#endif /* WINDOWSSOCKET_H_ */

@@ -1,0 +1,68 @@
+/*
+ * ClosedState.cpp
+ *
+ *  Created on: 30 de mai de 2017
+ *      Author: rvelloso
+ */
+
+#include "ClosedState.h"
+
+namespace socks {
+
+ClosedState::ClosedState(SocketImpl &impl) : SocketState(impl) {
+	setSocketState(SocketStateType::Closed);
+	impl.setSocketState(socketState);
+};
+
+ClosedState::~ClosedState() {
+
+};
+
+int ClosedState::receiveData(void *buf, size_t len) {
+	throw std::runtime_error("invalid operation receiveData().");
+};
+
+int ClosedState::sendData(const void *buf, size_t len) {
+	throw std::runtime_error("invalid operation sendData().");
+};
+
+std::pair<int, SocketAddress> ClosedState::receiveFrom(void *buf, size_t len) {
+	throw std::runtime_error("invalid operation receiveFrom().");
+};
+
+int ClosedState::sendTo(const SocketAddress &addr, const void *buf, size_t len) {
+	throw std::runtime_error("invalid operation sendTo().");
+};
+
+int ClosedState::connectTo(const std::string &host, const std::string &port) {
+	throw std::runtime_error("invalid operation connectTo().");
+};
+
+void ClosedState::disconnect() {
+};
+
+int ClosedState::bindSocket(const std::string &bindAddr, const std::string &port) {
+	throw std::runtime_error("invalid operation bindSocket().");
+};
+
+int ClosedState::listenForConnections(const std::string &bindAddr, const std::string &port) {
+	throw std::runtime_error("invalid operation listenForConnections().");
+};
+
+std::unique_ptr<SocketImpl> ClosedState::acceptConnection() {
+	throw std::runtime_error("invalid operation acceptConnection().");
+};
+
+std::string ClosedState::getPort() {
+	throw std::runtime_error("invalid operation getPort().");
+}
+;
+
+size_t ClosedState::getSendBufferSize() {
+	throw std::runtime_error("invalid operation getSendBufferSize().");
+}
+
+size_t ClosedState::getReceiveBufferSize() {
+	throw std::runtime_error("invalid operation getReceiveBufferSize().");
+}
+}
