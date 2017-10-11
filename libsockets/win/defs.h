@@ -16,6 +16,8 @@
 #ifndef WIN_DEFS_H_
 #define WIN_DEFS_H_
 
+#undef _WIN32_WINNT
+#define _WIN32_WINNT 0x0600
 #include <winsock2.h>
 
 namespace socks {
