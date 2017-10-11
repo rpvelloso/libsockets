@@ -16,36 +16,21 @@
 #ifndef SRC_FACTORY_SOCKETFACTORY_H_
 #define SRC_FACTORY_SOCKETFACTORY_H_
 
+#include <fstream>
+#include <iostream>
+
 #include <memory>
 #include <atomic>
 
-#include "Multiplexer/Multiplexer.h"
+#include "Factory/SocketFactoryImpl.h"
 #include "Socket/ClientSocket.h"
 #include "Socket/DatagramSocket.h"
 #include "Socket/ServerSocket.h"
 #include "Socket/SocketAddress.h"
 #include "Socket/SocketStream.h"
+#include "Server/Server.h"
 
 namespace socks {
-
-class SocketFactoryImpl {
-public:
-	SocketFactoryImpl() {};
-	virtual ~SocketFactoryImpl() {};
-	virtual SocketImpl *createSocketImpl() = 0;
-	virtual SocketImpl *createUDPSocketImpl() = 0;
-	virtual SocketImpl *createSSLSocketImpl() = 0;
-	virtual Multiplexer createMultiplexer(
-			MultiplexerCallback readCallback,
-			MultiplexerCallback connectCallback = defaultCallback,
-			MultiplexerCallback disconnectCallback = defaultCallback,
-			MultiplexerCallback writeCallback = defaultCallback) = 0;
-	virtual std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > createSocketPair() = 0;
-	virtual SocketAddress createAddress(
-			const std::string &host,
-			const std::string &port,
-			SocketProtocol protocol = SocketProtocol::UDP) = 0;
-};
 
 class SocketFactory {
 	friend class ClientSocket;
@@ -53,60 +38,29 @@ class SocketFactory {
 	friend class DatagramSocket;
 public:
 	SocketFactory() = delete;
-	SocketFactory(SocketFactoryImpl *impl) : impl(impl) {};
-	ClientSocket createClientSocket() {return ClientSocket();};
-	ClientSocket createUDPClientSocket() {return ClientSocket(impl->createUDPSocketImpl());};
-	ClientSocket createSSLClientSocket() {return ClientSocket(impl->createSSLSocketImpl());};
-	ServerSocket createServerSocket() {return ServerSocket();};
-	ServerSocket createSSLServerSocket() {return ServerSocket(impl->createSSLSocketImpl());};
+	SocketFactory(SocketFactoryImpl *impl);
+	ClientSocket createClientSocket();
+	ClientSocket createUDPClientSocket();
+	ClientSocket createSSLClientSocket();
+	ServerSocket createServerSocket();
+	ServerSocket createSSLServerSocket();
 	Multiplexer createMultiplexer(
 			MultiplexerCallback readCallback,
 			MultiplexerCallback connectCallback = defaultCallback,
 			MultiplexerCallback disconnectCallback = defaultCallback,
-			MultiplexerCallback writeCallback = defaultCallback) {
-		return impl->createMultiplexer(
-				readCallback,
-				connectCallback,
-				disconnectCallback,
-				writeCallback);
-	};
-	std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > createSocketPair() {
-		return impl->createSocketPair();
-	};
-
+			MultiplexerCallback writeCallback = defaultCallback);
+	std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > createSocketPair();
 	SocketAddress createAddress(
 			const std::string &host,
 			const std::string &port,
-			SocketProtocol protocol = SocketProtocol::UDP) {
-		return impl->createAddress(host, port, protocol);
-	};
-
-	DatagramSocket createDatagramSocket() {
-		return DatagramSocket();
-	};
-
-	static size_t createID() {
-		static std::atomic<std::size_t> id(0);
-
-		return ++id;
-	}
-
-	SocketStream createSocketStream() {
-		return SocketStream();
-	};
-
-	SocketStream createSSLSocketStream() {
-		return SocketStream(std::make_unique<ClientSocket>(createSSLClientSocket()));
-	};
-
-	SocketStream createUDPSocketStream() {
-		return SocketStream(std::make_unique<ClientSocket>(createUDPClientSocket()));
-	};
-
+			SocketProtocol protocol = SocketProtocol::UDP);
+	DatagramSocket createDatagramSocket();
+	static size_t createID();
+	SocketStream createSocketStream();
+	SocketStream createSSLSocketStream();
+	SocketStream createUDPSocketStream();
 private:
-	SocketFactoryImpl &getImpl() {
-		return *impl;
-	};
+	SocketFactoryImpl &getImpl();
 
 	std::unique_ptr<SocketFactoryImpl> impl;
 };
@@ -114,4 +68,5 @@ private:
 extern SocketFactory socketFactory;
 
 }
+
 #endif /* SRC_FACTORY_SOCKETFACTORY_H_ */

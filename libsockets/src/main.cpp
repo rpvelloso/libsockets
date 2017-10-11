@@ -33,7 +33,10 @@ void testMultiplexer(bool secure) {
 		size_t count=0;
 	};
 
-	socks::MultiplexedServer<EchoData> server("0.0.0.0", "30000", 1, secure,
+	auto server = socks::makeMultiplexedServer<EchoData>(
+			"0.0.0.0",
+			"30000",
+			1,
 	[](std::istream &inp, std::ostream &outp, socks::ClientData &clientData) {
 		/*auto &echoData = static_cast<EchoData &>(clientData);
 		size_t bufSize = 4096;
@@ -402,8 +405,8 @@ private:
 const std::vector<std::string> Netcat::boolString = {"false", "true"};
 
 int main(int argc, char **argv) {
-	Netcat netcat(argc, argv);
-	return 0;
+	/*Netcat netcat(argc, argv);
+	return 0;*/
 
 	try {
 //		testDatagram(argv[1], argv[2]);
