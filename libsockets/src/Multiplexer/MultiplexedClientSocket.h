@@ -28,26 +28,16 @@ namespace socks {
 class MultiplexerImpl;
 
 /*
- * memento base class to store specific client data/state
- */
-class ClientData {
-public:
-	ClientData() {};
-	virtual ~ClientData() {};
-};
-
-/*
  * Wrapper class. Adds multiplexing and buffering capabilities to a ClientSocket.
  * Signals the multiplexer if there is data to be sent and store client data/state.
  */
 
-using MultiplexerCallback = std::function<void(std::istream &, std::ostream &, ClientData&)>;
+using MultiplexerCallback = std::function<void(std::istream &, std::ostream &)>;
 
 class MultiplexedClientSocket {
 public:
 	MultiplexedClientSocket(
 			std::unique_ptr<ClientSocket> impl,
-			std::unique_ptr<ClientData> clientData,
 			std::function<void()> interruptFunc,
 			MultiplexerCallback readCallbackFunc,
 			MultiplexerCallback connectCallbackFunc,
@@ -58,14 +48,12 @@ public:
 				disconnectCallbackFunc(disconnectCallbackFunc),
 				writeCallbackFunc(writeCallbackFunc),
 				impl(std::move(impl)),
-				clientData(std::move(clientData)),
 				interruptFunc(interruptFunc) {
 
 	};
 	//virtual ~MultiplexedClientSocket() {};
 	bool getHasOutput() { return outputBuffer.rdbuf()->in_avail() > 0; };
 	void interrupt() { interruptFunc(); };
-	ClientData &getClientData() {return *clientData;};
 	std::stringstream &getOutputBuffer() {return outputBuffer;};
 	std::stringstream &getInputBuffer() {return inputBuffer;};
 
@@ -74,14 +62,13 @@ public:
 	size_t getSendBufferSize() const {return impl->getSendBufferSize();};
 	size_t getReceiveBufferSize() const {return impl->getReceiveBufferSize();};
 	SocketImpl &getImpl() {return impl->getImpl();};
-	void readCallback() {readCallbackFunc(inputBuffer, outputBuffer, *clientData);};
-	void connectCallback() {connectCallbackFunc(inputBuffer, outputBuffer, *clientData);};
-	void disconnectCallback() {disconnectCallbackFunc(inputBuffer, outputBuffer, *clientData);};
-	void writeCallback() {writeCallbackFunc(inputBuffer, outputBuffer, *clientData);};
+	void readCallback() {readCallbackFunc(inputBuffer, outputBuffer);};
+	void connectCallback() {connectCallbackFunc(inputBuffer, outputBuffer);};
+	void disconnectCallback() {disconnectCallbackFunc(inputBuffer, outputBuffer);};
+	void writeCallback() {writeCallbackFunc(inputBuffer, outputBuffer);};
 private:
 	MultiplexerCallback readCallbackFunc, connectCallbackFunc, disconnectCallbackFunc, writeCallbackFunc;
 	std::unique_ptr<ClientSocket> impl;
-	std::unique_ptr<ClientData> clientData;
 	std::function<void()> interruptFunc;
 	std::stringstream outputBuffer;
 	std::stringstream inputBuffer;

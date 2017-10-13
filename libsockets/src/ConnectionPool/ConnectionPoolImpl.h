@@ -13,24 +13,29 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_SERVER_SERVER_H_
-#define SRC_SERVER_SERVER_H_
+#ifndef SRC_CONNECTIONPOOL_CONNECTIONPOOLIMPL_H_
+#define SRC_CONNECTIONPOOL_CONNECTIONPOOLIMPL_H_
 
 #include <memory>
 
-#include "Server/ServerImpl.h"
+#include "Socket/ClientSocket.h"
+#include "Multiplexer/Multiplexer.h"
 
 namespace socks {
 
-class Server {
+class ConnectionPoolImpl {
 public:
-	Server(ServerImpl *impl) : impl(impl) {};
-	void listen(const std::string &bindAddr, const std::string &port) {
-		impl->listen(bindAddr, port);
-	};
-private:
-	std::unique_ptr<ServerImpl> impl;
+	ConnectionPoolImpl() {};
+	virtual ~ConnectionPoolImpl() {};
+	virtual void addClientSocket(
+			std::unique_ptr<ClientSocket> clientSocket,
+			MultiplexerCallback readCallback,
+			MultiplexerCallback connectCallback = defaultCallback,
+			MultiplexerCallback disconnectCallback = defaultCallback,
+			MultiplexerCallback writeCallback = defaultCallback) = 0;
+	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) = 0;
 };
 
-}
-#endif /* SRC_SERVER_SERVER_H_ */
+} /* namespace socks */
+
+#endif /* SRC_CONNECTIONPOOL_CONNECTIONPOOLIMPL_H_ */

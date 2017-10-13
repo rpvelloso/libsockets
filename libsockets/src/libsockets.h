@@ -16,9 +16,7 @@
 #ifndef SRC_LIBSOCKETS_H_
 #define SRC_LIBSOCKETS_H_
 
-#include "Server/MultiplexedServerImpl.h"
 #include "Factory/SocketFactory.h"
-#include "Multiplexer/MultiplexedClients.h"
 #include "URL.h"
 
 #endif /* SRC_LIBSOCKETS_H_ */

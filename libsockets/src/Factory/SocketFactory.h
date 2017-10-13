@@ -29,6 +29,7 @@
 #include "Socket/SocketAddress.h"
 #include "Socket/SocketStream.h"
 #include "Server/Server.h"
+#include "ConnectionPool/ConnectionPool.h"
 
 namespace socks {
 
@@ -49,6 +50,12 @@ public:
 			MultiplexerCallback connectCallback = defaultCallback,
 			MultiplexerCallback disconnectCallback = defaultCallback,
 			MultiplexerCallback writeCallback = defaultCallback);
+	ConnectionPool createMultiplexedConnectionPool(
+			size_t numThreads,
+			MultiplexerCallback readCallback,
+			MultiplexerCallback connectCallback = defaultCallback,
+			MultiplexerCallback disconnectCallback = defaultCallback,
+			MultiplexerCallback writeCallback = defaultCallback);
 	std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > createSocketPair();
 	SocketAddress createAddress(
 			const std::string &host,
@@ -59,6 +66,18 @@ public:
 	SocketStream createSocketStream();
 	SocketStream createSSLSocketStream();
 	SocketStream createUDPSocketStream();
+	Server createMultiplexedServer(
+			size_t numThreads,
+			MultiplexerCallback readCallback,
+			MultiplexerCallback connectCallback = defaultCallback,
+			MultiplexerCallback disconnectCallback = defaultCallback,
+			MultiplexerCallback writeCallback = defaultCallback);
+	Server createMultiplexedSSLServer(
+			size_t numThreads,
+			MultiplexerCallback readCallback,
+			MultiplexerCallback connectCallback = defaultCallback,
+			MultiplexerCallback disconnectCallback = defaultCallback,
+			MultiplexerCallback writeCallback = defaultCallback);
 private:
 	SocketFactoryImpl &getImpl();
 

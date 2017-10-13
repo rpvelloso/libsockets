@@ -21,7 +21,7 @@
 
 namespace socks {
 
-MultiplexerCallback defaultCallback = [](std::istream &inp, std::ostream &outp, ClientData&){}; // noop()
+MultiplexerCallback defaultCallback = [](std::istream &inp, std::ostream &outp){}; // noop()
 
 enum MultiplexerCommand : int {
 	CANCEL = 0x00,
@@ -43,14 +43,13 @@ MultiplexerImpl::MultiplexerImpl(Poll *pollStrategy,
 	auto socketPair = socketFactory.createSocketPair();
 	sockIn = std::move(socketPair.first);
 	sockOutFD = socketPair.second->getImpl().getFD();
-	addClientSocket(std::move(socketPair.second), std::make_unique<ClientData>());
+	addClientSocket(std::move(socketPair.second));
 }
 
 MultiplexerImpl::~MultiplexerImpl() {
 }
 
 void MultiplexerImpl::addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-		std::unique_ptr<ClientData> clientData,
 		MultiplexerCallback readCallbackFunc,
 		MultiplexerCallback connectCallbackFunc,
 		MultiplexerCallback disconnectCallbackFunc,
@@ -63,7 +62,6 @@ void MultiplexerImpl::addClientSocket(std::unique_ptr<ClientSocket> clientSocket
 	incomingClients.push_back(
 		makeMultiplexed(
 			std::move(clientSocket),
-			std::move(clientData),
 			readCallbackFunc,
 			connectCallbackFunc,
 			disconnectCallbackFunc,
@@ -72,11 +70,9 @@ void MultiplexerImpl::addClientSocket(std::unique_ptr<ClientSocket> clientSocket
 	interrupt();
 }
 
-void MultiplexerImpl::addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-		std::unique_ptr<ClientData> clientData) {
+void MultiplexerImpl::addClientSocket(std::unique_ptr<ClientSocket> clientSocket) {
 	addClientSocket(
 			std::move(clientSocket),
-			std::move(clientData),
 			this->readCallbackFunc,
 			this->connectCallbackFunc,
 			this->disconnectCallbackFunc,
@@ -174,7 +170,6 @@ void MultiplexerImpl::multiplex() {
 
 std::unique_ptr<MultiplexedClientSocket> MultiplexerImpl::makeMultiplexed(
 		std::unique_ptr<ClientSocket> clientSocket,
-		std::unique_ptr<ClientData> clientData,
 		MultiplexerCallback readCallbackFunc,
 		MultiplexerCallback connectCallbackFunc,
 		MultiplexerCallback disconnectCallbackFunc,
@@ -182,7 +177,6 @@ std::unique_ptr<MultiplexedClientSocket> MultiplexerImpl::makeMultiplexed(
 		) {
 	auto mCli = std::make_unique<MultiplexedClientSocket>(
 			std::move(clientSocket),
-			std::move(clientData),
 			std::bind(&MultiplexerImpl::interrupt, this),
 			readCallbackFunc,
 			connectCallbackFunc,

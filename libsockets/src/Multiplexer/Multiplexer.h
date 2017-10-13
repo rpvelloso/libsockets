@@ -51,12 +51,23 @@ public:
 	};
 
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) {
-		impl->addClientSocket(std::move(clientSocket), std::make_unique<ClientData>());
+		impl->addClientSocket(std::move(clientSocket));
 	};
+
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-			std::unique_ptr<ClientData> clientData) {
-		impl->addClientSocket(std::move(clientSocket), std::move(clientData));
+			MultiplexerCallback readCallback,
+			MultiplexerCallback connectCallback = defaultCallback,
+			MultiplexerCallback disconnectCallback = defaultCallback,
+			MultiplexerCallback writeCallback = defaultCallback) {
+		impl->addClientSocket(
+				std::move(clientSocket),
+				readCallback,
+				connectCallback,
+				disconnectCallback,
+				writeCallback
+		);
 	};
+
 	virtual void multiplex() {
 		impl->multiplex();
 	};

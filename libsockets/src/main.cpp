@@ -29,20 +29,8 @@
 //#include "HTTPResponse.h"
 
 void testMultiplexer(bool secure) {
-	struct EchoData : public socks::ClientData {
-		size_t count=0;
-	};
-
-	auto server = socks::makeMultiplexedServer<EchoData>(
-			"0.0.0.0",
-			"30000",
-			1,
-			std::make_unique<socks::ServerSocket>(socks::socketFactory.createServerSocket()),
-	[](std::istream &inp, std::ostream &outp, socks::ClientData &clientData) {
-		/*auto &echoData = static_cast<EchoData &>(clientData);
-		size_t bufSize = 4096;
-		char buf[4096];*/
-
+	auto server = socks::socketFactory.createMultiplexedServer(1,
+	[](std::istream &inp, std::ostream &outp) {
 		while (inp) {
 			std::string cmd;
 
@@ -66,76 +54,13 @@ void testMultiplexer(bool secure) {
 				break;
 			}
 		}
-		/*while (inp.rdbuf()->in_avail() > 0) {
-			inp.readsome(buf, bufSize);
-			outp.write(buf, inp.gcount());
-			echoData.count += inp.gcount();
-			outp << " " << echoData.count << std::endl;
-		}*/
 	});
 
 	std::cout << "listening..." << std::endl;
-	server.listen();
+	server.listen("0.0.0.0", "30000");
 	std::cout << "exiting..." << std::endl;
 }
 
-/*
-void testAsyncClient(const std::string &host, const std::string &port, const std::string &url, bool secure) {
-	class HTTPContext : public ClientData {
-	public:
-		bool hdr = true;
-		std::unique_ptr<HTTPResponse> response;
-	};
-
-	MultiplexedClients<HTTPContext> clients(1,
-	[](std::istream &inp, std::ostream &outp, ClientData &clientData) {
-		auto &ctx = static_cast<HTTPContext &>(clientData);
-
-		while (inp.rdbuf()->in_avail() > 0) {
-			if (ctx.hdr) {
-				std::string line;
-				auto savePos = inp.tellg();
-
-				std::getline(inp, line);
-				if (inp && !inp.eof()) {
-					if (line.back() == '\r')
-						line.pop_back();
-					if (line == "")
-						ctx.hdr = false;
-					else {
-						if (ctx.response.get() == nullptr)
-							ctx.response.reset(new HTTPResponse(line));
-						else
-							ctx.response->addHeader(std::make_unique<HTTPHeader>(line));
-					}
-				} else {
-					inp.clear();
-					inp.seekg(savePos);
-					break;
-				}
-			} else
-				break;
-		}
-	},
-	[host, url](std::istream &inp, std::ostream &outp, ClientData &clientData){
-		std::string request = "GET " + url + " HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n";
-		std::cerr << "sending request" << std::endl << request << std::endl;
-		outp << request;
-	},
-	[](std::istream &inp, std::ostream &outp, ClientData &clientData){
-		auto &ctx = static_cast<HTTPContext &>(clientData);
-		std::cerr << std::endl << "transaction ended." << std::endl;
-		for (auto h = ctx.response->begin(); h != ctx.response->end(); ++h)
-			std::cout << "\'" << h->first << "\' = \'" << h->second->getValue() << "\'" << std::endl;
-		std::cout << inp.rdbuf();
-	});
-
-	if (clients.CreateClientSocket(host, port, secure)) {
-		getchar();
-	} else
-		std::cerr << "error connecting to " << host << ":" << port << std::endl;
-}
-*/
 void testClient(const std::string &host, const std::string &port, bool secure) {
 	try {
 		auto clientSocket = secure?

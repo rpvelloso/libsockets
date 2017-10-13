@@ -43,10 +43,8 @@ public:
 			MultiplexerCallback disconnectCallbackFunc = defaultCallback,
 			MultiplexerCallback writeCallbackFunc = defaultCallback);
 	virtual ~MultiplexerImpl();
+	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket);
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-			std::unique_ptr<ClientData> clientData);
-	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-			std::unique_ptr<ClientData> clientData,
 			MultiplexerCallback readCallbackFunc,
 			MultiplexerCallback connectCallbackFunc = defaultCallback,
 			MultiplexerCallback disconnectCallbackFunc = defaultCallback,
@@ -75,7 +73,6 @@ protected:
 	 */
 	std::unique_ptr<MultiplexedClientSocket> makeMultiplexed(
 			std::unique_ptr<ClientSocket> clientSocket,
-			std::unique_ptr<ClientData> clientData,
 			MultiplexerCallback readCallbackFunc,
 			MultiplexerCallback connectCallbackFunc,
 			MultiplexerCallback disconnectCallbackFunc,

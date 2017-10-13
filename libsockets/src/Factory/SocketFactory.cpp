@@ -14,6 +14,7 @@
  */
 
 #include "Factory/SocketFactory.h"
+#include "ConnectionPool/MultiplexedConnectionPoolImpl.h"
 
 namespace socks {
 
@@ -74,6 +75,49 @@ SocketStream SocketFactory::createSSLSocketStream() {
 SocketStream SocketFactory::createUDPSocketStream() {
 	return SocketStream(std::make_unique<ClientSocket>(createUDPClientSocket()));
 };
+
+Server SocketFactory::createMultiplexedServer(size_t numThreads,
+		MultiplexerCallback readCallback, MultiplexerCallback connectCallback,
+		MultiplexerCallback disconnectCallback,
+		MultiplexerCallback writeCallback) {
+	return Server(new ServerImpl(
+			new ServerSocket(),
+			new ConnectionPool(new MultiplexedConnectionPoolImpl(
+				numThreads,
+				readCallback,
+				connectCallback,
+				disconnectCallback,
+				writeCallback))));
+}
+
+Server SocketFactory::createMultiplexedSSLServer(size_t numThreads,
+		MultiplexerCallback readCallback, MultiplexerCallback connectCallback,
+		MultiplexerCallback disconnectCallback,
+		MultiplexerCallback writeCallback) {
+	return Server(new ServerImpl(
+			new ServerSocket(impl->createSSLSocketImpl()),
+			new ConnectionPool(
+					new MultiplexedConnectionPoolImpl(
+							numThreads,
+							readCallback,
+							connectCallback,
+							disconnectCallback,
+							writeCallback))));
+}
+
+ConnectionPool SocketFactory::createMultiplexedConnectionPool(
+		size_t numThreads, MultiplexerCallback readCallback,
+		MultiplexerCallback connectCallback,
+		MultiplexerCallback disconnectCallback,
+		MultiplexerCallback writeCallback) {
+
+	return ConnectionPool(new MultiplexedConnectionPoolImpl(
+			numThreads,
+			readCallback,
+			connectCallback,
+			disconnectCallback,
+			writeCallback));
+}
 
 SocketFactoryImpl &SocketFactory::getImpl() {
 	return *impl;
