@@ -37,6 +37,7 @@ void testMultiplexer(bool secure) {
 			"0.0.0.0",
 			"30000",
 			1,
+			std::make_unique<socks::ServerSocket>(socks::socketFactory.createServerSocket()),
 	[](std::istream &inp, std::ostream &outp, socks::ClientData &clientData) {
 		/*auto &echoData = static_cast<EchoData &>(clientData);
 		size_t bufSize = 4096;
