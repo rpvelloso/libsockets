@@ -59,9 +59,9 @@ public:
 
 		while (true) {
 			try {
-				auto clientSocket = std::make_unique<ClientSocket>(serverSocket->acceptConnection());
-				std::unique_ptr<ClientData> cliData(new ClientDataType());
-				getMultiplexer().addClientSocket(std::move(clientSocket), std::move(cliData));
+				getMultiplexer().addClientSocket(
+						std::make_unique<ClientSocket>(serverSocket->acceptConnection()),
+						std::unique_ptr<ClientData>(new ClientDataType()));
 			} catch (std::exception &e) {
 				std::cerr << e.what() << std::endl;
 				break;
