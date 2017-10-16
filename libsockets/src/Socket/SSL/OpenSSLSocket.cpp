@@ -110,7 +110,7 @@ int OpenSSLSocket::sendTo(const SocketAddress &addr, const void *buf, size_t len
 int OpenSSLSocket::connectTo(const std::string& host, const std::string& port) {
 	int ret;
 	if ((ret = impl->connectTo(host, port)) == 0) {
-		sslContext.reset(SSL_CTX_new(ClientMethod()));
+		sslContext.reset(SSL_CTX_new(clientMethod()));
 		if (!sslContext)
 			return -1;
 
@@ -155,7 +155,7 @@ int OpenSSLSocket::listenForConnections(const std::string& bindAddr,
 	int ret;
 
 	if ((ret = impl->listenForConnections(bindAddr, port)) == 0) {
-		sslContext.reset(SSL_CTX_new(ServerMethod()));
+		sslContext.reset(SSL_CTX_new(serverMethod()));
 		if (!sslContext)
 			return -1;
 
