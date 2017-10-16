@@ -35,6 +35,11 @@ public:
 	ClientSocket makeClientSocket(const std::string &host, const std::string &port);
 };
 
+namespace factory {
+	ClientSocket makeUDPClientSocket();
+	DatagramSocket makeDatagramSocket();
+}
+
 } /* namespace socks */
 
 #endif /* SRC_SOCKET_DATAGRAMSOCKET_H_ */

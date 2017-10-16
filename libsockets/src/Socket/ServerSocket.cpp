@@ -19,10 +19,16 @@
 
 namespace socks {
 
+namespace factory {
+	ServerSocket makeServerSocket() {
+		return ServerSocket(socketFactory.createSocketImpl());
+	}
+}
+
 ServerSocket::ServerSocket(SocketImpl *impl) : Socket(impl) {
 }
 
-ServerSocket::ServerSocket() : Socket(socketFactory.getImpl().createSocketImpl()) {
+ServerSocket::ServerSocket() : Socket(socketFactory.createSocketImpl()) {
 }
 
 ServerSocket::~ServerSocket() {

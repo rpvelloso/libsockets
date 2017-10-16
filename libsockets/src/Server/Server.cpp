@@ -13,40 +13,40 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_FACTORY_SOCKETFACTORY_H_
-#define SRC_FACTORY_SOCKETFACTORY_H_
-
-#include <fstream>
-#include <iostream>
-
-#include <memory>
-#include <atomic>
-
-#include "Factory/SocketFactoryImpl.h"
+#include "Socket/ServerSocket.h"
 #include "Server/Server.h"
+#include "ConnectionPool/MultiplexedConnectionPoolImpl.h"
 
 namespace socks {
 
-class SocketFactory {
-public:
-	SocketFactory() = delete;
-	SocketFactory(SocketFactoryImpl *impl);
+Server::Server(ServerImpl *impl) : impl(impl) {
 
-	SocketImpl *createSocketImpl();
-	SocketImpl *createUDPSocketImpl();
-	SocketAddressImpl *createSocketAddressImpl(
-			const std::string &host,
-			const std::string &port,
-			SocketProtocol protocol = SocketProtocol::UDP);
-	Poll *createPoll();
-	std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > createSocketPair();
-	static size_t createID();
-private:
-	std::unique_ptr<SocketFactoryImpl> impl;
 };
 
-extern SocketFactory socketFactory;
+void Server::listen(const std::string &bindAddr, const std::string &port) {
+	impl->listen(bindAddr, port);
+};
+
+namespace factory {
+	Server makeMultiplexedServer(
+			size_t numThreads,
+			MultiplexerCallback readCallback,
+			MultiplexerCallback connectCallback,
+			MultiplexerCallback disconnectCallback,
+			MultiplexerCallback writeCallback) {
+		return Server(new ServerImpl(
+				new ServerSocket(),
+				new ConnectionPool(new MultiplexedConnectionPoolImpl(
+					numThreads,
+					readCallback,
+					connectCallback,
+					disconnectCallback,
+					writeCallback))));
+	};
+}
 
 }
 
-#endif /* SRC_FACTORY_SOCKETFACTORY_H_ */
+
+
+

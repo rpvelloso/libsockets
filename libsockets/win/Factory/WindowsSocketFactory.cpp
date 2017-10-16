@@ -16,7 +16,7 @@
 #include "defs.h"
 #include "Socket/WindowsSocket.h"
 #include "Socket/WindowsSocketAddress.h"
-#include "Socket/SSL/OpenSSLSocket.h"
+#include "Factory/SocketFactory.h"
 #include "Factory/WindowsSocketFactory.h"
 #include "Multiplexer/WindowsPoll.h"
 #include "Multiplexer/WindowsSelect.h"
@@ -40,20 +40,8 @@ SocketImpl *WindowsSocketFactory::createUDPSocketImpl() {
 	return new WindowsSocket(UDPFDFactory);
 }
 
-SocketImpl *WindowsSocketFactory::createSSLSocketImpl() {
-	return new OpenSSLSocket(createSocketImpl());
-}
-
-Multiplexer WindowsSocketFactory::createMultiplexer(
-		MultiplexerCallback readCallback,
-		MultiplexerCallback connectCallback = defaultCallback,
-		MultiplexerCallback disconnectCallback = defaultCallback,
-		MultiplexerCallback writeCallback = defaultCallback) {
-	return Multiplexer(new MultiplexerImpl(new WindowsPoll(),
-			readCallback,
-			connectCallback,
-			disconnectCallback,
-			writeCallback));
+Poll *WindowsSocketFactory::createPoll() {
+	return new WindowsPoll();
 }
 
 std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > WindowsSocketFactory::createSocketPair() {
@@ -70,11 +58,11 @@ std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > Windows
 	return std::make_pair(std::move(sockIn), std::move(sockOut));
 }
 
-SocketAddress WindowsSocketFactory::createAddress(
+SocketAddressImpl *WindowsSocketFactory::createSocketAddressImpl(
 		const std::string& host,
 		const std::string& port,
 		SocketProtocol protocol) {
-	return SocketAddress(new WindowsSocketAddress(host, port, protocol));
+	return new WindowsSocketAddress(host, port, protocol);
 }
 
 }

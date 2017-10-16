@@ -13,8 +13,8 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_SOCKETS_SSL_SOCKET_H_
-#define SRC_SOCKETS_SSL_SOCKET_H_
+#ifndef SRC_SOCKETS_SOCKET_H_
+#define SRC_SOCKETS_SOCKET_H_
 
 #include <memory>
 
@@ -68,4 +68,4 @@ protected:
 
 }
 
-#endif /* SRC_SOCKETS_SSL_SOCKET_H_ */
+#endif /* SRC_SOCKETS_SOCKET_H_ */

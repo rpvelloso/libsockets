@@ -24,28 +24,26 @@ namespace socks {
 
 class ConnectionPool {
 public:
-	ConnectionPool(ConnectionPoolImpl *impl) : impl(impl) {};
+	ConnectionPool(ConnectionPoolImpl *impl);
 	void addClientSocket(
 			std::unique_ptr<ClientSocket> clientSocket,
 			MultiplexerCallback readCallback,
 			MultiplexerCallback connectCallback = defaultCallback,
 			MultiplexerCallback disconnectCallback = defaultCallback,
-			MultiplexerCallback writeCallback = defaultCallback) {
-
-		impl->addClientSocket(
-				std::move(clientSocket),
-				readCallback,
-				connectCallback,
-				disconnectCallback,
-				writeCallback
-		);
-	};
-	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket){
-		impl->addClientSocket(std::move(clientSocket));
-	};
+			MultiplexerCallback writeCallback = defaultCallback);
+	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket);
 private:
 	std::unique_ptr<ConnectionPoolImpl> impl;
 };
+
+namespace factory {
+	ConnectionPool makeMultiplexedConnectionPool(
+		size_t numThreads,
+		MultiplexerCallback readCallback,
+		MultiplexerCallback connectCallback = defaultCallback,
+		MultiplexerCallback disconnectCallback = defaultCallback,
+		MultiplexerCallback writeCallback = defaultCallback);
+}
 
 } /* namespace socks */
 

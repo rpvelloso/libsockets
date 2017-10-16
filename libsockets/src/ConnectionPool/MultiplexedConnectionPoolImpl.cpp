@@ -29,11 +29,11 @@ MultiplexedConnectionPoolImpl::MultiplexedConnectionPoolImpl(
 	nthreads = std::max((size_t) 1, nthreads);
 	for (size_t i = 0; i < nthreads; ++i)
 		multiplexers.emplace_back(
-				socketFactory.createMultiplexer(
-				readCallback,
-				connectCallback,
-				disconnectCallback,
-				writeCallback)
+				factory::makeMultiplexer(
+						readCallback,
+						connectCallback,
+						disconnectCallback,
+						writeCallback)
 		);
 }
 

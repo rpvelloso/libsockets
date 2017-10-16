@@ -20,6 +20,8 @@
 #include <openssl/ssl.h>
 
 #include "Socket/ClientSocket.h"
+#include "Socket/ServerSocket.h"
+#include "Socket/SocketStream.h"
 #include "Socket/SocketImpl.h"
 
 namespace socks {
@@ -73,6 +75,12 @@ private:
 	SSLMethodType ServerMethod = TLSv1_2_server_method;
 	SSLMethodType ClientMethod = TLSv1_2_client_method;
 };
+
+namespace factory {
+	ClientSocket makeSSLClientSocket();
+	ServerSocket makeSSLServerSocket();
+	SocketStream makeSSLSocketStream();
+}
 
 }
 #endif /* SRC_SOCKET_SSL_OPENSSLSOCKET_H_ */

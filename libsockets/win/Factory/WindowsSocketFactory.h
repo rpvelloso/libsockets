@@ -16,7 +16,7 @@
 #ifndef WIN_FACTORIES_WINDOWSSOCKETFACTORY_H_
 #define WIN_FACTORIES_WINDOWSSOCKETFACTORY_H_
 
-#include "Factory/SocketFactory.h"
+#include "Factory/SocketFactoryImpl.h"
 
 namespace socks {
 
@@ -26,17 +26,12 @@ public:
 	virtual ~WindowsSocketFactory();
 	SocketImpl *createSocketImpl() override;
 	SocketImpl *createUDPSocketImpl() override;
-	SocketImpl *createSSLSocketImpl() override;
-	Multiplexer createMultiplexer(
-			MultiplexerCallback readCallback,
-			MultiplexerCallback connectCallback,
-			MultiplexerCallback disconnectCallback,
-			MultiplexerCallback writeCallback) override;
+	Poll *createPoll() override;
 	std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > createSocketPair() override;
-	SocketAddress createAddress(
+	SocketAddressImpl *createSocketAddressImpl(
 			const std::string &host,
 			const std::string &port,
-			SocketProtocol protocol) override;
+			SocketProtocol protocol = SocketProtocol::UDP) override;
 };
 
 }

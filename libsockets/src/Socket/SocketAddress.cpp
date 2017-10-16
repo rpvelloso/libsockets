@@ -13,42 +13,52 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_SOCKET_SOCKETADDRESS_H_
-#define SRC_SOCKET_SOCKETADDRESS_H_
-
-#include <memory>
-
-#include "Socket/SocketAddressImpl.h"
+#include "Factory/SocketFactory.h"
+#include "Socket/SocketAddress.h"
 
 namespace socks {
-
-enum class SocketProtocol {
-	TCP,
-	UDP
-};
-
-class SocketAddress {
-public:
-	SocketAddress() = delete;
-	SocketAddress(SocketAddressImpl *impl);
-
-	void *getSocketAddress() const;
-	void setSocketAddressSize(int saSize);
-	int getSocketAddressSize() const;
-	bool operator==(const SocketAddress &rhs);
-	std::string getHostname() const;
-	std::string getPort() const;
-protected:
-	std::unique_ptr<SocketAddressImpl> impl;
-};
 
 namespace factory {
 	SocketAddress makeSocketAddress(
 			const std::string &host,
 			const std::string &port,
-			SocketProtocol protocol = SocketProtocol::UDP);
+			SocketProtocol protocol) {
+
+		return SocketAddress(socketFactory.createSocketAddressImpl(host, port, protocol));
+	};
 }
+
+SocketAddress::SocketAddress(SocketAddressImpl *impl) : impl(impl) {
+
+};
+
+void *SocketAddress::getSocketAddress() const {
+	return impl->getSocketAddress();
+};
+
+void SocketAddress::setSocketAddressSize(int saSize) {
+	impl->setSocketAddressSize(saSize);
+};
+
+int SocketAddress::getSocketAddressSize() const {
+	return impl->getSocketAddressSize();
+};
+
+bool SocketAddress::operator==(const SocketAddress &rhs) {
+	return impl->operator==(*rhs.impl.get());
+};
+
+std::string SocketAddress::getHostname() const {
+	return impl->getHostname();
+};
+
+std::string SocketAddress::getPort() const {
+	return impl->getPort();
+};
 
 }
 
-#endif /* SRC_SOCKET_SOCKETADDRESS_H_ */
+
+
+
+

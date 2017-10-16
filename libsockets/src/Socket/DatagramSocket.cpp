@@ -18,10 +18,20 @@
 
 namespace socks {
 
+namespace factory {
+	ClientSocket makeUDPClientSocket() {
+		return ClientSocket(socketFactory.createUDPSocketImpl());
+	}
+
+	DatagramSocket makeDatagramSocket() {
+		return DatagramSocket(socketFactory.createUDPSocketImpl());
+	}
+}
+
 DatagramSocket::DatagramSocket(SocketImpl *impl) : Socket(impl) {
 }
 
-DatagramSocket::DatagramSocket() : Socket(socketFactory.getImpl().createUDPSocketImpl()) {
+DatagramSocket::DatagramSocket() : Socket(socketFactory.createUDPSocketImpl()) {
 }
 
 DatagramSocket::~DatagramSocket() {

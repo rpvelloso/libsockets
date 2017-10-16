@@ -16,7 +16,7 @@
 #ifndef SRC_CONNECTIONPOOL_MULTIPLEXEDCONNECTIONPOOLIMPL_H_
 #define SRC_CONNECTIONPOOL_MULTIPLEXEDCONNECTIONPOOLIMPL_H_
 
-#include "ConnectionPoolImpl.h"
+#include "ConnectionPool/ConnectionPool.h"
 
 namespace socks {
 

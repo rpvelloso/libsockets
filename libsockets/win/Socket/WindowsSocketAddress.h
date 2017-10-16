@@ -16,15 +16,13 @@
 #ifndef WIN_SOCKETS_WINDOWSSOCKETADDRESS_H_
 #define WIN_SOCKETS_WINDOWSSOCKETADDRESS_H_
 
-#include "Socket/SocketAddress.h"
+#include "Socket/SocketAddressImpl.h"
 #include "Socket/WindowsSocket.h"
 
 namespace socks {
 
-class WindowsSocketAddress : public SocketAddress {
+class WindowsSocketAddress : public SocketAddressImpl {
 public:
-	WindowsSocketAddress(WindowsSocketAddress &&) = default;
-	virtual WindowsSocketAddress& operator=(WindowsSocketAddress &&) = default;
 	WindowsSocketAddress(struct sockaddr *addr, size_t addrSize);
 	WindowsSocketAddress(
 			const std::string &host,
@@ -35,7 +33,7 @@ public:
 	void *getSocketAddress() const override;
 	void setSocketAddressSize(int saSize) override;
 	int getSocketAddressSize() const override;
-	bool operator==(const SocketAddress &rhs) override;
+	bool operator==(const SocketAddressImpl &rhs) override;
 	std::string getHostname() const override;
 	std::string getPort() const override;
 private:

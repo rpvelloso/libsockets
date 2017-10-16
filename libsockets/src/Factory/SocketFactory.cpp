@@ -14,48 +14,22 @@
  */
 
 #include "Factory/SocketFactory.h"
-#include "ConnectionPool/MultiplexedConnectionPoolImpl.h"
 
 namespace socks {
 
 SocketFactory::SocketFactory(SocketFactoryImpl *impl) : impl(impl) {};
-
-ClientSocket SocketFactory::createClientSocket() {return ClientSocket();};
-
-ClientSocket SocketFactory::createUDPClientSocket() {return ClientSocket(impl->createUDPSocketImpl());};
-
-ClientSocket SocketFactory::createSSLClientSocket() {return ClientSocket(impl->createSSLSocketImpl());};
-
-ServerSocket SocketFactory::createServerSocket() {return ServerSocket();};
-
-ServerSocket SocketFactory::createSSLServerSocket() {return ServerSocket(impl->createSSLSocketImpl());};
-
-Multiplexer SocketFactory::createMultiplexer(
-		MultiplexerCallback readCallback,
-		MultiplexerCallback connectCallback,
-		MultiplexerCallback disconnectCallback,
-		MultiplexerCallback writeCallback) {
-	return impl->createMultiplexer(
-			readCallback,
-			connectCallback,
-			disconnectCallback,
-			writeCallback);
-};
 
 std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> >
 SocketFactory::createSocketPair() {
 	return impl->createSocketPair();
 };
 
-SocketAddress SocketFactory::createAddress(
+SocketAddressImpl *SocketFactory::createSocketAddressImpl(
 		const std::string &host,
 		const std::string &port,
 		SocketProtocol protocol) {
-	return impl->createAddress(host, port, protocol);
-};
 
-DatagramSocket SocketFactory::createDatagramSocket() {
-	return DatagramSocket();
+	return impl->createSocketAddressImpl(host, port, protocol);
 };
 
 size_t SocketFactory::createID() {
@@ -64,63 +38,16 @@ size_t SocketFactory::createID() {
 	return ++id;
 }
 
-SocketStream SocketFactory::createSocketStream() {
-	return SocketStream();
-};
-
-SocketStream SocketFactory::createSSLSocketStream() {
-	return SocketStream(std::make_unique<ClientSocket>(createSSLClientSocket()));
-};
-
-SocketStream SocketFactory::createUDPSocketStream() {
-	return SocketStream(std::make_unique<ClientSocket>(createUDPClientSocket()));
-};
-
-Server SocketFactory::createMultiplexedServer(size_t numThreads,
-		MultiplexerCallback readCallback, MultiplexerCallback connectCallback,
-		MultiplexerCallback disconnectCallback,
-		MultiplexerCallback writeCallback) {
-	return Server(new ServerImpl(
-			new ServerSocket(),
-			new ConnectionPool(new MultiplexedConnectionPoolImpl(
-				numThreads,
-				readCallback,
-				connectCallback,
-				disconnectCallback,
-				writeCallback))));
+SocketImpl* SocketFactory::createSocketImpl() {
+	return impl->createSocketImpl();
 }
 
-Server SocketFactory::createMultiplexedSSLServer(size_t numThreads,
-		MultiplexerCallback readCallback, MultiplexerCallback connectCallback,
-		MultiplexerCallback disconnectCallback,
-		MultiplexerCallback writeCallback) {
-	return Server(new ServerImpl(
-			new ServerSocket(impl->createSSLSocketImpl()),
-			new ConnectionPool(
-					new MultiplexedConnectionPoolImpl(
-							numThreads,
-							readCallback,
-							connectCallback,
-							disconnectCallback,
-							writeCallback))));
+SocketImpl* SocketFactory::createUDPSocketImpl() {
+	return impl->createUDPSocketImpl();
 }
 
-ConnectionPool SocketFactory::createMultiplexedConnectionPool(
-		size_t numThreads, MultiplexerCallback readCallback,
-		MultiplexerCallback connectCallback,
-		MultiplexerCallback disconnectCallback,
-		MultiplexerCallback writeCallback) {
-
-	return ConnectionPool(new MultiplexedConnectionPoolImpl(
-			numThreads,
-			readCallback,
-			connectCallback,
-			disconnectCallback,
-			writeCallback));
+Poll *SocketFactory::createPoll() {
+	return impl->createPoll();
 }
-
-SocketFactoryImpl &SocketFactory::getImpl() {
-	return *impl;
-};
 
 }

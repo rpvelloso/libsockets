@@ -29,7 +29,7 @@
 //#include "HTTPResponse.h"
 
 void testMultiplexer(bool secure) {
-	auto server = socks::socketFactory.createMultiplexedServer(1,
+	auto server = socks::factory::makeMultiplexedServer(1,
 	[](std::istream &inp, std::ostream &outp) {
 		while (inp) {
 			std::string cmd;
@@ -64,8 +64,8 @@ void testMultiplexer(bool secure) {
 void testClient(const std::string &host, const std::string &port, bool secure) {
 	try {
 		auto clientSocket = secure?
-				socks::socketFactory.createSSLClientSocket():
-				socks::socketFactory.createClientSocket();
+				socks::factory::makeSSLClientSocket():
+				socks::factory::makeClientSocket();
 
 		if (clientSocket.connectTo(host, port) == 0) {
 			std::string request = "GET / HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n";
@@ -86,7 +86,7 @@ void testClient(const std::string &host, const std::string &port, bool secure) {
 }
 
 void testUDP(const std::string &host, const std::string &port) {
-	auto udpSocket = socks::socketFactory.createUDPClientSocket();
+	auto udpSocket = socks::factory::makeUDPClientSocket();
 	udpSocket.connectTo(host, port);
 	while (true) {
 		char buf[1024];
@@ -104,7 +104,7 @@ void testUDP(const std::string &host, const std::string &port) {
 
 void testDatagram(const std::string &host, const std::string &port) {
 	socks::DatagramSocket dgSocket;
-	auto addr = socks::socketFactory.createAddress(host, port);
+	auto addr = socks::factory::makeSocketAddress(host, port);
 
 	dgSocket.bindSocket("0.0.0.0", "");
 
@@ -135,8 +135,8 @@ void testDatagram(const std::string &host, const std::string &port) {
 
 void testSocketStream(const std::string &host, const std::string &port, bool udp) {
 	auto socketStream = udp?
-			socks::socketFactory.createUDPSocketStream():
-			socks::socketFactory.createSocketStream();
+			socks::factory::makeUDPSocketStream():
+			socks::factory::makeSocketStream();
 
 	if (socketStream.connectTo(host, port) == 0) {
 		while (!socketStream.eof()) {
@@ -167,9 +167,9 @@ public:
 
 		if (!listen) {
 			auto factory =
-					secure?std::bind(&socks::socketFactory.createSSLClientSocket, &socks::socketFactory):
-					udp?std::bind(&socks::socketFactory.createUDPClientSocket, &socks::socketFactory):
-					std::bind(&socks::socketFactory.createClientSocket, &socks::socketFactory);
+					secure?&socks::factory::makeSSLClientSocket:
+					udp?&socks::factory::makeUDPClientSocket:
+					&socks::factory::makeClientSocket;
 
 			auto clientSocket = factory();
 			client(clientSocket);
@@ -178,8 +178,8 @@ public:
 				datagramServer();
 			else {
 				auto factory =
-					secure?std::bind(&socks::socketFactory.createSSLServerSocket, &socks::socketFactory):
-					std::bind(&socks::socketFactory.createServerSocket, &socks::socketFactory);
+					secure?&socks::factory::makeSSLServerSocket:
+					&socks::factory::makeServerSocket;
 				auto serverSocket = factory();
 				server(serverSocket);
 			}
@@ -331,8 +331,8 @@ private:
 const std::vector<std::string> Netcat::boolString = {"false", "true"};
 
 int main(int argc, char **argv) {
-	/*Netcat netcat(argc, argv);
-	return 0;*/
+	Netcat netcat(argc, argv);
+	return 0;
 
 	try {
 //		testDatagram(argv[1], argv[2]);

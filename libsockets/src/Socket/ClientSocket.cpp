@@ -18,6 +18,12 @@
 
 namespace socks {
 
+namespace factory {
+	ClientSocket makeClientSocket() {
+		return ClientSocket(socketFactory.createSocketImpl());
+	}
+}
+
 ClientSocket& ClientSocket::operator =(ClientSocket&& rhs) {
 	Socket::operator =(std::move(rhs));
 	this->receiveBufferSize = rhs.receiveBufferSize;
@@ -32,7 +38,7 @@ ClientSocket::ClientSocket(SocketImpl *impl) : Socket(impl) {
 	}
 }
 
-ClientSocket::ClientSocket() : Socket(socketFactory.getImpl().createSocketImpl()) {
+ClientSocket::ClientSocket() : Socket(socketFactory.createSocketImpl()) {
 
 }
 

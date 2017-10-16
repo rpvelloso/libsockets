@@ -13,8 +13,8 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_SOCKETS_SSL_SERVERSOCKET_H_
-#define SRC_SOCKETS_SSL_SERVERSOCKET_H_
+#ifndef SRC_SOCKETS_SERVERSOCKET_H_
+#define SRC_SOCKETS_SERVERSOCKET_H_
 
 #include <string>
 
@@ -34,5 +34,9 @@ public:
 	void disconnect();
 };
 
+namespace factory {
+	ServerSocket makeServerSocket();
 }
-#endif /* SRC_SOCKETS_SSL_SERVERSOCKET_H_ */
+
+}
+#endif /* SRC_SOCKETS_SERVERSOCKET_H_ */

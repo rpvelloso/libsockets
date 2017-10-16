@@ -20,7 +20,6 @@
 #include <memory>
 
 #include "Socket/ClientSocket.h"
-#include "Socket/SSL/OpenSSL.h"
 #include "Multiplexer/MultiplexerImpl.h"
 
 namespace socks {
@@ -34,56 +33,31 @@ public:
 	Multiplexer(Multiplexer &&) = default;
 	Multiplexer &operator=(Multiplexer &&) = default;
 
-	Multiplexer(MultiplexerImpl *impl) : impl(impl) {
-		thread.reset(new std::thread([](MultiplexerImpl &multiplexer){
-			multiplexer.multiplex();
-			openSSL.threadCleanup();
-		},
-		std::ref(*(this->impl)) ));
-	};
-
-	virtual ~Multiplexer() {
-		if (impl)
-			impl->cancel();
-
-		if (thread)
-			thread->join();
-	};
-
-	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) {
-		impl->addClientSocket(std::move(clientSocket));
-	};
-
-	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
+	Multiplexer(MultiplexerImpl *impl);
+	~Multiplexer();
+	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket);
+	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
 			MultiplexerCallback readCallback,
 			MultiplexerCallback connectCallback = defaultCallback,
 			MultiplexerCallback disconnectCallback = defaultCallback,
-			MultiplexerCallback writeCallback = defaultCallback) {
-		impl->addClientSocket(
-				std::move(clientSocket),
-				readCallback,
-				connectCallback,
-				disconnectCallback,
-				writeCallback
-		);
-	};
+			MultiplexerCallback writeCallback = defaultCallback);
 
-	virtual void multiplex() {
-		impl->multiplex();
-	};
-	virtual void cancel() {
-		impl->cancel();
-	};
-	virtual void interrupt() {
-		impl->interrupt();
-	};
-	virtual size_t getClientCount() {
-		return impl->getClientCount();
-	};
+	void multiplex();
+	void cancel();
+	void interrupt();
+	size_t getClientCount();
 protected:
 	std::unique_ptr<MultiplexerImpl> impl;
 	std::unique_ptr<std::thread> thread;
 };
+
+namespace factory {
+	Multiplexer makeMultiplexer(
+		MultiplexerCallback readCallbackFunc = defaultCallback,
+		MultiplexerCallback connectCallbackFunc = defaultCallback,
+		MultiplexerCallback disconnectCallbackFunc = defaultCallback,
+		MultiplexerCallback writeCallbackFunc = defaultCallback);
+}
 
 }
 #endif /* SRC_MULTIPLEXER_MULTIPLEXER_H_ */

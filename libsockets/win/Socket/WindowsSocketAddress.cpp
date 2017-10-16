@@ -18,14 +18,14 @@
 namespace socks {
 
 WindowsSocketAddress::WindowsSocketAddress(struct sockaddr* addr,
-		size_t addrSize) : sockAddrPtr(new struct sockaddr_storage) {
+		size_t addrSize) : SocketAddressImpl(), sockAddrPtr(new struct sockaddr_storage) {
 	setSocketAddress(addr, addrSize);
 }
 
 WindowsSocketAddress::WindowsSocketAddress(
 		const std::string& host,
 		const std::string& port,
-		SocketProtocol protocol) : sockAddrPtr(new struct sockaddr_storage) {
+		SocketProtocol protocol) : SocketAddressImpl(), sockAddrPtr(new struct sockaddr_storage) {
 
 	struct addrinfo hints, *res;
 
@@ -75,7 +75,7 @@ void WindowsSocketAddress::setSocketAddress(struct sockaddr* addr,
 	port = std::to_string(htons(reinterpret_cast<struct sockaddr_in *>(addr)->sin_port));
 }
 
-bool WindowsSocketAddress::operator==(const SocketAddress &rhs) {
+bool WindowsSocketAddress::operator==(const SocketAddressImpl &rhs) {
 	if (rhs.getSocketAddressSize() == getSocketAddressSize()) {
 		return memcmp(rhs.getSocketAddress(), getSocketAddress(), getSocketAddressSize()) == 0;
 	}

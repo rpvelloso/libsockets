@@ -13,30 +13,25 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_FACTORY_SOCKETFACTORYIMPL_H_
-#define SRC_FACTORY_SOCKETFACTORYIMPL_H_
+#ifndef SRC_SOCKET_SOCKETADDRESSIMPL_H_
+#define SRC_SOCKET_SOCKETADDRESSIMPL_H_
 
-#include "Socket/SocketImpl.h"
-#include "Socket/ClientSocket.h"
-#include "Socket/SocketAddressImpl.h"
-#include "Multiplexer/Poll.h"
+#include <string>
 
 namespace socks {
 
-class SocketFactoryImpl {
+class SocketAddressImpl {
 public:
-	SocketFactoryImpl() {};
-	virtual ~SocketFactoryImpl() {};
-	virtual SocketImpl *createSocketImpl() = 0;
-	virtual SocketImpl *createUDPSocketImpl() = 0;
-	virtual Poll *createPoll() = 0;
-	virtual SocketAddressImpl *createSocketAddressImpl(
-			const std::string &host,
-			const std::string &port,
-			SocketProtocol protocol = SocketProtocol::UDP) = 0;
-	virtual std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > createSocketPair() = 0;
+	SocketAddressImpl() {};
+	virtual ~SocketAddressImpl() {};
+	virtual void *getSocketAddress() const = 0;
+	virtual void setSocketAddressSize(int saSize) = 0;
+	virtual int getSocketAddressSize() const = 0;
+	virtual bool operator==(const SocketAddressImpl &rhs) = 0;
+	virtual std::string getHostname() const = 0;
+	virtual std::string getPort() const = 0;
 };
 
-}
+} /* namespace socks */
 
-#endif /* SRC_FACTORY_SOCKETFACTORYIMPL_H_ */
+#endif /* SRC_SOCKET_SOCKETADDRESSIMPL_H_ */

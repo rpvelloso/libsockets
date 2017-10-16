@@ -14,8 +14,19 @@
  */
 
 #include "Socket/SocketStream.h"
+#include "Socket/DatagramSocket.h"
 
 namespace socks {
+
+namespace factory {
+	SocketStream makeSocketStream() {
+		return SocketStream(std::make_unique<ClientSocket>(makeClientSocket()));
+	};
+
+	SocketStream makeUDPSocketStream() {
+		return SocketStream(std::make_unique<ClientSocket>(makeUDPClientSocket()));
+	};
+}
 
 SocketStreamBuf::SocketStreamBuf(std::unique_ptr<ClientSocket> clientSocket) :
 		std::streambuf(),

@@ -51,6 +51,11 @@ private:
 	std::unique_ptr<SocketStreamBuf> socketStreamBuf;
 };
 
+namespace factory {
+	SocketStream makeSocketStream();
+	SocketStream makeUDPSocketStream();
+}
+
 } /* namespace socks */
 
 #endif /* SRC_SOCKET_SOCKETSTREAM_H_ */

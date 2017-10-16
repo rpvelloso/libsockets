@@ -19,18 +19,26 @@
 #include <memory>
 
 #include "Server/ServerImpl.h"
+#include "Multiplexer/MultiplexerImpl.h"
 
 namespace socks {
 
 class Server {
 public:
-	Server(ServerImpl *impl) : impl(impl) {};
-	void listen(const std::string &bindAddr, const std::string &port) {
-		impl->listen(bindAddr, port);
-	};
+	Server(ServerImpl *impl);
+	void listen(const std::string &bindAddr, const std::string &port);
 private:
 	std::unique_ptr<ServerImpl> impl;
 };
+
+namespace factory {
+	Server makeMultiplexedServer(
+		size_t numThreads,
+		MultiplexerCallback readCallback,
+		MultiplexerCallback connectCallback = defaultCallback,
+		MultiplexerCallback disconnectCallback = defaultCallback,
+		MultiplexerCallback writeCallback = defaultCallback);
+}
 
 }
 #endif /* SRC_SERVER_SERVER_H_ */

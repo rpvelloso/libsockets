@@ -16,7 +16,13 @@
 #ifndef SRC_LIBSOCKETS_H_
 #define SRC_LIBSOCKETS_H_
 
-#include "Factory/SocketFactory.h"
+#include "Socket/SocketAddress.h"
+#include "Socket/ClientSocket.h"
+#include "Socket/ServerSocket.h"
+#include "Socket/DatagramSocket.h"
+#include "Socket/SSL/OpenSSLSocket.h"
+#include "Server/Server.h"
+#include "ConnectionPool/ConnectionPool.h"
 #include "URL.h"
 
 #endif /* SRC_LIBSOCKETS_H_ */

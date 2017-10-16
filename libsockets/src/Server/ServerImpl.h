@@ -18,7 +18,7 @@
 
 #include <memory>
 
-#include "Factory/SocketFactory.h"
+#include "Socket/ServerSocket.h"
 #include "ConnectionPool/ConnectionPool.h"
 
 namespace socks {
@@ -44,7 +44,6 @@ public:
 				break;
 			}
 		}
-
 	};
 private:
 	std::unique_ptr<ServerSocket> serverSocket;

@@ -13,8 +13,8 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_SOCKETS_SSL_CLIENTSOCKET_H_
-#define SRC_SOCKETS_SSL_CLIENTSOCKET_H_
+#ifndef SRC_SOCKETS_CLIENTSOCKET_H_
+#define SRC_SOCKETS_CLIENTSOCKET_H_
 
 #include <memory>
 
@@ -43,5 +43,9 @@ private:
 	size_t receiveBufferSize = 0;
 };
 
+namespace factory {
+	ClientSocket makeClientSocket();
 }
-#endif /* SRC_SOCKETS_SSL_CLIENTSOCKET_H_ */
+
+}
+#endif /* SRC_SOCKETS_CLIENTSOCKET_H_ */

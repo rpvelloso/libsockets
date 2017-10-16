@@ -22,6 +22,20 @@
 
 namespace socks {
 
+namespace factory {
+	ClientSocket makeSSLClientSocket() {
+		return ClientSocket(new OpenSSLSocket(socketFactory.createSocketImpl()));
+	};
+
+	ServerSocket makeSSLServerSocket() {
+		return ServerSocket(new OpenSSLSocket(socketFactory.createSocketImpl()));
+	};
+
+	SocketStream makeSSLSocketStream() {
+		return SocketStream(std::make_unique<ClientSocket>(makeSSLClientSocket()));
+	}
+}
+
 OpenSSLSocket::OpenSSLSocket(SocketImpl* impl) : SocketImpl(), impl(impl),
 		sslContext(nullptr, FreeSSLContext()),
 		sslHandler(nullptr,FreeSSLHandler()) {
