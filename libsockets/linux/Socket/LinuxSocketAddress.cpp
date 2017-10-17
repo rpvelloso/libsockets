@@ -77,7 +77,7 @@ void LinuxSocketAddress::setSocketAddress(struct sockaddr* addr,
 	port = std::to_string(htons(reinterpret_cast<struct sockaddr_in *>(addr)->sin_port));
 }
 
-bool LinuxSocketAddress::operator==(const SocketAddress &rhs) {
+bool LinuxSocketAddress::operator==(const SocketAddressImpl &rhs) {
 	if (rhs.getSocketAddressSize() == getSocketAddressSize()) {
 		return memcmp(rhs.getSocketAddress(), getSocketAddress(), getSocketAddressSize()) == 0;
 	}

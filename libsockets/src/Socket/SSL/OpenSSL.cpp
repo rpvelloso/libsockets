@@ -31,9 +31,6 @@ namespace socks {
 
 OpenSSL openSSL;
 
-static void pthreads_locking_callback(int mode, int type, const char *file, int line);
-static unsigned long pthreads_thread_id(void);
-
 /*-
  * usage:
  * CRYPTO_thread_setup();
@@ -43,6 +40,24 @@ static unsigned long pthreads_thread_id(void);
 
 static pthread_mutex_t *lock_cs;
 static long *lock_count;
+
+void pthreads_locking_callback(int mode, int type, const char *file, int line)
+{
+    if (mode & CRYPTO_LOCK) {
+        pthread_mutex_lock(&(lock_cs[type]));
+        lock_count[type]++;
+    } else {
+        pthread_mutex_unlock(&(lock_cs[type]));
+    }
+}
+
+unsigned long pthreads_thread_id(void)
+{
+    unsigned long ret;
+
+    ret = (unsigned long)pthread_self();
+    return (ret);
+}
 
 void CRYPTO_thread_setup(void)
 {
@@ -77,24 +92,6 @@ void CRYPTO_thread_cleanup(void)
     }
     OPENSSL_free(lock_cs);
     OPENSSL_free(lock_count);
-}
-
-void pthreads_locking_callback(int mode, int type, const char *file, int line)
-{
-    if (mode & CRYPTO_LOCK) {
-        pthread_mutex_lock(&(lock_cs[type]));
-        lock_count[type]++;
-    } else {
-        pthread_mutex_unlock(&(lock_cs[type]));
-    }
-}
-
-unsigned long pthreads_thread_id(void)
-{
-    unsigned long ret;
-
-    ret = (unsigned long)pthread_self();
-    return (ret);
 }
 
 }

@@ -41,7 +41,7 @@ struct FreeSSLHandler {
 	}
 };
 
-using SSLMethodType = std::function<decltype(TLSv1_2_server_method)>;
+using SSLMethodType = std::function<decltype(DTLS_server_method)>;
 using SSLCtxPtr = std::unique_ptr<SSL_CTX, FreeSSLContext>;
 using SSLHandlerPtr = std::unique_ptr<SSL, FreeSSLHandler>;
 
@@ -72,8 +72,8 @@ private:
 	std::unique_ptr<SocketImpl> impl;
 	SSLCtxPtr sslContext;
 	SSLHandlerPtr sslHandler;
-	SSLMethodType serverMethod = TLSv1_2_server_method;
-	SSLMethodType clientMethod = TLSv1_2_client_method;
+	SSLMethodType serverMethod = DTLS_server_method;
+	SSLMethodType clientMethod = DTLS_client_method;
 };
 
 namespace factory {

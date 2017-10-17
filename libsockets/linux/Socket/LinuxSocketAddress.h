@@ -16,15 +16,13 @@
 #ifndef LINUX_SOCKETS_LINUXSOCKETADDRESS_H_
 #define LINUX_SOCKETS_LINUXSOCKETADDRESS_H_
 
-#include "Socket/SocketAddress.h"
+#include "Socket/SocketAddressImpl.h"
 #include "Socket/LinuxSocket.h"
 
 namespace socks {
 
-class LinuxSocketAddress : public SocketAddress {
+class LinuxSocketAddress : public SocketAddressImpl {
 public:
-	LinuxSocketAddress(LinuxSocketAddress &&) = default;
-	virtual LinuxSocketAddress& operator=(LinuxSocketAddress &&) = default;
 	LinuxSocketAddress(struct sockaddr *addr, size_t addrSize);
 	LinuxSocketAddress(
 			const std::string &host,
@@ -35,7 +33,7 @@ public:
 	void *getSocketAddress() const override;
 	void setSocketAddressSize(int saSize) override;
 	int getSocketAddressSize() const override;
-	bool operator==(const SocketAddress &rhs) override;
+	bool operator==(const SocketAddressImpl &rhs) override;
 	std::string getHostname() const override;
 	std::string getPort() const override;
 private:

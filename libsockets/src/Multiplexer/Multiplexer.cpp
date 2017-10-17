@@ -15,14 +15,12 @@
 
 #include "Factory/SocketFactory.h"
 #include "Multiplexer/Multiplexer.h"
-#include "Socket/SSL/OpenSSL.h"
 
 namespace socks {
 
 Multiplexer::Multiplexer(MultiplexerImpl *impl) : impl(impl) {
 	thread.reset(new std::thread([](MultiplexerImpl &multiplexer){
 		multiplexer.multiplex();
-		openSSL.threadCleanup();
 	},
 	std::ref(*(this->impl)) ));
 };

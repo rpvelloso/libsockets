@@ -13,6 +13,7 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Factory/SocketFactory.h"
 #include "Factory/LinuxSocketFactory.h"
 #include "Socket/LinuxSocket.h"
 #include "Socket/SSL/OpenSSLSocket.h"
@@ -38,21 +39,8 @@ SocketImpl *LinuxSocketFactory::createUDPSocketImpl() {
 	return new LinuxSocket(UDPFDFactory);
 }
 
-SocketImpl *LinuxSocketFactory::createSSLSocketImpl() {
-	return new OpenSSLSocket(createSocketImpl());
-}
-
-Multiplexer LinuxSocketFactory::createMultiplexer(
-		MultiplexerCallback readCallback,
-		MultiplexerCallback connectCallback = defaultCallback,
-		MultiplexerCallback disconnectCallback = defaultCallback,
-		MultiplexerCallback writeCallback = defaultCallback) {
-	return Multiplexer(new MultiplexerImpl(
-			new LinuxPoll(),
-			readCallback,
-			connectCallback,
-			disconnectCallback,
-			writeCallback));
+Poll *LinuxSocketFactory::createPoll() {
+	return new LinuxPoll();
 }
 
 std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > LinuxSocketFactory::createSocketPair() {
@@ -64,11 +52,11 @@ std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > LinuxSo
 	return std::make_pair(std::move(sockIn), std::move(sockOut));
 }
 
-SocketAddress LinuxSocketFactory::createAddress(
+SocketAddressImpl *LinuxSocketFactory::createSocketAddressImpl(
 		const std::string& host,
 		const std::string& port,
 		SocketProtocol protocol) {
-	return SocketAddress(new LinuxSocketAddress(host, port, protocol));
+	return new LinuxSocketAddress(host, port, protocol);
 }
 
 }

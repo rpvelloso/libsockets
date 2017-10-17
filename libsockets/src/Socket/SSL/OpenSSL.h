@@ -47,7 +47,6 @@ public:
 		ENGINE_cleanup();
 		CONF_modules_unload(1);
 		EVP_cleanup();
-		threadCleanup();
 		ERR_free_strings();
 	};
 	/* Command to generate test files 'key.pem' and 'cert.pem':
@@ -58,12 +57,6 @@ public:
 	};
 	virtual std::string getSSLCertificateFile() {
 		return "cert.pem";
-	};
-
-	virtual void threadCleanup() {
-		//should call this inside every thread
-		CRYPTO_cleanup_all_ex_data();
-		ERR_remove_state(0);
 	};
 };
 
