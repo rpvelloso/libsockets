@@ -30,8 +30,8 @@
 #include "libsockets.h"
 //#include "HTTPResponse.h"
 
-void testMultiplexer(bool secure) {
-	auto server = socks::factory::makeMultiplexedServer(1,
+void testMultiplexer() {
+	auto server = socks::factory::makeThreadedSSLServer(//1,
 	[](std::istream &inp, std::ostream &outp) {
 		while (inp) {
 			std::string cmd;
@@ -56,7 +56,11 @@ void testMultiplexer(bool secure) {
 				break;
 			}
 		}
-	});
+	},
+	[](std::istream &inp, std::ostream &outp) {std::cout << "Client connected." << std::endl;},
+	[](std::istream &inp, std::ostream &outp) {std::cout << "Client disconnected." << std::endl;},
+	[](std::istream &inp, std::ostream &outp) {std::cout << "sent data to client." << std::endl;}
+	);
 
 	std::cout << "listening..." << std::endl;
 	server.listen("0.0.0.0", "30000");
@@ -344,12 +348,16 @@ const std::vector<std::string> Netcat::boolString = {"false", "true"};
 
 int main(int argc, char **argv) {
 
-	Netcat netcat(argc, argv);
+	if (argc == 1)
+		testMultiplexer();
+	else
+		Netcat netcat(argc, argv);
+
 	return 0;
 
 	try {
 //		testDatagram(argv[1], argv[2]);
-		testMultiplexer(std::string(argv[1]) == "ssl");
+		testMultiplexer();
 //		testAsyncClient(argv[1], argv[2], argv[3], std::string(argv[4]) == "ssl");
 //		testClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
 //		testUDP(argv[1], argv[2]);

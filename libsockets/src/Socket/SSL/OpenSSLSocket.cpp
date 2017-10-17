@@ -19,6 +19,8 @@
 #include "Factory/SocketFactory.h"
 #include "Socket/SSL/OpenSSL.h"
 #include "Socket/SSL/OpenSSLSocket.h"
+#include "ConnectionPool/ThreadedConnectionPoolImpl.h"
+#include "ConnectionPool/MultiplexedConnectionPoolImpl.h"
 
 namespace socks {
 
@@ -34,6 +36,36 @@ namespace factory {
 	SocketStream makeSSLSocketStream() {
 		return SocketStream(std::make_unique<ClientSocket>(makeSSLClientSocket()));
 	}
+	Server makeMultiplexedSSLServer(
+			size_t numThreads,
+			MultiplexerCallback readCallback,
+			MultiplexerCallback connectCallback,
+			MultiplexerCallback disconnectCallback,
+			MultiplexerCallback writeCallback) {
+		return Server(new ServerImpl(
+				new ServerSocket(new OpenSSLSocket(socketFactory.createSocketImpl())),
+				new ConnectionPool(new MultiplexedConnectionPoolImpl(
+					numThreads,
+					readCallback,
+					connectCallback,
+					disconnectCallback,
+					writeCallback))));
+	};
+
+	Server makeThreadedSSLServer(
+			MultiplexerCallback readCallback,
+			MultiplexerCallback connectCallback,
+			MultiplexerCallback disconnectCallback,
+			MultiplexerCallback writeCallback) {
+		return Server(new ServerImpl(
+				new ServerSocket(new OpenSSLSocket(socketFactory.createSocketImpl())),
+				new ConnectionPool(new ThreadedConnectionPoolImpl(
+					readCallback,
+					connectCallback,
+					disconnectCallback,
+					writeCallback))));
+	};
+
 }
 
 OpenSSLSocket::OpenSSLSocket(SocketImpl* impl) : SocketImpl(), impl(impl),

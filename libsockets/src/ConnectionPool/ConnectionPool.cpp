@@ -15,6 +15,7 @@
 
 #include "ConnectionPool/ConnectionPool.h"
 #include "ConnectionPool/MultiplexedConnectionPoolImpl.h"
+#include "ConnectionPool/ThreadedConnectionPoolImpl.h"
 
 namespace socks {
 
@@ -28,6 +29,20 @@ namespace factory {
 
 		return ConnectionPool(new MultiplexedConnectionPoolImpl(
 				numThreads,
+				readCallback,
+				connectCallback,
+				disconnectCallback,
+				writeCallback));
+
+	};
+
+	ConnectionPool makeThreadedConnectionPool(
+		MultiplexerCallback readCallback,
+		MultiplexerCallback connectCallback,
+		MultiplexerCallback disconnectCallback,
+		MultiplexerCallback writeCallback) {
+
+		return ConnectionPool(new ThreadedConnectionPoolImpl(
 				readCallback,
 				connectCallback,
 				disconnectCallback,

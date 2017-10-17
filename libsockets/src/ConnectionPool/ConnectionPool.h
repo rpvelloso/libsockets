@@ -37,12 +37,18 @@ private:
 };
 
 namespace factory {
-	ConnectionPool makeMultiplexedConnectionPool(
-		size_t numThreads,
-		MultiplexerCallback readCallback,
-		MultiplexerCallback connectCallback = defaultCallback,
-		MultiplexerCallback disconnectCallback = defaultCallback,
-		MultiplexerCallback writeCallback = defaultCallback);
+ConnectionPool makeMultiplexedConnectionPool(
+	size_t numThreads,
+	MultiplexerCallback readCallback,
+	MultiplexerCallback connectCallback = defaultCallback,
+	MultiplexerCallback disconnectCallback = defaultCallback,
+	MultiplexerCallback writeCallback = defaultCallback);
+
+ConnectionPool makeThreadedConnectionPool(
+	MultiplexerCallback readCallback,
+	MultiplexerCallback connectCallback = defaultCallback,
+	MultiplexerCallback disconnectCallback = defaultCallback,
+	MultiplexerCallback writeCallback = defaultCallback);
 }
 
 } /* namespace socks */

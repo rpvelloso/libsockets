@@ -23,6 +23,7 @@
 #include "Socket/ServerSocket.h"
 #include "Socket/SocketStream.h"
 #include "Socket/SocketImpl.h"
+#include "Server/Server.h"
 
 namespace socks {
 
@@ -80,6 +81,17 @@ namespace factory {
 	ClientSocket makeSSLClientSocket();
 	ServerSocket makeSSLServerSocket();
 	SocketStream makeSSLSocketStream();
+	Server makeMultiplexedSSLServer(
+		size_t numThreads,
+		MultiplexerCallback readCallback,
+		MultiplexerCallback connectCallback = defaultCallback,
+		MultiplexerCallback disconnectCallback = defaultCallback,
+		MultiplexerCallback writeCallback = defaultCallback);
+	Server makeThreadedSSLServer(
+		MultiplexerCallback readCallback,
+		MultiplexerCallback connectCallback = defaultCallback,
+		MultiplexerCallback disconnectCallback = defaultCallback,
+		MultiplexerCallback writeCallback = defaultCallback);
 }
 
 }

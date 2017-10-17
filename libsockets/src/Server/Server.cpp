@@ -16,6 +16,7 @@
 #include "Socket/ServerSocket.h"
 #include "Server/Server.h"
 #include "ConnectionPool/MultiplexedConnectionPoolImpl.h"
+#include "ConnectionPool/ThreadedConnectionPoolImpl.h"
 
 namespace socks {
 
@@ -38,6 +39,20 @@ namespace factory {
 				new ServerSocket(),
 				new ConnectionPool(new MultiplexedConnectionPoolImpl(
 					numThreads,
+					readCallback,
+					connectCallback,
+					disconnectCallback,
+					writeCallback))));
+	};
+
+	Server makeThreadedServer(
+			MultiplexerCallback readCallback,
+			MultiplexerCallback connectCallback,
+			MultiplexerCallback disconnectCallback,
+			MultiplexerCallback writeCallback) {
+		return Server(new ServerImpl(
+				new ServerSocket(),
+				new ConnectionPool(new ThreadedConnectionPoolImpl(
 					readCallback,
 					connectCallback,
 					disconnectCallback,

@@ -22,6 +22,7 @@ namespace socks {
 
 class MultiplexedConnectionPoolImpl : public ConnectionPoolImpl {
 public:
+	MultiplexedConnectionPoolImpl() = delete;
 	MultiplexedConnectionPoolImpl(
 			size_t nthreads,
 			MultiplexerCallback readCallback,

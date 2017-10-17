@@ -38,6 +38,11 @@ namespace factory {
 		MultiplexerCallback connectCallback = defaultCallback,
 		MultiplexerCallback disconnectCallback = defaultCallback,
 		MultiplexerCallback writeCallback = defaultCallback);
+	Server makeThreadedServer(
+		MultiplexerCallback readCallback,
+		MultiplexerCallback connectCallback = defaultCallback,
+		MultiplexerCallback disconnectCallback = defaultCallback,
+		MultiplexerCallback writeCallback = defaultCallback);
 }
 
 }
