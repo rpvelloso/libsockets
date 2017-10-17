@@ -63,7 +63,7 @@ void testMultiplexer() {
 	);
 
 	std::cout << "listening..." << std::endl;
-	server.listen("0.0.0.0", "30000");
+	server.listen("127.0.0.1", "30000");
 	std::cout << "exiting..." << std::endl;
 }
 

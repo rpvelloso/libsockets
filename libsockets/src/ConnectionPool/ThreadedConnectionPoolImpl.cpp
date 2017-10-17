@@ -27,12 +27,6 @@ void threadFunction(
 	connectCallback(inputBuffer, outputBuffer);
 
 	while (true) {
-		if ((len = clientSocket->receiveData(recvBuf, recvBufSize)) > 0) {
-			inputBuffer.write(recvBuf, len);
-			readCallback(inputBuffer, outputBuffer);
-		} else
-			break;
-
 		while (outputBuffer.rdbuf()->in_avail() > 0) {
 			auto sndBufSize = outputBuffer.rdbuf()->in_avail();
 			char sndBuf[sndBufSize];
@@ -43,6 +37,12 @@ void threadFunction(
 		outputBuffer.clear();
 		outputBuffer.str(std::string());
 		writeCallback(inputBuffer, outputBuffer);
+
+		if ((len = clientSocket->receiveData(recvBuf, recvBufSize)) > 0) {
+			inputBuffer.write(recvBuf, len);
+			readCallback(inputBuffer, outputBuffer);
+		} else
+			break;
 	}
 
 	disconnectCallback(inputBuffer, outputBuffer);
