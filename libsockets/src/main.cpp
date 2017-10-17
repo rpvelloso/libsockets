@@ -57,7 +57,10 @@ void testMultiplexer() {
 			}
 		}
 	},
-	[](std::istream &inp, std::ostream &outp) {std::cout << "Client connected." << std::endl;},
+	[](std::istream &inp, std::ostream &outp) {
+		std::cout << "Client connected." << std::endl;
+		outp << "hello " << std::endl;
+	},
 	[](std::istream &inp, std::ostream &outp) {std::cout << "Client disconnected." << std::endl;},
 	[](std::istream &inp, std::ostream &outp) {std::cout << "sent data to client." << std::endl;}
 	);
