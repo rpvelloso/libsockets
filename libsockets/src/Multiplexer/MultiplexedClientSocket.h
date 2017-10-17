@@ -49,7 +49,7 @@ public:
 				impl(std::move(impl)) {
 
 	};
-	//virtual ~MultiplexedClientSocket() {};
+
 	bool getHasOutput() { return outputBuffer.rdbuf()->in_avail() > 0; };
 	std::stringstream &getOutputBuffer() {return outputBuffer;};
 	std::stringstream &getInputBuffer() {return inputBuffer;};
