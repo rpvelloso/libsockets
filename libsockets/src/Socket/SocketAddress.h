@@ -28,16 +28,18 @@ enum class SocketProtocol {
 };
 
 class SocketAddress {
+friend class SocketImpl;
 public:
 	SocketAddress() = delete;
 	SocketAddress(SocketAddressImpl *impl);
 
+	bool operator==(const SocketAddress &rhs);
+	bool operator!=(const SocketAddress &rhs);
+	std::string getHostname() const;
+	std::string getPort() const;
 	void *getSocketAddress() const;
 	void setSocketAddressSize(int saSize);
 	int getSocketAddressSize() const;
-	bool operator==(const SocketAddress &rhs);
-	std::string getHostname() const;
-	std::string getPort() const;
 protected:
 	std::unique_ptr<SocketAddressImpl> impl;
 };

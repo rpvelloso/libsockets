@@ -48,6 +48,10 @@ bool SocketAddress::operator==(const SocketAddress &rhs) {
 	return impl->operator==(*rhs.impl.get());
 };
 
+bool SocketAddress::operator!=(const SocketAddress &rhs) {
+	return !impl->operator==(*rhs.impl.get());
+};
+
 std::string SocketAddress::getHostname() const {
 	return impl->getHostname();
 };

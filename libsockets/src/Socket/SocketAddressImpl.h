@@ -24,12 +24,12 @@ class SocketAddressImpl {
 public:
 	SocketAddressImpl() {};
 	virtual ~SocketAddressImpl() {};
-	virtual void *getSocketAddress() const = 0;
-	virtual void setSocketAddressSize(int saSize) = 0;
-	virtual int getSocketAddressSize() const = 0;
 	virtual bool operator==(const SocketAddressImpl &rhs) = 0;
 	virtual std::string getHostname() const = 0;
 	virtual std::string getPort() const = 0;
+	virtual void *getSocketAddress() const = 0;
+	virtual void setSocketAddressSize(int saSize) = 0;
+	virtual int getSocketAddressSize() const = 0;
 };
 
 } /* namespace socks */

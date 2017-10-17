@@ -30,12 +30,12 @@ public:
 			SocketProtocol protocol = SocketProtocol::UDP);
 	virtual ~WindowsSocketAddress();
 
-	void *getSocketAddress() const override;
-	void setSocketAddressSize(int saSize) override;
-	int getSocketAddressSize() const override;
 	bool operator==(const SocketAddressImpl &rhs) override;
 	std::string getHostname() const override;
 	std::string getPort() const override;
+	void *getSocketAddress() const override;
+	void setSocketAddressSize(int saSize) override;
+	int getSocketAddressSize() const override;
 private:
 	WindowsSocketAddress() = delete;
 

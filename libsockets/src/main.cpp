@@ -25,6 +25,8 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <cassert>
+
 #include "libsockets.h"
 //#include "HTTPResponse.h"
 
@@ -328,9 +330,20 @@ private:
 		verbose = false;
 };
 
+void testSockAddr() {
+	auto addr1 = socks::factory::makeSocketAddress("127.0.0.1", "10000");
+	auto addr2 = socks::factory::makeSocketAddress("127.0.0.1", "10000");
+	auto addr3 = socks::factory::makeSocketAddress("0.0.0.0", "9000");
+
+	assert(addr1 == addr2); std::cout << "addr1 == addr2 ok" << std::endl;
+	assert(addr1 != addr3); std::cout << "addr1 != addr3 ok" << std::endl;
+	assert(addr2 != addr3); std::cout << "addr2 != addr3 ok" << std::endl;
+}
+
 const std::vector<std::string> Netcat::boolString = {"false", "true"};
 
 int main(int argc, char **argv) {
+
 	Netcat netcat(argc, argv);
 	return 0;
 
@@ -341,6 +354,7 @@ int main(int argc, char **argv) {
 //		testClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
 //		testUDP(argv[1], argv[2]);
 //		testSocketStream(argv[1], argv[2], std::string(argv[3]) == "udp");
+//		testSockAddr();
 	} catch (std::exception &e) {
 		std::cout << e.what() << std::endl;
 	}
