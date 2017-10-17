@@ -38,22 +38,19 @@ class MultiplexedClientSocket {
 public:
 	MultiplexedClientSocket(
 			std::unique_ptr<ClientSocket> impl,
-			std::function<void()> interruptFunc,
-			MultiplexerCallback readCallbackFunc,
-			MultiplexerCallback connectCallbackFunc,
-			MultiplexerCallback disconnectCallbackFunc,
-			MultiplexerCallback writeCallbackFunc
-			) :	readCallbackFunc(readCallbackFunc),
-				connectCallbackFunc(connectCallbackFunc),
-				disconnectCallbackFunc(disconnectCallbackFunc),
-				writeCallbackFunc(writeCallbackFunc),
-				impl(std::move(impl)),
-				interruptFunc(interruptFunc) {
+			MultiplexerCallback readCallback,
+			MultiplexerCallback connectCallback,
+			MultiplexerCallback disconnectCallback,
+			MultiplexerCallback writeCallback
+			) :	readCallbackFunc(readCallback),
+				connectCallbackFunc(connectCallback),
+				disconnectCallbackFunc(disconnectCallback),
+				writeCallbackFunc(writeCallback),
+				impl(std::move(impl)) {
 
 	};
 	//virtual ~MultiplexedClientSocket() {};
 	bool getHasOutput() { return outputBuffer.rdbuf()->in_avail() > 0; };
-	void interrupt() { interruptFunc(); };
 	std::stringstream &getOutputBuffer() {return outputBuffer;};
 	std::stringstream &getInputBuffer() {return inputBuffer;};
 

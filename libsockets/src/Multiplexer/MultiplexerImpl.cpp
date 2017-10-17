@@ -177,7 +177,6 @@ std::unique_ptr<MultiplexedClientSocket> MultiplexerImpl::makeMultiplexed(
 		) {
 	auto mCli = std::make_unique<MultiplexedClientSocket>(
 			std::move(clientSocket),
-			std::bind(&MultiplexerImpl::interrupt, this),
 			readCallbackFunc,
 			connectCallbackFunc,
 			disconnectCallbackFunc,

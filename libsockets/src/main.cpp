@@ -15,9 +15,6 @@
 
 /*
  * TODO: unit tests
- * TODO: refactor: where possible replace unique_ptr<Socket> by move semantics
- * TODO: Create class for simple threaded server and clients (one thread per client)
- * TODO: standardize multiplexedClients/Server interfaces and put them inside SocketFactory
  * TODO: implement an FTP and HTTP servers as sample/examples
  */
 

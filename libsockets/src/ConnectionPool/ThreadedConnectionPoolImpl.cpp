@@ -13,39 +13,35 @@
 
 namespace socks {
 
-void threadFunction(
-		std::unique_ptr<ClientSocket> clientSocket,
-		MultiplexerCallback readCallback,
-		MultiplexerCallback connectCallback,
-		MultiplexerCallback disconnectCallback,
-		MultiplexerCallback writeCallback) {
-	auto recvBufSize = clientSocket->getReceiveBufferSize();
+void threadFunction(MultiplexedClientSocket clientSocket) {
+	auto recvBufSize = clientSocket.getReceiveBufferSize();
 	char recvBuf[recvBufSize];
 	int len;
-	std::stringstream inputBuffer, outputBuffer;
 
-	connectCallback(inputBuffer, outputBuffer);
+	clientSocket.connectCallback();
 
 	while (true) {
-		while (outputBuffer.rdbuf()->in_avail() > 0) {
+		auto &outputBuffer = clientSocket.getOutputBuffer();
+		auto &inputBuffer = clientSocket.getInputBuffer();
+		while (clientSocket.getHasOutput()) {
 			auto sndBufSize = outputBuffer.rdbuf()->in_avail();
 			char sndBuf[sndBufSize];
 
 			outputBuffer.readsome(sndBuf, sndBufSize);
-			clientSocket->sendData(sndBuf, outputBuffer.gcount());
+			clientSocket.sendData(sndBuf, outputBuffer.gcount());
 		}
 		outputBuffer.clear();
 		outputBuffer.str(std::string());
-		writeCallback(inputBuffer, outputBuffer);
+		clientSocket.writeCallback();
 
-		if ((len = clientSocket->receiveData(recvBuf, recvBufSize)) > 0) {
+		if ((len = clientSocket.receiveData(recvBuf, recvBufSize)) > 0) {
 			inputBuffer.write(recvBuf, len);
-			readCallback(inputBuffer, outputBuffer);
+			clientSocket.readCallback();
 		} else
 			break;
 	}
 
-	disconnectCallback(inputBuffer, outputBuffer);
+	clientSocket.disconnectCallback();
 };
 
 ThreadedConnectionPoolImpl::ThreadedConnectionPoolImpl(
@@ -74,11 +70,12 @@ void ThreadedConnectionPoolImpl::addClientSocket(
 
 	std::thread th(
 			threadFunction,
-			std::move(clientSocket),
-			readCallback,
-			connectCallback,
-			disconnectCallback,
-			writeCallback);
+			MultiplexedClientSocket(
+				std::move(clientSocket),
+				readCallback,
+				connectCallback,
+				disconnectCallback,
+				writeCallback));
 
 	th.detach();
 }
