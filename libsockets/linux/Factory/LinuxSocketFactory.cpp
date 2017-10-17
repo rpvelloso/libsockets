@@ -16,7 +16,6 @@
 #include "Factory/SocketFactory.h"
 #include "Factory/LinuxSocketFactory.h"
 #include "Socket/LinuxSocket.h"
-#include "Socket/SSL/OpenSSLSocket.h"
 #include "Multiplexer/LinuxPoll.h"
 #include "Multiplexer/LinuxSelect.h"
 #include "Socket/LinuxSocketAddress.h"
