@@ -13,6 +13,7 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Factory/SocketFactory.h"
 #include "Socket/BufferedClientSocket.h"
 
 namespace socks {
@@ -29,6 +30,7 @@ BufferedClientSocket::BufferedClientSocket(
 			writeCallbackFunc(writeCallback),
 			impl(std::move(impl)) {
 
+	id = SocketFactory::createID();
 };
 
 bool BufferedClientSocket::getHasOutput() {
@@ -64,19 +66,19 @@ SocketImpl &BufferedClientSocket::getImpl() {
 };
 
 void BufferedClientSocket::readCallback() {
-	readCallbackFunc(inputBuffer, outputBuffer);
+	readCallbackFunc(id, inputBuffer, outputBuffer);
 };
 
 void BufferedClientSocket::connectCallback() {
-	connectCallbackFunc(inputBuffer, outputBuffer);
+	connectCallbackFunc(id, inputBuffer, outputBuffer);
 };
 
 void BufferedClientSocket::disconnectCallback() {
-	disconnectCallbackFunc(inputBuffer, outputBuffer);
+	disconnectCallbackFunc(id, inputBuffer, outputBuffer);
 };
 
 void BufferedClientSocket::writeCallback() {
-	writeCallbackFunc(inputBuffer, outputBuffer);
+	writeCallbackFunc(id, inputBuffer, outputBuffer);
 };
 
 }

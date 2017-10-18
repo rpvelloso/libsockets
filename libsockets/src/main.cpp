@@ -30,7 +30,7 @@
 
 void testMultiplexer() {
 	auto server = socks::factory::makeThreadedSSLServer(//1,
-	[](std::istream &inp, std::ostream &outp) {
+	[](size_t connectionID, std::istream &inp, std::ostream &outp) {
 		while (inp) {
 			std::string cmd;
 
@@ -55,12 +55,12 @@ void testMultiplexer() {
 			}
 		}
 	},
-	[](std::istream &inp, std::ostream &outp) {
-		std::cout << "Client connected." << std::endl;
+	[](size_t connectionID, std::istream &inp, std::ostream &outp) {
+		std::cout << "Client connected. ID: " << connectionID << std::endl;
 		outp << "hello " << std::endl;
 	},
-	[](std::istream &inp, std::ostream &outp) {std::cout << "Client disconnected." << std::endl;},
-	[](std::istream &inp, std::ostream &outp) {std::cout << "sent data to client." << std::endl;}
+	[](size_t connectionID, std::istream &inp, std::ostream &outp) {std::cout << "Client disconnected. ID: " << connectionID << std::endl;},
+	[](size_t connectionID, std::istream &inp, std::ostream &outp) {std::cout << "sent data to client " << connectionID << std::endl;}
 	);
 
 	std::cout << "listening..." << std::endl;

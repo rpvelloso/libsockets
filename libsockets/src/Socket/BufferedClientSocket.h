@@ -54,6 +54,7 @@ private:
 	std::unique_ptr<ClientSocket> impl;
 	std::stringstream outputBuffer;
 	std::stringstream inputBuffer;
+	size_t id;
 };
 
 }
