@@ -41,7 +41,7 @@ public:
 		CRYPTO_thread_setup();
 	};
 
-	virtual ~OpenSSL() {
+	~OpenSSL() {
 		CRYPTO_thread_cleanup();
 		FIPS_mode_set(0);
 		ENGINE_cleanup();
@@ -52,12 +52,17 @@ public:
 	/* Command to generate test files 'key.pem' and 'cert.pem':
 	 * openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
 	 */
-	virtual std::string getSSLKeyFile() {
+	std::string getSSLKeyFile() {
 		return "key.pem";
 	};
-	virtual std::string getSSLCertificateFile() {
+	std::string getSSLCertificateFile() {
 		return "cert.pem";
 	};
+
+	std::string version() {
+		return std::string(OpenSSL_version(OPENSSL_VERSION));
+	};
+
 };
 
 extern OpenSSL openSSL;
