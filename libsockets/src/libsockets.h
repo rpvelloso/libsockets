@@ -20,9 +20,10 @@
 #include "Socket/ClientSocket.h"
 #include "Socket/ServerSocket.h"
 #include "Socket/DatagramSocket.h"
-#include "Socket/SSL/OpenSSLSocket.h"
 #include "ConnectionPool/ConnectionPool.h"
 #include "Server/Server.h"
 #include "URL.h"
+
+#include "Socket/SSL/OpenSSLSocket.h" // optional
 
 #endif /* SRC_LIBSOCKETS_H_ */

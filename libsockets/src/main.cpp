@@ -26,10 +26,9 @@
 #include <thread>
 
 #include "libsockets.h"
-//#include "HTTPResponse.h"
 
 void testMultiplexer() {
-	auto server = socks::factory::makeThreadedSSLServer(//1,
+	auto server = socks::factory::makeMultiplexedSSLServer(4,
 	[](size_t connectionID, std::istream &inp, std::ostream &outp) {
 		while (inp) {
 			std::string cmd;
@@ -349,16 +348,16 @@ const std::vector<std::string> Netcat::boolString = {"false", "true"};
 
 int main(int argc, char **argv) {
 
-	if (argc == 1)
-		testMultiplexer();
-	else
-		Netcat netcat(argc, argv);
-
-	return 0;
-
 	try {
+		if (argc == 1)
+			testMultiplexer();
+		else
+			Netcat netcat(argc, argv);
+
+		return 0;
+
 //		testDatagram(argv[1], argv[2]);
-		testMultiplexer();
+//		testMultiplexer();
 //		testAsyncClient(argv[1], argv[2], argv[3], std::string(argv[4]) == "ssl");
 //		testClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
 //		testUDP(argv[1], argv[2]);

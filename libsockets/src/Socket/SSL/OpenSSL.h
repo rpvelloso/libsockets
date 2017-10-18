@@ -35,19 +35,17 @@ extern void CRYPTO_thread_cleanup();
 class OpenSSL {
 public:
 	OpenSSL() {
-	    SSL_load_error_strings();
-	    OpenSSL_add_ssl_algorithms();
 		SSL_library_init();
-		CRYPTO_thread_setup();
+	    SSL_load_error_strings();
+
+		CRYPTO_thread_setup(); // must call AFTER initialization
 	};
 
 	~OpenSSL() {
-		CRYPTO_thread_cleanup();
 		FIPS_mode_set(0);
-		ENGINE_cleanup();
 		CONF_modules_unload(1);
-		EVP_cleanup();
-		ERR_free_strings();
+
+		CRYPTO_thread_cleanup();
 	};
 	/* Command to generate test files 'key.pem' and 'cert.pem':
 	 * openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes

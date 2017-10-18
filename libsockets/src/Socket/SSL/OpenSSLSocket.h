@@ -73,8 +73,8 @@ private:
 	std::unique_ptr<SocketImpl> impl;
 	SSLCtxPtr sslContext;
 	SSLHandlerPtr sslHandler;
-	SSLMethodType serverMethod = DTLS_server_method;
-	SSLMethodType clientMethod = DTLS_client_method;
+	SSLMethodType serverMethod = TLS_server_method;
+	SSLMethodType clientMethod = TLS_client_method;
 };
 
 namespace factory {
