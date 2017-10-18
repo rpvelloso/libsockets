@@ -13,148 +13,12 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * TODO: unit tests
- * TODO: implement an FTP and HTTP servers as sample/examples
- */
-
+#include <getopt.h>
 #include <iostream>
-#include <fstream>
 #include <vector>
-#include <string>
-#include <cassert>
 #include <thread>
 
 #include "libsockets.h"
-
-void testMultiplexer() {
-	auto server = socks::factory::makeMultiplexedSSLServer(4,
-	[](size_t connectionID, std::istream &inp, std::ostream &outp) {
-		while (inp) {
-			std::string cmd;
-
-			auto savePos = inp.tellg();
-			std::getline(inp, cmd);
-			if (inp && !inp.eof()) {
-				if (cmd.back() == '\r')
-					cmd.pop_back();
-
-				if (cmd != "") {
-					std::fstream file(cmd);
-					if (file) {
-						std::cout << "file " << cmd << " opened" << std::endl;
-						outp << file.rdbuf();
-					}
-				}
-				std::cout << cmd << std::endl;
-			} else {
-				inp.clear();
-				inp.seekg(savePos);
-				break;
-			}
-		}
-	},
-	[](size_t connectionID, std::istream &inp, std::ostream &outp) {
-		std::cout << "Client connected. ID: " << connectionID << std::endl;
-		outp << "hello " << std::endl;
-	},
-	[](size_t connectionID, std::istream &inp, std::ostream &outp) {std::cout << "Client disconnected. ID: " << connectionID << std::endl;},
-	[](size_t connectionID, std::istream &inp, std::ostream &outp) {std::cout << "sent data to client " << connectionID << std::endl;}
-	);
-
-	std::cout << "listening..." << std::endl;
-	server.listen("127.0.0.1", "30000");
-	std::cout << "exiting..." << std::endl;
-}
-
-void testClient(const std::string &host, const std::string &port, bool secure) {
-	try {
-		auto clientSocket = secure?
-				socks::factory::makeSSLClientSocket():
-				socks::factory::makeClientSocket();
-
-		if (clientSocket.connectTo(host, port) == 0) {
-			std::string request = "GET / HTTP/1.1\r\nHost: " + host + "\r\nConnection: close\r\n\r\n";
-			std::cout << "sending request: " << request << "to: " << host << ":" << port << std::endl;
-			clientSocket.sendData(request.c_str(),request.size());
-			std::cout << "request sent. Response: " << std::endl;
-			char buf[4096+1];
-			int len;
-			while ((len=clientSocket.receiveData(buf, 4096)) > 0) {
-				buf[len]=0x00;
-				std::cout << buf;
-			}
-			std::cout << "done." << std::endl;
-		}
-	} catch (std::exception &e) {
-		std::cout << e.what() << std::endl;
-	}
-}
-
-void testUDP(const std::string &host, const std::string &port) {
-	auto udpSocket = socks::factory::makeUDPClientSocket();
-	udpSocket.connectTo(host, port);
-	while (true) {
-		char buf[1024];
-		udpSocket.sendData("hello\r\n.", 7);
-		auto len = udpSocket.receiveData(buf, 1024);
-		if (len > 0) {
-			buf[len] = 0;
-			std::cout << buf << std::endl;
-		}
-		auto c = getchar();
-		if (c == 'x')
-			break;
-	}
-}
-
-void testDatagram(const std::string &host, const std::string &port) {
-	socks::DatagramSocket dgSocket;
-	auto addr = socks::factory::makeSocketAddress(host, port);
-
-	dgSocket.bindSocket("0.0.0.0", "");
-
-	std::cout << "starting transmitter..." << std::endl;
-	std::thread transmitter([](socks::DatagramSocket &dgSocket, socks::SocketAddress &addr){
-		while (true) {
-			std::string inp;
-			std::getline(std::cin, inp);
-			inp.push_back('\n');
-			if (dgSocket.sendTo(addr, inp.c_str(), inp.size()) <= 0)
-				break;
-		}
-	}, std::ref(dgSocket), std::ref(addr));
-	transmitter.detach();
-
-	std::cout << "starting receiver on port " << dgSocket.getPort() << " ..." << std::endl;
-	char buf[4096];
-	while (true) {
-		auto ret = dgSocket.receiveFrom(buf, 4096);
-		if (ret.first <= 0)
-			break;
-
-		buf[ret.first] = 0x00;
-		std::cout << "received " << ret.first << ": " << buf << std::endl;
-	}
-
-}
-
-void testSocketStream(const std::string &host, const std::string &port, bool udp) {
-	auto socketStream = udp?
-			socks::factory::makeUDPSocketStream():
-			socks::factory::makeSocketStream();
-
-	if (socketStream.connectTo(host, port) == 0) {
-		while (!socketStream.eof()) {
-			socketStream << "hello!" << std::endl;
-			std::string inp;
-			socketStream >> inp;
-			std::cout << inp;
-		}
-	}
-}
-
-#include <getopt.h>
 
 class Netcat {
 public:
@@ -334,35 +198,11 @@ private:
 		verbose = false;
 };
 
-void testSockAddr() {
-	auto addr1 = socks::factory::makeSocketAddress("127.0.0.1", "10000");
-	auto addr2 = socks::factory::makeSocketAddress("127.0.0.1", "10000");
-	auto addr3 = socks::factory::makeSocketAddress("0.0.0.0", "9000");
-
-	assert(addr1 == addr2); std::cout << "addr1 == addr2 ok" << std::endl;
-	assert(addr1 != addr3); std::cout << "addr1 != addr3 ok" << std::endl;
-	assert(addr2 != addr3); std::cout << "addr2 != addr3 ok" << std::endl;
-}
-
 const std::vector<std::string> Netcat::boolString = {"false", "true"};
 
 int main(int argc, char **argv) {
-
 	try {
-		if (argc == 1)
-			testMultiplexer();
-		else
-			Netcat netcat(argc, argv);
-
-		return 0;
-
-//		testDatagram(argv[1], argv[2]);
-//		testMultiplexer();
-//		testAsyncClient(argv[1], argv[2], argv[3], std::string(argv[4]) == "ssl");
-//		testClient(argv[1], argv[2], std::string(argv[3]) == "ssl");
-//		testUDP(argv[1], argv[2]);
-//		testSocketStream(argv[1], argv[2], std::string(argv[3]) == "udp");
-//		testSockAddr();
+		Netcat netcat(argc, argv);
 	} catch (std::exception &e) {
 		std::cout << e.what() << std::endl;
 	}
