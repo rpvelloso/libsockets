@@ -18,8 +18,8 @@
 
 #include <memory>
 
+#include "Socket/ClientSocket.h"
 #include "Server/ServerImpl.h"
-#include "Multiplexer/MultiplexerImpl.h"
 
 namespace socks {
 
@@ -34,15 +34,15 @@ private:
 namespace factory {
 	Server makeMultiplexedServer(
 		size_t numThreads,
-		MultiplexerCallback readCallback,
-		MultiplexerCallback connectCallback = defaultCallback,
-		MultiplexerCallback disconnectCallback = defaultCallback,
-		MultiplexerCallback writeCallback = defaultCallback);
+		ClientCallback readCallback,
+		ClientCallback connectCallback = defaultCallback,
+		ClientCallback disconnectCallback = defaultCallback,
+		ClientCallback writeCallback = defaultCallback);
 	Server makeThreadedServer(
-		MultiplexerCallback readCallback,
-		MultiplexerCallback connectCallback = defaultCallback,
-		MultiplexerCallback disconnectCallback = defaultCallback,
-		MultiplexerCallback writeCallback = defaultCallback);
+		ClientCallback readCallback,
+		ClientCallback connectCallback = defaultCallback,
+		ClientCallback disconnectCallback = defaultCallback,
+		ClientCallback writeCallback = defaultCallback);
 }
 
 }

@@ -37,10 +37,10 @@ public:
 	~Multiplexer();
 	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket);
 	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-			MultiplexerCallback readCallback,
-			MultiplexerCallback connectCallback = defaultCallback,
-			MultiplexerCallback disconnectCallback = defaultCallback,
-			MultiplexerCallback writeCallback = defaultCallback);
+			ClientCallback readCallback,
+			ClientCallback connectCallback = defaultCallback,
+			ClientCallback disconnectCallback = defaultCallback,
+			ClientCallback writeCallback = defaultCallback);
 
 	void multiplex();
 	void cancel();
@@ -53,10 +53,10 @@ protected:
 
 namespace factory {
 	Multiplexer makeMultiplexer(
-		MultiplexerCallback readCallbackFunc = defaultCallback,
-		MultiplexerCallback connectCallbackFunc = defaultCallback,
-		MultiplexerCallback disconnectCallbackFunc = defaultCallback,
-		MultiplexerCallback writeCallbackFunc = defaultCallback);
+		ClientCallback readCallbackFunc = defaultCallback,
+		ClientCallback connectCallbackFunc = defaultCallback,
+		ClientCallback disconnectCallbackFunc = defaultCallback,
+		ClientCallback writeCallbackFunc = defaultCallback);
 }
 
 }

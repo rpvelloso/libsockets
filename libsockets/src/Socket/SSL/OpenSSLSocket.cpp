@@ -38,10 +38,10 @@ namespace factory {
 	}
 	Server makeMultiplexedSSLServer(
 			size_t numThreads,
-			MultiplexerCallback readCallback,
-			MultiplexerCallback connectCallback,
-			MultiplexerCallback disconnectCallback,
-			MultiplexerCallback writeCallback) {
+			ClientCallback readCallback,
+			ClientCallback connectCallback,
+			ClientCallback disconnectCallback,
+			ClientCallback writeCallback) {
 		return Server(new ServerImpl(
 				new ServerSocket(new OpenSSLSocket(socketFactory.createSocketImpl())),
 				new ConnectionPool(new MultiplexedConnectionPoolImpl(
@@ -53,10 +53,10 @@ namespace factory {
 	};
 
 	Server makeThreadedSSLServer(
-			MultiplexerCallback readCallback,
-			MultiplexerCallback connectCallback,
-			MultiplexerCallback disconnectCallback,
-			MultiplexerCallback writeCallback) {
+			ClientCallback readCallback,
+			ClientCallback connectCallback,
+			ClientCallback disconnectCallback,
+			ClientCallback writeCallback) {
 		return Server(new ServerImpl(
 				new ServerSocket(new OpenSSLSocket(socketFactory.createSocketImpl())),
 				new ConnectionPool(new ThreadedConnectionPoolImpl(

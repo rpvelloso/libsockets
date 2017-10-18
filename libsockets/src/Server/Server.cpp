@@ -31,10 +31,10 @@ void Server::listen(const std::string &bindAddr, const std::string &port) {
 namespace factory {
 	Server makeMultiplexedServer(
 			size_t numThreads,
-			MultiplexerCallback readCallback,
-			MultiplexerCallback connectCallback,
-			MultiplexerCallback disconnectCallback,
-			MultiplexerCallback writeCallback) {
+			ClientCallback readCallback,
+			ClientCallback connectCallback,
+			ClientCallback disconnectCallback,
+			ClientCallback writeCallback) {
 		return Server(new ServerImpl(
 				new ServerSocket(),
 				new ConnectionPool(new MultiplexedConnectionPoolImpl(
@@ -46,10 +46,10 @@ namespace factory {
 	};
 
 	Server makeThreadedServer(
-			MultiplexerCallback readCallback,
-			MultiplexerCallback connectCallback,
-			MultiplexerCallback disconnectCallback,
-			MultiplexerCallback writeCallback) {
+			ClientCallback readCallback,
+			ClientCallback connectCallback,
+			ClientCallback disconnectCallback,
+			ClientCallback writeCallback) {
 		return Server(new ServerImpl(
 				new ServerSocket(),
 				new ConnectionPool(new ThreadedConnectionPoolImpl(

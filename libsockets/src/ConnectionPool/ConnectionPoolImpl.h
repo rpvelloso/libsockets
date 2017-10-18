@@ -19,7 +19,6 @@
 #include <memory>
 
 #include "Socket/ClientSocket.h"
-#include "Multiplexer/Multiplexer.h"
 
 namespace socks {
 
@@ -29,10 +28,10 @@ public:
 	virtual ~ConnectionPoolImpl() {};
 	virtual void addClientSocket(
 			std::unique_ptr<ClientSocket> clientSocket,
-			MultiplexerCallback readCallback,
-			MultiplexerCallback connectCallback = defaultCallback,
-			MultiplexerCallback disconnectCallback = defaultCallback,
-			MultiplexerCallback writeCallback = defaultCallback) = 0;
+			ClientCallback readCallback,
+			ClientCallback connectCallback = defaultCallback,
+			ClientCallback disconnectCallback = defaultCallback,
+			ClientCallback writeCallback = defaultCallback) = 0;
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) = 0;
 };
 

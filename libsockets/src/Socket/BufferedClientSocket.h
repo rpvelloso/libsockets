@@ -13,43 +13,48 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SRC_SOCKETS_CLIENTSOCKET_H_
-#define SRC_SOCKETS_CLIENTSOCKET_H_
+#ifndef SRC_SOCKET_BUFFEREDCLIENTSOCKET_H_
+#define SRC_SOCKET_BUFFEREDCLIENTSOCKET_H_
 
-#include <memory>
 #include <functional>
+#include <sstream>
 
-#include "Socket/Socket.h"
-#include "Socket/SocketImpl.h"
+#include "Socket/ClientSocket.h"
 
 namespace socks {
 
-class ClientSocket : public Socket {
-public:
-	ClientSocket(ClientSocket &&) = default;
-	ClientSocket &operator=(ClientSocket &&);
+/*
+ * Wrapper class. Adds multiplexing and buffering capabilities to a ClientSocket.
+ */
 
-	ClientSocket(SocketImpl *impl);
-	ClientSocket();
-	virtual ~ClientSocket();
+class BufferedClientSocket {
+public:
+	BufferedClientSocket(
+			std::unique_ptr<ClientSocket> impl,
+			ClientCallback readCallback,
+			ClientCallback connectCallback,
+			ClientCallback disconnectCallback,
+			ClientCallback writeCallback
+			);
+	bool getHasOutput();
+	std::stringstream &getOutputBuffer();
+	std::stringstream &getInputBuffer();
+
 	int receiveData(void *buf, size_t len);
 	int sendData(const void *buf, size_t len);
-	int connectTo(const std::string &host, const std::string &port);
-	void disconnect();
 	size_t getSendBufferSize() const;
 	size_t getReceiveBufferSize() const;
-
+	SocketImpl &getImpl();
+	void readCallback();
+	void connectCallback();
+	void disconnectCallback();
+	void writeCallback();
 private:
-	size_t sendBufferSize = 0;
-	size_t receiveBufferSize = 0;
+	ClientCallback readCallbackFunc, connectCallbackFunc, disconnectCallbackFunc, writeCallbackFunc;
+	std::unique_ptr<ClientSocket> impl;
+	std::stringstream outputBuffer;
+	std::stringstream inputBuffer;
 };
 
-using ClientCallback = std::function<void(std::istream &, std::ostream &)>;
-extern ClientCallback defaultCallback;
-
-namespace factory {
-	ClientSocket makeClientSocket();
 }
-
-}
-#endif /* SRC_SOCKETS_CLIENTSOCKET_H_ */
+#endif /* SRC_SOCKET_BUFFEREDCLIENTSOCKET_H_ */

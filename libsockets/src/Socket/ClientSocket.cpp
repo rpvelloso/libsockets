@@ -18,6 +18,8 @@
 
 namespace socks {
 
+ClientCallback defaultCallback = [](std::istream &inp, std::ostream &outp){}; // noop()
+
 namespace factory {
 	ClientSocket makeClientSocket() {
 		return ClientSocket(socketFactory.createSocketImpl());

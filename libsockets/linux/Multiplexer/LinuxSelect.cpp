@@ -14,6 +14,7 @@
  */
 
 #include <sys/select.h>
+#include "Socket/BufferedClientSocket.h"
 #include "Multiplexer/LinuxSelect.h"
 
 namespace socks {

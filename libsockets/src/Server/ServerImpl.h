@@ -36,13 +36,8 @@ public:
 		serverSocket->listenForConnections(bindAddr, port);
 
 		while (true) {
-			try {
-				connectionPool->addClientSocket(
-						std::make_unique<ClientSocket>(serverSocket->acceptConnection()));
-			} catch (std::exception &e) {
-				std::cerr << e.what() << std::endl;
-				break;
-			}
+			connectionPool->addClientSocket(
+					std::make_unique<ClientSocket>(serverSocket->acceptConnection()));
 		}
 	};
 private:

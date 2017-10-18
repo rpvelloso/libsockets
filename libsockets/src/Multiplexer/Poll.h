@@ -23,7 +23,7 @@
 namespace socks {
 
 // <client, read, write>, error: read=false, write=false
-using pollTuple = std::tuple<MultiplexedClientSocket &, bool, bool>;
+using pollTuple = std::tuple<BufferedClientSocket &, bool, bool>;
 
 class Poll {
 public:

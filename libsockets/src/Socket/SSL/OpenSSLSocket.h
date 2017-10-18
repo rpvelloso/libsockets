@@ -83,15 +83,15 @@ namespace factory {
 	SocketStream makeSSLSocketStream();
 	Server makeMultiplexedSSLServer(
 		size_t numThreads,
-		MultiplexerCallback readCallback,
-		MultiplexerCallback connectCallback = defaultCallback,
-		MultiplexerCallback disconnectCallback = defaultCallback,
-		MultiplexerCallback writeCallback = defaultCallback);
+		ClientCallback readCallback,
+		ClientCallback connectCallback = defaultCallback,
+		ClientCallback disconnectCallback = defaultCallback,
+		ClientCallback writeCallback = defaultCallback);
 	Server makeThreadedSSLServer(
-		MultiplexerCallback readCallback,
-		MultiplexerCallback connectCallback = defaultCallback,
-		MultiplexerCallback disconnectCallback = defaultCallback,
-		MultiplexerCallback writeCallback = defaultCallback);
+		ClientCallback readCallback,
+		ClientCallback connectCallback = defaultCallback,
+		ClientCallback disconnectCallback = defaultCallback,
+		ClientCallback writeCallback = defaultCallback);
 }
 
 }

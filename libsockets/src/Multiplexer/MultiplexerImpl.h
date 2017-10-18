@@ -24,31 +24,29 @@
 #include <functional>
 #include <unordered_map>
 
-#include "Multiplexer/MultiplexedClientSocket.h"
+#include "Socket/ClientSocket.h"
 
 namespace socks {
 
 class Poll;
-class MultiplexedClientSocket;
+class BufferedClientSocket;
 
-using ClientListType = std::unordered_map<SocketFDType, std::unique_ptr<MultiplexedClientSocket>>;
-
-extern MultiplexerCallback defaultCallback;
+using ClientListType = std::unordered_map<SocketFDType, std::unique_ptr<BufferedClientSocket>>;
 
 class MultiplexerImpl {
 public:
 	MultiplexerImpl(Poll *pollStrategy,
-			MultiplexerCallback readCallbackFunc = defaultCallback,
-			MultiplexerCallback connectCallbackFunc = defaultCallback,
-			MultiplexerCallback disconnectCallbackFunc = defaultCallback,
-			MultiplexerCallback writeCallbackFunc = defaultCallback);
+			ClientCallback readCallbackFunc = defaultCallback,
+			ClientCallback connectCallbackFunc = defaultCallback,
+			ClientCallback disconnectCallbackFunc = defaultCallback,
+			ClientCallback writeCallbackFunc = defaultCallback);
 	virtual ~MultiplexerImpl();
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket);
 	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-			MultiplexerCallback readCallbackFunc,
-			MultiplexerCallback connectCallbackFunc = defaultCallback,
-			MultiplexerCallback disconnectCallbackFunc = defaultCallback,
-			MultiplexerCallback writeCallbackFunc = defaultCallback);
+			ClientCallback readCallbackFunc,
+			ClientCallback connectCallbackFunc = defaultCallback,
+			ClientCallback disconnectCallbackFunc = defaultCallback,
+			ClientCallback writeCallbackFunc = defaultCallback);
 	virtual size_t getClientCount();
 
 	virtual void cancel();
@@ -58,28 +56,28 @@ protected:
 	std::unique_ptr<Poll> pollStrategy;
 	std::unique_ptr<ClientSocket> sockIn;
 	std::mutex commandMutex, incomingClientsMutex;
-	MultiplexerCallback readCallbackFunc, connectCallbackFunc, disconnectCallbackFunc, writeCallbackFunc;
+	ClientCallback readCallbackFunc, connectCallbackFunc, disconnectCallbackFunc, writeCallbackFunc;
 	ClientListType clients;
 	std::atomic<size_t> clientCount;
-	std::vector<std::unique_ptr<MultiplexedClientSocket>> incomingClients;
+	std::vector<std::unique_ptr<BufferedClientSocket>> incomingClients;
 	SocketFDType sockOutFD = InvalidSocketFD;
 
 	virtual void sendMultiplexerCommand(int cmd);
-	virtual void removeClientSocket(MultiplexedClientSocket &clientSocket);
-	virtual bool selfPipe(MultiplexedClientSocket &clientSocket);
+	virtual void removeClientSocket(BufferedClientSocket &clientSocket);
+	virtual bool selfPipe(BufferedClientSocket &clientSocket);
 
 	/*
 	 * Factory method that wraps a clientSocket with a multiplexing interface
 	 */
-	std::unique_ptr<MultiplexedClientSocket> makeMultiplexed(
+	std::unique_ptr<BufferedClientSocket> makeMultiplexed(
 			std::unique_ptr<ClientSocket> clientSocket,
-			MultiplexerCallback readCallbackFunc,
-			MultiplexerCallback connectCallbackFunc,
-			MultiplexerCallback disconnectCallbackFunc,
-			MultiplexerCallback writeCallbackFunc);
+			ClientCallback readCallbackFunc,
+			ClientCallback connectCallbackFunc,
+			ClientCallback disconnectCallbackFunc,
+			ClientCallback writeCallbackFunc);
 
-	bool readHandler(MultiplexedClientSocket &client);
-	bool writeHandler(MultiplexedClientSocket &client);
+	bool readHandler(BufferedClientSocket &client);
+	bool writeHandler(BufferedClientSocket &client);
 };
 
 }

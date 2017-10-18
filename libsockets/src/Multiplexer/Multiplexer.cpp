@@ -38,10 +38,10 @@ void Multiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSocket) {
 };
 
 void Multiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-		MultiplexerCallback readCallback,
-		MultiplexerCallback connectCallback,
-		MultiplexerCallback disconnectCallback,
-		MultiplexerCallback writeCallback) {
+		ClientCallback readCallback,
+		ClientCallback connectCallback,
+		ClientCallback disconnectCallback,
+		ClientCallback writeCallback) {
 	impl->addClientSocket(
 			std::move(clientSocket),
 			readCallback,
@@ -66,10 +66,10 @@ size_t Multiplexer::getClientCount() {
 
 namespace factory {
 	Multiplexer makeMultiplexer(
-		MultiplexerCallback readCallback,
-		MultiplexerCallback connectCallback,
-		MultiplexerCallback disconnectCallback,
-		MultiplexerCallback writeCallback) {
+		ClientCallback readCallback,
+		ClientCallback connectCallback,
+		ClientCallback disconnectCallback,
+		ClientCallback writeCallback) {
 		return Multiplexer(new MultiplexerImpl(
 				socketFactory.createPoll(),
 				readCallback,

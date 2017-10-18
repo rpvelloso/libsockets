@@ -14,16 +14,15 @@
  */
 
 #include "ConnectionPool/MultiplexedConnectionPoolImpl.h"
-#include "Factory/SocketFactory.h"
 
 namespace socks {
 
 MultiplexedConnectionPoolImpl::MultiplexedConnectionPoolImpl(
 	size_t nthreads,
-	MultiplexerCallback readCallback,
-	MultiplexerCallback connectCallback,
-	MultiplexerCallback disconnectCallback,
-	MultiplexerCallback writeCallback)
+	ClientCallback readCallback,
+	ClientCallback connectCallback,
+	ClientCallback disconnectCallback,
+	ClientCallback writeCallback)
 	 	 : ConnectionPoolImpl() {
 
 	nthreads = std::max((size_t) 1, nthreads);
@@ -39,10 +38,10 @@ MultiplexedConnectionPoolImpl::MultiplexedConnectionPoolImpl(
 
 void MultiplexedConnectionPoolImpl::addClientSocket(
 		std::unique_ptr<ClientSocket> clientSocket,
-		MultiplexerCallback readCallback,
-		MultiplexerCallback connectCallback,
-		MultiplexerCallback disconnectCallback,
-		MultiplexerCallback writeCallback) {
+		ClientCallback readCallback,
+		ClientCallback connectCallback,
+		ClientCallback disconnectCallback,
+		ClientCallback writeCallback) {
 	getMultiplexer().addClientSocket(
 			std::move(clientSocket),
 			readCallback,
