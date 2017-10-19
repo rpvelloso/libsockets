@@ -24,7 +24,7 @@ class LuaServer {
 public:
 	int parseOptions(int argc, char **argv) {
 		int c;
-		while ((c = getopt(argc, argv, "vp:h:")) != -1) {
+		while ((c = getopt(argc, argv, "vp:h:i:")) != -1) {
 			switch (c) {
 			case 'p':
 				port = optarg;
@@ -34,6 +34,9 @@ public:
 				break;
 			case 'v':
 				verbose = true;
+				break;
+			case 'i':
+				scriptFile = std::string(optarg);
 				break;
 			default:
 				usage(argv[0]);
@@ -49,14 +52,14 @@ public:
 
 	void start() {
 		auto server = socks::factory::makeMultiplexedServer(4,
-		[](size_t connectionID, std::istream &inp, std::ostream &outp) {
+		[this](size_t connectionID, std::istream &inp, std::ostream &outp) {
 			while (inp) {
 				std::string cmd;
 
 				auto savePos = inp.tellg();
 				std::getline(inp, cmd);
 				if (inp && !inp.eof()) {
-					// process line
+					outp << this->processCmd(connectionID, cmd);
 				} else {
 					inp.clear();
 					inp.seekg(savePos);
@@ -76,9 +79,28 @@ private:
 		std::cout << "-v verbose (stderr)" << std::endl << std::endl;
 	};
 
+	std::string processCmd(size_t id, const std::string &cmd) {
+		sol::state lua;
+		lua.open_libraries();
+
+		auto script = lua.load_file(scriptFile);
+
+		if (script.status() == sol::load_status::ok)
+			script();
+
+		if (script.status() != sol::load_status::ok) {
+			std::cout << "Lua error: " << lua_tostring(lua.lua_state(), -1) << std::endl;
+			lua_pop(lua.lua_state(), 1);
+			throw std::runtime_error("error loading script " + scriptFile);
+		}
+
+		std::function<std::string(size_t, std::string)> serverFunc = lua["processCmd"];
+		return serverFunc(id, cmd);
+	};
+
 	std::string host = "", port = "";
 	bool verbose = false;
-
+	std::string scriptFile;
 };
 
 int main(int argc, char **argv) {
