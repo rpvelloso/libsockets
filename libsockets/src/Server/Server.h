@@ -27,6 +27,7 @@ class Server {
 public:
 	Server(ServerImpl *impl);
 	void listen(const std::string &bindAddr, const std::string &port);
+	std::string getPort();
 private:
 	std::unique_ptr<ServerImpl> impl;
 };

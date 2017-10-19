@@ -52,6 +52,10 @@ public:
 				writeCB);
 		}
 	};
+	virtual std::string getPort() {
+		return serverSocket->getPort();
+	};
+
 private:
 	std::unique_ptr<ServerSocket> serverSocket;
 	std::unique_ptr<ConnectionPool> connectionPool;

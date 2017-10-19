@@ -28,6 +28,10 @@ void Server::listen(const std::string &bindAddr, const std::string &port) {
 	impl->listen(bindAddr, port);
 };
 
+std::string Server::getPort() {
+	return impl->getPort();
+};
+
 namespace factory {
 	Server makeMultiplexedServer(
 			size_t numThreads,

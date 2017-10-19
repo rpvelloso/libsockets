@@ -15,6 +15,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <thread>
 #include <getopt.h>
 #include "sol.hpp"
 
@@ -68,9 +69,13 @@ public:
 			}
 		});
 
-		std::cout << "listening..." << std::endl;
-		server.listen("127.0.0.1", "30000");
-		std::cout << "exiting..." << std::endl;
+		std::thread listenThread([&server, this](){
+			server.listen(this->host, this->port);
+		});
+
+		std::cout << "listening at " << host << ":" << server.getPort() << std::endl;
+		listenThread.join();
+		std::cout << "terminating..." << std::endl;
 	};
 private:
 	void usage(const std::string &program) {
