@@ -28,7 +28,7 @@ public:
 	ServerImpl(
 			ServerSocket *serverSocket,
 			ConnectionPool *connectionPool,
-			ClientCallback readCallback,
+			ClientCallback readCallback = defaultCallback,
 			ClientCallback connectCallback = defaultCallback,
 			ClientCallback disconnectCallback = defaultCallback,
 			ClientCallback writeCallback = defaultCallback) :

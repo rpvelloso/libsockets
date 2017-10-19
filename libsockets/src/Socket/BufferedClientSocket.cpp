@@ -25,8 +25,8 @@ BufferedClientSocket::BufferedClientSocket(
 		ClientCallback readCallback,
 		ClientCallback connectCallback,
 		ClientCallback disconnectCallback,
-		ClientCallback writeCallback
-		) :	readCallbackFunc(readCallback),
+		ClientCallback writeCallback)
+		:	readCallbackFunc(readCallback),
 			connectCallbackFunc(connectCallback),
 			disconnectCallbackFunc(disconnectCallback),
 			writeCallbackFunc(writeCallback),
