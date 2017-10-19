@@ -24,12 +24,7 @@ namespace socks {
 class MultiplexedConnectionPoolImpl : public ConnectionPoolImpl {
 public:
 	MultiplexedConnectionPoolImpl() = delete;
-	MultiplexedConnectionPoolImpl(
-			size_t nthreads,
-			ClientCallback readCallback,
-			ClientCallback connectCallback = defaultCallback,
-			ClientCallback disconnectCallback = defaultCallback,
-			ClientCallback writeCallback = defaultCallback);
+	MultiplexedConnectionPoolImpl(size_t nthreads);
 	virtual ~MultiplexedConnectionPoolImpl();
 
 	void addClientSocket(
@@ -38,7 +33,6 @@ public:
 			ClientCallback connectCallback = defaultCallback,
 			ClientCallback disconnectCallback = defaultCallback,
 			ClientCallback writeCallback = defaultCallback) override;
-	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) override;
 private:
 	std::vector<Multiplexer> multiplexers;
 

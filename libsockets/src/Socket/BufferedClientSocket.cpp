@@ -65,6 +65,10 @@ SocketImpl &BufferedClientSocket::getImpl() {
 	return impl->getImpl();
 };
 
+int BufferedClientSocket::setNonBlockingIO(bool status) {
+	return impl->setNonBlockingIO(status);
+}
+
 void BufferedClientSocket::readCallback() {
 	readCallbackFunc(id, inputBuffer, outputBuffer);
 };
@@ -82,6 +86,4 @@ void BufferedClientSocket::writeCallback() {
 };
 
 }
-
-
 

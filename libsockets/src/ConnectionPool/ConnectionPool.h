@@ -31,24 +31,13 @@ public:
 			ClientCallback connectCallback = defaultCallback,
 			ClientCallback disconnectCallback = defaultCallback,
 			ClientCallback writeCallback = defaultCallback);
-	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket);
 private:
 	std::unique_ptr<ConnectionPoolImpl> impl;
 };
 
 namespace factory {
-ConnectionPool makeMultiplexedConnectionPool(
-	size_t numThreads,
-	ClientCallback readCallback,
-	ClientCallback connectCallback = defaultCallback,
-	ClientCallback disconnectCallback = defaultCallback,
-	ClientCallback writeCallback = defaultCallback);
-
-ConnectionPool makeThreadedConnectionPool(
-	ClientCallback readCallback,
-	ClientCallback connectCallback = defaultCallback,
-	ClientCallback disconnectCallback = defaultCallback,
-	ClientCallback writeCallback = defaultCallback);
+ConnectionPool makeMultiplexedConnectionPool(size_t numThreads);
+ConnectionPool makeThreadedConnectionPool();
 }
 
 } /* namespace socks */

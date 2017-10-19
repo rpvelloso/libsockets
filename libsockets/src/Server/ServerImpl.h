@@ -27,9 +27,17 @@ class ServerImpl {
 public:
 	ServerImpl(
 			ServerSocket *serverSocket,
-			ConnectionPool *connectionPool) :
+			ConnectionPool *connectionPool,
+			ClientCallback readCallback,
+			ClientCallback connectCallback = defaultCallback,
+			ClientCallback disconnectCallback = defaultCallback,
+			ClientCallback writeCallback = defaultCallback) :
 			serverSocket(serverSocket),
-			connectionPool(connectionPool) {};
+			connectionPool(connectionPool),
+			readCB(readCallback),
+			connectCB(connectCallback),
+			disconnectCB(disconnectCallback),
+			writeCB(writeCallback) {};
 
 	virtual ~ServerImpl() {};
 	virtual void listen(const std::string &bindAddr, const std::string &port) {
@@ -37,12 +45,17 @@ public:
 
 		while (true) {
 			connectionPool->addClientSocket(
-					std::make_unique<ClientSocket>(serverSocket->acceptConnection()));
+				std::make_unique<ClientSocket>(serverSocket->acceptConnection()),
+				readCB,
+				connectCB,
+				disconnectCB,
+				writeCB);
 		}
 	};
 private:
 	std::unique_ptr<ServerSocket> serverSocket;
 	std::unique_ptr<ConnectionPool> connectionPool;
+	ClientCallback readCB, connectCB, disconnectCB, writeCB;
 };
 
 }

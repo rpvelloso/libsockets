@@ -53,16 +53,7 @@ void threadFunction(BufferedClientSocket clientSocket) {
 	clientSocket.disconnectCallback();
 };
 
-ThreadedConnectionPoolImpl::ThreadedConnectionPoolImpl(
-		ClientCallback readCallback,
-		ClientCallback connectCallback,
-		ClientCallback disconnectCallback,
-		ClientCallback writeCallback) :
-				ConnectionPoolImpl(),
-				readCB(readCallback),
-				connectCB(connectCallback),
-				disconnectCB(disconnectCallback),
-				writeCB(writeCallback) {
+ThreadedConnectionPoolImpl::ThreadedConnectionPoolImpl() {
 }
 
 ThreadedConnectionPoolImpl::~ThreadedConnectionPoolImpl() {
@@ -87,17 +78,6 @@ void ThreadedConnectionPoolImpl::addClientSocket(
 				writeCallback));
 
 	th.detach();
-}
-
-void ThreadedConnectionPoolImpl::addClientSocket(
-		std::unique_ptr<ClientSocket> clientSocket) {
-
-	addClientSocket(
-			std::move(clientSocket),
-			readCB,
-			connectCB,
-			disconnectCB,
-			writeCB);
 }
 
 } /* namespace socks */

@@ -22,12 +22,7 @@ namespace socks {
 
 class ThreadedConnectionPoolImpl: public ConnectionPoolImpl {
 public:
-	ThreadedConnectionPoolImpl() = delete;
-	ThreadedConnectionPoolImpl(
-			ClientCallback readCallback,
-			ClientCallback connectCallback = defaultCallback,
-			ClientCallback disconnectCallback = defaultCallback,
-			ClientCallback writeCallback = defaultCallback);
+	ThreadedConnectionPoolImpl();
 	virtual ~ThreadedConnectionPoolImpl();
 	void addClientSocket(
 			std::unique_ptr<ClientSocket> clientSocket,
@@ -35,7 +30,6 @@ public:
 			ClientCallback connectCallback = defaultCallback,
 			ClientCallback disconnectCallback = defaultCallback,
 			ClientCallback writeCallback = defaultCallback) override;
-	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) override;
 private:
 	ClientCallback readCB, connectCB, disconnectCB, writeCB;
 };

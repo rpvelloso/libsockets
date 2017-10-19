@@ -37,12 +37,11 @@ namespace factory {
 			ClientCallback writeCallback) {
 		return Server(new ServerImpl(
 				new ServerSocket(),
-				new ConnectionPool(new MultiplexedConnectionPoolImpl(
-					numThreads,
-					readCallback,
-					connectCallback,
-					disconnectCallback,
-					writeCallback))));
+				new ConnectionPool(new MultiplexedConnectionPoolImpl(numThreads)),
+				readCallback,
+				connectCallback,
+				disconnectCallback,
+				writeCallback));
 	};
 
 	Server makeThreadedServer(
@@ -52,11 +51,11 @@ namespace factory {
 			ClientCallback writeCallback) {
 		return Server(new ServerImpl(
 				new ServerSocket(),
-				new ConnectionPool(new ThreadedConnectionPoolImpl(
-					readCallback,
-					connectCallback,
-					disconnectCallback,
-					writeCallback))));
+				new ConnectionPool(new ThreadedConnectionPoolImpl()),
+				readCallback,
+				connectCallback,
+				disconnectCallback,
+				writeCallback));
 	};
 }
 

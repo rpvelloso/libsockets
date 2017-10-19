@@ -31,10 +31,10 @@ class BufferedClientSocket {
 public:
 	BufferedClientSocket(
 			std::unique_ptr<ClientSocket> impl,
-			ClientCallback readCallback,
-			ClientCallback connectCallback,
-			ClientCallback disconnectCallback,
-			ClientCallback writeCallback
+			ClientCallback readCallback = defaultCallback,
+			ClientCallback connectCallback = defaultCallback,
+			ClientCallback disconnectCallback = defaultCallback,
+			ClientCallback writeCallback = defaultCallback
 			);
 	bool getHasOutput();
 	std::stringstream &getOutputBuffer();
@@ -49,6 +49,7 @@ public:
 	void connectCallback();
 	void disconnectCallback();
 	void writeCallback();
+	int setNonBlockingIO(bool status);
 private:
 	ClientCallback readCallbackFunc, connectCallbackFunc, disconnectCallbackFunc, writeCallbackFunc;
 	std::unique_ptr<ClientSocket> impl;

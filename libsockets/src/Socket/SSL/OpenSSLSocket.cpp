@@ -43,13 +43,12 @@ namespace factory {
 			ClientCallback disconnectCallback,
 			ClientCallback writeCallback) {
 		return Server(new ServerImpl(
-				new ServerSocket(new OpenSSLSocket(socketFactory.createSocketImpl())),
-				new ConnectionPool(new MultiplexedConnectionPoolImpl(
-					numThreads,
-					readCallback,
-					connectCallback,
-					disconnectCallback,
-					writeCallback))));
+			new ServerSocket(new OpenSSLSocket(socketFactory.createSocketImpl())),
+			new ConnectionPool(new MultiplexedConnectionPoolImpl(numThreads)),
+			readCallback,
+			connectCallback,
+			disconnectCallback,
+			writeCallback));
 	};
 
 	Server makeThreadedSSLServer(
@@ -58,12 +57,12 @@ namespace factory {
 			ClientCallback disconnectCallback,
 			ClientCallback writeCallback) {
 		return Server(new ServerImpl(
-				new ServerSocket(new OpenSSLSocket(socketFactory.createSocketImpl())),
-				new ConnectionPool(new ThreadedConnectionPoolImpl(
-					readCallback,
-					connectCallback,
-					disconnectCallback,
-					writeCallback))));
+			new ServerSocket(new OpenSSLSocket(socketFactory.createSocketImpl())),
+			new ConnectionPool(new ThreadedConnectionPoolImpl()),
+			readCallback,
+			connectCallback,
+			disconnectCallback,
+			writeCallback));
 	};
 
 }

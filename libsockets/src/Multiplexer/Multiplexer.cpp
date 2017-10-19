@@ -13,6 +13,7 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Socket/BufferedClientSocket.h"
 #include "Factory/SocketFactory.h"
 #include "Multiplexer/Multiplexer.h"
 
@@ -33,22 +34,9 @@ Multiplexer::~Multiplexer() {
 		thread->join();
 };
 
-void Multiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSocket) {
+void Multiplexer::addClientSocket(
+		std::unique_ptr<BufferedClientSocket> clientSocket) {
 	impl->addClientSocket(std::move(clientSocket));
-};
-
-void Multiplexer::addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-		ClientCallback readCallback,
-		ClientCallback connectCallback,
-		ClientCallback disconnectCallback,
-		ClientCallback writeCallback) {
-	impl->addClientSocket(
-			std::move(clientSocket),
-			readCallback,
-			connectCallback,
-			disconnectCallback,
-			writeCallback
-	);
 };
 
 void Multiplexer::multiplex() {
@@ -65,17 +53,8 @@ size_t Multiplexer::getClientCount() {
 };
 
 namespace factory {
-	Multiplexer makeMultiplexer(
-		ClientCallback readCallback,
-		ClientCallback connectCallback,
-		ClientCallback disconnectCallback,
-		ClientCallback writeCallback) {
-		return Multiplexer(new MultiplexerImpl(
-				socketFactory.createPoll(),
-				readCallback,
-				connectCallback,
-				disconnectCallback,
-				writeCallback));
+	Multiplexer makeMultiplexer() {
+		return Multiplexer(new MultiplexerImpl(socketFactory.createPoll()));
 	};
 }
 

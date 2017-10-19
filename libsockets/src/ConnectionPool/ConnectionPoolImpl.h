@@ -32,7 +32,6 @@ public:
 			ClientCallback connectCallback = defaultCallback,
 			ClientCallback disconnectCallback = defaultCallback,
 			ClientCallback writeCallback = defaultCallback) = 0;
-	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket) = 0;
 };
 
 } /* namespace socks */

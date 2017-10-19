@@ -35,13 +35,7 @@ public:
 
 	Multiplexer(MultiplexerImpl *impl);
 	~Multiplexer();
-	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket);
-	void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-			ClientCallback readCallback,
-			ClientCallback connectCallback = defaultCallback,
-			ClientCallback disconnectCallback = defaultCallback,
-			ClientCallback writeCallback = defaultCallback);
-
+	void addClientSocket(std::unique_ptr<BufferedClientSocket> clientSocket);
 	void multiplex();
 	void cancel();
 	void interrupt();
@@ -52,11 +46,7 @@ protected:
 };
 
 namespace factory {
-	Multiplexer makeMultiplexer(
-		ClientCallback readCallbackFunc = defaultCallback,
-		ClientCallback connectCallbackFunc = defaultCallback,
-		ClientCallback disconnectCallbackFunc = defaultCallback,
-		ClientCallback writeCallbackFunc = defaultCallback);
+	Multiplexer makeMultiplexer();
 }
 
 }

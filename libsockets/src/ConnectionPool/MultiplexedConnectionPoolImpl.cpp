@@ -13,27 +13,16 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "Socket/BufferedClientSocket.h"
 #include "ConnectionPool/MultiplexedConnectionPoolImpl.h"
 
 namespace socks {
 
-MultiplexedConnectionPoolImpl::MultiplexedConnectionPoolImpl(
-	size_t nthreads,
-	ClientCallback readCallback,
-	ClientCallback connectCallback,
-	ClientCallback disconnectCallback,
-	ClientCallback writeCallback)
-	 	 : ConnectionPoolImpl() {
+MultiplexedConnectionPoolImpl::MultiplexedConnectionPoolImpl(size_t nthreads) {
 
 	nthreads = std::max((size_t) 1, nthreads);
 	for (size_t i = 0; i < nthreads; ++i)
-		multiplexers.emplace_back(
-				factory::makeMultiplexer(
-						readCallback,
-						connectCallback,
-						disconnectCallback,
-						writeCallback)
-		);
+		multiplexers.emplace_back(factory::makeMultiplexer());
 }
 
 void MultiplexedConnectionPoolImpl::addClientSocket(
@@ -42,18 +31,16 @@ void MultiplexedConnectionPoolImpl::addClientSocket(
 		ClientCallback connectCallback,
 		ClientCallback disconnectCallback,
 		ClientCallback writeCallback) {
+
 	getMultiplexer().addClientSocket(
-			std::move(clientSocket),
-			readCallback,
-			connectCallback,
-			disconnectCallback,
-			writeCallback);
+		std::make_unique<BufferedClientSocket>(
+		std::move(clientSocket),
+		readCallback,
+		connectCallback,
+		disconnectCallback,
+		writeCallback));
 
 };
-
-void MultiplexedConnectionPoolImpl::addClientSocket(std::unique_ptr<ClientSocket> clientSocket) {
-	getMultiplexer().addClientSocket(std::move(clientSocket));
-}
 
 MultiplexedConnectionPoolImpl::~MultiplexedConnectionPoolImpl() {
 }

@@ -27,13 +27,8 @@ namespace factory {
 		ClientCallback disconnectCallback,
 		ClientCallback writeCallback) {
 
-		return ConnectionPool(new MultiplexedConnectionPoolImpl(
-				numThreads,
-				readCallback,
-				connectCallback,
-				disconnectCallback,
-				writeCallback));
-
+		return ConnectionPool(
+			new MultiplexedConnectionPoolImpl(numThreads));
 	};
 
 	ConnectionPool makeThreadedConnectionPool(
@@ -42,12 +37,7 @@ namespace factory {
 		ClientCallback disconnectCallback,
 		ClientCallback writeCallback) {
 
-		return ConnectionPool(new ThreadedConnectionPoolImpl(
-				readCallback,
-				connectCallback,
-				disconnectCallback,
-				writeCallback));
-
+		return ConnectionPool(new ThreadedConnectionPoolImpl());
 	};
 }
 
@@ -69,10 +59,6 @@ void ConnectionPool::addClientSocket(
 			disconnectCallback,
 			writeCallback
 	);
-};
-
-void ConnectionPool::addClientSocket(std::unique_ptr<ClientSocket> clientSocket){
-	impl->addClientSocket(std::move(clientSocket));
 };
 
 } /* namespace socks */

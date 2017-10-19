@@ -35,18 +35,9 @@ using ClientListType = std::unordered_map<SocketFDType, std::unique_ptr<Buffered
 
 class MultiplexerImpl {
 public:
-	MultiplexerImpl(Poll *pollStrategy,
-			ClientCallback readCallbackFunc = defaultCallback,
-			ClientCallback connectCallbackFunc = defaultCallback,
-			ClientCallback disconnectCallbackFunc = defaultCallback,
-			ClientCallback writeCallbackFunc = defaultCallback);
+	MultiplexerImpl(Poll *pollStrategy);
 	virtual ~MultiplexerImpl();
-	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket);
-	virtual void addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-			ClientCallback readCallbackFunc,
-			ClientCallback connectCallbackFunc = defaultCallback,
-			ClientCallback disconnectCallbackFunc = defaultCallback,
-			ClientCallback writeCallbackFunc = defaultCallback);
+	virtual void addClientSocket(std::unique_ptr<BufferedClientSocket> clientSocket);
 	virtual size_t getClientCount();
 
 	virtual void cancel();
@@ -56,7 +47,6 @@ protected:
 	std::unique_ptr<Poll> pollStrategy;
 	std::unique_ptr<ClientSocket> sockIn;
 	std::mutex commandMutex, incomingClientsMutex;
-	ClientCallback readCallbackFunc, connectCallbackFunc, disconnectCallbackFunc, writeCallbackFunc;
 	ClientListType clients;
 	std::atomic<size_t> clientCount;
 	std::vector<std::unique_ptr<BufferedClientSocket>> incomingClients;
@@ -69,13 +59,6 @@ protected:
 	/*
 	 * Factory method that wraps a clientSocket with a multiplexing interface
 	 */
-	std::unique_ptr<BufferedClientSocket> makeMultiplexed(
-			std::unique_ptr<ClientSocket> clientSocket,
-			ClientCallback readCallbackFunc,
-			ClientCallback connectCallbackFunc,
-			ClientCallback disconnectCallbackFunc,
-			ClientCallback writeCallbackFunc);
-
 	bool readHandler(BufferedClientSocket &client);
 	bool writeHandler(BufferedClientSocket &client);
 };

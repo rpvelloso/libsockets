@@ -27,55 +27,27 @@ enum MultiplexerCommand : int {
 	INTERRUPT = 0x01
 };
 
-MultiplexerImpl::MultiplexerImpl(Poll *pollStrategy,
-		ClientCallback readCallbackFunc,
-		ClientCallback connectCallbackFunc,
-		ClientCallback disconnectCallbackFunc,
-		ClientCallback writeCallbackFunc) :
-				pollStrategy(pollStrategy),
-				readCallbackFunc(readCallbackFunc),
-				connectCallbackFunc(connectCallbackFunc),
-				disconnectCallbackFunc(disconnectCallbackFunc),
-				writeCallbackFunc(writeCallbackFunc),
-				clientCount(0) {
+MultiplexerImpl::MultiplexerImpl(Poll *pollStrategy) :
+		pollStrategy(pollStrategy),
+		clientCount(0) {
 
 	auto socketPair = socketFactory.createSocketPair();
 	sockIn = std::move(socketPair.first);
 	sockOutFD = socketPair.second->getImpl().getFD();
-	addClientSocket(std::move(socketPair.second));
+	addClientSocket(std::make_unique<BufferedClientSocket>(std::move(socketPair.second)));
 }
 
 MultiplexerImpl::~MultiplexerImpl() {
 }
 
-void MultiplexerImpl::addClientSocket(std::unique_ptr<ClientSocket> clientSocket,
-		ClientCallback readCallbackFunc,
-		ClientCallback connectCallbackFunc,
-		ClientCallback disconnectCallbackFunc,
-		ClientCallback writeCallbackFunc) {
-
+void MultiplexerImpl::addClientSocket(std::unique_ptr<BufferedClientSocket> clientSocket) {
 	std::lock_guard<std::mutex> lock(incomingClientsMutex);
 
 
 	clientSocket->setNonBlockingIO(true);
-	incomingClients.push_back(
-		makeMultiplexed(
-			std::move(clientSocket),
-			readCallbackFunc,
-			connectCallbackFunc,
-			disconnectCallbackFunc,
-			writeCallbackFunc)
-	);
+	clientSocket->connectCallback();
+	incomingClients.push_back(std::move(clientSocket));
 	interrupt();
-}
-
-void MultiplexerImpl::addClientSocket(std::unique_ptr<ClientSocket> clientSocket) {
-	addClientSocket(
-			std::move(clientSocket),
-			this->readCallbackFunc,
-			this->connectCallbackFunc,
-			this->disconnectCallbackFunc,
-			this->writeCallbackFunc);
 }
 
 void MultiplexerImpl::removeClientSocket(BufferedClientSocket &clientSocket) {
@@ -156,8 +128,8 @@ void MultiplexerImpl::multiplex() {
 			std::lock_guard<std::mutex> lock(incomingClientsMutex);
 
 			for (size_t i = 0; i < incomingClients.size(); ++i) {
-				auto ic = std::move(incomingClients[i]);
-				clients[ic->getImpl().getFD()] = std::move(ic);
+				auto fd = incomingClients[i]->getImpl().getFD();
+				clients[fd] = std::move(incomingClients[i]);
 			}
 			incomingClients.clear();
 		}
@@ -166,26 +138,6 @@ void MultiplexerImpl::multiplex() {
 		clientCount = clients.size() - 1; // subtract self-pipe from count
 	}
 }
-
-std::unique_ptr<BufferedClientSocket> MultiplexerImpl::makeMultiplexed(
-		std::unique_ptr<ClientSocket> clientSocket,
-		ClientCallback readCallbackFunc,
-		ClientCallback connectCallbackFunc,
-		ClientCallback disconnectCallbackFunc,
-		ClientCallback writeCallbackFunc
-		) {
-	auto mCli = std::make_unique<BufferedClientSocket>(
-			std::move(clientSocket),
-			readCallbackFunc,
-			connectCallbackFunc,
-			disconnectCallbackFunc,
-			writeCallbackFunc);
-
-	if (!selfPipe(*mCli))
-		mCli->connectCallback();
-
-	return std::move(mCli);
-};
 
 bool MultiplexerImpl::readHandler(BufferedClientSocket &clientSocket) {
 	auto bufSize = clientSocket.getReceiveBufferSize();
