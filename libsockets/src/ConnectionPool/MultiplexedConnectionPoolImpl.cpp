@@ -25,21 +25,8 @@ MultiplexedConnectionPoolImpl::MultiplexedConnectionPoolImpl(size_t nthreads) {
 		multiplexers.emplace_back(factory::makeMultiplexer());
 }
 
-void MultiplexedConnectionPoolImpl::addClientSocket(
-		std::unique_ptr<ClientSocket> clientSocket,
-		ClientCallback readCallback,
-		ClientCallback connectCallback,
-		ClientCallback disconnectCallback,
-		ClientCallback writeCallback) {
-
-	getMultiplexer().addClientSocket(
-		std::make_unique<BufferedClientSocket>(
-		std::move(clientSocket),
-		readCallback,
-		connectCallback,
-		disconnectCallback,
-		writeCallback));
-
+void MultiplexedConnectionPoolImpl::addClientSocket(std::unique_ptr<BufferedClientSocket> clientSocket) {
+	getMultiplexer().addClientSocket(std::move(clientSocket));
 };
 
 MultiplexedConnectionPoolImpl::~MultiplexedConnectionPoolImpl() {

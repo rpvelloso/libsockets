@@ -23,6 +23,9 @@
 
 namespace socks {
 
+using ClientCallback = std::function<void(size_t, std::istream &, std::ostream &)>;
+extern ClientCallback defaultCallback;
+
 /*
  * Wrapper class. Adds multiplexing and buffering capabilities to a ClientSocket.
  */
@@ -30,12 +33,11 @@ namespace socks {
 class BufferedClientSocket {
 public:
 	BufferedClientSocket(
-			std::unique_ptr<ClientSocket> impl,
-			ClientCallback readCallback = defaultCallback,
-			ClientCallback connectCallback = defaultCallback,
-			ClientCallback disconnectCallback = defaultCallback,
-			ClientCallback writeCallback = defaultCallback
-			);
+		std::unique_ptr<ClientSocket> impl,
+		ClientCallback readCallback = defaultCallback,
+		ClientCallback connectCallback = defaultCallback,
+		ClientCallback disconnectCallback = defaultCallback,
+		ClientCallback writeCallback = defaultCallback);
 	bool getHasOutput();
 	std::stringstream &getOutputBuffer();
 	std::stringstream &getInputBuffer();

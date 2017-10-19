@@ -18,6 +18,8 @@
 
 namespace socks {
 
+ClientCallback defaultCallback = [](size_t id, std::istream &inp, std::ostream &outp){}; // noop()
+
 BufferedClientSocket::BufferedClientSocket(
 		std::unique_ptr<ClientSocket> impl,
 		ClientCallback readCallback,

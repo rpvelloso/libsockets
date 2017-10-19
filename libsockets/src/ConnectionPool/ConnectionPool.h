@@ -18,6 +18,7 @@
 
 #include <memory>
 
+#include "Socket/BufferedClientSocket.h"
 #include "ConnectionPool/ConnectionPoolImpl.h"
 
 namespace socks {
@@ -25,12 +26,7 @@ namespace socks {
 class ConnectionPool {
 public:
 	ConnectionPool(ConnectionPoolImpl *impl);
-	void addClientSocket(
-			std::unique_ptr<ClientSocket> clientSocket,
-			ClientCallback readCallback,
-			ClientCallback connectCallback = defaultCallback,
-			ClientCallback disconnectCallback = defaultCallback,
-			ClientCallback writeCallback = defaultCallback);
+	void addClientSocket(std::unique_ptr<BufferedClientSocket> clientSocket);
 private:
 	std::unique_ptr<ConnectionPoolImpl> impl;
 };

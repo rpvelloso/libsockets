@@ -45,11 +45,12 @@ public:
 
 		while (true) {
 			connectionPool->addClientSocket(
-				std::make_unique<ClientSocket>(serverSocket->acceptConnection()),
-				readCB,
-				connectCB,
-				disconnectCB,
-				writeCB);
+				std::make_unique<BufferedClientSocket>(
+					std::make_unique<ClientSocket>(serverSocket->acceptConnection()),
+					readCB,
+					connectCB,
+					disconnectCB,
+					writeCB));
 		}
 	};
 	virtual std::string getPort() {

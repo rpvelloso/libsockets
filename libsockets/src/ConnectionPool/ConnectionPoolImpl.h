@@ -18,7 +18,7 @@
 
 #include <memory>
 
-#include "Socket/ClientSocket.h"
+#include "Socket/BufferedClientSocket.h"
 
 namespace socks {
 
@@ -26,12 +26,7 @@ class ConnectionPoolImpl {
 public:
 	ConnectionPoolImpl() {};
 	virtual ~ConnectionPoolImpl() {};
-	virtual void addClientSocket(
-			std::unique_ptr<ClientSocket> clientSocket,
-			ClientCallback readCallback,
-			ClientCallback connectCallback = defaultCallback,
-			ClientCallback disconnectCallback = defaultCallback,
-			ClientCallback writeCallback = defaultCallback) = 0;
+	virtual void addClientSocket(std::unique_ptr<BufferedClientSocket> clientSocket) = 0;
 };
 
 } /* namespace socks */

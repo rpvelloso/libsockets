@@ -16,6 +16,7 @@
 #ifndef SRC_CONNECTIONPOOL_MULTIPLEXEDCONNECTIONPOOLIMPL_H_
 #define SRC_CONNECTIONPOOL_MULTIPLEXEDCONNECTIONPOOLIMPL_H_
 
+#include "Socket/BufferedClientSocket.h"
 #include "Multiplexer/Multiplexer.h"
 #include "ConnectionPool/ConnectionPool.h"
 
@@ -27,12 +28,7 @@ public:
 	MultiplexedConnectionPoolImpl(size_t nthreads);
 	virtual ~MultiplexedConnectionPoolImpl();
 
-	void addClientSocket(
-			std::unique_ptr<ClientSocket> clientSocket,
-			ClientCallback readCallback,
-			ClientCallback connectCallback = defaultCallback,
-			ClientCallback disconnectCallback = defaultCallback,
-			ClientCallback writeCallback = defaultCallback) override;
+	void addClientSocket(std::unique_ptr<BufferedClientSocket> clientSocket) override;
 private:
 	std::vector<Multiplexer> multiplexers;
 

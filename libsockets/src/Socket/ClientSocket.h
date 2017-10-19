@@ -44,9 +44,6 @@ private:
 	size_t receiveBufferSize = 0;
 };
 
-using ClientCallback = std::function<void(size_t, std::istream &, std::ostream &)>;
-extern ClientCallback defaultCallback;
-
 namespace factory {
 	ClientSocket makeClientSocket();
 }

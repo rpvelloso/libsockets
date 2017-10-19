@@ -16,6 +16,7 @@
 #ifndef SRC_CONNECTIONPOOL_THREADEDCONNECTIONPOOLIMPL_H_
 #define SRC_CONNECTIONPOOL_THREADEDCONNECTIONPOOLIMPL_H_
 
+#include "Socket/BufferedClientSocket.h"
 #include "ConnectionPool/ConnectionPoolImpl.h"
 
 namespace socks {
@@ -24,14 +25,7 @@ class ThreadedConnectionPoolImpl: public ConnectionPoolImpl {
 public:
 	ThreadedConnectionPoolImpl();
 	virtual ~ThreadedConnectionPoolImpl();
-	void addClientSocket(
-			std::unique_ptr<ClientSocket> clientSocket,
-			ClientCallback readCallback,
-			ClientCallback connectCallback = defaultCallback,
-			ClientCallback disconnectCallback = defaultCallback,
-			ClientCallback writeCallback = defaultCallback) override;
-private:
-	ClientCallback readCB, connectCB, disconnectCB, writeCB;
+	void addClientSocket(std::unique_ptr<BufferedClientSocket> clientSocket) override;
 };
 
 } /* namespace socks */

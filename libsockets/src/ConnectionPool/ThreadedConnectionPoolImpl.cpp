@@ -22,35 +22,35 @@
 
 namespace socks {
 
-void threadFunction(BufferedClientSocket clientSocket) {
-	auto recvBufSize = clientSocket.getReceiveBufferSize();
+void threadFunction(std::unique_ptr<BufferedClientSocket> clientSocket) {
+	auto recvBufSize = clientSocket->getReceiveBufferSize();
 	char recvBuf[recvBufSize];
 	int len;
 
-	clientSocket.connectCallback();
+	clientSocket->connectCallback();
 
 	while (true) {
-		auto &outputBuffer = clientSocket.getOutputBuffer();
-		auto &inputBuffer = clientSocket.getInputBuffer();
-		while (clientSocket.getHasOutput()) {
+		auto &outputBuffer = clientSocket->getOutputBuffer();
+		auto &inputBuffer = clientSocket->getInputBuffer();
+		while (clientSocket->getHasOutput()) {
 			auto sndBufSize = outputBuffer.rdbuf()->in_avail();
 			char sndBuf[sndBufSize];
 
 			outputBuffer.readsome(sndBuf, sndBufSize);
-			clientSocket.sendData(sndBuf, outputBuffer.gcount());
+			clientSocket->sendData(sndBuf, outputBuffer.gcount());
 		}
 		outputBuffer.clear();
 		outputBuffer.str(std::string());
-		clientSocket.writeCallback();
+		clientSocket->writeCallback();
 
-		if ((len = clientSocket.receiveData(recvBuf, recvBufSize)) > 0) {
+		if ((len = clientSocket->receiveData(recvBuf, recvBufSize)) > 0) {
 			inputBuffer.write(recvBuf, len);
-			clientSocket.readCallback();
+			clientSocket->readCallback();
 		} else
 			break;
 	}
 
-	clientSocket.disconnectCallback();
+	clientSocket->disconnectCallback();
 };
 
 ThreadedConnectionPoolImpl::ThreadedConnectionPoolImpl() {
@@ -59,23 +59,10 @@ ThreadedConnectionPoolImpl::ThreadedConnectionPoolImpl() {
 ThreadedConnectionPoolImpl::~ThreadedConnectionPoolImpl() {
 }
 
-void ThreadedConnectionPoolImpl::addClientSocket(
-		std::unique_ptr<ClientSocket> clientSocket,
-		ClientCallback readCallback,
-		ClientCallback connectCallback,
-		ClientCallback disconnectCallback,
-		ClientCallback writeCallback) {
-
+void ThreadedConnectionPoolImpl::addClientSocket(std::unique_ptr<BufferedClientSocket> clientSocket) {
 	clientSocket->setNonBlockingIO(false);
 
-	std::thread th(
-			threadFunction,
-			BufferedClientSocket(
-				std::move(clientSocket),
-				readCallback,
-				connectCallback,
-				disconnectCallback,
-				writeCallback));
+	std::thread th(threadFunction,std::move(clientSocket));
 
 	th.detach();
 }
