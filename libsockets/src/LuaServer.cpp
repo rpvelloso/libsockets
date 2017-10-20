@@ -24,6 +24,37 @@
 class Context {
 public:
 	size_t id;
+
+	void initLua(const std::string &scriptFile) {
+		lua.open_libraries();
+
+		auto script = lua.load_file(scriptFile);
+
+		if (script.status() == sol::load_status::ok) {
+			bindContext();
+			script();
+		}
+
+		if (script.status() != sol::load_status::ok) {
+			std::cout << "Lua error: " << lua_tostring(lua.lua_state(), -1) << std::endl;
+			lua_pop(lua.lua_state(), 1);
+			throw std::runtime_error("error loading script " + scriptFile);
+		}
+		serverFunc = lua["processCmd"];
+	};
+
+	std::string processCmd(const std::string &cmd) {
+		return serverFunc(*this, cmd);
+	};
+private:
+	sol::state lua;
+	std::function<std::string(Context &, std::string)> serverFunc;
+
+	void bindContext() {
+		lua.new_usertype<Context>(
+			"Context",
+			"id",&Context::id);
+	};
 };
 
 class LuaServer {
@@ -53,19 +84,24 @@ public:
 		if (host == "")
 			host = "127.0.0.1";
 
+		if (scriptFile == "") {
+			usage(argv[0]);
+			return -1;
+		}
+
 		return 0;
 	};
 
 	void start() {
-		auto server = socks::factory::makeMultiplexedServer<Context>(4,
-		[this](Context &ctx, std::istream &inp, std::ostream &outp) {
+		auto server = socks::factory::makeThreadedServer<Context>(//4,
+		[](Context &ctx, std::istream &inp, std::ostream &outp) {
 			while (inp) {
 				std::string cmd;
 
 				auto savePos = inp.tellg();
 				std::getline(inp, cmd);
 				if (inp && !inp.eof()) {
-					outp << this->processCmd(ctx, cmd);
+					outp << ctx.processCmd(cmd);
 				} else {
 					inp.clear();
 					inp.seekg(savePos);
@@ -74,7 +110,8 @@ public:
 			}
 		},
 		[this](Context &ctx, std::istream &inp, std::ostream &outp) {
-			ctx.id = socks::factory::makeID();
+			ctx.id = this->createID();
+			ctx.initLua(this->scriptFile);
 		});
 
 		std::thread listenThread([&server, this](){
@@ -86,37 +123,15 @@ public:
 		std::cout << "terminating..." << std::endl;
 	};
 private:
+	size_t createID() {
+		std::atomic<size_t> id(0);
+		return ++id;
+	};
+
 	void usage(const std::string &program) {
 		std::cout << "Usage:" << std::endl;
 		std::cout <<  program << "[-h host] [-p port] [-v]" << std::endl;
 		std::cout << "-v verbose (stderr)" << std::endl << std::endl;
-	};
-
-	void bindContext(sol::state &lua) {
-		lua.new_usertype<Context>(
-			"Context",
-			"id",&Context::id);
-	};
-
-	std::string processCmd(Context &ctx, const std::string &cmd) {
-		sol::state lua;
-		lua.open_libraries();
-
-		auto script = lua.load_file(scriptFile);
-
-		if (script.status() == sol::load_status::ok) {
-			bindContext(lua);
-			script();
-		}
-
-		if (script.status() != sol::load_status::ok) {
-			std::cout << "Lua error: " << lua_tostring(lua.lua_state(), -1) << std::endl;
-			lua_pop(lua.lua_state(), 1);
-			throw std::runtime_error("error loading script " + scriptFile);
-		}
-
-		std::function<std::string(Context &, std::string)> serverFunc = lua["processCmd"];
-		return serverFunc(ctx, cmd);
 	};
 
 	std::string host = "", port = "";
