@@ -18,7 +18,7 @@
 
 namespace socks {
 
-MultiplexedConnectionPoolImpl::MultiplexedConnectionPoolImpl(size_t nthreads) {
+MultiplexedConnectionPoolImpl::MultiplexedConnectionPoolImpl(size_t nthreads) : ConnectionPoolImpl() {
 
 	nthreads = std::max((size_t) 1, nthreads);
 	for (size_t i = 0; i < nthreads; ++i)

@@ -53,7 +53,7 @@ void threadFunction(std::unique_ptr<BufferedClientSocket> clientSocket) {
 	clientSocket->disconnectCallback();
 };
 
-ThreadedConnectionPoolImpl::ThreadedConnectionPoolImpl() {
+ThreadedConnectionPoolImpl::ThreadedConnectionPoolImpl() : ConnectionPoolImpl() {
 }
 
 ThreadedConnectionPoolImpl::~ThreadedConnectionPoolImpl() {
