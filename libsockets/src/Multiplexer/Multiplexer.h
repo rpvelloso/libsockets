@@ -35,7 +35,7 @@ public:
 
 	Multiplexer(MultiplexerImpl *impl);
 	~Multiplexer();
-	void addClientSocket(std::unique_ptr<BufferedClientSocket> clientSocket);
+	void addClientSocket(std::unique_ptr<BufferedClientSocketInterface> clientSocket);
 	void multiplex();
 	void cancel();
 	void interrupt();

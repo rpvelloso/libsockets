@@ -33,7 +33,7 @@ ConnectionPool::ConnectionPool(ConnectionPoolImpl *impl) : impl(impl) {
 
 };
 
-void ConnectionPool::addClientSocket(std::unique_ptr<BufferedClientSocket> clientSocket) {
+void ConnectionPool::addClientSocket(std::unique_ptr<BufferedClientSocketInterface> clientSocket) {
 	impl->addClientSocket(std::move(clientSocket));
 };
 

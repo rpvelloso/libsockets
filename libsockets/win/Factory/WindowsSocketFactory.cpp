@@ -14,6 +14,7 @@
  */
 
 #include "defs.h"
+#include "Socket/ServerSocket.h"
 #include "Socket/WindowsSocket.h"
 #include "Socket/WindowsSocketAddress.h"
 #include "Factory/SocketFactory.h"

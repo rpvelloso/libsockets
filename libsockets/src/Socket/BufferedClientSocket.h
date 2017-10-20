@@ -20,44 +20,52 @@
 #include <sstream>
 
 #include "Socket/ClientSocket.h"
+#include "Socket/BufferedClientSocketInterface.h"
 
 namespace socks {
 
-using ClientCallback = std::function<void(size_t, std::istream &, std::ostream &)>;
-extern ClientCallback defaultCallback;
+template<class ClientContext>
+using ClientCallback = std::function<void(ClientContext &, std::istream &, std::ostream &)>;
 
 /*
  * Wrapper class. Adds multiplexing and buffering capabilities to a ClientSocket.
  */
 
-class BufferedClientSocket {
+template<class ClientContext>
+class BufferedClientSocket : public BufferedClientSocketInterface {
 public:
 	BufferedClientSocket(
 		std::unique_ptr<ClientSocket> impl,
-		ClientCallback readCallback = defaultCallback,
-		ClientCallback connectCallback = defaultCallback,
-		ClientCallback disconnectCallback = defaultCallback,
-		ClientCallback writeCallback = defaultCallback);
-	bool getHasOutput();
-	std::stringstream &getOutputBuffer();
-	std::stringstream &getInputBuffer();
+		ClientCallback<ClientContext> readCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){},
+		ClientCallback<ClientContext> connectCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){},
+		ClientCallback<ClientContext> disconnectCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){},
+		ClientCallback<ClientContext> writeCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){}) :
+		impl(std::move(impl)),
+		readCB(readCallback),
+		connectCB(connectCallback),
+		disconnectCB(disconnectCallback),
+		writeCB(writeCallback) {};
+	virtual ~BufferedClientSocket() {};
+	bool getHasOutput() override {return outputBuffer.rdbuf()->in_avail() > 0;};
+	std::stringstream &getOutputBuffer() override {return outputBuffer;};
+	std::stringstream &getInputBuffer() override {return inputBuffer;};
 
-	int receiveData(void *buf, size_t len);
-	int sendData(const void *buf, size_t len);
-	size_t getSendBufferSize() const;
-	size_t getReceiveBufferSize() const;
-	SocketImpl &getImpl();
-	void readCallback();
-	void connectCallback();
-	void disconnectCallback();
-	void writeCallback();
-	int setNonBlockingIO(bool status);
+	int receiveData(void *buf, size_t len) override {return impl->receiveData(buf, len);};
+	int sendData(const void *buf, size_t len) override {return impl->sendData(buf, len);};
+	size_t getSendBufferSize() const override {return impl->getSendBufferSize();};
+	size_t getReceiveBufferSize() const override {return impl->getReceiveBufferSize();};
+	int setNonBlockingIO(bool status) override {return impl->setNonBlockingIO(status);};
+	SocketImpl &getImpl() override {return impl->getImpl();};
+	void readCallback() override {readCB(clientData, inputBuffer, outputBuffer);};
+	void connectCallback() override {connectCB(clientData, inputBuffer, outputBuffer);};
+	void disconnectCallback() override {disconnectCB(clientData, inputBuffer, outputBuffer);};
+	void writeCallback() override {writeCB(clientData, inputBuffer, outputBuffer);};
 private:
-	ClientCallback readCallbackFunc, connectCallbackFunc, disconnectCallbackFunc, writeCallbackFunc;
 	std::unique_ptr<ClientSocket> impl;
+	ClientCallback<ClientContext> readCB, connectCB, disconnectCB, writeCB;
 	std::stringstream outputBuffer;
 	std::stringstream inputBuffer;
-	size_t id;
+	ClientContext clientData;
 };
 
 }

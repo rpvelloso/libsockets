@@ -36,7 +36,7 @@ namespace factory {
 	SocketStream makeSSLSocketStream() {
 		return SocketStream(std::make_unique<ClientSocket>(makeSSLClientSocket()));
 	}
-	Server makeMultiplexedSSLServer(
+	/*Server makeMultiplexedSSLServer(
 			size_t numThreads,
 			ClientCallback readCallback,
 			ClientCallback connectCallback,
@@ -63,7 +63,7 @@ namespace factory {
 			connectCallback,
 			disconnectCallback,
 			writeCallback));
-	};
+	};*/
 
 }
 

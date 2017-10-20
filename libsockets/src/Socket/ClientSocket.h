@@ -46,6 +46,7 @@ private:
 
 namespace factory {
 	ClientSocket makeClientSocket();
+	size_t makeID();
 }
 
 }

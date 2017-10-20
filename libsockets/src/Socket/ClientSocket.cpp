@@ -22,6 +22,12 @@ namespace factory {
 	ClientSocket makeClientSocket() {
 		return ClientSocket(socketFactory.createSocketImpl());
 	}
+
+	size_t makeID() {
+		static std::atomic<std::size_t> id(0);
+		return ++id;
+	}
+
 }
 
 ClientSocket& ClientSocket::operator =(ClientSocket&& rhs) {

@@ -18,49 +18,62 @@
 
 #include <memory>
 
-#include "Socket/ServerSocket.h"
+#include "Socket/BufferedClientSocket.h"
 #include "ConnectionPool/ConnectionPool.h"
+#include "Socket/ServerSocket.h"
 
 namespace socks {
 
-class ServerImpl {
+class ServerImplInterface {
+public:
+	ServerImplInterface() {};
+	virtual ~ServerImplInterface() {};
+	virtual void listen(const std::string &bindAddr, const std::string &port) = 0;
+	virtual std::string getPort() = 0;
+};
+
+template<class ClientContext>
+class ServerImpl : public ServerImplInterface {
 public:
 	ServerImpl(
-			ServerSocket *serverSocket,
-			ConnectionPool *connectionPool,
-			ClientCallback readCallback = defaultCallback,
-			ClientCallback connectCallback = defaultCallback,
-			ClientCallback disconnectCallback = defaultCallback,
-			ClientCallback writeCallback = defaultCallback) :
-			serverSocket(serverSocket),
-			connectionPool(connectionPool),
-			readCB(readCallback),
-			connectCB(connectCallback),
-			disconnectCB(disconnectCallback),
-			writeCB(writeCallback) {};
+		ServerSocket *serverSocket,
+		ConnectionPool *connectionPool,
+		ClientCallback<ClientContext> readCallback,
+		ClientCallback<ClientContext> connectCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){},
+		ClientCallback<ClientContext> disconnectCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){},
+		ClientCallback<ClientContext> writeCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){}) :
+		ServerImplInterface(),
+		serverSocket(serverSocket),
+		connectionPool(connectionPool),
+		readCB(readCallback),
+		connectCB(connectCallback),
+		disconnectCB(disconnectCallback),
+		writeCB(writeCallback) {};
 
 	virtual ~ServerImpl() {};
-	virtual void listen(const std::string &bindAddr, const std::string &port) {
+	void listen(const std::string &bindAddr, const std::string &port) override {
 		serverSocket->listenForConnections(bindAddr, port);
 
 		while (true) {
-			connectionPool->addClientSocket(
-				std::make_unique<BufferedClientSocket>(
-					std::make_unique<ClientSocket>(serverSocket->acceptConnection()),
-					readCB,
-					connectCB,
-					disconnectCB,
-					writeCB));
+			std::unique_ptr<BufferedClientSocketInterface> clientSocket(
+					new BufferedClientSocket<ClientContext>(
+							std::make_unique<ClientSocket>(serverSocket->acceptConnection()),
+							readCB,
+							connectCB,
+							disconnectCB,
+							writeCB));
+
+			connectionPool->addClientSocket(std::move(clientSocket));
 		}
 	};
-	virtual std::string getPort() {
+	std::string getPort() override {
 		return serverSocket->getPort();
 	};
 
 private:
 	std::unique_ptr<ServerSocket> serverSocket;
 	std::unique_ptr<ConnectionPool> connectionPool;
-	ClientCallback readCB, connectCB, disconnectCB, writeCB;
+	ClientCallback<ClientContext> readCB, connectCB, disconnectCB, writeCB;
 };
 
 }

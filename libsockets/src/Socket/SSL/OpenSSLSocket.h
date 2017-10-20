@@ -24,6 +24,9 @@
 #include "Socket/SocketStream.h"
 #include "Socket/SocketImpl.h"
 #include "Server/Server.h"
+#include "ConnectionPool/ThreadedConnectionPoolImpl.h"
+#include "ConnectionPool/MultiplexedConnectionPoolImpl.h"
+#include "Factory/SocketFactory.h"
 
 namespace socks {
 
@@ -81,17 +84,35 @@ namespace factory {
 	ClientSocket makeSSLClientSocket();
 	ServerSocket makeSSLServerSocket();
 	SocketStream makeSSLSocketStream();
+	template<class ClientContext>
 	Server makeMultiplexedSSLServer(
 		size_t numThreads,
-		ClientCallback readCallback,
-		ClientCallback connectCallback = defaultCallback,
-		ClientCallback disconnectCallback = defaultCallback,
-		ClientCallback writeCallback = defaultCallback);
+		ClientCallback<ClientContext> readCallback,
+		ClientCallback<ClientContext> connectCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){},
+		ClientCallback<ClientContext> disconnectCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){},
+		ClientCallback<ClientContext> writeCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){}) {
+		return Server(new ServerImpl<ClientContext>(
+			new ServerSocket(new OpenSSLSocket(socketFactory.createSocketImpl())),
+			new ConnectionPool(new MultiplexedConnectionPoolImpl(numThreads)),
+			readCallback,
+			connectCallback,
+			disconnectCallback,
+			writeCallback));
+	};
+	template<class ClientContext>
 	Server makeThreadedSSLServer(
-		ClientCallback readCallback,
-		ClientCallback connectCallback = defaultCallback,
-		ClientCallback disconnectCallback = defaultCallback,
-		ClientCallback writeCallback = defaultCallback);
+		ClientCallback<ClientContext> readCallback,
+		ClientCallback<ClientContext> connectCallback = [](ClientContext &cd, std::istream &inp, std::ostream &outp){},
+		ClientCallback<ClientContext> disconnectCallback = [](ClientContext &cd, std::istream &inp, std::ostream &outp){},
+		ClientCallback<ClientContext> writeCallback = [](ClientContext &cd, std::istream &inp, std::ostream &outp){}) {
+		return Server(new ServerImpl<ClientContext>(
+			new ServerSocket(new OpenSSLSocket(socketFactory.createSocketImpl())),
+			new ConnectionPool(new ThreadedConnectionPoolImpl()),
+			readCallback,
+			connectCallback,
+			disconnectCallback,
+			writeCallback));
+	};
 }
 
 }

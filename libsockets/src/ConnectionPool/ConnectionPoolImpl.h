@@ -16,9 +16,9 @@
 #ifndef SRC_CONNECTIONPOOL_CONNECTIONPOOLIMPL_H_
 #define SRC_CONNECTIONPOOL_CONNECTIONPOOLIMPL_H_
 
+#include <Socket/BufferedClientSocketInterface.h>
 #include <memory>
 
-#include "Socket/BufferedClientSocket.h"
 
 namespace socks {
 
@@ -26,7 +26,7 @@ class ConnectionPoolImpl {
 public:
 	ConnectionPoolImpl() {};
 	virtual ~ConnectionPoolImpl() {};
-	virtual void addClientSocket(std::unique_ptr<BufferedClientSocket> clientSocket) = 0;
+	virtual void addClientSocket(std::unique_ptr<BufferedClientSocketInterface> clientSocket) = 0;
 };
 
 } /* namespace socks */

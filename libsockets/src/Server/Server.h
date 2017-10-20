@@ -18,32 +18,55 @@
 
 #include <memory>
 
+//#include "Socket/BufferedClientSocket.h"
 #include "Socket/ClientSocket.h"
 #include "Server/ServerImpl.h"
+#include "ConnectionPool/MultiplexedConnectionPoolImpl.h"
+#include "ConnectionPool/ThreadedConnectionPoolImpl.h"
 
 namespace socks {
 
 class Server {
 public:
-	Server(ServerImpl *impl);
+	Server(ServerImplInterface *impl);
 	void listen(const std::string &bindAddr, const std::string &port);
 	std::string getPort();
 private:
-	std::unique_ptr<ServerImpl> impl;
+	std::unique_ptr<ServerImplInterface> impl;
 };
 
 namespace factory {
+	template<class ClientContext>
 	Server makeMultiplexedServer(
 		size_t numThreads,
-		ClientCallback readCallback,
-		ClientCallback connectCallback = defaultCallback,
-		ClientCallback disconnectCallback = defaultCallback,
-		ClientCallback writeCallback = defaultCallback);
+		ClientCallback<ClientContext> readCallback,
+		ClientCallback<ClientContext> connectCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){},
+		ClientCallback<ClientContext> disconnectCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){},
+		ClientCallback<ClientContext> writeCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){}) {
+		return Server(new ServerImpl<ClientContext>(
+				new ServerSocket(),
+				new ConnectionPool(new MultiplexedConnectionPoolImpl(numThreads)),
+				readCallback,
+				connectCallback,
+				disconnectCallback,
+				writeCallback));
+
+	};
+
+	template<class ClientContext>
 	Server makeThreadedServer(
-		ClientCallback readCallback,
-		ClientCallback connectCallback = defaultCallback,
-		ClientCallback disconnectCallback = defaultCallback,
-		ClientCallback writeCallback = defaultCallback);
+		ClientCallback<ClientContext> readCallback,
+		ClientCallback<ClientContext> connectCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){},
+		ClientCallback<ClientContext> disconnectCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){},
+		ClientCallback<ClientContext> writeCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){}) {
+		return Server(new ServerImpl<ClientContext>(
+				new ServerSocket(),
+				new ConnectionPool(new ThreadedConnectionPoolImpl()),
+				readCallback,
+				connectCallback,
+				disconnectCallback,
+				writeCallback));
+	};
 }
 
 }

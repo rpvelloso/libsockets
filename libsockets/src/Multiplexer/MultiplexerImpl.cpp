@@ -15,6 +15,7 @@
 
 #include <iostream>
 
+#include "Socket/BufferedClientSocketInterface.h"
 #include "Socket/BufferedClientSocket.h"
 #include "Factory/SocketFactory.h"
 #include "Multiplexer/MultiplexerImpl.h"
@@ -34,13 +35,14 @@ MultiplexerImpl::MultiplexerImpl(Poll *pollStrategy) :
 	auto socketPair = socketFactory.createSocketPair();
 	sockIn = std::move(socketPair.first);
 	sockOutFD = socketPair.second->getImpl().getFD();
-	addClientSocket(std::make_unique<BufferedClientSocket>(std::move(socketPair.second)));
+	std::unique_ptr<BufferedClientSocketInterface> sockOut(new BufferedClientSocket<size_t>(std::move(socketPair.second)));
+	addClientSocket(std::move(sockOut));
 }
 
 MultiplexerImpl::~MultiplexerImpl() {
 }
 
-void MultiplexerImpl::addClientSocket(std::unique_ptr<BufferedClientSocket> clientSocket) {
+void MultiplexerImpl::addClientSocket(std::unique_ptr<BufferedClientSocketInterface> clientSocket) {
 	std::lock_guard<std::mutex> lock(incomingClientsMutex);
 
 
@@ -50,7 +52,7 @@ void MultiplexerImpl::addClientSocket(std::unique_ptr<BufferedClientSocket> clie
 	interrupt();
 }
 
-void MultiplexerImpl::removeClientSocket(BufferedClientSocket &clientSocket) {
+void MultiplexerImpl::removeClientSocket(BufferedClientSocketInterface &clientSocket) {
 	clients.erase(clientSocket.getImpl().getFD());
 }
 
@@ -58,7 +60,7 @@ size_t MultiplexerImpl::getClientCount() {
 	return clientCount;
 }
 
-bool MultiplexerImpl::selfPipe(BufferedClientSocket &clientSocket) {
+bool MultiplexerImpl::selfPipe(BufferedClientSocketInterface &clientSocket) {
 	return clientSocket.getImpl().getFD() == sockOutFD;
 }
 
@@ -139,7 +141,7 @@ void MultiplexerImpl::multiplex() {
 	}
 }
 
-bool MultiplexerImpl::readHandler(BufferedClientSocket &clientSocket) {
+bool MultiplexerImpl::readHandler(BufferedClientSocketInterface &clientSocket) {
 	auto bufSize = clientSocket.getReceiveBufferSize();
 	char buf[bufSize];
 	int len;
@@ -158,7 +160,7 @@ bool MultiplexerImpl::readHandler(BufferedClientSocket &clientSocket) {
 	return true;
 }
 
-bool MultiplexerImpl::writeHandler(BufferedClientSocket &clientSocket) {
+bool MultiplexerImpl::writeHandler(BufferedClientSocketInterface &clientSocket) {
 	auto &outp = clientSocket.getOutputBuffer();
 
 	while (outp.rdbuf()->in_avail() > 0) {

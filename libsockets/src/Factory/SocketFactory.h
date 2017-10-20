@@ -23,7 +23,6 @@
 #include <atomic>
 
 #include "Factory/SocketFactoryImpl.h"
-#include "Server/Server.h"
 
 namespace socks {
 
@@ -40,7 +39,6 @@ public:
 			SocketProtocol protocol = SocketProtocol::UDP);
 	Poll *createPoll();
 	std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > createSocketPair();
-	static size_t createID();
 private:
 	std::unique_ptr<SocketFactoryImpl> impl;
 };

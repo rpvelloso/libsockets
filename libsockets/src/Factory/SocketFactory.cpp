@@ -32,12 +32,6 @@ SocketAddressImpl *SocketFactory::createSocketAddressImpl(
 	return impl->createSocketAddressImpl(host, port, protocol);
 };
 
-size_t SocketFactory::createID() {
-	static std::atomic<std::size_t> id(0);
-
-	return ++id;
-}
-
 SocketImpl* SocketFactory::createSocketImpl() {
 	return impl->createSocketImpl();
 }

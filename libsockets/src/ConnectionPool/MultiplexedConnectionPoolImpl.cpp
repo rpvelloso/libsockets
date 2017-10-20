@@ -13,7 +13,7 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Socket/BufferedClientSocket.h"
+#include <Socket/BufferedClientSocketInterface.h>
 #include "ConnectionPool/MultiplexedConnectionPoolImpl.h"
 
 namespace socks {
@@ -25,7 +25,7 @@ MultiplexedConnectionPoolImpl::MultiplexedConnectionPoolImpl(size_t nthreads) : 
 		multiplexers.emplace_back(factory::makeMultiplexer());
 }
 
-void MultiplexedConnectionPoolImpl::addClientSocket(std::unique_ptr<BufferedClientSocket> clientSocket) {
+void MultiplexedConnectionPoolImpl::addClientSocket(std::unique_ptr<BufferedClientSocketInterface> clientSocket) {
 	getMultiplexer().addClientSocket(std::move(clientSocket));
 };
 

@@ -29,15 +29,15 @@
 namespace socks {
 
 class Poll;
-class BufferedClientSocket;
+class BufferedClientSocketInterface;
 
-using ClientListType = std::unordered_map<SocketFDType, std::unique_ptr<BufferedClientSocket>>;
+using ClientListType = std::unordered_map<SocketFDType, std::unique_ptr<BufferedClientSocketInterface>>;
 
 class MultiplexerImpl {
 public:
 	MultiplexerImpl(Poll *pollStrategy);
 	virtual ~MultiplexerImpl();
-	virtual void addClientSocket(std::unique_ptr<BufferedClientSocket> clientSocket);
+	virtual void addClientSocket(std::unique_ptr<BufferedClientSocketInterface> clientSocket);
 	virtual size_t getClientCount();
 
 	virtual void cancel();
@@ -49,18 +49,18 @@ protected:
 	std::mutex commandMutex, incomingClientsMutex;
 	ClientListType clients;
 	std::atomic<size_t> clientCount;
-	std::vector<std::unique_ptr<BufferedClientSocket>> incomingClients;
+	std::vector<std::unique_ptr<BufferedClientSocketInterface>> incomingClients;
 	SocketFDType sockOutFD = InvalidSocketFD;
 
 	virtual void sendMultiplexerCommand(int cmd);
-	virtual void removeClientSocket(BufferedClientSocket &clientSocket);
-	virtual bool selfPipe(BufferedClientSocket &clientSocket);
+	virtual void removeClientSocket(BufferedClientSocketInterface &clientSocket);
+	virtual bool selfPipe(BufferedClientSocketInterface &clientSocket);
 
 	/*
 	 * Factory method that wraps a clientSocket with a multiplexing interface
 	 */
-	bool readHandler(BufferedClientSocket &client);
-	bool writeHandler(BufferedClientSocket &client);
+	bool readHandler(BufferedClientSocketInterface &client);
+	bool writeHandler(BufferedClientSocketInterface &client);
 };
 
 }

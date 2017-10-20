@@ -13,16 +13,16 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <Socket/BufferedClientSocketInterface.h>
 #include <thread>
 #include <sstream>
 
 #include "Socket/ClientSocket.h"
-#include "Socket/BufferedClientSocket.h"
 #include "ConnectionPool/ThreadedConnectionPoolImpl.h"
 
 namespace socks {
 
-void threadFunction(std::unique_ptr<BufferedClientSocket> clientSocket) {
+void threadFunction(std::unique_ptr<BufferedClientSocketInterface> clientSocket) {
 	auto recvBufSize = clientSocket->getReceiveBufferSize();
 	char recvBuf[recvBufSize];
 	int len;
@@ -59,7 +59,7 @@ ThreadedConnectionPoolImpl::ThreadedConnectionPoolImpl() : ConnectionPoolImpl() 
 ThreadedConnectionPoolImpl::~ThreadedConnectionPoolImpl() {
 }
 
-void ThreadedConnectionPoolImpl::addClientSocket(std::unique_ptr<BufferedClientSocket> clientSocket) {
+void ThreadedConnectionPoolImpl::addClientSocket(std::unique_ptr<BufferedClientSocketInterface> clientSocket) {
 	clientSocket->setNonBlockingIO(false);
 
 	std::thread th(threadFunction,std::move(clientSocket));

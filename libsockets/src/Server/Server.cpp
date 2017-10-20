@@ -20,7 +20,7 @@
 
 namespace socks {
 
-Server::Server(ServerImpl *impl) : impl(impl) {
+Server::Server(ServerImplInterface *impl) : impl(impl) {
 
 };
 
@@ -32,7 +32,7 @@ std::string Server::getPort() {
 	return impl->getPort();
 };
 
-namespace factory {
+/*namespace factory {
 	Server makeMultiplexedServer(
 			size_t numThreads,
 			ClientCallback readCallback,
@@ -61,7 +61,7 @@ namespace factory {
 				disconnectCallback,
 				writeCallback));
 	};
-}
+}*/
 
 }
 
