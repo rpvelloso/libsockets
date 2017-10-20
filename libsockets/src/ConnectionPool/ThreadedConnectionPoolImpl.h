@@ -16,7 +16,7 @@
 #ifndef SRC_CONNECTIONPOOL_THREADEDCONNECTIONPOOLIMPL_H_
 #define SRC_CONNECTIONPOOL_THREADEDCONNECTIONPOOLIMPL_H_
 
-#include <Socket/BufferedClientSocketInterface.h>
+#include "Socket/BufferedClientSocketInterface.h"
 #include "ConnectionPool/ConnectionPoolImpl.h"
 
 namespace socks {

@@ -16,7 +16,7 @@
 #ifndef SRC_CONNECTIONPOOL_MULTIPLEXEDCONNECTIONPOOLIMPL_H_
 #define SRC_CONNECTIONPOOL_MULTIPLEXEDCONNECTIONPOOLIMPL_H_
 
-#include <Socket/BufferedClientSocketInterface.h>
+#include "Socket/BufferedClientSocketInterface.h"
 #include "Multiplexer/Multiplexer.h"
 #include "ConnectionPool/ConnectionPool.h"
 

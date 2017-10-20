@@ -13,10 +13,10 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <Socket/BufferedClientSocketInterface.h>
 #include <thread>
 #include <sstream>
 
+#include "Socket/BufferedClientSocketInterface.h"
 #include "Socket/ClientSocket.h"
 #include "ConnectionPool/ThreadedConnectionPoolImpl.h"
 

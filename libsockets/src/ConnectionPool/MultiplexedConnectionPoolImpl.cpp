@@ -13,7 +13,7 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <Socket/BufferedClientSocketInterface.h>
+#include "Socket/BufferedClientSocketInterface.h"
 #include "ConnectionPool/MultiplexedConnectionPoolImpl.h"
 
 namespace socks {
