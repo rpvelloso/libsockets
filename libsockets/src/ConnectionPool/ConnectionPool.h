@@ -13,6 +13,8 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+//TODO: visitor to iterate over pool's clients and queue commands
+
 #ifndef SRC_CONNECTIONPOOL_CONNECTIONPOOL_H_
 #define SRC_CONNECTIONPOOL_CONNECTIONPOOL_H_
 
