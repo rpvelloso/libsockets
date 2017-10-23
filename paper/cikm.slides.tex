@@ -140,8 +140,8 @@ sources.
 \end{itemize}
 }
 
-\subsection{Problema}
-\frame{\frametitle{Challenges}
+\subsection{Problem}
+\frame{\frametitle{Problem - Challenges}
 \begin{itemize} 
 	\item extraction from semi-structured sources;
 	\item make use of syntactical information (our scope);
@@ -194,8 +194,8 @@ descritos por sequências de \textit{tag paths} semelhantes sendo, portanto, reg
 }
 
 
-\subsection{Diagrama da abordagem}
-\frame{\frametitle{Diagrama da abordagem}
+\subsection{Overall diagram}
+\frame{\frametitle{Overall diagram}
 \begin{figure}[H]
   \centering
     \zoombox{\includegraphics[width=1.00\textwidth]{img/proposal.jpg}}
@@ -227,8 +227,8 @@ descritos por sequências de \textit{tag paths} semelhantes sendo, portanto, reg
 \end{figure}
 }
 
-\subsection{Detecção das Regiões Semiestruturadas}
-\frame{\frametitle{Contorno superior}
+\subsection{Semi-structured Region Detection}
+\frame{\frametitle{Contour}
 \begin{figure}[H]
   \caption{Contorno superior da TPS.}
   \centering
@@ -236,7 +236,7 @@ descritos por sequências de \textit{tag paths} semelhantes sendo, portanto, reg
      210},clip,scale=0.45]{img/contour-pt.pdf}}
 \end{figure}
 }
-\frame{\frametitle{Derivada do Contorno}
+\frame{\frametitle{Contour difference}
 \begin{figure}[H]
   \caption{Derivada do contorno superior da TPS.}
   \centering
@@ -244,8 +244,8 @@ descritos por sequências de \textit{tag paths} semelhantes sendo, portanto, reg
      210},clip,scale=0.45]{img/derivada-pt.pdf}}
 \end{figure}
 }
-\subsection{Filtragem das Regiões}
-\frame{\frametitle{Regressão Linear - Identificação da Estrutura}
+\subsection{Region Filtering}
+\frame{\frametitle{Linear Regression}
 \begin{figure}[H]
   \caption{Regressão linear da região.}
   \centering
@@ -253,7 +253,7 @@ descritos por sequências de \textit{tag paths} semelhantes sendo, portanto, reg
 \end{figure}
 }
 
-\frame{\frametitle{Clustering das Regiões - Identificação do Ruído}
+\frame{\frametitle{Clustering - Noise detection}
 \begin{itemize}
 \item O \textit{score} da região utilizado para clusterização é diretamente
 proporcional ao tamanho da subsequência e inversamente proporcional à distância
@@ -265,7 +265,7 @@ que se encontra do centro da sequência completa;
 \end{itemize}
 }
 
-\subsection{Subdivisão em Registros}
+\subsection{Record Identification}
 \frame{\frametitle{Detecção do tamanho e quantidade de registros}
 \begin{figure}[H]
   \caption{a) TPS e regressão linear da região; b) PSD.}
@@ -281,7 +281,7 @@ complexidade, é o algoritmo de Goertzel que calcula apenas um coeficiente em
 tempo linear. Outra medida (alternativa ao Z-Score) deve ser encontrada para
 avaliar se um coeficiente é significativo ou não (relação de Parseval). }
 
-\subsection{Alinhamento dos Registros}
+\subsection{Record Alignment}
 \frame{\frametitle{Center Star}
 Como o alinhamento ótimo de múltiplas sequências é \textit{NP-Hard},
 alternativas aproximadas, com complexidade polinomial, devem ser empregadas.
@@ -304,7 +304,7 @@ de múltiplos registros. Por exemplo, a ordem dos campos pode ser flexibilizada.
 Soluções mais eficientes podem ser elaboradas relaxando o problema.
 }
 
-\section{Resultados}
+\section{Results}
 \subsection{Precision, Recall \& F-Score}
 
 \frame{\frametitle{Precision, Recall \& F-Score}
@@ -339,7 +339,7 @@ Ours &	92,02\%	& 94,11\%	& 93,05\% \\ \hline
 
 }
 
-\subsection{Tempo de execução}
+\subsection{Runtime analysis}
 \frame{\frametitle{Tempo de execução}
 \begin{figure}[h]
   \centering
@@ -357,21 +357,4 @@ Ours &	92,02\%	& 94,11\%	& 93,05\% \\ \hline
 %\end{figure}
 
 %}
-
-\section{Cronograma}
-\frame{\frametitle{Cronograma da pesquisa}
-\begin{enumerate}
-  \item \textbf{levantamento bibliográfico}: leitura de publicações para
-  levantamento do estado da arte \textbf{(até 12/2018)};
-  \item \textbf{realização de experimentos}: realização de mais testes e
-  experimentos com a abordagem proposta utilizando \textit{datasets} disponíveis publicamente
-  para comparação com as demais abordagens existentes \textbf{(até 06/2018)};
-  \item \textbf{publicação dos artigos}: escrita e publicação de artigos em
-  congressos e periódicos \textbf{(até 12/2018)} (mais um artigo sobre
-  alinhamento e outro com a redução da complexidade para $O(n)$);
-  \item \textbf{disponibilização do \textit{framework}}: finalização da codificação do
-  \textit{framework} C++/Lua e documentação da API \textbf{(até 12/2018)};
-  \item \textbf{defesa}: escrita da tese e defesa final \textbf{(até 12/2018)}.
-\end{enumerate}
-}
 \end{document}
