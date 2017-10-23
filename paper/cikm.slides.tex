@@ -154,117 +154,41 @@ sources.
 \end{itemize}
 }
 
-\subsection{Objetivo}
-\frame{\frametitle{Objetivo Geral} 
-O objetivo geral desta pesquisa é desenvolver um método automático (não
-supervisionado) de extração de dados estruturados a partir de informação
-semiestruturada contida em páginas \textit{web}.
-}
-
-\frame{\frametitle{Objetivos específicos}
+\subsection{Contributions}
+\frame{\frametitle{Contributions}
 \begin{itemize}
-\item desenvolver um método de \textbf{segmentação} de um documento HTML que
-identifique as regiões da página com conteúdo semiestruturado;
-\item desenvolver um método de \textbf{filtragem} que identifique quais das
-regiões semiestruturadas possuem conteúdo e quais possuem ruído (menus, \textit{template}, anúncios,
-etc.);
-\item desenvolver um método de estruturação da informação semiestruturada
-identificada (\textit{e.g.} \textbf{alinhamento} de registros);
-\item desenvolver um \textbf{\textit{framework}} de extração estruturada;
+  \item a novel insight on how the structure of a web document can be seen;
+  \item a novel web page segmentation technique;
+  \item a new and efficient way of checking if a given region of a web page is
+    structured or not;
+  \item a more efficient approach, when compared to the state-of-the-art,
+    that is due to the use of efficient signal processing algorithms.
 \end{itemize}
 }
 
-\subsection{Contribuições}
-\frame{\frametitle{Contribuições}
+\section{Approach}
+
+\subsection{Main Features}
+\frame{\frametitle{Main Features}
 \begin{itemize}
-  \item uma nova forma de ver a estrutura das páginas web;
-  \item uma nova técnica de segmentação de documentos HTML;
-  \item um novo critério para determinar se um segmento (\textit{i.e.}, região)
-  é estruturado ou não, antes de extraí-lo efetivamente;
-  \item uma técnica de extração com eficiência computacional superior ao estado
-  da arte (linear);
-  \item uma nova técnica de alinhamento de registros, específica para o
-  problema de extração estruturada da web;
-  \item desenvolvimento de um \textit{framework} de extração estruturada
-  (auxilia nas comparações e elimina variabilidade dos testes).
+  \item domain independent;
+  \item HTML independent; 
+  \item unsupervised;
+  \item needs only one input page for extraction;
+  \item computationally efficient.
 \end{itemize}
 }
 
-\section{Trabalhos Relacionados} 
-\frame{\frametitle{Trabalhos Relacionados}
-\begin{itemize}
-\item Poucas implementações disponíveis;
-\item Alguns datasets disponíveis; 
-\item Três principais abordagens identificadas:
-\begin{itemize}
-  \item extração de tabelas e listas;
-  \item extração a partir de uma única página;
-  \item extração a partir de múltiplas páginas.
-\end{itemize}
-\end{itemize}
-}
-
-\subsection{Tabelas e Listas}
-\frame{\frametitle{Extração de Tabelas e Listas}
-Abordagens fazem suposições \textbf{fortes} a respeito da entrada.
-\begin{itemize}
-  \item WebTables Google/ACSDb (\texttt{<table>}) (2008);
-  \item WebTables M\$/Probase (\texttt{<table>}) (2012);
-  \item ListExtract (\texttt{<ol/ul/etc.>}) (2009);
-  \item Tegra (ListExtract da M\$) (\texttt{<ol/ul/etc.>}) (2015);
-  \item \textit{Top-k pages} (\textit{template} fixo) (2013).
-\end{itemize}
-}
-
-\subsection{Única Página}
-\frame{\frametitle{Extração a partir de uma única página}
-Buscam padrões no HTML/DOM para encontrar os registros. Ao menos dois registros
-devem existir para ser possível a extração.
-Algumas abordagens ``gerais'':
-\begin{itemize}
-  \item Abordagens não visuais: MDR, NET, TPC (2003 - 2009);
-  \item Abordagens visuais: DEPTA, ViPER, ClustVX, AutoRM, (CHU et al., 2015b)
-  (2005 - 2015);
-\end{itemize}
-}
-
-\subsection{Múltiplas Páginas}
-\frame{\frametitle{Extração a partir de múltiplas páginas}
-Utilizam uma ``amostra'' do \textit{template} do \textit{site} para treinamento.
-São capazes de extrair conteúdo de páginas com apenas um registro.
-(\textit{i.e.}, páginas de detalhe).
-\begin{itemize}
-  \item RoadRunner (2001);
-  \item ExAlg (2003);
-  \item FiVaTech (2010).
-\end{itemize} 
-}
-
-\section{Proposta}
-
-\subsection{Características}
-\frame{\frametitle{Características}
-\begin{itemize}
-  \item Independente de domínio;
-  \item Independente de características da linguagem HTML; 
-  \item Não dependa de bases de dados e/ou definições \textit{a priori}.
-  \item Totalmente automática;
-  \item Necessite de apenas uma página (ao invés de um conjunto de páginas);
-  \item Não dependa de treinamento;
-  \item Computacionalmente eficiente.
-\end{itemize}
-}
-
-\subsection{Suposições}
-\frame{\frametitle{Suposições}
+\subsection{Assumptions}
+\frame{\frametitle{Assumptions}
 \begin{enumerate}
-\item \textbf{Segmentação}: diferentes
+\item \textbf{Segmantation}: diferentes
 regiões de uma página HTML são formatadas de maneiras diferentes, justamente
 para que haja distinção entre elas, portanto serão formadas por conjuntos de \textit{tag
 paths} diferentes, caso contrário não haveria diferença visual
 significativa entre as regiões de uma página;
-\item \textbf{Registros}: regiões com conteúdo semiestruturado são compostas por
-conjuntos de registros contíguos e com estrutura semelhantes, 
+\item \textbf{Records}: regiões com conteúdo semiestruturado são compostas
+por conjuntos de registros contíguos e com estrutura semelhantes, 
 descritos por sequências de \textit{tag paths} semelhantes sendo, portanto, regiões cíclicas.
 \end{enumerate} 
 }
