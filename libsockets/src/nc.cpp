@@ -27,6 +27,8 @@ public:
 			return;
 
 		if (verbose) {
+			const std::vector<std::string> boolString = {"false", "true"};
+
 			std::cerr << "Parameters: " << std::endl;
 			std::cerr << "  host: " << host << ", port: " << port << std::endl;
 			std::cerr << "  udp = " << boolString[udp] << std::endl;
@@ -189,7 +191,6 @@ private:
 	};
 
 	static constexpr size_t bufferSize = 4096;
-	static const std::vector<std::string> boolString;
 	std::string host = "", port = "";
 	bool
 		secure = false,
@@ -197,8 +198,6 @@ private:
 		listen = false,
 		verbose = false;
 };
-
-const std::vector<std::string> Netcat::boolString = {"false", "true"};
 
 int main(int argc, char **argv) {
 	try {
