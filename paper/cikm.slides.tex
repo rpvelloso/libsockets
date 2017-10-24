@@ -182,14 +182,16 @@ sources.
 \subsection{Assumptions}
 \frame{\frametitle{Assumptions}
 \begin{enumerate}
-\item \textbf{Segmantation}: diferentes
-regiões de uma página HTML são formatadas de maneiras diferentes, justamente
-para que haja distinção entre elas, portanto serão formadas por conjuntos de \textit{tag
-paths} diferentes, caso contrário não haveria diferença visual
-significativa entre as regiões de uma página;
-\item \textbf{Records}: regiões com conteúdo semiestruturado são compostas
-por conjuntos de registros contíguos e com estrutura semelhantes, 
-descritos por sequências de \textit{tag paths} semelhantes sendo, portanto, regiões cíclicas.
+\item \textbf{Segmantation}: 
+different regions of a document have different formatting so one can distinguish
+one region from another (regardless the presence of noise). Therefore they are
+formed using different tag paths, otherwise the visual difference 
+would not be enough to distinguish them.
+
+\textbf{Records}: 
+semi-structured regions are composed by a set of contiguous records with similar
+structure (and, consequently, by similar tag paths), so the subsequence
+that represents these regions should be cyclic.
 \end{enumerate} 
 }
 
