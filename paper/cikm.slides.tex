@@ -250,13 +250,12 @@ that represents these regions should be cyclic.
 
 \frame{\frametitle{Clustering - Noise detection}
 \begin{itemize}
-\item O \textit{score} da região utilizado para clusterização é diretamente
-proporcional ao tamanho da subsequência e inversamente proporcional à distância
-que se encontra do centro da sequência completa;
-\item É utilizado ``kmeans ótimo de uma dimensão'', forçando a criação de dois
-\textit{clusters};
-\item O \textit{cluster} com maior centro é considerado conteúdo e o outro
-\textit{cluster} (com menor centro) é descartado.
+\item The region's score is directly proportional to it's size and
+inversely proportional to it's distance to the center of the sequence;
+\item We use 1D optimal k-means to separate the regions into two
+clusters;
+\item The cluster with greatest centroid is kept (as content) and the other one
+is discarded (as noise).
 \end{itemize}
 }
 
@@ -267,45 +266,29 @@ que se encontra do centro da sequência completa;
     \zoombox{\includegraphics[clip, trim={2cm 6cm 0.5cm 6.8cm},
     width=0.8\textwidth]{img/fftreg.pdf}}
 \end{figure}
-
-} \frame{\frametitle{Detecção do tamanho e quantidade de registros - reduzindo a
-complexidade computacional} Transformada de Fourier possui complexidade
-$O(nlogn)$ e calcula todo o espectro do sinal. Nesta aplicação, especificamente,
-apenas uma faixa do espectro é necessária. Uma alternativa, para reduzir a
-complexidade, é o algoritmo de Goertzel que calcula apenas um coeficiente em
-tempo linear. Outra medida (alternativa ao Z-Score) deve ser encontrada para
-avaliar se um coeficiente é significativo ou não (relação de Parseval). }
+}
 
 \subsection{Record Alignment}
 \frame{\frametitle{Center Star}
-Como o alinhamento ótimo de múltiplas sequências é \textit{NP-Hard},
-alternativas aproximadas, com complexidade polinomial, devem ser empregadas.
+Optimal multiple sequence alignment is NP-Hard. We should employ approximate
+alternatives, with polynomial time complexity.
 
 \begin{itemize}
-\item Características do algoritmo \textit{Center Star}:
+\item Center Star algorithm features:
 \begin{itemize}
-  \item Não encontra necessariamente a solução ótima;
-  \item Tem complexidade computacional polinomial $O(k^2\cdot n^2)$ (porém
-  elevada);
-  \item Garante um erro máximo com relação à solução ótima.
+  \item optimal solution not guaranteed;
+  \item polynomial time complexity $O(k^2\cdot n^2)$;
+  \item guaranteed maximum error bound.
 \end{itemize}
 \end{itemize}
-}
-
-\frame{\frametitle{Solução de alinhamento específica para o problema}
-As restrições do problema geral de alinhamento de múltiplas sequências não
-precisam ser aplicadas, obrigatoriamente, ao problema específico de alinhamento
-de múltiplos registros. Por exemplo, a ordem dos campos pode ser flexibilizada.
-Soluções mais eficientes podem ser elaboradas relaxando o problema.
 }
 
 \section{Results}
 \subsection{Precision, Recall \& F-Score}
 
 \frame{\frametitle{Precision, Recall \& F-Score}
-Resultados obtidos com dataset próprio contendo $1466$ registros de $46$
-websites, de diversos domínios, das maiores empresas da internet:
-\url{https://en.wikipedia.org/wiki/List_of_largest_Internet_companies}.
+Results using own dataset with $1466$ records from $46$ different websites in
+various domains.
 
 \begin{table}[h]
 \centering
@@ -316,7 +299,7 @@ websites, de diversos domínios, das maiores empresas da internet:
 \end{tabular}
 \end{table}
 
-Comparativo com outras técnicas estado da arte.
+Comparative with other state-of-art techniques.
 \begin{table}[h]
 %\begin{small}
 \begin{tabular}
@@ -335,7 +318,7 @@ Ours &	92,02\%	& 94,11\%	& 93,05\% \\ \hline
 }
 
 \subsection{Runtime analysis}
-\frame{\frametitle{Tempo de execução}
+\frame{\frametitle{Runtime analysis}
 \begin{figure}[h]
   \centering
      \includegraphics[clip, trim={2.0cm 7.0cm 2.0cm 7.3cm}, width=1.0\textwidth
