@@ -207,7 +207,7 @@ that represents these regions should be cyclic.
 \subsection{Tag Paths}
 \frame{\frametitle{$Tag$ $paths$}
 \begin{figure}[H]
-  \caption{Construção da sequência de $tag$ $paths$ (TPS) a partir do HTML.}
+  \caption{Tag Path Sequence construction.}
   \centering
     \zoombox{\includegraphics[clip, trim={1.1cm 1.9cm 1.5cm 1.65cm},
     width=1.00\textwidth]{img/tree2seq.pdf}}
@@ -215,43 +215,36 @@ that represents these regions should be cyclic.
 }
 \frame{\frametitle{$Tag$ $paths$}
 \begin{figure}[H]
-  \caption{Construção da sequência de $tag$ $paths$ (TPS) a partir do HTML.}
+  \caption{Tag Path Sequence document representation.}
   \centering
-    \zoombox{\includegraphics[width=\textwidth]{img/creat-tps-pt.jpg}}
+    \zoombox{\includegraphics[width=\textwidth]{img/main-reg.jpg}}
 \end{figure}
 }
 
 \frame{\frametitle{$Tag$ $paths$}
 \begin{figure}[H]
-  \caption{Sequência de $tag$ $paths$ (TPS).}
+  \caption{Tag Path Sequence document representation.}
   \centering
-    \zoombox{\includegraphics[width=\textwidth]{img/tps-pt.jpg}}
+    \zoombox{\includegraphics[width=\textwidth]{img/tps.jpg}}
 \end{figure}
 }
 
 \subsection{Semi-structured Region Detection}
 \frame{\frametitle{Contour}
 \begin{figure}[H]
-  \caption{Contorno superior da TPS.}
+  \caption{Sequence Contour and Finite difference.}
   \centering
-    \zoombox{\includegraphics[trim={55 200 40
-     210},clip,scale=0.45]{img/contour-pt.pdf}}
-\end{figure}
-}
-\frame{\frametitle{Contour difference}
-\begin{figure}[H]
-  \caption{Derivada do contorno superior da TPS.}
-  \centering
-    \zoombox{\includegraphics[trim={55 200 40
-     210},clip,scale=0.45]{img/derivada-pt.pdf}}
+    \zoombox{\includegraphics[trim={55 200 20
+     210},clip,scale=0.45]{img/contour.pdf}}
 \end{figure}
 }
 \subsection{Region Filtering}
 \frame{\frametitle{Linear Regression}
 \begin{figure}[H]
-  \caption{Regressão linear da região.}
+  \caption{Region's Linear Regression.}
   \centering
-    \zoombox{\includegraphics[scale=0.25]{img/region-pt.jpg}}
+    \zoombox{\includegraphics[trim={55 390 20
+     210},clip,scale=0.45]{img/fftreg.pdf}}
 \end{figure}
 }
 
@@ -268,13 +261,13 @@ que se encontra do centro da sequência completa;
 }
 
 \subsection{Record Identification}
-\frame{\frametitle{Detecção do tamanho e quantidade de registros}
-\begin{figure}[H]
-  \caption{a) TPS e regressão linear da região; b) PSD.}
+\frame{\frametitle{Record count and size detection} \begin{figure}[H]
+  \caption{a) TPS \& linear regression; b) PSD.}
   \centering
     \zoombox{\includegraphics[clip, trim={2cm 6cm 0.5cm 6.8cm},
     width=0.8\textwidth]{img/fftreg.pdf}}
 \end{figure}
+
 } \frame{\frametitle{Detecção do tamanho e quantidade de registros - reduzindo a
 complexidade computacional} Transformada de Fourier possui complexidade
 $O(nlogn)$ e calcula todo o espectro do sinal. Nesta aplicação, especificamente,
