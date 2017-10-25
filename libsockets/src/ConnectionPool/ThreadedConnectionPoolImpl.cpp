@@ -16,6 +16,7 @@
 #include <thread>
 #include <sstream>
 
+#include "Factory/SocketFactory.h"
 #include "Socket/BufferedClientSocketInterface.h"
 #include "Socket/ClientSocket.h"
 #include "ConnectionPool/ThreadedConnectionPoolImpl.h"

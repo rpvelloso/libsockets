@@ -18,6 +18,7 @@
 #include <thread>
 #include <mutex>
 #include <unordered_map>
+#include <queue>
 #include <getopt.h>
 #include "sol.hpp"
 
@@ -63,17 +64,42 @@ public:
 	std::string processCmd(const std::string &cmd) {
 		return serverFunc(*this, cmd);
 	};
+
+	void sendTo(size_t id, const std::string &msg) {
+		std::lock_guard<std::mutex> lock(contextLock);
+		if (contextList.count(id) > 0) {
+			std::lock_guard<std::mutex> lock(queueLock);
+			contextList[id]->queueMessage(msg);
+		}
+	}
+
+	void queueMessage(const std::string &msg) {
+		std::lock_guard<std::mutex> lock(queueLock);
+		messages.push(msg);
+	};
+
+	void processQueue(std::ostream &outp) {
+		std::lock_guard<std::mutex> lock(queueLock);
+		while (!messages.empty()) {
+			auto msg = messages.front();
+			outp << msg << std::endl;
+			messages.pop();
+		}
+	};
 private:
 	std::mutex contextLock;
+	std::mutex queueLock;
 	size_t id = 0;
 	static std::unordered_map<size_t, Context *> contextList;
 	sol::state lua;
 	std::function<std::string(Context &, std::string)> serverFunc;
+	std::queue<std::string> messages;
 
 	void bindContext() {
 		lua.new_usertype<Context>(
 			"Context",
-			"getID",Context::getID);
+			"getID",Context::getID,
+			"sendTo", Context::sendTo);
 	};
 };
 
@@ -117,6 +143,9 @@ public:
 	void start() {
 		auto server = socks::factory::makeThreadedServer<Context>(//4,
 		[](Context &ctx, std::istream &inp, std::ostream &outp) {
+
+			ctx.processQueue(outp);
+
 			while (inp) {
 				std::string cmd;
 
