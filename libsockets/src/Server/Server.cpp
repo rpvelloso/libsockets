@@ -32,37 +32,6 @@ std::string Server::getPort() {
 	return impl->getPort();
 };
 
-/*namespace factory {
-	Server makeMultiplexedServer(
-			size_t numThreads,
-			ClientCallback readCallback,
-			ClientCallback connectCallback,
-			ClientCallback disconnectCallback,
-			ClientCallback writeCallback) {
-		return Server(new ServerImpl(
-				new ServerSocket(),
-				new ConnectionPool(new MultiplexedConnectionPoolImpl(numThreads)),
-				readCallback,
-				connectCallback,
-				disconnectCallback,
-				writeCallback));
-	};
-
-	Server makeThreadedServer(
-			ClientCallback readCallback,
-			ClientCallback connectCallback,
-			ClientCallback disconnectCallback,
-			ClientCallback writeCallback) {
-		return Server(new ServerImpl(
-				new ServerSocket(),
-				new ConnectionPool(new ThreadedConnectionPoolImpl()),
-				readCallback,
-				connectCallback,
-				disconnectCallback,
-				writeCallback));
-	};
-}*/
-
 }
 
 

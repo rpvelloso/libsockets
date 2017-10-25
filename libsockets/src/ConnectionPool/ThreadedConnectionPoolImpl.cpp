@@ -29,9 +29,10 @@ void threadFunction(std::unique_ptr<BufferedClientSocketInterface> clientSocket)
 
 	clientSocket->connectCallback();
 
+	auto &outputBuffer = clientSocket->getOutputBuffer();
+	auto &inputBuffer = clientSocket->getInputBuffer();
+
 	while (true) {
-		auto &outputBuffer = clientSocket->getOutputBuffer();
-		auto &inputBuffer = clientSocket->getInputBuffer();
 		while (clientSocket->getHasOutput()) {
 			auto sndBufSize = outputBuffer.rdbuf()->in_avail();
 			char sndBuf[sndBufSize];

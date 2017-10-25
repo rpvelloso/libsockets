@@ -16,6 +16,8 @@
 #include <iostream>
 #include <fstream>
 #include <thread>
+#include <mutex>
+#include <unordered_map>
 #include <getopt.h>
 #include "sol.hpp"
 
@@ -23,7 +25,22 @@
 
 class Context {
 public:
-	size_t id;
+	~Context() {
+		if (id != 0) {
+			std::lock_guard<std::mutex> lock(contextLock);
+			contextList.erase(id);
+		}
+	};
+
+	void setID(size_t id) {
+		std::lock_guard<std::mutex> lock(contextLock);
+		this->id = id;
+		contextList[id] = this;
+	};
+
+	size_t getID() const {
+		return id;
+	};
 
 	void initLua(const std::string &scriptFile) {
 		lua.open_libraries();
@@ -47,15 +64,20 @@ public:
 		return serverFunc(*this, cmd);
 	};
 private:
+	std::mutex contextLock;
+	size_t id = 0;
+	static std::unordered_map<size_t, Context *> contextList;
 	sol::state lua;
 	std::function<std::string(Context &, std::string)> serverFunc;
 
 	void bindContext() {
 		lua.new_usertype<Context>(
 			"Context",
-			"id",&Context::id);
+			"getID",Context::getID);
 	};
 };
+
+std::unordered_map<size_t, Context *> Context::contextList;
 
 class LuaServer {
 public:
@@ -110,7 +132,7 @@ public:
 			}
 		},
 		[this](Context &ctx, std::istream &inp, std::ostream &outp) {
-			ctx.id = this->createID();
+			ctx.setID(this->createID());
 			ctx.initLua(this->scriptFile);
 		});
 
@@ -124,7 +146,7 @@ public:
 	};
 private:
 	size_t createID() {
-		std::atomic<size_t> id(0);
+		static std::atomic<size_t> id(0);
 		return ++id;
 	};
 

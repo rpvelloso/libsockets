@@ -36,35 +36,6 @@ namespace factory {
 	SocketStream makeSSLSocketStream() {
 		return SocketStream(std::make_unique<ClientSocket>(makeSSLClientSocket()));
 	}
-	/*Server makeMultiplexedSSLServer(
-			size_t numThreads,
-			ClientCallback readCallback,
-			ClientCallback connectCallback,
-			ClientCallback disconnectCallback,
-			ClientCallback writeCallback) {
-		return Server(new ServerImpl(
-			new ServerSocket(new OpenSSLSocket(socketFactory.createSocketImpl())),
-			new ConnectionPool(new MultiplexedConnectionPoolImpl(numThreads)),
-			readCallback,
-			connectCallback,
-			disconnectCallback,
-			writeCallback));
-	};
-
-	Server makeThreadedSSLServer(
-			ClientCallback readCallback,
-			ClientCallback connectCallback,
-			ClientCallback disconnectCallback,
-			ClientCallback writeCallback) {
-		return Server(new ServerImpl(
-			new ServerSocket(new OpenSSLSocket(socketFactory.createSocketImpl())),
-			new ConnectionPool(new ThreadedConnectionPoolImpl()),
-			readCallback,
-			connectCallback,
-			disconnectCallback,
-			writeCallback));
-	};*/
-
 }
 
 OpenSSLSocket::OpenSSLSocket(SocketImpl* impl) : SocketImpl(), impl(impl),
