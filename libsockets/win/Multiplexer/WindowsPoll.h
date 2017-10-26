@@ -24,7 +24,7 @@ class WindowsPoll: public Poll {
 public:
 	WindowsPoll();
 	virtual ~WindowsPoll();
-	std::vector<pollTuple> pollClients(ClientListType &clients) override;
+	std::vector<pollTuple> pollClients(ClientListType &clients, int timeout) override;
 };
 
 }

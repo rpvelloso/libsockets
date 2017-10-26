@@ -25,7 +25,7 @@ LinuxPoll::LinuxPoll() {
 LinuxPoll::~LinuxPoll() {
 }
 
-std::vector<pollTuple> LinuxPoll::pollClients(ClientListType& clients) {
+std::vector<pollTuple> LinuxPoll::pollClients(ClientListType& clients, int timeout) {
 	std::vector<pollTuple> readyClients;
 
 	auto nfds = clients.size();
@@ -40,7 +40,7 @@ std::vector<pollTuple> LinuxPoll::pollClients(ClientListType& clients) {
 		}
 	}
 
-	if (poll(fdarray,nfds,-1) > 0) {
+	if (poll(fdarray,nfds, timeout) > 0) {
 		for (auto c:fdarray) {
 			bool fdError = false;
 			bool readFlag = c.revents & POLLIN;

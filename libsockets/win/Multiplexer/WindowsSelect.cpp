@@ -24,8 +24,9 @@ WindowsSelect::WindowsSelect() {
 WindowsSelect::~WindowsSelect() {
 }
 
-std::vector<pollTuple> WindowsSelect::pollClients(ClientListType& clients) {
+std::vector<pollTuple> WindowsSelect::pollClients(ClientListType& clients, int timeout) {
 	std::vector<pollTuple> readyClients;
+	struct timeval tvTimeout = {timeout/1000, (timeout%1000)*1000};
 
 	int nfds = 0;
 	fd_set readfds;
@@ -45,7 +46,7 @@ std::vector<pollTuple> WindowsSelect::pollClients(ClientListType& clients) {
 	}
 	++nfds;
 
-	if (select(nfds, &readfds, &writefds, &exceptfds, NULL) > 0) {
+	if (select(nfds, &readfds, &writefds, &exceptfds, timeout==-1?NULL:&tvTimeout) > 0) {
 		for (auto clientIt = clients.begin(); clientIt != clients.end(); ++clientIt) {
 			bool fdError = false;
 			bool readFlag = FD_ISSET(clientIt->first, &readfds);

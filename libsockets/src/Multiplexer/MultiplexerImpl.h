@@ -42,7 +42,7 @@ public:
 
 	virtual void cancel();
 	virtual void interrupt();
-	virtual void multiplex();
+	virtual void multiplex(int timeout = -1);
 protected:
 	std::unique_ptr<Poll> pollStrategy;
 	std::unique_ptr<ClientSocket> sockIn;

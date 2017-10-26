@@ -29,7 +29,8 @@ class Poll {
 public:
 	Poll() {};
 	virtual ~Poll() {};
-	virtual std::vector<pollTuple> pollClients(ClientListType &clients) = 0;
+	virtual std::vector<pollTuple> pollClients(ClientListType &clients, int timeout = -1) = 0;
+	// timeout in milliseconds, default -1 = no timeout
 };
 
 }

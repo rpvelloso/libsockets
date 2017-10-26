@@ -24,7 +24,7 @@ class WindowsSelect: public Poll {
 public:
 	WindowsSelect();
 	virtual ~WindowsSelect();
-	std::vector<pollTuple> pollClients(ClientListType &clients) override;
+	std::vector<pollTuple> pollClients(ClientListType &clients, int timeout) override;
 };
 
 }

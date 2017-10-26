@@ -24,7 +24,7 @@ class LinuxPoll: public Poll {
 public:
 	LinuxPoll();
 	virtual ~LinuxPoll();
-	std::vector<pollTuple> pollClients(ClientListType &clients) override;
+	std::vector<pollTuple> pollClients(ClientListType &clients, int timeout) override;
 };
 
 }

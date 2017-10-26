@@ -68,8 +68,11 @@ public:
 	void sendTo(size_t id, const std::string &msg) {
 		std::lock_guard<std::mutex> lock(contextLock);
 		if (contextList.count(id) > 0) {
-			std::lock_guard<std::mutex> lock(queueLock);
-			contextList[id]->queueMessage(msg);
+			if (id != this->id) {
+				std::lock_guard<std::mutex> lock(queueLock);
+				contextList[id]->queueMessage(msg);
+			} else
+				contextList[id]->queueMessage(msg);
 		}
 	}
 

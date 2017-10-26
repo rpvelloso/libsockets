@@ -77,9 +77,9 @@ void MultiplexerImpl::sendMultiplexerCommand(int cmd) {
 	sockIn->sendData(static_cast<void *>(&cmd), sizeof(cmd));
 }
 
-void MultiplexerImpl::multiplex() {
+void MultiplexerImpl::multiplex(int timeout) {
 	while (true) {
-		auto readyClients = pollStrategy->pollClients(clients);
+		auto readyClients = pollStrategy->pollClients(clients, timeout);
 
 		for (auto rc:readyClients) {
 			auto &clientSocket = std::get<0>(rc);

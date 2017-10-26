@@ -24,7 +24,7 @@ WindowsPoll::WindowsPoll() {
 WindowsPoll::~WindowsPoll() {
 }
 
-std::vector<pollTuple> WindowsPoll::pollClients(ClientListType &clients) {
+std::vector<pollTuple> WindowsPoll::pollClients(ClientListType &clients, int timeout) {
 	std::vector<pollTuple> readyClients;
 
 	auto nfds = clients.size();
@@ -40,7 +40,7 @@ std::vector<pollTuple> WindowsPoll::pollClients(ClientListType &clients) {
 	}
 	//std::cout << "# " << nfds << std::endl;
 
-	if (WSAPoll(fdarray,nfds,-1) > 0) {
+	if (WSAPoll(fdarray,nfds,timeout) > 0) {
 		for (auto c:fdarray) {
 			bool fdError = false;
 			bool readFlag = c.revents & POLLIN;
