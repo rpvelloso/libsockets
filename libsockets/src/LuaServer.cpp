@@ -101,8 +101,8 @@ private:
 	void bindContext() {
 		lua.new_usertype<Context>(
 			"Context",
-			"getID",Context::getID,
-			"sendTo", Context::sendTo);
+			"getID",&Context::getID,
+			"sendTo",&Context::sendTo);
 	};
 };
 
