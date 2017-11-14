@@ -49,4 +49,9 @@ FTPReply FTPClientActive::STOR(const std::string& filename) {
 }
 
 FTPReply FTPClientActive::REST(const std::string& pos) {
+	if (pos.empty())
+		return FTPReply::R501;
+
+	context.setRestartPos(std::stoul(pos));
+	return FTPReply::R350;
 }

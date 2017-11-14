@@ -25,7 +25,7 @@ std::unordered_map<FTPReply, std::string> FTPReplyString= {
 		{FTPReply::R257			,"257 Directory successfully created.\n"},
 		{FTPReply::R257_PWD		,"257 \""},
 		{FTPReply::R331			,"331 Password required.\n"},
-		{FTPReply::R350			,"350 Restarted position accepted.\n"},
+		{FTPReply::R350			,"350 Restart position accepted.\n"},
 		{FTPReply::R350_RNFR	,"350 Rename from accepted.\n"},
 		{FTPReply::R421			,"421 Server full.\n"},
 		{FTPReply::R425			,"425 Can't open data connection.\n"},

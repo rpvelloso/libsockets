@@ -76,3 +76,11 @@ socks::ServerSocket& FTPContext::getPassiveSocket() const {
 void FTPContext::setPassiveSocket(std::unique_ptr<socks::ServerSocket> serverSocket) {
 	this->passiveSocket = std::move(serverSocket);
 }
+
+size_t FTPContext::getRestartPos() const {
+	return restartPos;
+}
+
+void FTPContext::setRestartPos(size_t restartPos) {
+	this->restartPos = restartPos;
+}
