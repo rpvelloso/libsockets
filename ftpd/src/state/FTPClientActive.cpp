@@ -8,6 +8,7 @@
 #include "state/FTPClientActive.h"
 #include "filesystem/FileSystem.h"
 #include <iomanip>
+#include <fstream>
 #include <sys/stat.h>
 
 FTPClientActive::FTPClientActive(FTPContext &ctx) : FTPClientState(ctx) {
@@ -43,18 +44,20 @@ FTPReply FTPClientActive::LIST(const std::string& path, int type) {
 }
 
 FTPReply FTPClientActive::RETR(const std::string& filename) {
-	try {
-		std::fstream file(filename);
+	if (dataSocket.connectTo(context.getAddress(), context.getPort()) == 0) {
+		try {
+			std::fstream file(fs.resolvePath(context.getCwd(),filename));
 
-		std::copy(
-			std::istreambuf_iterator<char>(file),
-			std::istreambuf_iterator<char>(),
-			std::ostreambuf_iterator<char>(dataSocket.rdbuf()));
-		dataSocket.sync();
-		return FTPReply::R226;
-	} catch (std::exception e) {
-		return FTPReply::R425;
+			/*std::copy(std::istreambuf_iterator<char>(file),
+			     std::istreambuf_iterator<char>(),
+			     std::ostreambuf_iterator<char>(dataSocket));*/
+			dataSocket << file.rdbuf();
+			dataSocket.sync();
+			return FTPReply::R226;
+		} catch (std::exception e) {
+		}
 	}
+	return FTPReply::R425;
 }
 
 FTPReply FTPClientActive::STOR(const std::string& filename) {

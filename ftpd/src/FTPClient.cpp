@@ -60,9 +60,14 @@ std::string FTPClient::processCmd(const std::string& cmdline) {
 		reply = state->HELP();
 	else if (command == "SYST")
 		reply = state->SYST();
-	else if (command == "PWD")
+	else if (
+			command == "PWD" ||
+			command == "XPWD")
 		reply = state->PWD();
-	else if (command == "DELE")
+	else if (
+			command == "DELE" ||
+			command == "RMD" ||
+			command == "XRMD")
 		reply = state->DELE(param);
 	else if (command == "RNFR") {
 		reply = state->RNFR(param);
@@ -78,12 +83,15 @@ std::string FTPClient::processCmd(const std::string& cmdline) {
 			state.reset(new FTPClientActive(context));
 	} else if (command == "PASV")
 		reply = state->PASV();
-	else if (command == "LIST") {
+	else if (
+			command == "LIST" ||
+			command == "NLST") {
 		reply = state->LIST(param, 1);
 		state.reset(new FTPClientLoggedIn(context));
-	} else if (command == "RETR")
+	} else if (command == "RETR") {
 		reply = state->RETR(param);
-	else if (command == "STOR")
+		state.reset(new FTPClientLoggedIn(context));
+	} else if (command == "STOR")
 		reply = state->STOR(param);
 	else if (command == "REST")
 		reply = state->REST(param);
