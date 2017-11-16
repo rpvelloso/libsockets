@@ -8,8 +8,10 @@
 #include "FileSystemImpl.h"
 
 #include <iomanip>
+#include <iostream>
 #include <list>
 #include <sstream>
+#include <algorithm>
 
 FileSystemImpl::FileSystemImpl() {
 }

@@ -26,7 +26,11 @@ std::string FTPClient::processCmd(const std::string& cmdline) {
 	std::string param;
 
 	ss >> command;
-	ss >> param;
+	std::getline(ss, param);
+	param = param.substr(param.find_first_not_of(' '));
+	if (param.back() == '\r')
+		param.pop_back();
+	//ss >> param;
 
 	std::transform(command.begin(), command.end(), command.begin(), ::toupper);
 
@@ -80,10 +84,16 @@ std::string FTPClient::processCmd(const std::string& cmdline) {
 			state.reset(new FTPClientLoggedIn(context));
 	} else if (command == "PORT") {
 		reply = state->PORT(param);
-		if (reply == FTPReply::R200)
-			state.reset(new FTPClientActive(context));
-	} else if (command == "PASV")
-		reply = state->PASV();
+		if (reply == FTPReply::R200) {
+			try {
+				state.reset(new FTPClientActive(context));
+			} catch (std::exception e) {
+				state.reset(new FTPClientLoggedIn(context));
+				reply = FTPReply::R425;
+			}
+		}
+	} /*else if (command == "PASV")
+		reply = state->PASV();*/
 	else if (
 			command == "LIST" ||
 			command == "NLST") {
@@ -92,9 +102,10 @@ std::string FTPClient::processCmd(const std::string& cmdline) {
 	} else if (command == "RETR") {
 		reply = state->RETR(param);
 		state.reset(new FTPClientLoggedIn(context));
-	} else if (command == "STOR")
+	} else if (command == "STOR") {
 		reply = state->STOR(param);
-	else if (command == "REST")
+		state.reset(new FTPClientLoggedIn(context));
+	} else if (command == "REST")
 		reply = state->REST(param);
 	else
 		reply = FTPReply::R500;
