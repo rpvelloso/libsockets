@@ -45,22 +45,33 @@ FTPReply FTPClientActive::LIST(const std::string& path, int type) {
 
 FTPReply FTPClientActive::RETR(const std::string& filename) {
 	if (dataSocket.connectTo(context.getAddress(), context.getPort()) == 0) {
-		try {
-			std::fstream file(fs.resolvePath(context.getCwd(),filename));
+		std::fstream file(
+			fs.resolvePath(context.getCwd(),filename),
+			std::ios::binary|std::ios::in);
 
-			/*std::copy(std::istreambuf_iterator<char>(file),
-			     std::istreambuf_iterator<char>(),
-			     std::ostreambuf_iterator<char>(dataSocket));*/
+		if (file.is_open()) {
 			dataSocket << file.rdbuf();
 			dataSocket.sync();
 			return FTPReply::R226;
-		} catch (std::exception e) {
 		}
 	}
 	return FTPReply::R425;
 }
 
 FTPReply FTPClientActive::STOR(const std::string& filename) {
+	if (dataSocket.connectTo(context.getAddress(), context.getPort()) == 0) {
+		std::fstream file(
+			fs.resolvePath(context.getCwd(),filename),
+			std::ios::binary|std::ios::out);
+
+		if (file.is_open()) {
+			file << dataSocket.rdbuf();
+			file.sync();
+			dataSocket.sync();
+			return FTPReply::R226;
+		}
+	}
+	return FTPReply::R425;
 }
 
 FTPReply FTPClientActive::REST(const std::string& pos) {
