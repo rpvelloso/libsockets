@@ -30,7 +30,6 @@ std::string FTPClient::processCmd(const std::string& cmdline) {
 	param = param.substr(param.find_first_not_of(' '));
 	if (param.back() == '\r')
 		param.pop_back();
-	//ss >> param;
 
 	std::transform(command.begin(), command.end(), command.begin(), ::toupper);
 

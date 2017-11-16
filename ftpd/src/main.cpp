@@ -15,7 +15,6 @@ std::string readline(std::istream &inp) {
 	auto savePos = inp.tellg();
 	std::getline(inp, line);
 	if (inp && !inp.eof()) {
-		std::cerr << "received: " << line << std::endl;
 		return line;
 	} else {
 		inp.clear();
@@ -29,9 +28,15 @@ int main(int argc, char **argv) {
 	[](FTPClient &ctx, std::istream &inp, std::ostream &outp) {
 		while (inp) {
 			auto cmd = readline(inp);
-			if (!cmd.empty())
-				outp << ctx.processCmd(cmd);
-			else
+			if (!cmd.empty()) {
+				std::cerr << "< received: " << cmd << std::endl;
+
+				auto reply = ctx.processCmd(cmd);
+
+				std::cerr << ">     sent: " << reply;
+
+				outp << reply;
+			} else
 				break;
 		}
 	},

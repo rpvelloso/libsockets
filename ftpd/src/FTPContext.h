@@ -11,6 +11,7 @@
 #include "libsockets.h"
 
 #include <string>
+#include <fstream>
 
 class FTPContext {
 public:
@@ -32,8 +33,8 @@ public:
 	void setRenameFrom(const std::string& renameFrom = "");
 	socks::ServerSocket& getPassiveSocket() const;
 	void setPassiveSocket(std::unique_ptr<socks::ServerSocket> serverSocket);
-	size_t getRestartPos() const;
-	void setRestartPos(size_t restartPos = 0);
+	std::fstream::pos_type getRestartPos() const;
+	void setRestartPos(std::fstream::pos_type restartPos = 0);
 
 private:
 	std::string username = "";
@@ -43,7 +44,7 @@ private:
 	std::string type = "I";
 	std::string renameFrom = "";
 	size_t size = 0;
-	size_t restartPos = 0;
+	std::fstream::pos_type restartPos = 0;
 
 	std::unique_ptr<socks::ServerSocket> passiveSocket;
 };

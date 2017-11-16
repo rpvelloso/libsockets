@@ -36,7 +36,7 @@ FTPReply FTPClientActive::LIST(const std::string& path, int type) {
 			std::get<2>(file) << " " <<
 			std::setw(11) << std::right << std::get<4>(file) << " " <<
 			std::get<6>(file) << " " <<
-			std::get<0>(file) << std::endl;
+			std::get<0>(file) << "\r\n";
 	}
 	dataSocket.sync();
 	return FTPReply::R226;
@@ -48,9 +48,13 @@ FTPReply FTPClientActive::RETR(const std::string& filename) {
 		std::ios::binary|std::ios::in);
 
 	if (file.is_open()) {
-		dataSocket << file.rdbuf();
-		dataSocket.sync();
-		return FTPReply::R226;
+		auto restartPos = context.getRestartPos();
+		file.seekg(restartPos);
+		if (file.tellg() == restartPos) {
+			dataSocket << file.rdbuf();
+			dataSocket.sync();
+			return FTPReply::R226;
+		}
 	}
 	return FTPReply::R425;
 }
@@ -61,10 +65,14 @@ FTPReply FTPClientActive::STOR(const std::string& filename) {
 		std::ios::binary|std::ios::out);
 
 	if (file.is_open()) {
-		file << dataSocket.rdbuf();
-		file.sync();
-		dataSocket.sync();
-		return FTPReply::R226;
+		auto restartPos = context.getRestartPos();
+		file.seekp(restartPos);
+		if (file.tellp() == restartPos) {
+			file << dataSocket.rdbuf();
+			file.sync();
+			dataSocket.sync();
+			return FTPReply::R226;
+		}
 	}
 	return FTPReply::R425;
 }
