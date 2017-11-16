@@ -32,7 +32,8 @@ std::string FTPClient::processCmd(const std::string& cmdline) {
 
 	FTPReply reply;
 
-	if (command == "NOOP")
+	if (command == "NOOP" ||
+		command == "ALLO")
 		reply = state->NOOP();
 	else if (command == "QUIT")
 		reply = state->QUIT();

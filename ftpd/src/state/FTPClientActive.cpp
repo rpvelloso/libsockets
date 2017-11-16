@@ -35,7 +35,7 @@ FTPReply FTPClientActive::LIST(const std::string& path, int type) {
 				std::get<2>(file) << " " <<
 				std::setw(11) << std::right << std::get<4>(file) << " " <<
 				std::get<6>(file) << " " <<
-				std::get<0>(file) << "\r\n";//std::endl;
+				std::get<0>(file) << std::endl;
 		}
 		dataSocket.sync();
 		return FTPReply::R226;
