@@ -104,6 +104,9 @@ std::string FTPClient::processCmd(const std::string& cmdline) {
 	} else if (command == "STOR") {
 		reply = state->STOR(param);
 		state.reset(new FTPClientLoggedIn(context));
+	} else if (command == "APPE") {
+		reply = state->APPE(param);
+		state.reset(new FTPClientLoggedIn(context));
 	} else if (command == "REST")
 		reply = state->REST(param);
 	else

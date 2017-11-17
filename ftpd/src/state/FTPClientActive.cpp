@@ -51,6 +51,7 @@ FTPReply FTPClientActive::RETR(const std::string& filename) {
 		auto restartPos = context.getRestartPos();
 		file.seekg(restartPos);
 		if (file.tellg() == restartPos) {
+			context.setRestartPos(0);
 			dataSocket << file.rdbuf();
 			dataSocket.sync();
 			return FTPReply::R226;
@@ -65,14 +66,20 @@ FTPReply FTPClientActive::STOR(const std::string& filename) {
 		std::ios::binary|std::ios::out);
 
 	if (file.is_open()) {
-		auto restartPos = context.getRestartPos();
-		file.seekp(restartPos);
-		if (file.tellp() == restartPos) {
-			file << dataSocket.rdbuf();
-			file.sync();
-			dataSocket.sync();
-			return FTPReply::R226;
-		}
+		receiveFile(dataSocket.getClientSocket(), file);
+		return FTPReply::R226;
+	}
+	return FTPReply::R425;
+}
+
+FTPReply FTPClientActive::APPE(const std::string& filename) {
+	std::fstream file(
+		fs.resolvePath(context.getCwd(),filename),
+		std::ios::binary|std::ios::app|std::ios::out);
+
+	if (file.is_open()) {
+		receiveFile(dataSocket.getClientSocket(), file);
+		return FTPReply::R226;
 	}
 	return FTPReply::R425;
 }
@@ -83,4 +90,16 @@ FTPReply FTPClientActive::REST(const std::string& pos) {
 
 	context.setRestartPos(std::stoul(pos));
 	return FTPReply::R350;
+}
+
+void FTPClientActive::receiveFile(socks::ClientSocket& source, std::fstream &dest) {
+	size_t bufSize = 4096;
+	std::unique_ptr<char> bufPtr(new char[bufSize]);
+	auto buf = bufPtr.get();
+
+	auto len = source.receiveData(buf, bufSize);
+	while (len > 0) {
+		dest.write(buf, len);
+		len = source.receiveData(buf, bufSize);
+	}
 }

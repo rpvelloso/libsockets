@@ -69,6 +69,7 @@ FTPReply FTPClientState::RNTO(const std::string &) { return FTPReply::R503_RNTO;
 FTPReply FTPClientState::LIST(const std::string &, int) { return FTPReply::R500; };
 FTPReply FTPClientState::RETR(const std::string &) { return FTPReply::R500; };
 FTPReply FTPClientState::STOR(const std::string &) { return FTPReply::R500; };
+FTPReply FTPClientState::APPE(const std::string &) { return FTPReply::R500; };
 FTPReply FTPClientState::REST(const std::string &) { return FTPReply::R500; };
 
 FTPReply FTPClientState::PORT(const std::string &) { return FTPReply::R500; };

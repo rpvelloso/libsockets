@@ -53,6 +53,7 @@ public:
 	virtual FTPReply LIST(const std::string &, int);
 	virtual FTPReply RETR(const std::string &);
 	virtual FTPReply STOR(const std::string &);
+	virtual FTPReply APPE(const std::string &);
 	virtual FTPReply REST(const std::string &);
 
 protected:
