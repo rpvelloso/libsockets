@@ -8,8 +8,8 @@
 #ifndef FILESYSTEM_WINDOWSFILESYSTEM_H_
 #define FILESYSTEM_WINDOWSFILESYSTEM_H_
 
-#include "FileSystem.h"
-#include "FileSystemImpl.h"
+#include "filesystem/FileSystem.h"
+#include "filesystem/FileSystemImpl.h"
 
 class WindowsFileSystem: public FileSystemImpl {
 public:
