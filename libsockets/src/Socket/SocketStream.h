@@ -25,8 +25,7 @@ namespace socks {
 
 class SocketStreamBuf : public std::streambuf {
 public:
-	SocketStreamBuf(std::unique_ptr<ClientSocket> clientSocket);
-	SocketStreamBuf();
+	SocketStreamBuf(ClientSocket &clientSocket);
 	virtual ~SocketStreamBuf();
 	ClientSocket &getClientSocket();
 protected:
@@ -36,7 +35,7 @@ protected:
 private:
     static constexpr size_t buffSize = 4096;
     std::unique_ptr<char []> inp, outp;
-    std::unique_ptr<ClientSocket> clientSocket;
+    ClientSocket &clientSocket;
 
     int_type transmit();
 };
@@ -47,7 +46,9 @@ public:
 	SocketStream();
 	SocketStream(SocketStream &&);
 	int connectTo(const std::string &host, const std::string &port);
+	ClientSocket &getClientSocket();
 private:
+	std::unique_ptr<ClientSocket> clientSocket;
 	std::unique_ptr<SocketStreamBuf> socketStreamBuf;
 };
 

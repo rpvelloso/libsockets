@@ -28,32 +28,24 @@ namespace factory {
 	};
 }
 
-SocketStreamBuf::SocketStreamBuf(std::unique_ptr<ClientSocket> clientSocket) :
+SocketStreamBuf::SocketStreamBuf(ClientSocket &clientSocket) :
 		std::streambuf(),
 		inp(new char[buffSize]),
 		outp(new char[buffSize]),
-		clientSocket(std::move(clientSocket)) {
+		clientSocket(clientSocket) {
 
 		setp(outp.get(), outp.get() + buffSize - 1);
 		setg(inp.get(), inp.get(), inp.get());
 	};
 
-SocketStreamBuf::SocketStreamBuf() :
-				std::streambuf(),
-				inp(new char[buffSize]),
-				outp(new char[buffSize]),
-				clientSocket(std::make_unique<ClientSocket>(ClientSocket())) {
-
-};
-
 SocketStreamBuf::~SocketStreamBuf() {};
 
 ClientSocket &SocketStreamBuf::getClientSocket() {
-	return *clientSocket;
+	return clientSocket;
 };
 
 std::streambuf::int_type SocketStreamBuf::underflow() {
-	auto received = clientSocket->receiveData(inp.get(), buffSize);
+	auto received = clientSocket.receiveData(inp.get(), buffSize);
 
 	if (received <= 0)
 		return traits_type::eof();
@@ -80,25 +72,28 @@ int SocketStreamBuf::sync() {
 std::streambuf::int_type SocketStreamBuf::transmit() {
 	auto len = pptr() - pbase();
 	if (len > 0) {
-		auto sent = clientSocket->sendData(outp.get(), len);
+		auto sent = clientSocket.sendData(outp.get(), len);
 		// transmit
 		if (sent > 0) {
 			pbump(-sent);
 			return sent;
 		} // else ??? fail bit? eof ?
+		return traits_type::eof();
 	}
-	return traits_type::eof();
+	return 0;
 }
 
 SocketStream::SocketStream(std::unique_ptr<ClientSocket> clientSocket) :
 		std::iostream(),
-		socketStreamBuf(new SocketStreamBuf(std::move(clientSocket))) {
+		clientSocket(std::move(clientSocket)),
+		socketStreamBuf(new SocketStreamBuf(*(this->clientSocket))) {
 	rdbuf(socketStreamBuf.get());
 }
 
 SocketStream::SocketStream() :
 		std::iostream(),
-		socketStreamBuf(new SocketStreamBuf(std::make_unique<ClientSocket>(ClientSocket()))) {
+		clientSocket(new ClientSocket()),
+		socketStreamBuf(new SocketStreamBuf(*clientSocket)) {
 	rdbuf(socketStreamBuf.get());
 };
 
@@ -110,4 +105,9 @@ int SocketStream::connectTo(const std::string &host, const std::string &port) {
 	return socketStreamBuf->getClientSocket().connectTo(host, port);
 };
 
+ClientSocket& SocketStream::getClientSocket() {
+	return *clientSocket;
+}
+
 } /* namespace socks */
+
