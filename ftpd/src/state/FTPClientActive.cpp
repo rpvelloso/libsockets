@@ -28,15 +28,21 @@ FTPReply FTPClientActive::LIST(const std::string& path, int type) {
 		modeStr[1] = ((S_IRUSR&mode)?'r':'-');
 		modeStr[2] = ((S_IWUSR&mode)?'w':'-');
 		modeStr[3] = ((S_IXUSR&mode)?'x':'-');
+		auto nlinks = std::get<5>(file);
+		auto user = std::get<1>(file);
+		auto group = std::get<2>(file);
+		auto filesize = std::get<4>(file);
+		auto filedate = std::get<6>(file);
+		auto filename = std::get<0>(file);
 
 		dataSocket <<
 			modeStr << " " <<
-			std::get<5>(file) << " " <<
-			std::setw(8) << std::left << std::get<1>(file) << " " <<
-			std::get<2>(file) << " " <<
-			std::setw(11) << std::right << std::get<4>(file) << " " <<
-			std::get<6>(file) << " " <<
-			std::get<0>(file) << "\r\n";
+			nlinks << " " <<
+			std::setw(8) << std::left << user << " " <<
+			group << " " <<
+			/*std::setw(11) <<*/ std::right << filesize << " " <<
+			filedate << " " <<
+			filename << "\r\n";
 	}
 	dataSocket.sync();
 	return FTPReply::R226;

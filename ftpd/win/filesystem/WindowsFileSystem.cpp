@@ -81,9 +81,9 @@ std::vector<ListTuple> WindowsFileSystem::list(const std::string &path) {
 
 		auto de = readdir(d);
 		while (de) {
-			struct stat st;
+			struct stat64 st;
 
-			if (stat(std::string(path + sep + std::string(de->d_name)).c_str(),&st) != -1) {
+			if (stat64(std::string(path + sep + std::string(de->d_name)).c_str(),&st) != -1) {
 				struct tm tm1;
 
 				gmtime_r(&st.st_mtime,&tm1);
