@@ -86,7 +86,7 @@ std::string FTPClient::processCmd(const std::string& cmdline) {
 		if (reply == FTPReply::R200) {
 			try {
 				state.reset(new FTPClientActive(context));
-			} catch (std::exception e) {
+			} catch (std::exception &e) {
 				state.reset(new FTPClientLoggedIn(context));
 				reply = FTPReply::R425;
 			}

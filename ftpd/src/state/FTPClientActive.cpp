@@ -35,7 +35,8 @@ FTPReply FTPClientActive::LIST(const std::string& path, int type) {
 		auto filedate = std::get<6>(file);
 		auto filename = std::get<0>(file);
 
-		dataSocket <<
+		std::stringstream ss;
+		ss <<
 			modeStr << " " <<
 			nlinks << " " <<
 			std::setw(8) << std::left << user << " " <<
@@ -43,8 +44,8 @@ FTPReply FTPClientActive::LIST(const std::string& path, int type) {
 			/*std::setw(11) <<*/ std::right << filesize << " " <<
 			filedate << " " <<
 			filename << "\r\n";
+		dataSocket.sendData(ss.str().c_str(), ss.str().size());
 	}
-	dataSocket.sync();
 	return FTPReply::R226;
 }
 
@@ -57,9 +58,7 @@ FTPReply FTPClientActive::RETR(const std::string& filename) {
 		auto restartPos = context.getRestartPos();
 		file.seekg(restartPos);
 		if (file.tellg() == restartPos) {
-			context.setRestartPos(0);
-			dataSocket << file.rdbuf();
-			dataSocket.sync();
+			sendFile(file, dataSocket);
 			return FTPReply::R226;
 		}
 	}
@@ -72,7 +71,7 @@ FTPReply FTPClientActive::STOR(const std::string& filename) {
 		std::ios::binary|std::ios::out);
 
 	if (file.is_open()) {
-		receiveFile(dataSocket.getClientSocket(), file);
+		receiveFile(dataSocket, file);
 		return FTPReply::R226;
 	}
 	return FTPReply::R425;
@@ -84,7 +83,7 @@ FTPReply FTPClientActive::APPE(const std::string& filename) {
 		std::ios::binary|std::ios::app|std::ios::out);
 
 	if (file.is_open()) {
-		receiveFile(dataSocket.getClientSocket(), file);
+		receiveFile(dataSocket, file);
 		return FTPReply::R226;
 	}
 	return FTPReply::R425;
@@ -99,13 +98,19 @@ FTPReply FTPClientActive::REST(const std::string& pos) {
 }
 
 void FTPClientActive::receiveFile(socks::ClientSocket& source, std::fstream &dest) {
-	size_t bufSize = 4096;
 	std::unique_ptr<char> bufPtr(new char[bufSize]);
 	auto buf = bufPtr.get();
 
-	auto len = source.receiveData(buf, bufSize);
-	while (len > 0) {
-		dest.write(buf, len);
-		len = source.receiveData(buf, bufSize);
-	}
+	int len;
+	while ((len = source.receiveData(static_cast<void *>(buf), bufSize)) > 0)
+		dest.write(static_cast<char *>(buf), len);
+}
+
+void FTPClientActive::sendFile(std::fstream &source, socks::ClientSocket& dest) {
+	std::unique_ptr<char> bufPtr(new char[bufSize]);
+	auto buf = bufPtr.get();
+
+	std::fstream::off_type len;
+	while ((len = source.read(static_cast<char *>(buf), bufSize).gcount()) > 0)
+		dest.sendData(static_cast<void *>(buf), len);
 }

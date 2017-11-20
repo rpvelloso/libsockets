@@ -21,8 +21,10 @@ public:
 	FTPReply APPE(const std::string &filename) override;
 	FTPReply REST(const std::string &pos) override;
 private:
+	static const size_t bufSize = 4*1024;
 	void receiveFile(socks::ClientSocket& source, std::fstream &dest);
-	socks::SocketStream dataSocket;
+	void sendFile(std::fstream &source, socks::ClientSocket& dest);
+	socks::ClientSocket dataSocket;
 };
 
 #endif /* STATE_FTPCLIENTACTIVE_H_ */
