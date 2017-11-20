@@ -15,17 +15,26 @@
 
 #include <thread>
 #include <sstream>
+#include <memory>
 
 #include "Factory/SocketFactory.h"
 #include "Socket/BufferedClientSocketInterface.h"
 #include "Socket/ClientSocket.h"
 #include "ConnectionPool/ThreadedConnectionPoolImpl.h"
+#include "Socket/SocketStream.h"
 
 namespace socks {
 
 void threadFunction(std::unique_ptr<BufferedClientSocketInterface> clientSocket) {
 	auto recvBufSize = clientSocket->getReceiveBufferSize();
 	char recvBuf[recvBufSize];
+
+	struct ScopedGuard {
+		ScopedGuard(std::function<void()> cleanup) : cleanup(cleanup) {};
+		~ScopedGuard(){cleanup();};
+		std::function<void()> cleanup;
+	} guard([&clientSocket](){clientSocket->disconnectCallback();});
+
 	int len;
 
 	clientSocket->connectCallback();
@@ -51,8 +60,6 @@ void threadFunction(std::unique_ptr<BufferedClientSocketInterface> clientSocket)
 		} else
 			break;
 	}
-
-	clientSocket->disconnectCallback();
 };
 
 ThreadedConnectionPoolImpl::ThreadedConnectionPoolImpl() : ConnectionPoolImpl() {

@@ -45,6 +45,7 @@ public:
 	SocketStream(std::unique_ptr<ClientSocket> clientSocket);
 	SocketStream();
 	SocketStream(SocketStream &&);
+	SocketStream(ClientSocket &);
 	int connectTo(const std::string &host, const std::string &port);
 	ClientSocket &getClientSocket();
 private:

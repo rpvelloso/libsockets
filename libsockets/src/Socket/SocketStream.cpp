@@ -80,7 +80,7 @@ std::streambuf::int_type SocketStreamBuf::transmit() {
 		} // else ??? fail bit? eof ?
 		return traits_type::eof();
 	}
-	return 0;
+	return traits_type::eof();
 }
 
 SocketStream::SocketStream(std::unique_ptr<ClientSocket> clientSocket) :
@@ -99,6 +99,12 @@ SocketStream::SocketStream() :
 
 SocketStream::SocketStream(SocketStream &&rhs) : std::iostream(std::move(rhs)) {
 	socketStreamBuf.swap(rhs.socketStreamBuf);
+}
+
+SocketStream::SocketStream(ClientSocket &clientSocket) :
+		std::iostream(),
+		socketStreamBuf(new SocketStreamBuf(clientSocket)) {
+	rdbuf(socketStreamBuf.get());
 }
 
 int SocketStream::connectTo(const std::string &host, const std::string &port) {

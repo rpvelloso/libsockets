@@ -39,6 +39,7 @@ public:
 	virtual size_t getSendBufferSize() const = 0;
 	virtual size_t getReceiveBufferSize() const = 0;
 	virtual SocketImpl &getImpl() = 0;
+	virtual ClientSocket &getSocket() = 0;
 	virtual void readCallback() = 0;
 	virtual void connectCallback() = 0;
 	virtual void disconnectCallback() = 0;

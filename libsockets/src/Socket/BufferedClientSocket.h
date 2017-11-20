@@ -56,6 +56,7 @@ public:
 	size_t getReceiveBufferSize() const override {return impl->getReceiveBufferSize();};
 	int setNonBlockingIO(bool status) override {return impl->setNonBlockingIO(status);};
 	SocketImpl &getImpl() override {return impl->getImpl();};
+	ClientSocket &getSocket() override {return *impl;};
 	void readCallback() override {readCB(clientData, inputBuffer, outputBuffer);};
 	void connectCallback() override {connectCB(clientData, inputBuffer, outputBuffer);};
 	void disconnectCallback() override {disconnectCB(clientData, inputBuffer, outputBuffer);};
