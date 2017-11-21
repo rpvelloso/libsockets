@@ -23,6 +23,7 @@ std::string readline(std::istream &inp) {
 	auto savePos = inp.tellg();
 	std::getline(inp, line);
 	if (inp && !inp.eof()) {
+		std::cerr << "< received: " << line << std::endl;
 		return line;
 	} else {
 		inp.clear();
@@ -37,13 +38,8 @@ int main(int argc, char **argv) {
 		while (inp) {
 			auto cmd = readline(inp);
 			if (!cmd.empty()) {
-				std::cerr << "< received: " << cmd << std::endl;
-
 				auto reply = ctx.processCmd(cmd, outp);
-
-				std::cerr << ">     sent: " << reply << std::endl;
-
-				outp << reply << std::endl;
+				outp << ctx.buildReplyString(reply) << std::endl;
 			} else
 				break;
 		}

@@ -28,7 +28,7 @@ FTPClient::FTPClient() : state(new FTPClientConnected(context)) {
 FTPClient::~FTPClient() {
 }
 
-std::string FTPClient::processCmd(const std::string& cmdline, std::ostream &outp) {
+FTPReply FTPClient::processCmd(const std::string& cmdline, std::ostream &outp) {
 	std::stringstream ss(cmdline);
 	std::string command;
 	std::string param;
@@ -124,7 +124,7 @@ std::string FTPClient::processCmd(const std::string& cmdline, std::ostream &outp
 	else
 		reply = FTPReply::R500;
 
-	return buildReplyString(reply);
+	return reply;
 }
 
 std::string FTPClient::buildReplyString(FTPReply reply) {
@@ -149,6 +149,8 @@ std::string FTPClient::buildReplyString(FTPReply reply) {
 	default:
 		break;
 	}
+
+	std::cerr << ">     sent: " << replyStr << std::endl;
 
 	return replyStr;
 }

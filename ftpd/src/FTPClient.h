@@ -25,7 +25,7 @@ class FTPClient {
 public:
 	FTPClient();
 	~FTPClient();
-	std::string processCmd(const std::string &cmdline, std::ostream &outp);
+	FTPReply processCmd(const std::string &cmdline, std::ostream &outp);
 	std::string buildReplyString(FTPReply reply);
 private:
 	FTPContext context;
