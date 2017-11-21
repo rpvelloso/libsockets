@@ -16,7 +16,7 @@
 #ifndef STATE_FTPCLIENTLOGGEDIN_H_
 #define STATE_FTPCLIENTLOGGEDIN_H_
 
-#include <state/FTPClientState.h>
+#include "state/FTPClientState.h"
 
 class FTPClientLoggedIn: public FTPClientState {
 public:

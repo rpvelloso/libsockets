@@ -13,21 +13,24 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "state/FTPClientActive.h"
+#include <state/FTPClientTransfer.h>
 #include "filesystem/FileSystem.h"
 #include <iomanip>
 #include <fstream>
 #include <sys/stat.h>
 
-FTPClientActive::FTPClientActive(FTPContext &ctx) : FTPClientState(ctx) {
-	if (dataSocket.connectTo(context.getAddress(), context.getPort()) != 0)
-		throw std::runtime_error("Can't open data connection");
+FTPClientTransfer::FTPClientTransfer(
+		FTPContext &ctx,
+		std::function<socks::ClientSocket()> getDataSocket) :
+		FTPClientState(ctx),
+		getDataSocket(getDataSocket) {
 }
 
-FTPClientActive::~FTPClientActive() {
+FTPClientTransfer::~FTPClientTransfer() {
 }
 
-FTPReply FTPClientActive::LIST(const std::string& path, int type) {
+FTPReply FTPClientTransfer::LIST(const std::string& path, int type) {
+	auto dataSocket = getDataSocket();
 	auto fileList = fs.list(fs.resolvePath(context.getCwd(), path));
 
 	for (auto &file:fileList) {
@@ -57,7 +60,8 @@ FTPReply FTPClientActive::LIST(const std::string& path, int type) {
 	return FTPReply::R226;
 }
 
-FTPReply FTPClientActive::RETR(const std::string& filename) {
+FTPReply FTPClientTransfer::RETR(const std::string& filename) {
+	auto dataSocket = getDataSocket();
 	std::fstream file(
 		fs.resolvePath(context.getCwd(),filename),
 		std::ios::binary|std::ios::in);
@@ -73,7 +77,8 @@ FTPReply FTPClientActive::RETR(const std::string& filename) {
 	return FTPReply::R425;
 }
 
-FTPReply FTPClientActive::STOR(const std::string& filename) {
+FTPReply FTPClientTransfer::STOR(const std::string& filename) {
+	auto dataSocket = getDataSocket();
 	std::fstream file(
 		fs.resolvePath(context.getCwd(),filename),
 		std::ios::binary|std::ios::out);
@@ -85,7 +90,8 @@ FTPReply FTPClientActive::STOR(const std::string& filename) {
 	return FTPReply::R425;
 }
 
-FTPReply FTPClientActive::APPE(const std::string& filename) {
+FTPReply FTPClientTransfer::APPE(const std::string& filename) {
+	auto dataSocket = getDataSocket();
 	std::fstream file(
 		fs.resolvePath(context.getCwd(),filename),
 		std::ios::binary|std::ios::app|std::ios::out);
@@ -97,7 +103,7 @@ FTPReply FTPClientActive::APPE(const std::string& filename) {
 	return FTPReply::R425;
 }
 
-FTPReply FTPClientActive::REST(const std::string& pos) {
+FTPReply FTPClientTransfer::REST(const std::string& pos) {
 	if (pos.empty())
 		return FTPReply::R501;
 
@@ -105,7 +111,7 @@ FTPReply FTPClientActive::REST(const std::string& pos) {
 	return FTPReply::R350;
 }
 
-void FTPClientActive::receiveFile(socks::ClientSocket& source, std::fstream &dest) {
+void FTPClientTransfer::receiveFile(socks::ClientSocket& source, std::fstream &dest) {
 	std::unique_ptr<char> bufPtr(new char[bufSize]);
 	auto buf = bufPtr.get();
 
@@ -114,7 +120,7 @@ void FTPClientActive::receiveFile(socks::ClientSocket& source, std::fstream &des
 		dest.write(static_cast<char *>(buf), len);
 }
 
-void FTPClientActive::sendFile(std::fstream &source, socks::ClientSocket& dest) {
+void FTPClientTransfer::sendFile(std::fstream &source, socks::ClientSocket& dest) {
 	std::unique_ptr<char> bufPtr(new char[bufSize]);
 	auto buf = bufPtr.get();
 

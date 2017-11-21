@@ -13,7 +13,7 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <state/FTPClientRename.h>
+#include "state/FTPClientRename.h"
 
 FTPClientRename::FTPClientRename(FTPContext& ctx) : FTPClientState(ctx) {
 }

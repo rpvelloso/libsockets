@@ -27,6 +27,7 @@ public:
 	~FTPClient();
 	FTPReply processCmd(const std::string &cmdline, std::ostream &outp);
 	std::string buildReplyString(FTPReply reply);
+	const FTPContext& getContext() const;
 private:
 	FTPContext context;
 	std::unique_ptr<FTPClientState> state;

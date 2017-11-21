@@ -39,7 +39,8 @@ int main(int argc, char **argv) {
 			auto cmd = readline(inp);
 			if (!cmd.empty()) {
 				auto reply = ctx.processCmd(cmd, outp);
-				outp << ctx.buildReplyString(reply) << std::endl;
+				if (reply != FTPReply::RNULL)
+					outp << ctx.buildReplyString(reply) << std::endl;
 			} else
 				break;
 		}

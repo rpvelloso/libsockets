@@ -13,15 +13,16 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef STATE_FTPCLIENTACTIVE_H_
-#define STATE_FTPCLIENTACTIVE_H_
+#ifndef STATE_FTPCLIENTTRANSFER_H_
+#define STATE_FTPCLIENTTRANSFER_H_
 
-#include <state/FTPClientState.h>
+#include "state/FTPClientState.h"
+#include <functional>
 
-class FTPClientActive: public FTPClientState {
+class FTPClientTransfer: public FTPClientState {
 public:
-	FTPClientActive(FTPContext &ctx);
-	virtual ~FTPClientActive();
+	FTPClientTransfer(FTPContext &ctx, std::function<socks::ClientSocket()> getDataSocket);
+	virtual ~FTPClientTransfer();
 
 	FTPReply LIST(const std::string &path, int type) override;
 	FTPReply RETR(const std::string &filename) override;
@@ -32,7 +33,7 @@ private:
 	static const size_t bufSize = 4*1024;
 	void receiveFile(socks::ClientSocket& source, std::fstream &dest);
 	void sendFile(std::fstream &source, socks::ClientSocket& dest);
-	socks::ClientSocket dataSocket;
+	std::function<socks::ClientSocket()> getDataSocket;
 };
 
-#endif /* STATE_FTPCLIENTACTIVE_H_ */
+#endif /* STATE_FTPCLIENTTRANSFER_H_ */
