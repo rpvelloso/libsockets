@@ -29,7 +29,7 @@ FTPClientTransfer::FTPClientTransfer(
 FTPClientTransfer::~FTPClientTransfer() {
 }
 
-FTPReply FTPClientTransfer::LIST(const std::string& path, int type) {
+FTPReply FTPClientTransfer::LIST(const std::string& path) {
 	auto dataSocket = getDataSocket();
 	auto fileList = fs.list(fs.resolvePath(context.getCwd(), path));
 

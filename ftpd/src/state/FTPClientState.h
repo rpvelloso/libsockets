@@ -58,7 +58,7 @@ public:
 	virtual FTPReply PORT(const std::string &);
 	virtual FTPReply PASV();
 
-	virtual FTPReply LIST(const std::string &, int);
+	virtual FTPReply LIST(const std::string &);
 	virtual FTPReply RETR(const std::string &);
 	virtual FTPReply STOR(const std::string &);
 	virtual FTPReply APPE(const std::string &);

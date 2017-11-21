@@ -24,7 +24,7 @@ public:
 	FTPClientTransfer(FTPContext &ctx, std::function<socks::ClientSocket()> getDataSocket);
 	virtual ~FTPClientTransfer();
 
-	FTPReply LIST(const std::string &path, int type) override;
+	FTPReply LIST(const std::string &path) override;
 	FTPReply RETR(const std::string &filename) override;
 	FTPReply STOR(const std::string &filename) override;
 	FTPReply APPE(const std::string &filename) override;

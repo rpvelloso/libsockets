@@ -120,7 +120,7 @@ FTPReply FTPClient::processCmd(const std::string& cmdline, std::ostream &outp) {
 			command == "NLST") {
 		outp << buildReplyString(FTPReply::R150) << std::endl;
 		try {
-			reply = state->LIST(param, 1);
+			reply = state->LIST(param);
 		} catch (std::exception &e) {
 			reply = FTPReply::R425;
 		}
