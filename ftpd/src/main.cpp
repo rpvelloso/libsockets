@@ -31,17 +31,17 @@ int main(int argc, char **argv) {
 			if (!cmd.empty()) {
 				std::cerr << "< received: " << cmd << std::endl;
 
-				auto reply = ctx.processCmd(cmd);
+				auto reply = ctx.processCmd(cmd, outp);
 
-				std::cerr << ">     sent: " << reply;
+				std::cerr << ">     sent: " << reply << std::endl;
 
-				outp << reply;
+				outp << reply << std::endl;
 			} else
 				break;
 		}
 	},
 	[](FTPClient &ctx, std::istream &inp, std::ostream &outp) {
-		outp << FTPReplyString[FTPReply::R220];
+		outp << ctx.buildReplyString(FTPReply::R220) << std::endl;
 	});
 
 	FTPServer.listen("127.0.0.1","21");

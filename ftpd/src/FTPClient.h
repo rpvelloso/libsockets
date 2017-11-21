@@ -17,12 +17,11 @@ class FTPClient {
 public:
 	FTPClient();
 	~FTPClient();
-	std::string processCmd(const std::string &cmdline);
+	std::string processCmd(const std::string &cmdline, std::ostream &outp);
+	std::string buildReplyString(FTPReply reply);
 private:
 	FTPContext context;
 	std::unique_ptr<FTPClientState> state;
-
-	std::string buildReplyString(FTPReply reply);
 };
 
 #endif /* FTPCLIENT_H_ */

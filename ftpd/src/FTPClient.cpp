@@ -20,7 +20,7 @@ FTPClient::FTPClient() : state(new FTPClientConnected(context)) {
 FTPClient::~FTPClient() {
 }
 
-std::string FTPClient::processCmd(const std::string& cmdline) {
+std::string FTPClient::processCmd(const std::string& cmdline, std::ostream &outp) {
 	std::stringstream ss(cmdline);
 	std::string command;
 	std::string param;
@@ -96,15 +96,19 @@ std::string FTPClient::processCmd(const std::string& cmdline) {
 	else if (
 			command == "LIST" ||
 			command == "NLST") {
+		outp << buildReplyString(FTPReply::R150) << std::endl;
 		reply = state->LIST(param, 1);
 		state.reset(new FTPClientLoggedIn(context));
 	} else if (command == "RETR") {
+		outp << buildReplyString(FTPReply::R150) << std::endl;
 		reply = state->RETR(param);
 		state.reset(new FTPClientLoggedIn(context));
 	} else if (command == "STOR") {
+		outp << buildReplyString(FTPReply::R150) << std::endl;
 		reply = state->STOR(param);
 		state.reset(new FTPClientLoggedIn(context));
 	} else if (command == "APPE") {
+		outp << buildReplyString(FTPReply::R150) << std::endl;
 		reply = state->APPE(param);
 		state.reset(new FTPClientLoggedIn(context));
 	} else if (command == "REST")
@@ -120,22 +124,19 @@ std::string FTPClient::buildReplyString(FTPReply reply) {
 
 	switch (reply) {
 	case FTPReply::R200_TYPE:
-		replyStr += context.getType() + "\n";
+		replyStr += context.getType();
 		break;
 	case FTPReply::R213:
-		replyStr += std::to_string(context.getSize()) + "\n";
-		break;
-	case FTPReply::R226:
-		replyStr = FTPReplyString[FTPReply::R150] + replyStr;
+		replyStr += std::to_string(context.getSize());
 		break;
 	case FTPReply::R227: {
 		auto port = std::stoul(context.getPassiveSocket().getPort());
 		auto portHi = std::to_string((port >> 8) && 0x00ff);
 		auto portLo = std::to_string(port && 0x00ff);
-		replyStr += "127,0,0,1," + portHi + "," + portLo + "\n";}
+		replyStr += "127,0,0,1," + portHi + "," + portLo;}
 		break;
 	case FTPReply::R257_PWD:
-		replyStr += context.getCwd() + "\"\n";
+		replyStr += context.getCwd() + "\"";
 		break;
 	default:
 		break;
