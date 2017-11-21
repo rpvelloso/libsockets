@@ -21,6 +21,7 @@
 
 #include "Socket/ClientSocket.h"
 #include "Socket/BufferedClientSocketInterface.h"
+#include "Socket/SocketStream.h"
 
 namespace socks {
 
@@ -44,7 +45,9 @@ public:
 		readCB(readCallback),
 		connectCB(connectCallback),
 		disconnectCB(disconnectCallback),
-		writeCB(writeCallback) {};
+		writeCB(writeCallback),
+		outputSocketBuffer(*(this->impl)),
+		outp(&outputSocketBuffer) {};
 	virtual ~BufferedClientSocket() {};
 	bool getHasOutput() override {return outputBuffer.rdbuf()->in_avail() > 0;};
 	std::stringstream &getOutputBuffer() override {return outputBuffer;};
@@ -54,18 +57,27 @@ public:
 	int sendData(const void *buf, size_t len) override {return impl->sendData(buf, len);};
 	size_t getSendBufferSize() const override {return impl->getSendBufferSize();};
 	size_t getReceiveBufferSize() const override {return impl->getReceiveBufferSize();};
-	int setNonBlockingIO(bool status) override {return impl->setNonBlockingIO(status);};
+	int setNonBlockingIO(bool status) override {
+		if (!status)
+			outp = &outputSocketBuffer; // unbuffered output for blocking I/O
+		else
+			outp = &outputBuffer;
+
+		return impl->setNonBlockingIO(status);
+	};
 	SocketImpl &getImpl() override {return impl->getImpl();};
 	ClientSocket &getSocket() override {return *impl;};
-	void readCallback() override {readCB(clientData, inputBuffer, outputBuffer);};
-	void connectCallback() override {connectCB(clientData, inputBuffer, outputBuffer);};
-	void disconnectCallback() override {disconnectCB(clientData, inputBuffer, outputBuffer);};
-	void writeCallback() override {writeCB(clientData, inputBuffer, outputBuffer);};
+	void readCallback() override {readCB(clientData, inputBuffer, *outp);};
+	void connectCallback() override {connectCB(clientData, inputBuffer, *outp);};
+	void disconnectCallback() override {disconnectCB(clientData, inputBuffer, *outp);};
+	void writeCallback() override {writeCB(clientData, inputBuffer, *outp);};
 private:
 	std::unique_ptr<ClientSocket> impl;
 	ClientCallback<ClientContext> readCB, connectCB, disconnectCB, writeCB;
 	std::stringstream outputBuffer;
 	std::stringstream inputBuffer;
+	SocketStream outputSocketBuffer;
+	std::ostream *outp;
 	ClientContext clientData;
 };
 
