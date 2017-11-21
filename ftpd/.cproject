@@ -24,13 +24,17 @@
 							</builder>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.mingw.exe.debug.545231209" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.mingw.exe.debug">
 								<option id="gnu.both.asm.option.include.paths.1733168623" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
-									<listOptionValue builtIn="false" value="../FTPServer/libsockets/src"/>
-									<listOptionValue builtIn="false" value="../FTPServer/FTPServer/src"/>
+									<listOptionValue builtIn="false" value="C:/Users/rvelloso/workspace/ftpd/FTPServer/libsockets/src"/>
+									<listOptionValue builtIn="false" value="C:/Users/rvelloso/workspace/ftpd/FTPServer/FTPServer/src"/>
 									<listOptionValue builtIn="false" value="C:/mingw-w64/local/include"/>
+									<listOptionValue builtIn="false" value="C:/Users/rvelloso/workspace/ftpd/FTPServer/libsockets/win"/>
+									<listOptionValue builtIn="false" value="../FTPServer/libsockets/src"/>
 									<listOptionValue builtIn="false" value="../FTPServer/libsockets/win"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FTPServer/libsockets/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FTPServer/libsockets/win}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FTPServer/FTPServer/src}&quot;"/>
+									<listOptionValue builtIn="false" value="../FTPServer/FTPServer/src"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ftpd/libsockets/win}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ftpd/libsockets/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ftpd/ftpd/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ftpd/ftpd/win}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1229137783" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -42,8 +46,8 @@
 									<listOptionValue builtIn="false" value="C:/mingw-w64/local/include"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libsockets/win}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libsockets/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/win}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ftpd/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/ftpd/win}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.dialect.std.1914326734" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" value="gnu.cpp.compiler.dialect.c++1y" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.files.197221681" name="Include files (-include)" superClass="gnu.cpp.compiler.option.include.files"/>
@@ -52,15 +56,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.debug.1868166657" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.debug">
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.mingw.exe.debug.option.optimization.level.1719341034" name="Optimization Level" superClass="gnu.c.compiler.mingw.exe.debug.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
 								<option id="gnu.c.compiler.mingw.exe.debug.option.debugging.level.1722226109" name="Debug Level" superClass="gnu.c.compiler.mingw.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.max" valueType="enumerated"/>
-								<option id="gnu.c.compiler.option.include.paths.1312578439" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
-									<listOptionValue builtIn="false" value="../FTPServer/libsockets/src"/>
-									<listOptionValue builtIn="false" value="../FTPServer/FTPServer/src"/>
-									<listOptionValue builtIn="false" value="C:/mingw-w64/local/include"/>
-									<listOptionValue builtIn="false" value="../FTPServer/libsockets/win"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FTPServer/libsockets/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FTPServer/libsockets/win}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/FTPServer/FTPServer/src}&quot;"/>
-								</option>
+								<option id="gnu.c.compiler.option.include.paths.1312578439" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1281736838" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.debug.1840649271" name="MinGW C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.debug"/>
@@ -79,8 +75,9 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="win|old|state|src|filesystem" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="log|old|win|state|src|filesystem" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="log" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/log"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="win"/>
 					</sourceEntries>
 				</configuration>
@@ -127,9 +124,10 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="win|old|filesystem|state|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry excluding="filesystem|state" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
+						<entry excluding="log|win|old|filesystem|state|src" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="log|filesystem|state" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/filesystem"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/log"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src/state"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="win"/>
 					</sourceEntries>
