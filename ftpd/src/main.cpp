@@ -16,9 +16,6 @@
 #include "libsockets.h"
 
 #include "FTPClient.h"
-/*
- * TODO: check, in passive mode, if the client's IP is the same as the data connection
- */
 
 std::string readline(std::istream &inp) {
 	std::string line;
