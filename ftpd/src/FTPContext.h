@@ -26,19 +26,19 @@ public:
 	FTPContext();
 	~FTPContext();
 	const std::string& getUsername() const;
-	void setUsername(const std::string& username = "");
+	void setUsername(const std::string& username);
 	const std::string& getCwd() const;
-	void setCwd(const std::string& cwd = "/");
+	void setCwd(const std::string& cwd);
 	const std::string& getAddress() const;
-	void setAddress(const std::string& address = "");
+	void setAddress(const std::string& address);
 	const std::string& getPort() const;
-	void setPort(const std::string& port = "");
+	void setPort(const std::string& port);
 	const std::string& getType() const;
-	void setType(const std::string& type = "I");
+	void setType(const std::string& type);
 	size_t getSize() const;
 	void setSize(size_t size = 0);
 	const std::string& getRenameFrom() const;
-	void setRenameFrom(const std::string& renameFrom = "");
+	void setRenameFrom(const std::string& renameFrom);
 	socks::ServerSocket& getPassiveSocket() const;
 	void setPassiveSocket(std::unique_ptr<socks::ServerSocket> serverSocket);
 	std::fstream::pos_type getRestartPos() const;
@@ -49,16 +49,16 @@ public:
 	void setPeerAddr(socks::SocketAddress &addr);
 
 private:
-	std::string username = "";
+	std::string username;
 	std::string cwd = "/";
-	std::string address = "";
-	std::string port = "";
+	std::string address;
+	std::string port;
 	std::string type = "I";
-	std::string renameFrom = "";
-	size_t size = 0;
+	std::string renameFrom;
+	size_t size;
 	std::fstream::pos_type restartPos = 0;
-	std::string pasvAddr = "";
-	std::string peerAddr = "";
+	std::string pasvAddr;
+	std::string peerAddr;
 
 	std::unique_ptr<socks::ServerSocket> passiveSocket;
 
