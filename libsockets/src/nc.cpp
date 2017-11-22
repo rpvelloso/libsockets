@@ -56,7 +56,7 @@ public:
 				server(serverSocket);
 			}
 		}
-	};
+	}
 private:
 	void server(socks::ServerSocket &serverSocket) {
 		if (serverSocket.listenForConnections(host, port) == 0) {
@@ -104,18 +104,23 @@ private:
 
 		auto clientSocket = datagramSocket.makeClientSocket(peer);
 		sendAndReceive(clientSocket);
-	};
+	}
 
 	void client(socks::ClientSocket &clientSocket) {
 		if (clientSocket.connectTo(host, port) == 0) {
-			if (verbose)
-				std::cerr << "connected to " << host << ":" << port << std::endl;
 			sendAndReceive(clientSocket);
 		} else
 			std::cerr << "error connecting to " << host << ":" << port << std::endl;
 	}
 
 	void sendAndReceive(socks::ClientSocket &clientSocket) {
+		if (verbose) {
+			auto localAddr = clientSocket.getLocalAddress();
+			auto remoteAddr = clientSocket.getRemoteAddress();
+			std::cerr << "local address " << localAddr.getHostname() << ":" << localAddr.getPort() << std::endl;
+			std::cerr << "remote address " << remoteAddr.getHostname() << ":" << remoteAddr.getPort() << std::endl;
+		}
+
 		std::thread transmitter([](socks::ClientSocket &clientSocket){
 			while (true) {
 				std::string inp;
@@ -138,7 +143,7 @@ private:
 
 		if (verbose)
 			std::cerr << std::endl << "connection terminated." << std::endl;
-	};
+	}
 
 	int parseOptions(int argc, char **argv) {
 		int c;
@@ -176,7 +181,7 @@ private:
 			return -1;
 		}
 		return 0;
-	};
+	}
 
 	void usage(const std::string &program) {
 		std::cout << "Usage:" << std::endl;
@@ -188,7 +193,7 @@ private:
 
 		std::cout << std::endl;
 		std::cout << "(*) -u and -s are mutually exclusive" << std::endl;
-	};
+	}
 
 	static constexpr size_t bufferSize = 4096;
 	std::string host = "", port = "";
