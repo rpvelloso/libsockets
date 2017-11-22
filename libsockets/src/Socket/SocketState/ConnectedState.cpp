@@ -44,30 +44,13 @@ int ConnectedState::sendTo(const SocketAddress& addr, const void* buf,
 	return impl.sendTo(addr, buf, len);
 };
 
-int ConnectedState::connectTo(const std::string &host, const std::string &port) {
-	throw std::runtime_error("invalid operation connectTo().");
-};
-
 void ConnectedState::disconnect() {
 	impl.disconnect();
 };
 
-int ConnectedState::bindSocket(const std::string &bindAddr, const std::string &port) {
-	throw std::runtime_error("invalid operation listenForConnections().");
-};
-
-int ConnectedState::listenForConnections(const std::string &bindAddr, const std::string &port) {
-	throw std::runtime_error("invalid operation listenForConnections().");
-};
-
-std::unique_ptr<SocketImpl> ConnectedState::acceptConnection() {
-	throw std::runtime_error("invalid operation listenForConnections().");
-};
-
 std::string ConnectedState::getPort() {
 	return impl.getPort();
-}
-;
+};
 
 size_t ConnectedState::getSendBufferSize() {
 	return impl.getSendBufferSize();

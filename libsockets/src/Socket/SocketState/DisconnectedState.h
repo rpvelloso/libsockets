@@ -24,18 +24,11 @@ class DisconnectedState : public SocketState {
 public:
 	DisconnectedState(SocketImpl &impl);
 	virtual ~DisconnectedState();
-	int receiveData(void *buf, size_t len) override;
-	int sendData(const void *buf, size_t len) override;
 	std::pair<int, SocketAddress> receiveFrom(void *buf, size_t len) override;
 	int sendTo(const SocketAddress &addr, const void *buf, size_t len) override;
 	int connectTo(const std::string &host, const std::string &port) override;
-	void disconnect() override;
 	int bindSocket(const std::string &bindAddr, const std::string &port) override;
 	int listenForConnections(const std::string &bindAddr, const std::string &port) override;
-	std::unique_ptr<SocketImpl> acceptConnection() override;
-	std::string getPort() override;
-	size_t getSendBufferSize() override;
-	size_t getReceiveBufferSize() override;
 };
 
 }

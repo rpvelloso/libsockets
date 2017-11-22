@@ -18,6 +18,7 @@
 
 #include <memory>
 
+#include "Socket/SocketAddress.h"
 #include "Socket/SocketImpl.h"
 #include "Socket/SocketState/ClosedState.h"
 #include "Socket/SocketState/ConnectedState.h"
@@ -46,24 +47,38 @@ public:
 			state.reset(new ClosedState(getImpl()));
 			break;
 		}
-	};
+	}
 
 	virtual ~Socket() {
 		if (state)
 			state->disconnect();
-	};
+	}
+
 	virtual int setNonBlockingIO(bool status) {
 		return impl->setNonBlockingIO(status);
-	};
+	}
+
 	virtual std::string getPort() {
 		return impl->getPort();
 	}
+
 	virtual SocketImpl &getImpl() {
 		return *impl;
-	};
+	}
+
+	virtual SocketAddress getLocalAddress() {
+		return impl->getLocalAddress();
+	}
+
+	virtual SocketAddress getRemoteAddress() {
+		return impl->getRemoteAddress();
+	}
+
 protected:
 	std::unique_ptr<SocketImpl> impl;
 	std::unique_ptr<SocketState> state;
+private:
+	Socket() = delete;
 };
 
 }

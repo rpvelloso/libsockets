@@ -52,6 +52,8 @@ public:
 	virtual std::string getPort() = 0;
 	virtual size_t getSendBufferSize() = 0;
 	virtual size_t getReceiveBufferSize() = 0;
+	virtual SocketAddress getLocalAddress() = 0;
+	virtual SocketAddress getRemoteAddress() = 0;
 	virtual SocketStateType getSocketState() {
 		return socketState;
 	};

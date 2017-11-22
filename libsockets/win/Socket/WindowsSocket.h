@@ -44,6 +44,8 @@ public:
 	std::string getPort() override;
 	size_t getSendBufferSize() override;
 	size_t getReceiveBufferSize() override;
+	SocketAddress getLocalAddress() override;
+	SocketAddress getRemoteAddress() override;
 private:
 	WindowsSocket(SocketFDType); // ctor used by acceptConnections()
 	std::string port = "";

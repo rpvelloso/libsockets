@@ -217,4 +217,13 @@ SocketFDType OpenSSLSocket::getFD() {
 	return impl->getFD();
 }
 
+SocketAddress OpenSSLSocket::getLocalAddress() {
+	return impl->getLocalAddress();
 }
+
+SocketAddress OpenSSLSocket::getRemoteAddress() {
+	return impl->getRemoteAddress();
+}
+
+}
+

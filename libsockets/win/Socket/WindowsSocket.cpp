@@ -202,4 +202,19 @@ int WindowsSocket::reuseAddress() {
 	return setsockopt(fd,SOL_SOCKET,SO_REUSEADDR,(char *)&reuse,sizeof(reuse));
 }
 
+
+SocketAddress WindowsSocket::getLocalAddress() {
+	struct sockaddr_storage addr;
+	socklen_t addrlen = sizeof(addr);
+	getsockname(fd, (struct sockaddr *)(&addr), &addrlen);
+	return SocketAddress(new WindowsSocketAddress((struct sockaddr *)(&addr), addrlen));
+}
+
+SocketAddress WindowsSocket::getRemoteAddress() {
+	struct sockaddr_storage addr;
+	socklen_t addrlen = sizeof(addr);
+	getpeername(fd, (struct sockaddr *)(&addr), &addrlen);
+	return SocketAddress(new WindowsSocketAddress((struct sockaddr *)(&addr), addrlen));
+}
+
 }

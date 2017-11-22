@@ -70,6 +70,8 @@ public:
 	SocketStateType getSocketState() override;
 	void setSocketState(SocketStateType socketState) override;
 	SocketFDType getFD() override;
+	SocketAddress getLocalAddress() override;
+	SocketAddress getRemoteAddress() override;
 private:
 	OpenSSLSocket(SocketFDType fd, SocketImpl *impl, SSL_CTX *sslContext);
 
