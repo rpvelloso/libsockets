@@ -40,9 +40,9 @@ namespace factory {
 	Server makeMultiplexedServer(
 		size_t numThreads,
 		ClientCallback<ClientContext> readCallback,
-		ClientCallback<ClientContext> connectCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){},
-		ClientCallback<ClientContext> disconnectCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){},
-		ClientCallback<ClientContext> writeCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){}) {
+		ClientCallback<ClientContext> connectCallback = [](Context<ClientContext> &ctx, std::istream &inp, std::ostream &outp){},
+		ClientCallback<ClientContext> disconnectCallback = [](Context<ClientContext> &ctx, std::istream &inp, std::ostream &outp){},
+		ClientCallback<ClientContext> writeCallback = [](Context<ClientContext> &ctx, std::istream &inp, std::ostream &outp){}) {
 		return Server(new ServerImpl<ClientContext>(
 				new ServerSocket(),
 				new ConnectionPool(new MultiplexedConnectionPoolImpl(numThreads)),
@@ -56,9 +56,9 @@ namespace factory {
 	template<class ClientContext>
 	Server makeThreadedServer(
 		ClientCallback<ClientContext> readCallback,
-		ClientCallback<ClientContext> connectCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){},
-		ClientCallback<ClientContext> disconnectCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){},
-		ClientCallback<ClientContext> writeCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){}) {
+		ClientCallback<ClientContext> connectCallback = [](Context<ClientContext> &ctx, std::istream &inp, std::ostream &outp){},
+		ClientCallback<ClientContext> disconnectCallback = [](Context<ClientContext> &ctx, std::istream &inp, std::ostream &outp){},
+		ClientCallback<ClientContext> writeCallback = [](Context<ClientContext> &ctx, std::istream &inp, std::ostream &outp){}) {
 		return Server(new ServerImpl<ClientContext>(
 				new ServerSocket(),
 				new ConnectionPool(new ThreadedConnectionPoolImpl()),

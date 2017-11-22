@@ -26,7 +26,31 @@
 namespace socks {
 
 template<class ClientContext>
-using ClientCallback = std::function<void(ClientContext &, std::istream &, std::ostream &)>;
+class Context {
+public:
+	Context(ClientSocket &clientSocket) :
+		localAddress(clientSocket.getLocalAddress()),
+		remoteAddress(clientSocket.getRemoteAddress()) {
+	}
+
+	ClientContext &getContext() {
+		return context;
+	}
+
+	SocketAddress &getLocalAddress() {
+		return localAddress;
+	}
+
+	SocketAddress &getRemoteAddress() {
+		return remoteAddress;
+	}
+private:
+	ClientContext context;
+	SocketAddress localAddress, remoteAddress;
+};
+
+template<class ClientContext>
+using ClientCallback = std::function<void(Context<ClientContext> &, std::istream &, std::ostream &)>;
 
 /*
  * Wrapper class. Adds multiplexing and buffering capabilities to a ClientSocket.
@@ -37,17 +61,18 @@ class BufferedClientSocket : public BufferedClientSocketInterface {
 public:
 	BufferedClientSocket(
 		std::unique_ptr<ClientSocket> impl,
-		ClientCallback<ClientContext> readCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){},
-		ClientCallback<ClientContext> connectCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){},
-		ClientCallback<ClientContext> disconnectCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){},
-		ClientCallback<ClientContext> writeCallback = [](ClientContext &ctx, std::istream &inp, std::ostream &outp){}) :
+		ClientCallback<ClientContext> readCallback = [](Context<ClientContext> &ctx, std::istream &inp, std::ostream &outp){},
+		ClientCallback<ClientContext> connectCallback = [](Context<ClientContext> &ctx, std::istream &inp, std::ostream &outp){},
+		ClientCallback<ClientContext> disconnectCallback = [](Context<ClientContext> &ctx, std::istream &inp, std::ostream &outp){},
+		ClientCallback<ClientContext> writeCallback = [](Context<ClientContext> &ctx, std::istream &inp, std::ostream &outp){}) :
 		impl(std::move(impl)),
 		readCB(readCallback),
 		connectCB(connectCallback),
 		disconnectCB(disconnectCallback),
 		writeCB(writeCallback),
 		outputSocketBuffer(*(this->impl)),
-		outp(&outputSocketBuffer) {};
+		outp(&outputSocketBuffer),
+		clientData(*(this->impl)) {};
 	virtual ~BufferedClientSocket() {};
 	bool getHasOutput() override {return outputBuffer.rdbuf()->in_avail() > 0;};
 	std::stringstream &getOutputBuffer() override {return outputBuffer;};
@@ -78,7 +103,7 @@ private:
 	std::stringstream inputBuffer;
 	SocketStream outputSocketBuffer;
 	std::ostream *outp;
-	ClientContext clientData;
+	Context<ClientContext> clientData;
 };
 
 }

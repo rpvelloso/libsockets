@@ -145,9 +145,9 @@ public:
 
 	void start() {
 		auto server = socks::factory::makeThreadedServer<Context>(//4,
-		[](Context &ctx, std::istream &inp, std::ostream &outp) {
+		[](socks::Context<Context> &ctx, std::istream &inp, std::ostream &outp) {
 
-			ctx.processQueue(outp);
+			ctx.getContext().processQueue(outp);
 
 			while (inp) {
 				std::string cmd;
@@ -155,7 +155,7 @@ public:
 				auto savePos = inp.tellg();
 				std::getline(inp, cmd);
 				if (inp && !inp.eof()) {
-					outp << ctx.processCmd(cmd);
+					outp << ctx.getContext().processCmd(cmd);
 				} else {
 					inp.clear();
 					inp.seekg(savePos);
@@ -163,9 +163,9 @@ public:
 				}
 			}
 		},
-		[this](Context &ctx, std::istream &inp, std::ostream &outp) {
-			ctx.setID(this->createID());
-			ctx.initLua(this->scriptFile);
+		[this](socks::Context<Context> &ctx, std::istream &inp, std::ostream &outp) {
+			ctx.getContext().setID(this->createID());
+			ctx.getContext().initLua(this->scriptFile);
 		});
 
 		std::thread listenThread([&server, this](){
