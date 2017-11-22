@@ -35,9 +35,11 @@ FTPReply FTPClient::processCmd(const std::string& cmdline, std::ostream &outp) {
 
 	ss >> command;
 	std::getline(ss, param);
-	param = param.substr(param.find_first_not_of(' '));
-	if (param.back() == '\r')
-		param.pop_back();
+	if (!param.empty()) {
+		param = param.substr(param.find_first_not_of(' '));
+		if (param.back() == '\r')
+			param.pop_back();
+	}
 
 	std::transform(command.begin(), command.end(), command.begin(), ::toupper);
 
