@@ -30,77 +30,93 @@ FTPClientTransfer::~FTPClientTransfer() {
 }
 
 FTPReply FTPClientTransfer::LIST(const std::string& path) {
-	auto dataSocket = getDataSocket();
-	auto fileList = fs.list(fs.resolvePath(context.getCwd(), path));
+	try {
+		auto dataSocket = getDataSocket();
+		auto fileList = fs.list(fs.resolvePath(context.getCwd(), path));
 
-	for (auto &file:fileList) {
-		auto mode = std::get<3>(file);
-		std::string modeStr = S_ISDIR(mode)?"d---------":"----------";
-		modeStr[1] = ((S_IRUSR&mode)?'r':'-');
-		modeStr[2] = ((S_IWUSR&mode)?'w':'-');
-		modeStr[3] = ((S_IXUSR&mode)?'x':'-');
-		auto nlinks = std::get<5>(file);
-		auto user = std::get<1>(file);
-		auto group = std::get<2>(file);
-		auto filesize = std::get<4>(file);
-		auto filedate = std::get<6>(file);
-		auto filename = std::get<0>(file);
+		for (auto &file:fileList) {
+			auto mode = std::get<3>(file);
+			std::string modeStr = S_ISDIR(mode)?"d---------":"----------";
+			modeStr[1] = ((S_IRUSR&mode)?'r':'-');
+			modeStr[2] = ((S_IWUSR&mode)?'w':'-');
+			modeStr[3] = ((S_IXUSR&mode)?'x':'-');
+			auto nlinks = std::get<5>(file);
+			auto user = std::get<1>(file);
+			auto group = std::get<2>(file);
+			auto filesize = std::get<4>(file);
+			auto filedate = std::get<6>(file);
+			auto filename = std::get<0>(file);
 
-		std::stringstream ss;
-		ss <<
-			modeStr << " " <<
-			nlinks << " " <<
-			std::setw(8) << std::left << user << " " <<
-			group << " " <<
-			/*std::setw(11) <<*/ std::right << filesize << " " <<
-			filedate << " " <<
-			filename << "\r\n";
-		dataSocket.sendData(ss.str().c_str(), ss.str().size());
+			std::stringstream ss;
+			ss <<
+				modeStr << " " <<
+				nlinks << " " <<
+				std::setw(8) << std::left << user << " " <<
+				group << " " <<
+				/*std::setw(11) <<*/ std::right << filesize << " " <<
+				filedate << " " <<
+				filename << "\r\n";
+			dataSocket.sendData(ss.str().c_str(), ss.str().size());
+		}
+		return FTPReply::R226;
+	} catch (...) {
+		return FTPReply::R425;
 	}
-	return FTPReply::R226;
 }
 
 FTPReply FTPClientTransfer::RETR(const std::string& filename) {
-	auto dataSocket = getDataSocket();
-	std::fstream file(
-		fs.resolvePath(context.getCwd(),filename),
-		std::ios::binary|std::ios::in);
+	try {
+		auto dataSocket = getDataSocket();
+		std::fstream file(
+			fs.resolvePath(context.getCwd(),filename),
+			std::ios::binary|std::ios::in);
 
-	if (file.is_open()) {
-		auto restartPos = context.getRestartPos();
-		file.seekg(restartPos);
-		if (file.tellg() == restartPos) {
-			sendFile(file, dataSocket);
-			return FTPReply::R226;
+		if (file.is_open()) {
+			auto restartPos = context.getRestartPos();
+			file.seekg(restartPos);
+			if (file.tellg() == restartPos) {
+				sendFile(file, dataSocket);
+				return FTPReply::R226;
+			}
 		}
+		return FTPReply::R425;
+	} catch (...) {
+		return FTPReply::R425;
 	}
-	return FTPReply::R425;
 }
 
 FTPReply FTPClientTransfer::STOR(const std::string& filename) {
-	auto dataSocket = getDataSocket();
-	std::fstream file(
-		fs.resolvePath(context.getCwd(),filename),
-		std::ios::binary|std::ios::out);
+	try {
+		auto dataSocket = getDataSocket();
+		std::fstream file(
+			fs.resolvePath(context.getCwd(),filename),
+			std::ios::binary|std::ios::out);
 
-	if (file.is_open()) {
-		receiveFile(dataSocket, file);
-		return FTPReply::R226;
+		if (file.is_open()) {
+			receiveFile(dataSocket, file);
+			return FTPReply::R226;
+		}
+		return FTPReply::R425;
+	} catch (...) {
+		return FTPReply::R425;
 	}
-	return FTPReply::R425;
 }
 
 FTPReply FTPClientTransfer::APPE(const std::string& filename) {
-	auto dataSocket = getDataSocket();
-	std::fstream file(
-		fs.resolvePath(context.getCwd(),filename),
-		std::ios::binary|std::ios::app|std::ios::out);
+	try {
+		auto dataSocket = getDataSocket();
+		std::fstream file(
+			fs.resolvePath(context.getCwd(),filename),
+			std::ios::binary|std::ios::app|std::ios::out);
 
-	if (file.is_open()) {
-		receiveFile(dataSocket, file);
-		return FTPReply::R226;
+		if (file.is_open()) {
+			receiveFile(dataSocket, file);
+			return FTPReply::R226;
+		}
+		return FTPReply::R425;
+	} catch (...) {
+		return FTPReply::R425;
 	}
-	return FTPReply::R425;
 }
 
 FTPReply FTPClientTransfer::REST(const std::string& pos) {

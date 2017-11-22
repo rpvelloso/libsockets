@@ -92,17 +92,12 @@ FTPReply FTPClient::processCmd(const std::string& cmdline, std::ostream &outp) {
 	} else if (command == "PORT") {
 		reply = state->PORT(param);
 		if (reply == FTPReply::R200) {
-			try {
-				state.reset(new FTPClientTransfer(context, [this]() {
-					socks::ClientSocket dataSocket;
-					if (dataSocket.connectTo(this->getContext().getAddress(), context.getPort()) != 0)
-						throw std::runtime_error("Can't open data connection.");
-					return dataSocket;
-				}));
-			} catch (std::exception &e) {
-				state.reset(new FTPClientLoggedIn(context));
-				reply = FTPReply::R425;
-			}
+			state.reset(new FTPClientTransfer(context, [this]() {
+				socks::ClientSocket dataSocket;
+				if (dataSocket.connectTo(this->getContext().getAddress(), context.getPort()) != 0)
+					throw std::runtime_error("Can't open data connection.");
+				return dataSocket;
+			}));
 		}
 	} else if (command == "PASV") {
 		reply = state->PASV();
@@ -119,35 +114,19 @@ FTPReply FTPClient::processCmd(const std::string& cmdline, std::ostream &outp) {
 			command == "LIST" ||
 			command == "NLST") {
 		outp << buildReplyString(FTPReply::R150) << std::endl;
-		try {
-			reply = state->LIST(param);
-		} catch (std::exception &e) {
-			reply = FTPReply::R425;
-		}
+		reply = state->LIST(param);
 		state.reset(new FTPClientLoggedIn(context));
 	} else if (command == "RETR") {
 		outp << buildReplyString(FTPReply::R150) << std::endl;
-		try {
-			reply = state->RETR(param);
-		} catch (std::exception &e) {
-			reply = FTPReply::R425;
-		}
+		reply = state->RETR(param);
 		state.reset(new FTPClientLoggedIn(context));
 	} else if (command == "STOR") {
 		outp << buildReplyString(FTPReply::R150) << std::endl;
-		try {
-			reply = state->STOR(param);
-		} catch (std::exception &e) {
-			reply = FTPReply::R425;
-		}
+		reply = state->STOR(param);
 		state.reset(new FTPClientLoggedIn(context));
 	} else if (command == "APPE") {
 		outp << buildReplyString(FTPReply::R150) << std::endl;
-		try {
 		reply = state->APPE(param);
-		} catch (std::exception &e) {
-			reply = FTPReply::R425;
-		}
 		state.reset(new FTPClientLoggedIn(context));
 	} else if (command == "REST")
 		reply = state->REST(param);
