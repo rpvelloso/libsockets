@@ -43,6 +43,10 @@ public:
 	void setPassiveSocket(std::unique_ptr<socks::ServerSocket> serverSocket);
 	std::fstream::pos_type getRestartPos() const;
 	void setRestartPos(std::fstream::pos_type restartPos = 0);
+	const std::string& getPasvAddr() const;
+	void setPasvAddr(socks::SocketAddress &addr);
+	const std::string& getPeerAddr() const;
+	void setPeerAddr(socks::SocketAddress &addr);
 
 private:
 	std::string username = "";
@@ -53,8 +57,12 @@ private:
 	std::string renameFrom = "";
 	size_t size = 0;
 	std::fstream::pos_type restartPos = 0;
+	std::string pasvAddr = "";
+	std::string peerAddr = "";
 
 	std::unique_ptr<socks::ServerSocket> passiveSocket;
+
+	std::string socketAddr2FTPAddr(socks::SocketAddress &addr);
 };
 
 #endif /* FTPCONTEXT_H_ */

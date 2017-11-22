@@ -147,7 +147,7 @@ FTPReply FTPClientLoggedIn::PASV() {
 	std::unique_ptr<socks::ServerSocket> passiveSocket(new socks::ServerSocket());
 
 	// TODO: change listen IP to client's IP address to avoid connections from other clients
-	if (passiveSocket->listenForConnections("0.0.0.0", "") == 0) {
+	if (passiveSocket->listenForConnections(context.getPeerAddr(), "") == 0) {
 		context.setPassiveSocket(std::move(passiveSocket));
 		return FTPReply::R227;
 	}

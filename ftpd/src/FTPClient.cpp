@@ -153,7 +153,7 @@ std::string FTPClient::buildReplyString(FTPReply reply) {
 		auto port = std::stoul(context.getPassiveSocket().getPort());
 		auto portHi = std::to_string((port >> 8) & 0x00ff);
 		auto portLo = std::to_string(port & 0x00ff);
-		replyStr += "127,0,0,1," + portHi + "," + portLo + ").";}
+		replyStr += context.getPasvAddr() + portHi + "," + portLo + ").";}
 		break;
 	case FTPReply::R257_PWD:
 		replyStr += context.getCwd() + "\"";
@@ -167,6 +167,6 @@ std::string FTPClient::buildReplyString(FTPReply reply) {
 	return replyStr;
 }
 
-const FTPContext& FTPClient::getContext() const {
+FTPContext& FTPClient::getContext() {
 	return context;
 }

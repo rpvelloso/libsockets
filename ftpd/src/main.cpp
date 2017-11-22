@@ -34,22 +34,24 @@ std::string readline(std::istream &inp) {
 
 int main(int argc, char **argv) {
 	auto FTPServer = socks::factory::makeThreadedServer<FTPClient>(
-	[](FTPClient &ctx, std::istream &inp, std::ostream &outp) {
+	[](socks::Context<FTPClient> &ctx, std::istream &inp, std::ostream &outp) {
 		while (inp) {
 			auto cmd = readline(inp);
 			if (!cmd.empty()) {
-				auto reply = ctx.processCmd(cmd, outp);
+				auto reply = ctx.getContext().processCmd(cmd, outp);
 				if (reply != FTPReply::RNULL)
-					outp << ctx.buildReplyString(reply) << std::endl;
+					outp << ctx.getContext().buildReplyString(reply) << std::endl;
 			} else
 				break;
 		}
 	},
-	[](FTPClient &ctx, std::istream &inp, std::ostream &outp) {
-		outp << ctx.buildReplyString(FTPReply::R220) << std::endl;
+	[](socks::Context<FTPClient> &ctx, std::istream &inp, std::ostream &outp) {
+		ctx.getContext().getContext().setPasvAddr(ctx.getLocalAddress());
+		ctx.getContext().getContext().setPeerAddr(ctx.getRemoteAddress());
+		outp << ctx.getContext().buildReplyString(FTPReply::R220) << std::endl;
 	});
 
-	FTPServer.listen("127.0.0.1","21");
+	FTPServer.listen("0.0.0.0","21");
 }
 
 

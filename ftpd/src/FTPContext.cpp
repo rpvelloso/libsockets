@@ -92,3 +92,39 @@ std::fstream::pos_type FTPContext::getRestartPos() const {
 void FTPContext::setRestartPos(std::fstream::pos_type restartPos) {
 	this->restartPos = restartPos;
 }
+
+const std::string& FTPContext::getPasvAddr() const {
+	return pasvAddr;
+}
+
+void FTPContext::setPasvAddr(socks::SocketAddress &addr) {
+	this->pasvAddr = socketAddr2FTPAddr(addr);
+}
+
+const std::string& FTPContext::getPeerAddr() const {
+	return peerAddr;
+}
+
+void FTPContext::setPeerAddr(socks::SocketAddress &addr) {
+	this->peerAddr = addr.getHostname();
+}
+
+std::string FTPContext::socketAddr2FTPAddr(socks::SocketAddress &addr) {
+	std::string ftpAddr = addr.getHostname() + ",";
+	std::transform(
+			ftpAddr.begin(),
+			ftpAddr.end(),
+			ftpAddr.begin(),
+		[](char c){
+		if (c == '.')
+			return ',';
+		else
+			return c;
+	});
+	/*auto port = std::stoul(addr.getPort());
+	auto portHi = std::to_string((port >> 8) & 0x00ff);
+	auto portLo = std::to_string(port & 0x00ff);
+	ftpAddr += "," + portHi + "," + portLo;*/
+
+	return ftpAddr;
+}
