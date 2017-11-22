@@ -121,10 +121,6 @@ std::string FTPContext::socketAddr2FTPAddr(socks::SocketAddress &addr) {
 		else
 			return c;
 	});
-	/*auto port = std::stoul(addr.getPort());
-	auto portHi = std::to_string((port >> 8) & 0x00ff);
-	auto portLo = std::to_string(port & 0x00ff);
-	ftpAddr += "," + portHi + "," + portLo;*/
 
 	return ftpAddr;
 }
