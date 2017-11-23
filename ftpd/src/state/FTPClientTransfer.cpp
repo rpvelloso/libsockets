@@ -36,10 +36,18 @@ FTPReply FTPClientTransfer::LIST(const std::string& path) {
 
 		for (auto &file:fileList) {
 			auto mode = std::get<3>(file);
-			std::string modeStr = S_ISDIR(mode)?"d---------":"----------";
+			std::string modeStr(10,'-');
+			modeStr[0] =  (S_ISDIR(mode)?'d':'-');
 			modeStr[1] = ((S_IRUSR&mode)?'r':'-');
 			modeStr[2] = ((S_IWUSR&mode)?'w':'-');
 			modeStr[3] = ((S_IXUSR&mode)?'x':'-');
+			modeStr[4] = ((S_IRGRP&mode)?'r':'-');
+			modeStr[5] = ((S_IWGRP&mode)?'w':'-');
+			modeStr[6] = ((S_IXGRP&mode)?'x':'-');
+			modeStr[7] = ((S_IROTH&mode)?'r':'-');
+			modeStr[8] = ((S_IWOTH&mode)?'w':'-');
+			modeStr[9] = ((S_IXOTH&mode)?'x':'-');
+
 			auto nlinks = std::get<5>(file);
 			auto user = std::get<1>(file);
 			auto group = std::get<2>(file);
