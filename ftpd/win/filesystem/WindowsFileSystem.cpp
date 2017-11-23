@@ -80,13 +80,13 @@ bool WindowsFileSystem::renameFile(
 }
 
 std::string WindowsFileSystem::path2Windows(const std::string &path) {
-	auto result = path;
+	auto result = "c:\\" + path;
 	std::transform(result.begin(), result.end(), result.begin(), [](char c){
 		if (c == '/')
 			return '\\';
 		return c;
 	});
-	return "c:\\" + result;
+	return result;
 }
 
 std::pair<std::string, std::string> WindowsFileSystem::fileOwner(const std::string &filename) {
