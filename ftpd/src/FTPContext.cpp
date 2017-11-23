@@ -99,7 +99,6 @@ const std::string& FTPContext::getPasvAddr() const {
 
 void FTPContext::setPasvAddr(socks::SocketAddress &addr) {
 	pasvAddr = socketAddr2FTPAddr(addr);
-	std::cerr << pasvAddr << std::endl;
 }
 
 const std::string& FTPContext::getPeerAddr() const {
@@ -108,7 +107,6 @@ const std::string& FTPContext::getPeerAddr() const {
 
 void FTPContext::setPeerAddr(socks::SocketAddress &addr) {
 	peerAddr = addr.getHostname();
-	std::cerr << peerAddr << std::endl;
 }
 
 std::string FTPContext::socketAddr2FTPAddr(socks::SocketAddress &addr) {
