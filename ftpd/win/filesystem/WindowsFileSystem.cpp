@@ -17,13 +17,16 @@
 
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
 
 #include <memory>
 #include <time.h>
 #include <stddef.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <windows.h>
 #include <fcntl.h>
+#include <wincred.h>
 
 FileSystem fs(new WindowsFileSystem());
 
@@ -76,6 +79,72 @@ bool WindowsFileSystem::renameFile(
 
 }
 
+std::string WindowsFileSystem::path2Windows(const std::string &path) {
+	auto result = path;
+	std::transform(result.begin(), result.end(), result.begin(), [](char c){
+		if (c == '/')
+			return '\\';
+		return c;
+	});
+	return "c:\\" + result;
+}
+std::pair<std::string, std::string> WindowsFileSystem::fileOwner(const std::string &filename) {
+	auto winPath = path2Windows(filename);
+	SID_NAME_USE SIDNameUse;
+	DWORD len, domainLen;
+	std::unique_ptr<char[]> nameBuf(new char[512]);
+	std::unique_ptr<char[]> domainBuf(new char[512]);
+	std::pair<std::string, std::string> result;
+
+	GetFileSecurity(
+		winPath.c_str(),
+		OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION,
+		nullptr, 0, &len);
+
+	std::unique_ptr<char[]> securityDescriptor(new char[len]);
+
+	auto ret = GetFileSecurity(
+		winPath.c_str(),
+		OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION,
+		securityDescriptor.get(),
+		len,
+		&len);
+
+	if (ret) {
+		PSID ownerID, groupID;
+		WINBOOL flag;
+
+		GetSecurityDescriptorOwner(securityDescriptor.get(), &ownerID, &flag);
+		GetSecurityDescriptorGroup(securityDescriptor.get(), &groupID, &flag);
+
+		len = 512;
+		domainLen = 512;
+		ret = LookupAccountSid(
+			nullptr,
+			ownerID,
+			nameBuf.get(),
+			&len,
+			domainBuf.get(),
+			&domainLen,
+			&SIDNameUse);
+		result.first = std::string(nameBuf.get());
+
+		len = 512;
+		domainLen = 512;
+		ret = LookupAccountSid(
+			nullptr,
+			groupID,
+			nameBuf.get(),
+			&len,
+			domainBuf.get(),
+			&domainLen,
+			&SIDNameUse);
+		result.second = std::string(nameBuf.get());
+	}
+
+	return result;
+}
+
 std::vector<ListTuple> WindowsFileSystem::list(const std::string &path) {
 	DIR *d;
 	std::vector<ListTuple> fileList;
@@ -94,13 +163,19 @@ std::vector<ListTuple> WindowsFileSystem::list(const std::string &path) {
 			if (stat64(std::string(path + sep + std::string(de->d_name)).c_str(),&st) != -1) {
 				struct tm tm1;
 
+				auto owner = fileOwner(path + "/" + std::string(de->d_name));
+				if (owner.first.empty())
+					owner.first = "User";
+				if (owner.second.empty())
+					owner.second = "Group";
+
 				gmtime_r(&st.st_mtime,&tm1);
 				std::string dateStr = dateToString(tm1);
 
 				fileList.push_back(std::forward_as_tuple(
 					std::string(de->d_name),
-					"user",
-					"group",
+					owner.first,
+					owner.second,
 					st.st_mode,
 					st.st_size,
 					st.st_nlink,

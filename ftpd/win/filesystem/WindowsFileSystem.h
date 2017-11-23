@@ -30,6 +30,9 @@ public:
 	bool deleteFile(const std::string &filename) override;
 	bool renameFile(const std::string &from, const std::string &to) override;
 	std::vector<ListTuple> list(const std::string &path) override;
+private:
+	std::string path2Windows(const std::string &path);
+	std::pair<std::string, std::string> fileOwner(const std::string &filename);
 };
 
 #endif /* FILESYSTEM_WINDOWSFILESYSTEM_H_ */
