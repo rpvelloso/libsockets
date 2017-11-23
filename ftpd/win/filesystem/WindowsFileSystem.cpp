@@ -159,11 +159,12 @@ std::vector<ListTuple> WindowsFileSystem::list(const std::string &path) {
 		auto de = readdir(d);
 		while (de) {
 			struct stat64 st;
+			auto fullpath = path + sep + std::string(de->d_name);
 
-			if (stat64(std::string(path + sep + std::string(de->d_name)).c_str(),&st) != -1) {
+			if (stat64(fullpath.c_str(),&st) != -1) {
 				struct tm tm1;
 
-				auto owner = fileOwner(path + "/" + std::string(de->d_name));
+				auto owner = fileOwner(fullpath);
 				if (owner.first.empty())
 					owner.first = "User";
 				if (owner.second.empty())
