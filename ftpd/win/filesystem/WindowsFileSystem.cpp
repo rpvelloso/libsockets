@@ -76,7 +76,6 @@ bool WindowsFileSystem::renameFile(
 	if (rename(from.c_str(),to.c_str()) != -1)
 		return true;
 	return false;
-
 }
 
 std::string WindowsFileSystem::path2Windows(const std::string &path) {
