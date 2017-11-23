@@ -34,7 +34,7 @@ std::string readline(std::istream &inp) {
 
 int main(int argc, char **argv) {
 	auto FTPServer = socks::factory::makeThreadedServer<FTPClient>(
-	[](socks::Context<FTPClient> &ctx, std::istream &inp, std::ostream &outp) {
+	[](socks::Context<FTPClient> &ctx, std::istream &inp, std::ostream &outp) { // onReceive()
 		while (inp) {
 			auto cmd = readline(inp);
 			if (!cmd.empty()) {
@@ -45,7 +45,7 @@ int main(int argc, char **argv) {
 				break;
 		}
 	},
-	[](socks::Context<FTPClient> &ctx, std::istream &inp, std::ostream &outp) {
+	[](socks::Context<FTPClient> &ctx, std::istream &inp, std::ostream &outp) { // onConnect()
 		ctx.getContext().getContext().setPasvAddr(ctx.getLocalAddress());
 		ctx.getContext().getContext().setPeerAddr(ctx.getRemoteAddress());
 		outp << ctx.getContext().buildReplyString(FTPReply::R220) << std::endl;
