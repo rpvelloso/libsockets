@@ -88,6 +88,7 @@ std::string WindowsFileSystem::path2Windows(const std::string &path) {
 	});
 	return "c:\\" + result;
 }
+
 std::pair<std::string, std::string> WindowsFileSystem::fileOwner(const std::string &filename) {
 	auto winPath = path2Windows(filename);
 	SID_NAME_USE SIDNameUse;
