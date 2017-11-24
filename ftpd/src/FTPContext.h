@@ -47,7 +47,6 @@ public:
 	void setPasvAddr(socks::SocketAddress &addr);
 	const std::string& getPeerAddr() const;
 	void setPeerAddr(socks::SocketAddress &addr);
-
 private:
 	std::string username;
 	std::string cwd = "/";
@@ -59,7 +58,6 @@ private:
 	std::fstream::pos_type restartPos = 0;
 	std::string pasvAddr;
 	std::string peerAddr;
-
 	std::unique_ptr<socks::ServerSocket> passiveSocket;
 
 	std::string socketAddr2FTPAddr(socks::SocketAddress &addr);
