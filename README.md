@@ -26,7 +26,7 @@ void server() {
   socks::ServerSocket serverSocket;
   
   serverSocket.listenForConnections("127.0.0.1", "10000");
-  auto clientSocket = serverSocket.accept();
+  auto clientSocket = serverSocket.acceptConnection();
   
   char buf[512];
   auto len = clientSocket.receiveData(buf, 512);
