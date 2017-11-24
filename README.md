@@ -1,5 +1,5 @@
 # libsockets (work in progress!!!)
-A plataform independet socket library with transparent SSL support (and some more stuff).
+A platform independent socket library with transparent SSL support (and some more stuff).
 # Examples
 ## socks::ClientSocket & socks::ServerSocket
 ```cpp
@@ -47,7 +47,7 @@ $> ./client
 ```
 
 ## SSL Support
-Just replace the declarions:
+Just replace the declarations:
 ```cpp
 socks::ClientSocket clientSocket = socks::factory::makeSSLClientSocket;
 socks::ServerSocket serverSocket = socks::factory::makeSSLServerSocket;
