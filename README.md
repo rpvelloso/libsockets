@@ -67,6 +67,7 @@ void onReceive(socks::Context<MyContext> &context, std::istream &inp, std::ostre
 
   while (inp >> word)
     outp << context.getContext().value++ << " " << word << std::endl;
+  inp.clear();
 };
 
 void onConnect(socks::Context<MyContext> &context, std::istream &inp, std::ostream &outp) {
@@ -76,7 +77,7 @@ void onConnect(socks::Context<MyContext> &context, std::istream &inp, std::ostre
 
 int main() {
   auto myServer = socks::factory::makeThreadedServer<MyContext>(
-    onReceive, 
+    onReceive,
     onConnect /*,
     onDisconnect,
     afterWrite
