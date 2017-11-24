@@ -31,10 +31,10 @@ FTPReply FTPClientConnected::USER(const std::string &username) {
 
 FTPReply FTPClientConnected::PASS(const std::string &password) {
 	if (!context.getUsername().empty()) {
-		// if authenticate OK (not implemented)
-		return FTPReply::R230;
-		// else
-		// return FTPReply::R530;
+		if (context.authenticate(context.getUsername(), password))
+			return FTPReply::R230;
+		else
+			return FTPReply::R530;
 	} else
 		return FTPReply::R503;
 }

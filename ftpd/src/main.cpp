@@ -17,6 +17,11 @@
 
 #include "FTPClient.h"
 
+std::function<bool(const std::string &, const std::string &)> FTPContext::authenticate =
+[](const std::string &username, const std::string &password) {
+	return true;
+};
+
 std::string readline(std::istream &inp) {
 	std::string line;
 

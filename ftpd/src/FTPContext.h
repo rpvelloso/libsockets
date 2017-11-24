@@ -47,6 +47,7 @@ public:
 	void setPasvAddr(socks::SocketAddress &addr);
 	const std::string& getPeerAddr() const;
 	void setPeerAddr(socks::SocketAddress &addr);
+	static std::function<bool(const std::string &username, const std::string &password)> authenticate;
 private:
 	std::string username;
 	std::string cwd = "/";
