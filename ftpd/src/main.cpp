@@ -17,8 +17,13 @@
 
 #include "FTPClient.h"
 
-std::function<bool(const std::string &, const std::string &)> FTPContext::authenticate =
-[](const std::string &username, const std::string &password) {
+AuthenticationFunction FTPContext::authenticate =
+[](const std::string &username, const std::string &password, FTPContext& ctx) {
+	/*
+	 * in here a user profile can be loaded into 'ctx'
+	 * upon authentication in order to define, for example,
+	 * a home dir, chroot, etc.
+	 */
 	return true;
 };
 
@@ -68,7 +73,6 @@ socks::Server makeFTPServer() {
 }
 
 int main(int argc, char **argv) {
-
 	bool ssl = true;
 	std::string port = ssl?"990":"21";
 	auto serverFactory = ssl?

@@ -21,6 +21,9 @@
 #include <string>
 #include <fstream>
 
+class FTPContext;
+using AuthenticationFunction = std::function<bool(const std::string &username, const std::string &password, FTPContext &ctx)>;
+
 class FTPContext {
 public:
 	FTPContext();
@@ -47,7 +50,7 @@ public:
 	void setPasvAddr(socks::SocketAddress &addr);
 	const std::string& getPeerAddr() const;
 	void setPeerAddr(socks::SocketAddress &addr);
-	static std::function<bool(const std::string &username, const std::string &password)> authenticate;
+	static AuthenticationFunction authenticate;
 private:
 	std::string username;
 	std::string cwd = "/";
