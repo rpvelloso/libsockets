@@ -74,15 +74,17 @@ void onConnect(socks::Context<MyContext> &context, std::istream &inp, std::ostre
   outp << "Hello" << std::endl;
 };
 
-auto myServer = socks::factory::makeThreadedServer<MyContext>(
-  onReceive, 
-  onConnect /*,
-  onDisconnect,
-  afterWrite
-  */
-  ); // onReceive is mandatory, onConnect, onDisconnect & afterWrite are optional
-  
-myServer.listen("127.0.0.1", "10000"); // serves
+int main() {
+  auto myServer = socks::factory::makeThreadedServer<MyContext>(
+    onReceive, 
+    onConnect /*,
+    onDisconnect,
+    afterWrite
+    */
+    ); // onReceive is mandatory, onConnect, onDisconnect & afterWrite are optional
+
+  myServer.listen("127.0.0.1", "10000"); // serves
+};
 ```
 ## socks::factory
 This namespace contains all library's factory methods.
