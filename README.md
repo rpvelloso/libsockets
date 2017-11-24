@@ -12,11 +12,11 @@ void client() {
     std::string hello = "Hello World";
     clientSocket.sendData(hello.c_str(), hello.size());
   }
-}
+};
 
 int main() {
   client();
-}
+};
 ```
 
 ```cpp
@@ -34,11 +34,11 @@ void server() {
     buf[len]=0;
     std::cout << buf << std::endl;
   }
-}
+};
 
 int main() {
   server();
-}
+};
 ```
 
 ```sh
@@ -60,18 +60,19 @@ That's it.
 class MyContext {
 public:
   int value; // whatever context you need to maintain
-}
+};
+
 void onReceive(socks::Context<MyContext> &context, std::istream &inp, std::ostream &outp) {
   std::string word;
 
   while (inp >> word)
     outp << context.getContext().value++ << " " << word << std::endl;
-}
+};
 
 void onConnect(socks::Context<MyContext> &context, std::istream &inp, std::ostream &outp) {
   context.getContext().value = 0;
   outp << "Hello" << std::endl;
-}
+};
 
 auto myServer = socks::factory::makeThreadedServer<MyContext>(
   onReceive, 
