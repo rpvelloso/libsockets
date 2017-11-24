@@ -88,4 +88,6 @@ This namespace contains all library's factory methods.
 # FTP Server (ftpd/)
 A more elaborate example: a fully functional FTP server implementation using libsockets (including SSL support, passive mode, resume & FXP support). 
 An authentication callback is provided for the user.
-
+# HTTP Server (httd/)
+Coming soon...
+(under development/refactoring, currently not working...)
