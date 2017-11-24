@@ -17,6 +17,7 @@
 
 #include "filesystem/FileSystem.h"
 #include "state/FTPClientLoggedIn.h"
+#include "factory/AbstractFTPSocketFactory.h"
 
 FTPClientLoggedIn::FTPClientLoggedIn(FTPContext& ctx) : FTPClientState(ctx) {
 }
@@ -144,7 +145,7 @@ FTPReply FTPClientLoggedIn::PORT(const std::string& addr) {
 }
 
 FTPReply FTPClientLoggedIn::PASV() {
-	std::unique_ptr<socks::ServerSocket> passiveSocket(new socks::ServerSocket());
+	std::unique_ptr<socks::ServerSocket> passiveSocket(new socks::ServerSocket(ftpSocketFactory.makeServerSocket()));
 
 	if (passiveSocket->listenForConnections("0.0.0.0", "") == 0) {
 		context.setPassiveSocket(std::move(passiveSocket));

@@ -18,6 +18,7 @@
 #include "state/FTPClientLoggedIn.h"
 #include "state/FTPClientRename.h"
 #include "state/FTPClientTransfer.h"
+#include "factory/AbstractFTPSocketFactory.h"
 
 #include <sstream>
 #include <algorithm>
@@ -95,7 +96,7 @@ FTPReply FTPClient::processCmd(const std::string& cmdline, std::ostream &outp) {
 		reply = state->PORT(param);
 		if (reply == FTPReply::R200) {
 			state.reset(new FTPClientTransfer(context, [this]() {
-				socks::ClientSocket dataSocket;
+				socks::ClientSocket dataSocket = ftpSocketFactory.makeClientSocket();
 				if (dataSocket.connectTo(this->getContext().getAddress(), context.getPort()) != 0)
 					throw std::runtime_error("Can't open data connection.");
 				return dataSocket;

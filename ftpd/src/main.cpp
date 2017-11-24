@@ -16,6 +16,8 @@
 #include "libsockets.h"
 
 #include "FTPClient.h"
+#include "factory/FTPSocketFactory.h"
+#include "factory/FTPSSLSocketFactory.h"
 
 std::string readline(std::istream &inp) {
 	std::string line;
@@ -32,8 +34,12 @@ std::string readline(std::istream &inp) {
 	return "";
 }
 
+std::unique_ptr<AbstractFTPSocketFactory> ftpSocketFactoryPtr(new FTPSSLSocketFactory());
+AbstractFTPSocketFactory &ftpSocketFactory = *ftpSocketFactoryPtr;
+
 int main(int argc, char **argv) {
-	auto FTPServer = socks::factory::makeThreadedServer<FTPClient>(
+
+	auto FTPServer = socks::factory::makeThreadedSSLServer<FTPClient>(
 	[](socks::Context<FTPClient> &ctx, std::istream &inp, std::ostream &outp) { // onReceive()
 		while (inp) {
 			auto cmd = readline(inp);
@@ -51,7 +57,8 @@ int main(int argc, char **argv) {
 		outp << ctx.getContext().buildReplyString(FTPReply::R220) << std::endl;
 	});
 
-	FTPServer.listen("0.0.0.0","21");
+	FTPServer.listen("0.0.0.0","990");
+	//FTPServer.listen("0.0.0.0","21");
 }
 
 

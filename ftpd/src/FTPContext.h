@@ -55,7 +55,7 @@ private:
 	std::string port;
 	std::string type = "I";
 	std::string renameFrom;
-	size_t size;
+	size_t size = 0;
 	std::fstream::pos_type restartPos = 0;
 	std::string pasvAddr;
 	std::string peerAddr;
