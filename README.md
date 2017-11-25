@@ -1,5 +1,5 @@
-# libsockets (work in progress!!!)
-A platform independent socket library with transparent SSL support (and some more stuff).
+# libsockets (Work In Progress!!!)
+A platform independent C++ socket library with transparent SSL support (and some more stuff).
 # Examples
 ## socks::ClientSocket & socks::ServerSocket
 ```cpp
