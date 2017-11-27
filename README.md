@@ -46,13 +46,6 @@ $> ./server &
 $> ./client
 ```
 
-## SSL Support
-Just replace the declarations:
-```cpp
-socks::ClientSocket clientSocket = socks::factory::makeSSLClientSocket;
-socks::ServerSocket serverSocket = socks::factory::makeSSLServerSocket;
-```
-That's it.
 ## socks::Server (socks::makeThreaded[SSL]Server & socks::makeMultiplexed[SSL]Server)
 ```cpp
 #include "libsockets.h"
@@ -87,9 +80,10 @@ int main() {
   myServer.listen("127.0.0.1", "10000"); // serves
 };
 ```
+
 ## socks::DatagramSocket
 ```cpp
-#include "libsockets"
+#include "libsockets.h"
 
 socks::DatagramSocket datagramSocket;
 
@@ -109,12 +103,49 @@ if (ret.first > 0) {
 ```
 You can also turn a socks::DatagramSocket into a 'connected' datagram socket and use socks::ClientSocket's interface.
 ```cpp
-  socks::ClientSocket = datagramSocket.makeClientSocket(peer); // from this point on 'datagramSocket can not be used anymore
+  socks::ClientSocket = datagramSocket.makeClientSocket(peer); 
+  /* 
+   * from this point on 'datagramSocket' can not be used anymore,
+   * its implementation has been moved to 'clientSocket'.
+   */
 ```
 or
 ```cpp
-  socks::ClientSocket = datagramSocket.makeClientSocket(host, port);
+  socks::ClientSocket = datagramSocket.makeClientSocket(host, port); // same here
 ```
+
+## socks::SocketStream
+It's a socks::ClientSocket wrapped in an STL stream class.
+```cpp
+#include "libsockets.h"
+
+socks::SocketStream socketStream;
+
+if (socketStream.connecTo("127.0.0.1", "10000") == 0) {
+  std::string buf;
+
+  socketStream >> buf; // receiving data
+  std::cout << buf << std::endl;
+  socketStream << "message received." << std::endl; // transmitting data
+} else {
+  std::cerr << "error connecting." << std::endl;
+}
+```
+
+## SSL Support
+Just replace the declarations:
+```cpp
+socks::ClientSocket clientSocket = socks::factory::makeSSLClientSocket;
+socks::ServerSocket serverSocket = socks::factory::makeSSLServerSocket;
+socks::SocketStream serverSocket = socks::factory::makeSSLSocketStream;
+socks::Server server = socks::makeThreadedSSLServer<...>(...);
+```
+That's it. For the socks::ServerSocket and socks::Server you'll also need certificate and key files (default names are 'cert.pem' and 'key.pem').
+To generate test certificate and key files: 
+```sh
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
+```
+
 ## socks::factory
 This namespace contains all library's factory methods.
 # FTP Server (ftpd/)
