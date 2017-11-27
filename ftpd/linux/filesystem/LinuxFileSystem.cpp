@@ -46,7 +46,7 @@ bool LinuxFileSystem::changeWorkingDir(const std::string& dirname) {
 }
 
 bool LinuxFileSystem::makeDir(const std::string& dirname) {
-	if (mkdir(dirname.c_str(), 0600) == 0)
+	if (mkdir(dirname.c_str(), 0700) == 0)
 		return true;
 	return false;
 }
