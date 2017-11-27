@@ -14,8 +14,8 @@
  */
 
 #include "libsockets.h"
-
 #include "FTPClient.h"
+#include "auth/Authentication.h"
 
 AuthenticationFunction FTPClientInfo::authenticate =
 [](const std::string &username, const std::string &password, FTPClientInfo& ctx) {
@@ -24,7 +24,7 @@ AuthenticationFunction FTPClientInfo::authenticate =
 	 * upon authentication in order to define, for example,
 	 * a home dir, chroot, etc.
 	 */
-	return true;
+	return authService.authenticate(username, password);
 };
 
 std::string readline(std::istream &inp) {
@@ -47,17 +47,19 @@ void onConnect(socks::Context<FTPClient> &ctx, std::istream &inp, std::ostream &
 	FTPClientInfo &clientInfo = context.getClientInfo();
 	clientInfo.setPasvAddr(ctx.getLocalAddress());
 	clientInfo.setPeerAddr(ctx.getRemoteAddress());
-	outp << context.buildReplyString(FTPReply::R220) << std::endl;
+	outp << clientInfo.buildReplyString(FTPReply::R220) << std::endl;
 }
 
 void onReceive(socks::Context<FTPClient> &ctx, std::istream &inp, std::ostream &outp) {
 	FTPClient &context = ctx.getContext();
+	FTPClientInfo &clientInfo = context.getClientInfo();
+
 	while (inp) {
 		auto cmd = readline(inp);
 		if (!cmd.empty()) {
 			auto reply = context.processCmd(cmd, outp);
 			if (reply != FTPReply::RNULL)
-				outp << context.buildReplyString(reply) << std::endl;
+				outp << clientInfo.buildReplyString(reply) << std::endl;
 		} else
 			break;
 	}
@@ -76,7 +78,7 @@ socks::Server makeFTPServer() {
 }
 
 int main(int argc, char **argv) {
-	bool ssl = true;
+	bool ssl = false;
 	std::string port = ssl?"990":"21";
 	auto serverFactory = ssl?
 		makeSSLFTPServer:
