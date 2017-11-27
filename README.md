@@ -46,7 +46,7 @@ $> ./server &
 $> ./client
 ```
 
-## socks::Server (socks::makeThreaded[SSL]Server & socks::makeMultiplexed[SSL]Server)
+## socks::Server (`socks::makeThreaded[SSL]Server` & `socks::makeMultiplexed[SSL]Server`)
 ```cpp
 #include "libsockets.h"
 
@@ -80,7 +80,7 @@ int main() {
   myServer.listen("127.0.0.1", "10000"); // serves
 };
 ```
-You can replace socks::factory::makeThreadedServer with socks::factory::makeMultiplexedServer. The first instantiates a server that creates one thread per client (using blocking I/O), the second instantiates a server with a more scalable architecture, using the reactor pattern (several clients are served per thread using non-blocking I/O).
+You can replace `socks::factory::makeThreadedServer` with `socks::factory::makeMultiplexedServer`. The first instantiates a server that creates one thread per client (using blocking I/O), the second instantiates a server with a more scalable architecture, using the reactor pattern (several clients are served per thread using non-blocking I/O).
 
 ## socks::DatagramSocket
 ```cpp
@@ -102,7 +102,7 @@ if (ret.first > 0) {
   std::cerr << "error receiving." << std::endl;
 }
 ```
-You can also turn a socks::DatagramSocket into a 'connected' datagram socket and use socks::ClientSocket's interface.
+You can also turn a `socks::DatagramSocket` into a 'connected' datagram socket and use `socks::ClientSocket`'s interface.
 ```cpp
 socks::ClientSocket = datagramSocket.makeClientSocket(peer); 
 /* 
@@ -116,7 +116,7 @@ socks::ClientSocket = datagramSocket.makeClientSocket(host, port); // same here
 ```
 
 ## socks::SocketStream
-It's a socks::ClientSocket wrapped in an STL stream class.
+It's a `socks::ClientSocket` wrapped in an `std::iostream` class.
 ```cpp
 #include "libsockets.h"
 
@@ -142,7 +142,7 @@ socks::SocketStream socketStream = socks::factory::makeSSLSocketStream;
 socks::Server server = socks::makeThreadedSSLServer<...>(...);
 socks::Server server = socks::makeMultiplexedSSLServer<...>(...);
 ```
-That's it. For the socks::ServerSocket and socks::Server you'll also need certificate and key files (default names are 'cert.pem' and 'key.pem').
+That's it. For the `socks::ServerSocket` and `socks::Server` you'll also need certificate and key files (default names are 'cert.pem' and 'key.pem').
 To generate test certificate and key files: 
 ```sh
 openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
