@@ -16,13 +16,16 @@
 #include <state/FTPClientTransfer.h>
 #include "filesystem/FileSystem.h"
 #include <iomanip>
+#include <iostream>
 #include <fstream>
 #include <sys/stat.h>
 
 FTPClientTransfer::FTPClientTransfer(
 		FTPClientInfo &ctx,
+		std::ostream &outp,
 		std::function<socks::ClientSocket()> getDataSocket) :
 		FTPClientState(ctx),
+		outp(outp),
 		getDataSocket(getDataSocket) {
 }
 
@@ -31,6 +34,8 @@ FTPClientTransfer::~FTPClientTransfer() {
 
 FTPReply FTPClientTransfer::LIST(const std::string& path) {
 	try {
+		outp << context.buildReplyString(FTPReply::R150) << std::endl;
+
 		auto dataSocket = getDataSocket();
 		auto fileList = fs.list(fs.resolvePath(context.getCwd(), path));
 
@@ -74,6 +79,8 @@ FTPReply FTPClientTransfer::LIST(const std::string& path) {
 
 FTPReply FTPClientTransfer::RETR(const std::string& filename) {
 	try {
+		outp << context.buildReplyString(FTPReply::R150) << std::endl;
+
 		auto dataSocket = getDataSocket();
 		std::fstream file(
 			fs.resolvePath(context.getCwd(),filename),
@@ -95,6 +102,8 @@ FTPReply FTPClientTransfer::RETR(const std::string& filename) {
 
 FTPReply FTPClientTransfer::STOR(const std::string& filename) {
 	try {
+		outp << context.buildReplyString(FTPReply::R150) << std::endl;
+
 		auto dataSocket = getDataSocket();
 		std::fstream file(
 			fs.resolvePath(context.getCwd(),filename),
@@ -112,6 +121,8 @@ FTPReply FTPClientTransfer::STOR(const std::string& filename) {
 
 FTPReply FTPClientTransfer::APPE(const std::string& filename) {
 	try {
+		outp << context.buildReplyString(FTPReply::R150) << std::endl;
+
 		auto dataSocket = getDataSocket();
 		std::fstream file(
 			fs.resolvePath(context.getCwd(),filename),
@@ -151,4 +162,8 @@ void FTPClientTransfer::sendFile(std::fstream &source, socks::ClientSocket& dest
 	std::fstream::off_type len;
 	while ((len = source.read(static_cast<char *>(buf), bufSize).gcount()) > 0)
 		dest.sendData(static_cast<void *>(buf), len);
+}
+
+StateType FTPClientTransfer::getState() {
+	return StateType::Transfer;
 }

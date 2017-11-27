@@ -22,6 +22,7 @@ class FTPClientLoggedIn: public FTPClientState {
 public:
 	FTPClientLoggedIn(FTPClientInfo &ctx);
 	virtual ~FTPClientLoggedIn();
+	StateType getState() override;
 
 	FTPReply MODE(const std::string &) override;
 	FTPReply STRU(const std::string &) override;

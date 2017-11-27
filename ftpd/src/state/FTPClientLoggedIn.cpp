@@ -153,3 +153,7 @@ FTPReply FTPClientLoggedIn::PASV() {
 
 	return FTPReply::R425;
 }
+
+StateType FTPClientLoggedIn::getState() {
+	return StateType::LoggedIn;
+}

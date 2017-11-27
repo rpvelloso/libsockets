@@ -26,7 +26,6 @@ public:
 	FTPClient();
 	~FTPClient();
 	FTPReply processCmd(const std::string &cmdline, std::ostream &outp);
-	std::string buildReplyString(FTPReply reply);
 	FTPClientInfo& getClientInfo();
 private:
 	FTPClientInfo clientInfo;

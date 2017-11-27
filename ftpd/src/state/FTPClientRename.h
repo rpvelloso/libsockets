@@ -23,6 +23,7 @@ class FTPClientRename: public FTPClientState {
 public:
 	FTPClientRename(FTPClientInfo& ctx);
 	virtual ~FTPClientRename();
+	StateType getState() override;
 
 	FTPReply RNTO(const std::string &path) override;
 };

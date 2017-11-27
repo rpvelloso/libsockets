@@ -21,8 +21,9 @@
 
 class FTPClientTransfer: public FTPClientState {
 public:
-	FTPClientTransfer(FTPClientInfo &ctx, std::function<socks::ClientSocket()> getDataSocket);
+	FTPClientTransfer(FTPClientInfo &ctx, std::ostream &outp, std::function<socks::ClientSocket()> getDataSocket);
 	virtual ~FTPClientTransfer();
+	StateType getState() override;
 
 	FTPReply LIST(const std::string &path) override;
 	FTPReply RETR(const std::string &filename) override;
@@ -30,6 +31,7 @@ public:
 	FTPReply APPE(const std::string &filename) override;
 	FTPReply REST(const std::string &pos) override;
 private:
+	std::ostream &outp;
 	static const size_t bufSize = 4*1024;
 	void receiveFile(socks::ClientSocket& source, std::fstream &dest);
 	void sendFile(std::fstream &source, socks::ClientSocket& dest);

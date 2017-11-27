@@ -18,7 +18,35 @@
 FTPClientInfo::FTPClientInfo() {
 }
 
-FTPClientInfo::~FTPClientInfo() {
+std::string FTPClientInfo::buildReplyString(FTPReply reply) {
+	if (reply == FTPReply::RNULL)
+		throw std::runtime_error("invalid FTP reply");
+
+	std::string replyStr = FTPReplyString[reply];
+
+	switch (reply) {
+	case FTPReply::R200_TYPE:
+		replyStr += getType();
+		break;
+	case FTPReply::R213:
+		replyStr += std::to_string(getSize());
+		break;
+	case FTPReply::R227: {
+		auto port = std::stoul(getPassiveSocket().getPort());
+		auto portHi = std::to_string((port >> 8) & 0x00ff);
+		auto portLo = std::to_string(port & 0x00ff);
+		replyStr += getPasvAddr() + portHi + "," + portLo + ").";}
+		break;
+	case FTPReply::R257_PWD:
+		replyStr += getCwd() + "\"";
+		break;
+	default:
+		break;
+	}
+
+	std::cerr << ">     sent: " << replyStr << std::endl;
+
+	return replyStr;
 }
 
 const std::string& FTPClientInfo::getUsername() const {

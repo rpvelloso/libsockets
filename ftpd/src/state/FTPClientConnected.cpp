@@ -42,3 +42,7 @@ FTPReply FTPClientConnected::PASS(const std::string &password) {
 bool FTPClientConnected::validUserName(const std::string& username) {
 	return !username.empty();
 }
+
+StateType FTPClientConnected::getState() {
+	return StateType::Connected;
+}

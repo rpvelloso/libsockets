@@ -94,7 +94,7 @@ FTPReply FTPClient::processCmd(const std::string& cmdline, std::ostream &outp) {
 	} else if (command == "PORT") {
 		reply = state->PORT(param);
 		if (reply == FTPReply::R200) {
-			state.reset(new FTPClientTransfer(clientInfo, [this]() {
+			state.reset(new FTPClientTransfer(clientInfo, outp, [this]() {
 				socks::ClientSocket dataSocket;
 				if (dataSocket.connectTo(this->getClientInfo().getAddress(), clientInfo.getPort()) != 0)
 					throw std::runtime_error("Can't open data connection.");
@@ -104,9 +104,9 @@ FTPReply FTPClient::processCmd(const std::string& cmdline, std::ostream &outp) {
 	} else if (command == "PASV") {
 		reply = state->PASV();
 		if (reply == FTPReply::R227) {
-			outp << buildReplyString(reply) << std::endl;
+			outp << clientInfo.buildReplyString(reply) << std::endl;
 			reply = FTPReply::RNULL;
-			state.reset(new FTPClientTransfer(clientInfo, [this]() {
+			state.reset(new FTPClientTransfer(clientInfo, outp, [this]() {
 				auto dataSocket = this->getClientInfo().getPassiveSocket().acceptConnection();
 				if (this->getClientInfo().getPeerAddr() != dataSocket.getRemoteAddress().getHostname())
 					throw std::runtime_error("Invalid peer address.");
@@ -117,58 +117,27 @@ FTPReply FTPClient::processCmd(const std::string& cmdline, std::ostream &outp) {
 	} else if (
 			command == "LIST" ||
 			command == "NLST") {
-		outp << buildReplyString(FTPReply::R150) << std::endl;
 		reply = state->LIST(param);
-		state.reset(new FTPClientLoggedIn(clientInfo));
+		if (state->getState() == StateType::Transfer)
+			state.reset(new FTPClientLoggedIn(clientInfo));
 	} else if (command == "RETR") {
-		outp << buildReplyString(FTPReply::R150) << std::endl;
 		reply = state->RETR(param);
-		state.reset(new FTPClientLoggedIn(clientInfo));
+		if (state->getState() == StateType::Transfer)
+			state.reset(new FTPClientLoggedIn(clientInfo));
 	} else if (command == "STOR") {
-		outp << buildReplyString(FTPReply::R150) << std::endl;
 		reply = state->STOR(param);
-		state.reset(new FTPClientLoggedIn(clientInfo));
+		if (state->getState() == StateType::Transfer)
+			state.reset(new FTPClientLoggedIn(clientInfo));
 	} else if (command == "APPE") {
-		outp << buildReplyString(FTPReply::R150) << std::endl;
 		reply = state->APPE(param);
-		state.reset(new FTPClientLoggedIn(clientInfo));
+		if (state->getState() == StateType::Transfer)
+			state.reset(new FTPClientLoggedIn(clientInfo));
 	} else if (command == "REST")
 		reply = state->REST(param);
 	else
 		reply = FTPReply::R500;
 
 	return reply;
-}
-
-std::string FTPClient::buildReplyString(FTPReply reply) {
-	if (reply == FTPReply::RNULL)
-		throw std::runtime_error("invalid FTP reply");
-
-	std::string replyStr = FTPReplyString[reply];
-
-	switch (reply) {
-	case FTPReply::R200_TYPE:
-		replyStr += clientInfo.getType();
-		break;
-	case FTPReply::R213:
-		replyStr += std::to_string(clientInfo.getSize());
-		break;
-	case FTPReply::R227: {
-		auto port = std::stoul(clientInfo.getPassiveSocket().getPort());
-		auto portHi = std::to_string((port >> 8) & 0x00ff);
-		auto portLo = std::to_string(port & 0x00ff);
-		replyStr += clientInfo.getPasvAddr() + portHi + "," + portLo + ").";}
-		break;
-	case FTPReply::R257_PWD:
-		replyStr += clientInfo.getCwd() + "\"";
-		break;
-	default:
-		break;
-	}
-
-	std::cerr << ">     sent: " << replyStr << std::endl;
-
-	return replyStr;
 }
 
 FTPClientInfo& FTPClient::getClientInfo() {

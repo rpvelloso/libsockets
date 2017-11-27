@@ -22,6 +22,8 @@ class FTPClientConnected: public FTPClientState {
 public:
 	FTPClientConnected(FTPClientInfo &ctx);
 	virtual ~FTPClientConnected();
+	StateType getState() override;
+
 	FTPReply USER(const std::string &) override;
 	FTPReply PASS(const std::string &) override;
 private:

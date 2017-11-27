@@ -30,3 +30,7 @@ FTPReply FTPClientRename::RNTO(const std::string& path) {
 
 	return FTPReply::R550_RNTO;
 }
+
+StateType FTPClientRename::getState() {
+	return StateType::Rename;
+}
