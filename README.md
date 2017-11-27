@@ -129,7 +129,7 @@ int main() {
   if (socketStream.connectTo("127.0.0.1", "10000") == 0) {
     std::string buf;
 
-    socketStream >> buf; // receiving data
+    std::getline(socketStream, buf); // receiving data
     std::cout << buf << std::endl;
     socketStream << "message received." << std::endl; // transmitting data
   } else {
