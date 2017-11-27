@@ -18,9 +18,9 @@
 #include "auth/Authentication.h"
 
 AuthenticationFunction FTPClientInfo::authenticate =
-[](const std::string &username, const std::string &password, FTPClientInfo& ctx) {
+[](const std::string &username, const std::string &password, FTPClientInfo& clientInfo) {
 	/*
-	 * in here a user profile can be loaded into 'ctx'
+	 * in here a user profile can be loaded into 'clientInfo'
 	 * upon authentication in order to define, for example,
 	 * a home dir, chroot, etc.
 	 */

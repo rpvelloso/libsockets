@@ -33,7 +33,7 @@ enum class FTPReply {
 extern std::unordered_map<FTPReply, std::string> FTPReplyString;
 
 class FTPClientInfo;
-using AuthenticationFunction = std::function<bool(const std::string &username, const std::string &password, FTPClientInfo &ctx)>;
+using AuthenticationFunction = std::function<bool(const std::string &username, const std::string &password, FTPClientInfo &clientInfo)>;
 
 class FTPClientInfo {
 public:
