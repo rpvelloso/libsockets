@@ -87,6 +87,34 @@ int main() {
   myServer.listen("127.0.0.1", "10000"); // serves
 };
 ```
+## socks::DatagramSocket
+```cpp
+#include "libsockets"
+
+socks::DatagramSocket datagramSocket;
+
+datagramSocket.bindSocket("0.0.0.0", "10000");
+size_t bufferSize = 4096;
+char buffer[bufferSize];
+
+std::pair<int, socks::SocketAddress> ret = datagramSocket.receiveFrom(buffer, bufferSize);
+// ret = pair<bytes received, sender address>
+if (ret.first > 0) {
+  auto peer = std::move(ret.second);
+  std::string reply = "received " + std::to_string(ret.first) + " bytes";
+  datagramSocket.sendTo(peer, reply.c_str(), reply.size());
+} else {
+  std::cerr << "error receiving." << std::endl;
+}
+```
+You can also turn a socks::DatagramSocket into a 'connected' datagram socket and use socks::ClientSocket's interface.
+```cpp
+  socks::ClientSocket = datagramSocket.makeClientSocket(peer); // from this point on 'datagramSocket can not be used anymore
+```
+or
+```cpp
+  socks::ClientSocket = datagramSocket.makeClientSocket(host, port);
+```
 ## socks::factory
 This namespace contains all library's factory methods.
 # FTP Server (ftpd/)
