@@ -89,20 +89,20 @@ You can replace `socks::factory::makeThreadedServer` with `socks::factory::makeM
 constexpr size_t bufferSize = 4096;
 
 int main() {
-	socks::DatagramSocket datagramSocket;
+  socks::DatagramSocket datagramSocket;
 
-	datagramSocket.bindSocket("0.0.0.0", "10000");
-	char buffer[bufferSize];
+  datagramSocket.bindSocket("0.0.0.0", "10000");
+  char buffer[bufferSize];
 
-	std::pair<int, socks::SocketAddress> ret = datagramSocket.receiveFrom(buffer, bufferSize);
-	// ret = pair<bytes received, sender address>
-	if (ret.first > 0) {
-	  auto peer = std::move(ret.second);
-	  std::string reply = "received " + std::to_string(ret.first) + " bytes";
-	  datagramSocket.sendTo(peer, reply.c_str(), reply.size());
-	} else {
-	  std::cerr << "error receiving." << std::endl;
-	}
+  std::pair<int, socks::SocketAddress> ret = datagramSocket.receiveFrom(buffer, bufferSize);
+  // ret = pair<bytes received, sender address>
+  if (ret.first > 0) {
+    auto peer = std::move(ret.second);
+    std::string reply = "received " + std::to_string(ret.first) + " bytes";
+    datagramSocket.sendTo(peer, reply.c_str(), reply.size());
+  } else {
+    std::cerr << "error receiving." << std::endl;
+  }
 }
 ```
 You can also turn a `socks::DatagramSocket` into a 'connected' datagram socket and use `socks::ClientSocket`'s interface.
@@ -123,16 +123,18 @@ It's a `socks::ClientSocket` wrapped in an `std::iostream` class.
 ```cpp
 #include "libsockets.h"
 
-socks::SocketStream socketStream;
+int main() {
+  socks::SocketStream socketStream;
 
-if (socketStream.connecTo("127.0.0.1", "10000") == 0) {
-  std::string buf;
+  if (socketStream.connectTo("127.0.0.1", "10000") == 0) {
+    std::string buf;
 
-  socketStream >> buf; // receiving data
-  std::cout << buf << std::endl;
-  socketStream << "message received." << std::endl; // transmitting data
-} else {
-  std::cerr << "error connecting." << std::endl;
+    socketStream >> buf; // receiving data
+    std::cout << buf << std::endl;
+    socketStream << "message received." << std::endl; // transmitting data
+  } else {
+    std::cerr << "error connecting." << std::endl;
+  }
 }
 ```
 
