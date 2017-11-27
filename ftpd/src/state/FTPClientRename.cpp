@@ -15,7 +15,7 @@
 
 #include "state/FTPClientRename.h"
 
-FTPClientRename::FTPClientRename(FTPContext& ctx) : FTPClientState(ctx) {
+FTPClientRename::FTPClientRename(FTPClientInfo& ctx) : FTPClientState(ctx) {
 }
 
 FTPClientRename::~FTPClientRename() {

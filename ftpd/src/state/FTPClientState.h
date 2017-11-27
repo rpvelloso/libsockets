@@ -16,10 +16,10 @@
 #ifndef FTPCLIENTSTATE_H_
 #define FTPCLIENTSTATE_H_
 
+#include <FTPClientInfo.h>
 #include <unordered_map>
 #include <string>
 
-#include "FTPContext.h"
 
 enum class FTPReply {
 	RNULL, R150, R200, R200_MODE, R200_TYPE, R200_STRU, R211,
@@ -34,7 +34,7 @@ extern std::unordered_map<FTPReply, std::string> FTPReplyString;
 
 class FTPClientState {
 public:
-	FTPClientState(FTPContext &ctx);
+	FTPClientState(FTPClientInfo &ctx);
 	virtual ~FTPClientState();
 	virtual FTPReply NOOP();
 
@@ -65,7 +65,7 @@ public:
 	virtual FTPReply REST(const std::string &);
 
 protected:
-	FTPContext &context;
+	FTPClientInfo &context;
 };
 
 #endif /* FTPCLIENTSTATE_H_ */

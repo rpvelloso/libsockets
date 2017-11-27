@@ -21,7 +21,7 @@
 
 class FTPClientTransfer: public FTPClientState {
 public:
-	FTPClientTransfer(FTPContext &ctx, std::function<socks::ClientSocket()> getDataSocket);
+	FTPClientTransfer(FTPClientInfo &ctx, std::function<socks::ClientSocket()> getDataSocket);
 	virtual ~FTPClientTransfer();
 
 	FTPReply LIST(const std::string &path) override;

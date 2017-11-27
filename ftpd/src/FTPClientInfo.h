@@ -13,21 +13,21 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef FTPCONTEXT_H_
-#define FTPCONTEXT_H_
+#ifndef FTPCLIENTINFO_H_
+#define FTPCLIENTINFO_H_
 
 #include "libsockets.h"
 
 #include <string>
 #include <fstream>
 
-class FTPContext;
-using AuthenticationFunction = std::function<bool(const std::string &username, const std::string &password, FTPContext &ctx)>;
+class FTPClientInfo;
+using AuthenticationFunction = std::function<bool(const std::string &username, const std::string &password, FTPClientInfo &ctx)>;
 
-class FTPContext {
+class FTPClientInfo {
 public:
-	FTPContext();
-	~FTPContext();
+	FTPClientInfo();
+	~FTPClientInfo();
 	const std::string& getUsername() const;
 	void setUsername(const std::string& username);
 	const std::string& getCwd() const;
@@ -67,4 +67,4 @@ private:
 	std::string socketAddr2FTPAddr(socks::SocketAddress &addr);
 };
 
-#endif /* FTPCONTEXT_H_ */
+#endif /* FTPCLIENTINFO_H_ */

@@ -20,7 +20,7 @@
 #include <sys/stat.h>
 
 FTPClientTransfer::FTPClientTransfer(
-		FTPContext &ctx,
+		FTPClientInfo &ctx,
 		std::function<socks::ClientSocket()> getDataSocket) :
 		FTPClientState(ctx),
 		getDataSocket(getDataSocket) {

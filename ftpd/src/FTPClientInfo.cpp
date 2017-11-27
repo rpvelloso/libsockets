@@ -13,103 +13,103 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "FTPContext.h"
+#include <FTPClientInfo.h>
 
-FTPContext::FTPContext() {
+FTPClientInfo::FTPClientInfo() {
 }
 
-FTPContext::~FTPContext() {
+FTPClientInfo::~FTPClientInfo() {
 }
 
-const std::string& FTPContext::getUsername() const {
+const std::string& FTPClientInfo::getUsername() const {
 	return username;
 }
 
-void FTPContext::setUsername(const std::string& username) {
+void FTPClientInfo::setUsername(const std::string& username) {
 	this->username = username;
 }
 
-const std::string& FTPContext::getCwd() const {
+const std::string& FTPClientInfo::getCwd() const {
 	return cwd;
 }
 
-void FTPContext::setCwd(const std::string& cwd) {
+void FTPClientInfo::setCwd(const std::string& cwd) {
 	this->cwd = cwd;
 }
 
-const std::string& FTPContext::getAddress() const {
+const std::string& FTPClientInfo::getAddress() const {
 	return address;
 }
 
-void FTPContext::setAddress(const std::string& address) {
+void FTPClientInfo::setAddress(const std::string& address) {
 	this->address = address;
 }
 
-const std::string& FTPContext::getPort() const {
+const std::string& FTPClientInfo::getPort() const {
 	return port;
 }
 
-void FTPContext::setPort(const std::string& port) {
+void FTPClientInfo::setPort(const std::string& port) {
 	this->port = port;
 }
 
-const std::string& FTPContext::getType() const {
+const std::string& FTPClientInfo::getType() const {
 	return type;
 }
 
-void FTPContext::setType(const std::string& type) {
+void FTPClientInfo::setType(const std::string& type) {
 	this->type = type;
 }
 
-size_t FTPContext::getSize() const {
+size_t FTPClientInfo::getSize() const {
 	return size;
 }
 
-void FTPContext::setSize(size_t size) {
+void FTPClientInfo::setSize(size_t size) {
 	this->size = size;
 }
 
-const std::string& FTPContext::getRenameFrom() const {
+const std::string& FTPClientInfo::getRenameFrom() const {
 	return renameFrom;
 }
 
-void FTPContext::setRenameFrom(const std::string& renameFrom) {
+void FTPClientInfo::setRenameFrom(const std::string& renameFrom) {
 	this->renameFrom = renameFrom;
 }
 
-socks::ServerSocket& FTPContext::getPassiveSocket() const {
+socks::ServerSocket& FTPClientInfo::getPassiveSocket() const {
 	return *passiveSocket;
 }
 
-void FTPContext::setPassiveSocket(std::unique_ptr<socks::ServerSocket> serverSocket) {
+void FTPClientInfo::setPassiveSocket(std::unique_ptr<socks::ServerSocket> serverSocket) {
 	this->passiveSocket = std::move(serverSocket);
 }
 
-std::fstream::pos_type FTPContext::getRestartPos() const {
+std::fstream::pos_type FTPClientInfo::getRestartPos() const {
 	return restartPos;
 }
 
-void FTPContext::setRestartPos(std::fstream::pos_type restartPos) {
+void FTPClientInfo::setRestartPos(std::fstream::pos_type restartPos) {
 	this->restartPos = restartPos;
 }
 
-const std::string& FTPContext::getPasvAddr() const {
+const std::string& FTPClientInfo::getPasvAddr() const {
 	return pasvAddr;
 }
 
-void FTPContext::setPasvAddr(socks::SocketAddress &addr) {
+void FTPClientInfo::setPasvAddr(socks::SocketAddress &addr) {
 	pasvAddr = socketAddr2FTPAddr(addr);
 }
 
-const std::string& FTPContext::getPeerAddr() const {
+const std::string& FTPClientInfo::getPeerAddr() const {
 	return peerAddr;
 }
 
-void FTPContext::setPeerAddr(socks::SocketAddress &addr) {
+void FTPClientInfo::setPeerAddr(socks::SocketAddress &addr) {
 	peerAddr = addr.getHostname();
 }
 
-std::string FTPContext::socketAddr2FTPAddr(socks::SocketAddress &addr) {
+std::string FTPClientInfo::socketAddr2FTPAddr(socks::SocketAddress &addr) {
 	std::string ftpAddr = addr.getHostname() + ",";
 	std::transform(
 			ftpAddr.begin(),

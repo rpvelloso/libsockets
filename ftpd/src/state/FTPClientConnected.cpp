@@ -15,7 +15,7 @@
 
 #include "FTPClientConnected.h"
 
-FTPClientConnected::FTPClientConnected(FTPContext &ctx) : FTPClientState(ctx) {
+FTPClientConnected::FTPClientConnected(FTPClientInfo &ctx) : FTPClientState(ctx) {
 }
 
 FTPClientConnected::~FTPClientConnected() {

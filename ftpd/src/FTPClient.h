@@ -16,9 +16,9 @@
 #ifndef FTPCLIENT_H_
 #define FTPCLIENT_H_
 
+#include <FTPClientInfo.h>
 #include <memory>
 
-#include "FTPContext.h"
 #include "state/FTPClientState.h"
 
 class FTPClient {
@@ -27,9 +27,9 @@ public:
 	~FTPClient();
 	FTPReply processCmd(const std::string &cmdline, std::ostream &outp);
 	std::string buildReplyString(FTPReply reply);
-	FTPContext& getContext();
+	FTPClientInfo& getClientInfo();
 private:
-	FTPContext context;
+	FTPClientInfo clientInfo;
 	std::unique_ptr<FTPClientState> state;
 };
 

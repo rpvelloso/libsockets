@@ -54,7 +54,7 @@ std::unordered_map<FTPReply, std::string> FTPReplyString= {
 		{FTPReply::R550_RNTO	,"550 Can't rename file."}
 };
 
-FTPClientState::FTPClientState(FTPContext &ctx) : context(ctx) {};
+FTPClientState::FTPClientState(FTPClientInfo &ctx) : context(ctx) {};
 FTPClientState::~FTPClientState() {};
 FTPReply FTPClientState::NOOP() { return FTPReply::R200; };
 FTPReply FTPClientState::QUIT() { return FTPReply::R221; };

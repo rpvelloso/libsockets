@@ -17,8 +17,8 @@
 
 #include "FTPClient.h"
 
-AuthenticationFunction FTPContext::authenticate =
-[](const std::string &username, const std::string &password, FTPContext& ctx) {
+AuthenticationFunction FTPClientInfo::authenticate =
+[](const std::string &username, const std::string &password, FTPClientInfo& ctx) {
 	/*
 	 * in here a user profile can be loaded into 'ctx'
 	 * upon authentication in order to define, for example,
@@ -43,18 +43,21 @@ std::string readline(std::istream &inp) {
 }
 
 void onConnect(socks::Context<FTPClient> &ctx, std::istream &inp, std::ostream &outp) {
-	ctx.getContext().getContext().setPasvAddr(ctx.getLocalAddress());
-	ctx.getContext().getContext().setPeerAddr(ctx.getRemoteAddress());
-	outp << ctx.getContext().buildReplyString(FTPReply::R220) << std::endl;
+	FTPClient &context = ctx.getContext();
+	FTPClientInfo &clientInfo = context.getClientInfo();
+	clientInfo.setPasvAddr(ctx.getLocalAddress());
+	clientInfo.setPeerAddr(ctx.getRemoteAddress());
+	outp << context.buildReplyString(FTPReply::R220) << std::endl;
 }
 
 void onReceive(socks::Context<FTPClient> &ctx, std::istream &inp, std::ostream &outp) {
+	FTPClient &context = ctx.getContext();
 	while (inp) {
 		auto cmd = readline(inp);
 		if (!cmd.empty()) {
-			auto reply = ctx.getContext().processCmd(cmd, outp);
+			auto reply = context.processCmd(cmd, outp);
 			if (reply != FTPReply::RNULL)
-				outp << ctx.getContext().buildReplyString(reply) << std::endl;
+				outp << context.buildReplyString(reply) << std::endl;
 		} else
 			break;
 	}

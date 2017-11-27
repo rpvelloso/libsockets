@@ -18,7 +18,7 @@
 #include "filesystem/FileSystem.h"
 #include "state/FTPClientLoggedIn.h"
 
-FTPClientLoggedIn::FTPClientLoggedIn(FTPContext& ctx) : FTPClientState(ctx) {
+FTPClientLoggedIn::FTPClientLoggedIn(FTPClientInfo& ctx) : FTPClientState(ctx) {
 }
 
 FTPClientLoggedIn::~FTPClientLoggedIn() {

@@ -20,7 +20,7 @@
 
 class FTPClientLoggedIn: public FTPClientState {
 public:
-	FTPClientLoggedIn(FTPContext &ctx);
+	FTPClientLoggedIn(FTPClientInfo &ctx);
 	virtual ~FTPClientLoggedIn();
 
 	FTPReply MODE(const std::string &) override;

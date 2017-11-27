@@ -22,7 +22,7 @@
 #include <sstream>
 #include <algorithm>
 
-FTPClient::FTPClient() : state(new FTPClientConnected(context)) {
+FTPClient::FTPClient() : state(new FTPClientConnected(clientInfo)) {
 }
 
 FTPClient::~FTPClient() {
@@ -55,7 +55,7 @@ FTPReply FTPClient::processCmd(const std::string& cmdline, std::ostream &outp) {
 	else if (command == "PASS") {
 		reply = state->PASS(param);
 		if (reply == FTPReply::R230)
-			state.reset(new FTPClientLoggedIn(context));
+			state.reset(new FTPClientLoggedIn(clientInfo));
 	} else if (command == "MODE")
 		reply = state->MODE(param);
 	else if (command == "STRU")
@@ -86,17 +86,17 @@ FTPReply FTPClient::processCmd(const std::string& cmdline, std::ostream &outp) {
 	else if (command == "RNFR") {
 		reply = state->RNFR(param);
 		if (reply == FTPReply::R350_RNFR)
-			state.reset(new FTPClientRename(context));
+			state.reset(new FTPClientRename(clientInfo));
 	} else if (command == "RNTO") {
 		reply = state->RNTO(param);
 		if (reply == FTPReply::R250)
-			state.reset(new FTPClientLoggedIn(context));
+			state.reset(new FTPClientLoggedIn(clientInfo));
 	} else if (command == "PORT") {
 		reply = state->PORT(param);
 		if (reply == FTPReply::R200) {
-			state.reset(new FTPClientTransfer(context, [this]() {
+			state.reset(new FTPClientTransfer(clientInfo, [this]() {
 				socks::ClientSocket dataSocket;
-				if (dataSocket.connectTo(this->getContext().getAddress(), context.getPort()) != 0)
+				if (dataSocket.connectTo(this->getClientInfo().getAddress(), clientInfo.getPort()) != 0)
 					throw std::runtime_error("Can't open data connection.");
 				return dataSocket;
 			}));
@@ -106,11 +106,11 @@ FTPReply FTPClient::processCmd(const std::string& cmdline, std::ostream &outp) {
 		if (reply == FTPReply::R227) {
 			outp << buildReplyString(reply) << std::endl;
 			reply = FTPReply::RNULL;
-			state.reset(new FTPClientTransfer(context, [this]() {
-				auto dataSocket = this->getContext().getPassiveSocket().acceptConnection();
-				if (this->getContext().getPeerAddr() != dataSocket.getRemoteAddress().getHostname())
+			state.reset(new FTPClientTransfer(clientInfo, [this]() {
+				auto dataSocket = this->getClientInfo().getPassiveSocket().acceptConnection();
+				if (this->getClientInfo().getPeerAddr() != dataSocket.getRemoteAddress().getHostname())
 					throw std::runtime_error("Invalid peer address.");
-				context.getPassiveSocket().disconnect();
+				clientInfo.getPassiveSocket().disconnect();
 				return dataSocket;
 			}));
 		}
@@ -119,19 +119,19 @@ FTPReply FTPClient::processCmd(const std::string& cmdline, std::ostream &outp) {
 			command == "NLST") {
 		outp << buildReplyString(FTPReply::R150) << std::endl;
 		reply = state->LIST(param);
-		state.reset(new FTPClientLoggedIn(context));
+		state.reset(new FTPClientLoggedIn(clientInfo));
 	} else if (command == "RETR") {
 		outp << buildReplyString(FTPReply::R150) << std::endl;
 		reply = state->RETR(param);
-		state.reset(new FTPClientLoggedIn(context));
+		state.reset(new FTPClientLoggedIn(clientInfo));
 	} else if (command == "STOR") {
 		outp << buildReplyString(FTPReply::R150) << std::endl;
 		reply = state->STOR(param);
-		state.reset(new FTPClientLoggedIn(context));
+		state.reset(new FTPClientLoggedIn(clientInfo));
 	} else if (command == "APPE") {
 		outp << buildReplyString(FTPReply::R150) << std::endl;
 		reply = state->APPE(param);
-		state.reset(new FTPClientLoggedIn(context));
+		state.reset(new FTPClientLoggedIn(clientInfo));
 	} else if (command == "REST")
 		reply = state->REST(param);
 	else
@@ -148,19 +148,19 @@ std::string FTPClient::buildReplyString(FTPReply reply) {
 
 	switch (reply) {
 	case FTPReply::R200_TYPE:
-		replyStr += context.getType();
+		replyStr += clientInfo.getType();
 		break;
 	case FTPReply::R213:
-		replyStr += std::to_string(context.getSize());
+		replyStr += std::to_string(clientInfo.getSize());
 		break;
 	case FTPReply::R227: {
-		auto port = std::stoul(context.getPassiveSocket().getPort());
+		auto port = std::stoul(clientInfo.getPassiveSocket().getPort());
 		auto portHi = std::to_string((port >> 8) & 0x00ff);
 		auto portLo = std::to_string(port & 0x00ff);
-		replyStr += context.getPasvAddr() + portHi + "," + portLo + ").";}
+		replyStr += clientInfo.getPasvAddr() + portHi + "," + portLo + ").";}
 		break;
 	case FTPReply::R257_PWD:
-		replyStr += context.getCwd() + "\"";
+		replyStr += clientInfo.getCwd() + "\"";
 		break;
 	default:
 		break;
@@ -171,6 +171,6 @@ std::string FTPClient::buildReplyString(FTPReply reply) {
 	return replyStr;
 }
 
-FTPContext& FTPClient::getContext() {
-	return context;
+FTPClientInfo& FTPClient::getClientInfo() {
+	return clientInfo;
 }
