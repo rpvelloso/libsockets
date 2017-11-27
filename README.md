@@ -86,20 +86,23 @@ You can replace `socks::factory::makeThreadedServer` with `socks::factory::makeM
 ```cpp
 #include "libsockets.h"
 
-socks::DatagramSocket datagramSocket;
+constexpr size_t bufferSize = 4096;
 
-datagramSocket.bindSocket("0.0.0.0", "10000");
-size_t bufferSize = 4096;
-char buffer[bufferSize];
+int main() {
+	socks::DatagramSocket datagramSocket;
 
-std::pair<int, socks::SocketAddress> ret = datagramSocket.receiveFrom(buffer, bufferSize);
-// ret = pair<bytes received, sender address>
-if (ret.first > 0) {
-  auto peer = std::move(ret.second);
-  std::string reply = "received " + std::to_string(ret.first) + " bytes";
-  datagramSocket.sendTo(peer, reply.c_str(), reply.size());
-} else {
-  std::cerr << "error receiving." << std::endl;
+	datagramSocket.bindSocket("0.0.0.0", "10000");
+	char buffer[bufferSize];
+
+	std::pair<int, socks::SocketAddress> ret = datagramSocket.receiveFrom(buffer, bufferSize);
+	// ret = pair<bytes received, sender address>
+	if (ret.first > 0) {
+	  auto peer = std::move(ret.second);
+	  std::string reply = "received " + std::to_string(ret.first) + " bytes";
+	  datagramSocket.sendTo(peer, reply.c_str(), reply.size());
+	} else {
+	  std::cerr << "error receiving." << std::endl;
+	}
 }
 ```
 You can also turn a `socks::DatagramSocket` into a 'connected' datagram socket and use `socks::ClientSocket`'s interface.
