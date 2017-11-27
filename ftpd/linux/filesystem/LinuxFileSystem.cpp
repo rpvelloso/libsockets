@@ -23,6 +23,9 @@
 #include <stddef.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <pwd.h>
+#include <grp.h>
 #include <fcntl.h>
 
 FileSystem fs(new LinuxFileSystem());
@@ -76,6 +79,24 @@ bool LinuxFileSystem::renameFile(
 
 }
 
+std::pair<std::string, std::string> LinuxFileSystem::fileOwner(uid_t uid) {
+	std::pair<std::string, std::string> result;
+	struct passwd pwd, *res;
+	std::unique_ptr<char[]> buf(new char[512]);
+
+	getpwuid_r(uid, &pwd,buf.get(), 512, &res);
+	if (res != nullptr) {
+		result.first = std::string(pwd.pw_name);
+		struct group grp, *grpres;
+
+		getgrgid_r(pwd.pw_gid, &grp, buf.get(), 512, &grpres);
+		if (grpres != nullptr)
+			result.second = std::string(grp.gr_name);
+	}
+
+	return result;
+}
+
 std::vector<ListTuple> LinuxFileSystem::list(const std::string &path) {
 	DIR *d;
 	std::vector<ListTuple> fileList;
@@ -90,17 +111,24 @@ std::vector<ListTuple> LinuxFileSystem::list(const std::string &path) {
 		auto de = readdir(d);
 		while (de) {
 			struct stat64 st;
+			auto fullpath = path + sep + std::string(de->d_name);
 
-			if (stat64(std::string(path + sep + std::string(de->d_name)).c_str(),&st) != -1) {
+			if (stat64(fullpath.c_str(),&st) != -1) {
 				struct tm tm1;
+
+				auto owner = fileOwner(st.st_uid);
+				if (owner.first.empty())
+					owner.first = "User";
+				if (owner.second.empty())
+					owner.second = "Group";
 
 				gmtime_r(&st.st_mtime,&tm1);
 				std::string dateStr = dateToString(tm1);
 
 				fileList.push_back(std::forward_as_tuple(
 					std::string(de->d_name),
-					"user",
-					"group",
+					owner.first,
+					owner.second,
 					st.st_mode,
 					st.st_size,
 					st.st_nlink,
