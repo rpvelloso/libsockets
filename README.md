@@ -76,10 +76,11 @@ int main() {
     afterWrite
     */
     ); // onReceive is mandatory, onConnect, onDisconnect & afterWrite are optional
-
+    
   myServer.listen("127.0.0.1", "10000"); // serves
 };
 ```
+You can replace socks::factory::makeThreadedServer with socks::factory::makeMultiplexedServer. The first instantiates a server that creates one thread per client (using blocking I/O), the second instantiates a server with a more scalable architecture, using the reactor pattern (several clients are served per thread using non-blocking I/O).
 
 ## socks::DatagramSocket
 ```cpp
@@ -103,15 +104,15 @@ if (ret.first > 0) {
 ```
 You can also turn a socks::DatagramSocket into a 'connected' datagram socket and use socks::ClientSocket's interface.
 ```cpp
-  socks::ClientSocket = datagramSocket.makeClientSocket(peer); 
-  /* 
-   * from this point on 'datagramSocket' can not be used anymore,
-   * its implementation has been moved to 'clientSocket'.
-   */
+socks::ClientSocket = datagramSocket.makeClientSocket(peer); 
+/* 
+ * from this point on 'datagramSocket' cannot be used anymore,
+ * its implementation has been moved to 'clientSocket'.
+ */
 ```
 or
 ```cpp
-  socks::ClientSocket = datagramSocket.makeClientSocket(host, port); // same here
+socks::ClientSocket = datagramSocket.makeClientSocket(host, port); // same here
 ```
 
 ## socks::SocketStream
@@ -137,8 +138,9 @@ Just replace the declarations:
 ```cpp
 socks::ClientSocket clientSocket = socks::factory::makeSSLClientSocket;
 socks::ServerSocket serverSocket = socks::factory::makeSSLServerSocket;
-socks::SocketStream serverSocket = socks::factory::makeSSLSocketStream;
+socks::SocketStream socketStream = socks::factory::makeSSLSocketStream;
 socks::Server server = socks::makeThreadedSSLServer<...>(...);
+socks::Server server = socks::makeMultiplexedSSLServer<...>(...);
 ```
 That's it. For the socks::ServerSocket and socks::Server you'll also need certificate and key files (default names are 'cert.pem' and 'key.pem').
 To generate test certificate and key files: 
