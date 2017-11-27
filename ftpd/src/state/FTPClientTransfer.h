@@ -30,6 +30,7 @@ public:
 	FTPReply STOR(const std::string &filename) override;
 	FTPReply APPE(const std::string &filename) override;
 	FTPReply REST(const std::string &pos) override;
+	FTPReply PWD() override;
 private:
 	std::ostream &outp;
 	static const size_t bufSize = 4*1024;

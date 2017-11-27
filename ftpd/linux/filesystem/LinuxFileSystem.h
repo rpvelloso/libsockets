@@ -16,6 +16,8 @@
 #ifndef FILESYSTEM_LINUXFILESYSTEM_H_
 #define FILESYSTEM_LINUXFILESYSTEM_H_
 
+#include <sys/types.h>
+
 #include "filesystem/FileSystem.h"
 #include "filesystem/FileSystemImpl.h"
 
@@ -31,7 +33,7 @@ public:
 	bool renameFile(const std::string &from, const std::string &to) override;
 	std::vector<ListTuple> list(const std::string &path) override;
 private:
-	std::pair<std::string, std::string> fileOwner(const std::string &filename);
+	std::pair<std::string, std::string> fileOwner(uid_t uid);
 };
 
 #endif /* FILESYSTEM_LINUXFILESYSTEM_H_ */

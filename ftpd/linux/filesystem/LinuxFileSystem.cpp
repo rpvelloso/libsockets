@@ -23,7 +23,6 @@
 #include <stddef.h>
 #include <dirent.h>
 #include <sys/stat.h>
-#include <sys/types.h>
 #include <pwd.h>
 #include <grp.h>
 #include <fcntl.h>

@@ -146,6 +146,10 @@ FTPReply FTPClientTransfer::REST(const std::string& pos) {
 	return FTPReply::R350;
 }
 
+FTPReply FTPClientTransfer::PWD() {
+	return FTPReply::R257_PWD;
+}
+
 void FTPClientTransfer::receiveFile(socks::ClientSocket& source, std::fstream &dest) {
 	std::unique_ptr<char> bufPtr(new char[bufSize]);
 	auto buf = bufPtr.get();
