@@ -12,8 +12,6 @@
 
 #include "PAM.h"
 
-struct pam_response *reply;
-
 int convFunction(
 	int num_msg,
 	const struct pam_message **msg,
