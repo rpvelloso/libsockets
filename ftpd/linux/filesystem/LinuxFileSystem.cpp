@@ -41,7 +41,7 @@ LinuxFileSystem::~LinuxFileSystem() {
 bool LinuxFileSystem::changeWorkingDir(const std::string& dirname) {
 	DIR *d;
 	if ((d = opendir(dirname.c_str()))) {
-		std::unique_ptr<DIR, ClosedirType> dirGuard(d, &closedir);
+		std::unique_ptr<DIR, ClosedirType> dirGuard(d, closedir);
 		return true;
 	}
 	return false;
@@ -108,7 +108,7 @@ std::vector<ListTuple> LinuxFileSystem::list(const std::string &path) {
 		sep = "/";
 
 	if ((d = opendir(path.c_str()))) {
-		std::unique_ptr<DIR, ClosedirType> dirGuard(d, &closedir);
+		std::unique_ptr<DIR, ClosedirType> dirGuard(d, closedir);
 
 		auto de = readdir(d);
 		while (de) {

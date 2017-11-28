@@ -30,6 +30,8 @@
 
 FileSystem fs(new WindowsFileSystem());
 
+using ClosedirType = decltype(&closedir);
+
 WindowsFileSystem::WindowsFileSystem() {
 }
 
@@ -39,7 +41,7 @@ WindowsFileSystem::~WindowsFileSystem() {
 bool WindowsFileSystem::changeWorkingDir(const std::string& dirname) {
 	DIR *d;
 	if ((d = opendir(dirname.c_str()))) {
-		std::unique_ptr<DIR, decltype(&closedir)> dirGuard(d, closedir);
+		std::unique_ptr<DIR, ClosedirType> dirGuard(d, closedir);
 		return true;
 	}
 	return false;
@@ -154,7 +156,7 @@ std::vector<ListTuple> WindowsFileSystem::list(const std::string &path) {
 		sep = "/";
 
 	if ((d = opendir(path.c_str()))) {
-		std::unique_ptr<DIR, decltype(&closedir)> dirGuard(d, closedir);
+		std::unique_ptr<DIR, ClosedirType> dirGuard(d, closedir);
 
 		auto de = readdir(d);
 		while (de) {
