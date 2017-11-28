@@ -62,9 +62,8 @@ bool PAM::auth(
 	if (res == PAM_SUCCESS) {
 		PAMGuard pamGuard(pamHandle, res);
 		res = pam_authenticate(pamHandle, PAM_SILENT);
-		if (res == PAM_SUCCESS) {
+		if (res == PAM_SUCCESS)
 			res = pam_acct_mgmt(pamHandle, PAM_SILENT);
-		}
 	}
 	return res == PAM_SUCCESS;
 }
