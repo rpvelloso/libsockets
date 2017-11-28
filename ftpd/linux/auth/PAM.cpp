@@ -6,23 +6,47 @@
  */
 
 #include <memory>
-#include <algorithm>
+#include <stdlib.h>
+#include <string.h>
 #include <security/pam_appl.h>
 
 #include "PAM.h"
 
 struct pam_response *reply;
 
-int null_conv(int num_msg, const struct pam_message **msg, struct pam_response **resp, void *appdata_ptr) {
+int convFunction(
+	int num_msg,
+	const struct pam_message **msg,
+	struct pam_response **resp,
+	void *appdata_ptr) {
+
+	auto reply = (struct pam_response *)calloc(
+		num_msg,
+		sizeof(struct pam_response)); // this memory is free'd by PAM
+
+	for (int i = 0; i < num_msg; ++i) {
+		reply[i].resp = nullptr;
+		reply[i].resp_retcode = 0;
+	}
+	reply[0].resp = (char *)appdata_ptr; // passwordPtr's addr
+
 	*resp = reply;
 	return PAM_SUCCESS;
 }
 
-struct pam_conv conv = { null_conv, NULL };
-
+class PAMGuard {
+public:
+	PAMGuard(pam_handle_t *pamHandle, int &res) :
+		pamHandle(pamHandle), res(res) {};
+	~PAMGuard() {
+		pam_end(pamHandle, res);
+	}
+private:
+	pam_handle_t *pamHandle;
+	int &res;
+};
 
 PAM::PAM() {
-
 }
 
 bool PAM::auth(
@@ -30,27 +54,17 @@ bool PAM::auth(
 	const std::string &username,
 	const std::string &password) {
 
-	pam_handle_t *pamh = NULL;
-	auto res = pam_start(service.c_str(), username.c_str(), &conv, &pamh);
+	pam_handle_t *pamHandle = NULL;
+	auto passwordPtr = strdup(password.c_str()); // this memory is free'd by PAM
 
+	struct pam_conv conv = { convFunction, passwordPtr };
+	auto res = pam_start(service.c_str(), username.c_str(), &conv, &pamHandle);
 	if (res == PAM_SUCCESS) {
-		std::unique_ptr<char[]> passwordPtr(new char[password.size()+1]);
-		passwordPtr[password.size()+1] = 0;
-		size_t pos = 0;
-		std::for_each(password.begin(), password.end(), [&pos, &passwordPtr](char c){passwordPtr[pos++]=c;});
-		/*std::unique_ptr<struct pam_response, decltype(&free)> replyPtr(
-				new struct pam_response
-				(struct pam_response *)malloc(sizeof(struct pam_response)),
-				free);*/
-		reply = (struct pam_response *)malloc(sizeof(struct pam_response));//replyPtr.get();
-
-		reply[0].resp = passwordPtr.get();//const_cast<char *>(password.c_str());
-		reply[0].resp_retcode = 0;
-
-		res = pam_authenticate(pamh, 0);
-
-		pam_end(pamh, PAM_SUCCESS);
+		PAMGuard pamGuard(pamHandle, res);
+		res = pam_authenticate(pamHandle, PAM_SILENT);
+		if (res == PAM_SUCCESS) {
+			res = pam_acct_mgmt(pamHandle, PAM_SILENT);
+		}
 	}
-
 	return res == PAM_SUCCESS;
 }
