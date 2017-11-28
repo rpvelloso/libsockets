@@ -13,12 +13,12 @@
 
 struct pam_response *reply;
 
-static int null_conv(int num_msg, const struct pam_message **msg, struct pam_response **resp, void *appdata_ptr) {
+int null_conv(int num_msg, const struct pam_message **msg, struct pam_response **resp, void *appdata_ptr) {
 	*resp = reply;
 	return PAM_SUCCESS;
 }
 
-static struct pam_conv conv = { null_conv, NULL };
+struct pam_conv conv = { null_conv, NULL };
 
 
 PAM::PAM() {
@@ -34,7 +34,8 @@ bool PAM::auth(
 	auto res = pam_start(service.c_str(), username.c_str(), &conv, &pamh);
 
 	if (res == PAM_SUCCESS) {
-		std::unique_ptr<char[]> passwordPtr(new char[password.size()]);
+		std::unique_ptr<char[]> passwordPtr(new char[password.size()+1]);
+		passwordPtr[password.size()+1] = 0;
 		size_t pos = 0;
 		std::for_each(password.begin(), password.end(), [&pos, &passwordPtr](char c){passwordPtr[pos++]=c;});
 		/*std::unique_ptr<struct pam_response, decltype(&free)> replyPtr(
