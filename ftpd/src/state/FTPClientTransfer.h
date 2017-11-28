@@ -17,6 +17,7 @@
 #define STATE_FTPCLIENTTRANSFER_H_
 
 #include "state/FTPClientState.h"
+#include "state/FTPClientLoggedIn.h"
 #include <functional>
 
 class FTPClientTransfer: public FTPClientState {
@@ -30,9 +31,11 @@ public:
 	FTPReply STOR(const std::string &filename) override;
 	FTPReply APPE(const std::string &filename) override;
 	FTPReply REST(const std::string &pos) override;
-	FTPReply PWD() override;
+
+	FTPReply CWD(const std::string &) override;
 private:
 	std::ostream &outp;
+	FTPClientLoggedIn loggedIn;
 	static const size_t bufSize = 4*1024;
 	void receiveFile(socks::ClientSocket& source, std::fstream &dest);
 	void sendFile(std::fstream &source, socks::ClientSocket& dest);

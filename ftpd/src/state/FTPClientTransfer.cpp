@@ -26,6 +26,7 @@ FTPClientTransfer::FTPClientTransfer(
 		std::function<socks::ClientSocket()> getDataSocket) :
 		FTPClientState(ctx),
 		outp(outp),
+		loggedIn(ctx),
 		getDataSocket(getDataSocket) {
 }
 
@@ -146,10 +147,6 @@ FTPReply FTPClientTransfer::REST(const std::string& pos) {
 	return FTPReply::R350;
 }
 
-FTPReply FTPClientTransfer::PWD() {
-	return FTPReply::R257_PWD;
-}
-
 void FTPClientTransfer::receiveFile(socks::ClientSocket& source, std::fstream &dest) {
 	std::unique_ptr<char> bufPtr(new char[bufSize]);
 	auto buf = bufPtr.get();
@@ -157,6 +154,10 @@ void FTPClientTransfer::receiveFile(socks::ClientSocket& source, std::fstream &d
 	int len;
 	while ((len = source.receiveData(static_cast<void *>(buf), bufSize)) > 0)
 		dest.write(static_cast<char *>(buf), len);
+}
+
+FTPReply FTPClientTransfer::CWD(const std::string& path) {
+	return loggedIn.CWD(path);
 }
 
 void FTPClientTransfer::sendFile(std::fstream &source, socks::ClientSocket& dest) {
