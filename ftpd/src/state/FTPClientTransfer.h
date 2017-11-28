@@ -35,7 +35,7 @@ public:
 	FTPReply CWD(const std::string &) override;
 private:
 	std::ostream &outp;
-	FTPClientLoggedIn loggedIn;
+	FTPClientLoggedIn loggedInState;
 	static const size_t bufSize = 4*1024;
 	void receiveFile(socks::ClientSocket& source, std::fstream &dest);
 	void sendFile(std::fstream &source, socks::ClientSocket& dest);

@@ -26,7 +26,7 @@ FTPClientTransfer::FTPClientTransfer(
 		std::function<socks::ClientSocket()> getDataSocket) :
 		FTPClientState(ctx),
 		outp(outp),
-		loggedIn(ctx),
+		loggedInState(ctx),
 		getDataSocket(getDataSocket) {
 }
 
@@ -157,7 +157,7 @@ void FTPClientTransfer::receiveFile(socks::ClientSocket& source, std::fstream &d
 }
 
 FTPReply FTPClientTransfer::CWD(const std::string& path) {
-	return loggedIn.CWD(path);
+	return loggedInState.CWD(path);
 }
 
 void FTPClientTransfer::sendFile(std::fstream &source, socks::ClientSocket& dest) {
