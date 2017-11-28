@@ -23,6 +23,11 @@ public:
 	LinuxAuthentication();
 	virtual ~LinuxAuthentication();
 	bool authenticate(const std::string &username, const std::string &password) override;
+private:
+	static bool pamAuthentication(
+		const std::string &service,
+		const std::string &username,
+		const std::string &password);
 };
 
 #endif /* LINUX_AUTH_LINUXAUTHENTICATION_H_ */
