@@ -24,6 +24,11 @@
 template<class Type>
 using UniqueMallocPtr = std::unique_ptr<Type, decltype(&free)>;
 
+template<typename Type>
+UniqueMallocPtr<Type> makeUniqueMallocPtr(Type *data) {
+	return UniqueMallocPtr<Type>(data, free);
+}
+
 Authentication authService(new LinuxAuthentication());
 
 int conversationFunction(
@@ -32,13 +37,8 @@ int conversationFunction(
 	struct pam_response **resp,
 	void *appdata_ptr) {
 
-	UniqueMallocPtr<struct pam_response> replyPtr(
-		(struct pam_response *)calloc(num_msg, sizeof(struct pam_response)),
-		free);
-	UniqueMallocPtr<char> passwordPtr(
-		strdup((const char *)appdata_ptr),
-		free);
-
+	auto replyPtr = makeUniqueMallocPtr((struct pam_response *)calloc(num_msg, sizeof(struct pam_response)));
+	auto passwordPtr = makeUniqueMallocPtr(strdup((const char *)appdata_ptr));
 	auto reply = replyPtr.get();
 
 	for (int i = 0; i < num_msg; ++i) {
