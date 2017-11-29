@@ -46,7 +46,7 @@ std::string FTPClientInfo::buildReplyString(FTPReply reply) {
 
 	std::cerr << ">     sent: " << replyStr << std::endl;
 
-	return replyStr;
+	return replyStr+'\r';
 }
 
 const std::string& FTPClientInfo::getUsername() const {

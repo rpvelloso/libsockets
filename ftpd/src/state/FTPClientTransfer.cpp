@@ -34,11 +34,15 @@ FTPClientTransfer::~FTPClientTransfer() {
 }
 
 FTPReply FTPClientTransfer::LIST(const std::string& path) {
+	std::string lsPath;
+	if (path[0] != '-')
+		lsPath = path;
+
 	try {
 		outp << context.buildReplyString(FTPReply::R150) << std::endl;
 
 		auto dataSocket = getDataSocket();
-		auto fileList = fs.list(fs.resolvePath(context.getCwd(), path));
+		auto fileList = fs.list(fs.resolvePath(context.getCwd(), lsPath));
 
 		for (auto &file:fileList) {
 			auto mode = std::get<3>(file);
