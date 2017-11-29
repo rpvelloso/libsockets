@@ -92,10 +92,22 @@ public:
 	};
 	SocketImpl &getImpl() override {return impl->getImpl();};
 	ClientSocket &getSocket() override {return *impl;};
-	void readCallback() override {readCB(clientData, inputBuffer, *outp);};
-	void connectCallback() override {connectCB(clientData, inputBuffer, *outp);};
-	void disconnectCallback() override {disconnectCB(clientData, inputBuffer, *outp);};
-	void writeCallback() override {writeCB(clientData, inputBuffer, *outp);};
+	void readCallback() override {
+		inputBuffer.clear();
+		readCB(clientData, inputBuffer, *outp);
+	};
+	void connectCallback() override {
+		inputBuffer.clear();
+		connectCB(clientData, inputBuffer, *outp);
+	};
+	void disconnectCallback() override {
+		inputBuffer.clear();
+		disconnectCB(clientData, inputBuffer, *outp);
+	};
+	void writeCallback() override {
+		inputBuffer.clear();
+		writeCB(clientData, inputBuffer, *outp);
+	};
 private:
 	std::unique_ptr<ClientSocket> impl;
 	ClientCallback<ClientContext> readCB, connectCB, disconnectCB, writeCB;
