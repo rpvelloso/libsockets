@@ -45,11 +45,8 @@ int conversationFunction(
 		reply[i].resp = nullptr;
 		reply[i].resp_retcode = 0;
 	}
-	reply[0].resp = passwordPtr.get();
-
-	*resp = reply;
-	passwordPtr.release();
-	replyPtr.release(); // this memory is free'd by PAM
+	reply[0].resp = passwordPtr.release();
+	*resp = replyPtr.release(); // this memory is free'd by PAM
 	return PAM_SUCCESS;
 }
 
