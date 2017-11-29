@@ -164,6 +164,10 @@ FTPReply FTPClientTransfer::CWD(const std::string& path) {
 	return loggedInState.CWD(path);
 }
 
+FTPReply FTPClientTransfer::SIZE(const std::string& path) {
+	return loggedInState.SIZE(path);
+}
+
 void FTPClientTransfer::sendFile(std::fstream &source, socks::ClientSocket& dest) {
 	std::unique_ptr<char> bufPtr(new char[bufSize]);
 	auto buf = bufPtr.get();

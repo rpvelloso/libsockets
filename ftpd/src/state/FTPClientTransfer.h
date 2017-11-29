@@ -33,6 +33,7 @@ public:
 	FTPReply REST(const std::string &pos) override;
 
 	FTPReply CWD(const std::string &) override;
+	FTPReply SIZE(const std::string &) override;
 private:
 	std::ostream &outp;
 	FTPClientLoggedIn loggedInState;
