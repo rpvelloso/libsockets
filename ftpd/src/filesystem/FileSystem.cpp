@@ -46,7 +46,16 @@ std::vector<ListTuple> FileSystem::list(const std::string &path) {
 	return impl->list(path);
 }
 
-std::string FileSystem::resolvePath(const std::string& cwd,
-		const std::string& path) {
-	return impl->resolvePath(cwd, path);
+std::string FileSystem::resolvePath(
+	const std::string& chroot,
+	const std::string& cwd,
+	const std::string& path) {
+
+	auto resolvedPath = impl->resolvePath(cwd, path);
+	auto res = std::mismatch(chroot.begin(), chroot.end(), resolvedPath.begin());
+
+	if (!(res.first == chroot.end()))
+		resolvedPath = chroot;
+
+	return resolvedPath;
 }

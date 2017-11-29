@@ -50,7 +50,7 @@ FTPReply FTPClientLoggedIn::CWD(const std::string& path) {
 	if (path.empty())
 		return FTPReply::R501;
 
-	auto newPath = fs.resolvePath(context.getCwd(), path);
+	auto newPath = fs.resolvePath(context.getChroot(), context.getCwd(), path);
 	if (fs.changeWorkingDir(newPath)) {
 		context.setCwd(newPath);
 		return FTPReply::R250;
@@ -63,7 +63,7 @@ FTPReply FTPClientLoggedIn::MKD(const std::string& path) {
 	if (path.empty())
 		return FTPReply::R501;
 
-	if (fs.makeDir(fs.resolvePath(context.getCwd(), path)))
+	if (fs.makeDir(fs.resolvePath(context.getChroot(), context.getCwd(), path)))
 		return FTPReply::R257;
 
 	return FTPReply::R550_MKD;
@@ -74,7 +74,7 @@ FTPReply FTPClientLoggedIn::SIZE(const std::string& path) {
 		return FTPReply::R501;
 
 	size_t sz;
-	if (fs.size(fs.resolvePath(context.getCwd(), path), sz)) {
+	if (fs.size(fs.resolvePath(context.getChroot(), context.getCwd(), path), sz)) {
 		context.setSize(sz);
 		return FTPReply::R213;
 	}
@@ -98,7 +98,7 @@ FTPReply FTPClientLoggedIn::DELE(const std::string& path) {
 	if (path.empty())
 		return FTPReply::R501;
 
-	if (fs.deleteFile(fs.resolvePath(context.getCwd(), path)))
+	if (fs.deleteFile(fs.resolvePath(context.getChroot(), context.getCwd(), path)))
 		return FTPReply::R250;
 
 	return FTPReply::R550_DELE;
@@ -108,7 +108,7 @@ FTPReply FTPClientLoggedIn::RNFR(const std::string& path) {
 	if (path.empty())
 		return FTPReply::R501;
 
-	context.setRenameFrom(fs.resolvePath(context.getCwd(), path));
+	context.setRenameFrom(fs.resolvePath(context.getChroot(), context.getCwd(), path));
 	return FTPReply::R350_RNFR;
 }
 

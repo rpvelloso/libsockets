@@ -42,8 +42,11 @@ public:
 
 	const std::string& getUsername() const;
 	void setUsername(const std::string& username);
+	std::string getDisplayCwd() const;
 	const std::string& getCwd() const;
 	void setCwd(const std::string& cwd);
+	const std::string& getChroot() const;
+	void setChroot(const std::string& cwd);
 	const std::string& getAddress() const;
 	void setAddress(const std::string& address);
 	const std::string& getPort() const;
@@ -66,6 +69,7 @@ public:
 private:
 	std::string username;
 	std::string cwd = "/";
+	std::string chroot = "/";
 	std::string address;
 	std::string port;
 	std::string type = "I";

@@ -25,7 +25,8 @@ FTPReply FTPClientRename::RNTO(const std::string& path) {
 	if (path.empty())
 		return FTPReply::R501;
 
-	if (fs.renameFile(context.getRenameFrom(), fs.resolvePath(context.getCwd(), path)))
+	if (fs.renameFile(context.getRenameFrom(),
+		fs.resolvePath(context.getChroot(), context.getCwd(), path)))
 		return FTPReply::R250;
 
 	return FTPReply::R550_RNTO;

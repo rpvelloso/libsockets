@@ -13,7 +13,8 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <FTPClientInfo.h>
+#include "FTPClientInfo.h"
+#include "filesystem/FileSystem.h"
 
 FTPClientInfo::FTPClientInfo() {
 }
@@ -38,7 +39,7 @@ std::string FTPClientInfo::buildReplyString(FTPReply reply) {
 		replyStr += getPasvAddr() + portHi + "," + portLo + ").";}
 		break;
 	case FTPReply::R257_PWD:
-		replyStr += getCwd() + "\"";
+		replyStr += getDisplayCwd() + "\"";
 		break;
 	default:
 		break;
@@ -61,8 +62,24 @@ const std::string& FTPClientInfo::getCwd() const {
 	return cwd;
 }
 
+std::string FTPClientInfo::getDisplayCwd() const {
+	return cwd.substr(getChroot().size()-1);
+}
+
 void FTPClientInfo::setCwd(const std::string& cwd) {
 	this->cwd = cwd;
+}
+
+const std::string& FTPClientInfo::getChroot() const {
+	return chroot;
+}
+
+void FTPClientInfo::setChroot(const std::string& chroot) {
+	this->chroot = chroot;
+	if (this->chroot.back() != '/')
+		this->chroot.push_back('/');
+
+	cwd = fs.resolvePath(chroot, cwd, "");
 }
 
 const std::string& FTPClientInfo::getAddress() const {

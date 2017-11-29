@@ -90,7 +90,7 @@ AuthenticationFunction FTPClientInfo::authenticate =
 	 * upon authentication in order to define, for example,
 	 * a home dir, chroot, etc.
 	 */
-	return authService.authenticate(username, password);
+	return authService.authenticate(username, password);;
 };
 
 int main(int argc, char **argv) {

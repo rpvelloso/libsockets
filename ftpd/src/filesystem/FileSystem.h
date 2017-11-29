@@ -30,7 +30,7 @@ public:
 	bool size(const std::string &filename, size_t &sz);
 	bool deleteFile(const std::string &filename);
 	bool renameFile(const std::string &from, const std::string &to);
-	std::string resolvePath(const std::string &cwd, const std::string &path = "");
+	std::string resolvePath(const std::string &chroot, const std::string &cwd, const std::string &path);
 	std::vector<ListTuple> list(const std::string &path);
 private:
 	std::unique_ptr<FileSystemImpl> impl;
