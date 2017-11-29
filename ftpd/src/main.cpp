@@ -35,10 +35,9 @@ std::string readline(std::istream &inp) {
 	if (inp && !inp.eof()) {
 		std::cerr << "< received: " << line << std::endl;
 		return line;
-	} else {
-		inp.clear();
+	} else
 		inp.seekg(savePos);
-	}
+
 	return "";
 }
 
