@@ -143,8 +143,8 @@ Just replace the declarations:
 socks::ClientSocket clientSocket = socks::factory::makeSSLClientSocket;
 socks::ServerSocket serverSocket = socks::factory::makeSSLServerSocket;
 socks::SocketStream socketStream = socks::factory::makeSSLSocketStream;
-socks::Server server = socks::makeThreadedSSLServer<...>(...);
-socks::Server server = socks::makeMultiplexedSSLServer<...>(...);
+socks::Server server = socks::factory::makeThreadedSSLServer<...>(...);
+socks::Server server = socks::factory::makeMultiplexedSSLServer<...>(...);
 ```
 That's it. For the `socks::ServerSocket` and `socks::Server` you'll also need certificate and key files (default names are 'cert.pem' and 'key.pem').
 To generate test certificate and key files: 
