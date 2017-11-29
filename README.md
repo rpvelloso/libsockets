@@ -169,9 +169,9 @@ AuthenticationFunction FTPClientInfo::authenticate =
 };
 
 int main(int argc, char **argv) {
-  FTPServer server;
+  FTPServer ftpServer;
 
-  server.start();
+  ftpServer.start();
 }
 ```
 # HTTP Server (httd/)
