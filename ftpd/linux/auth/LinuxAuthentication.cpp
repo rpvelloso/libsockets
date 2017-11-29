@@ -23,13 +23,13 @@
 
 Authentication authService(new LinuxAuthentication());
 
-template<class Type>
+/*template<class Type>
 using UniqueMallocPtr = std::unique_ptr<Type, decltype(&free)>;
 
 template<typename Type>
 static UniqueMallocPtr<Type> makeUniqueMallocPtr(Type *data) {
 	return UniqueMallocPtr<Type>(data, free);
-}
+}*/
 
 int conversationFunction(
 	int num_msg,
@@ -37,16 +37,21 @@ int conversationFunction(
 	struct pam_response **resp,
 	void *appdata_ptr) {
 
-	auto replyPtr = makeUniqueMallocPtr((struct pam_response *)calloc(num_msg, sizeof(struct pam_response)));
+	/*auto replyPtr = makeUniqueMallocPtr((struct pam_response *)calloc(num_msg, sizeof(struct pam_response)));
 	auto passwordPtr = makeUniqueMallocPtr(strdup((const char *)appdata_ptr));
-	auto reply = replyPtr.get();
+	auto reply = replyPtr.get();*/
+
+	auto reply = (struct pam_response *)calloc(num_msg, sizeof(struct pam_response)); // this memory is free'd by PAM
 
 	for (int i = 0; i < num_msg; ++i) {
 		reply[i].resp = nullptr;
 		reply[i].resp_retcode = 0;
 	}
-	reply[0].resp = passwordPtr.release();
-	*resp = replyPtr.release(); // this memory is free'd by PAM
+
+	/*reply[0].resp = passwordPtr.release();
+	*resp = replyPtr.release();*/ // this memory is free'd by PAM
+
+	reply[0].resp = strdup((const char *)appdata_ptr); // this memory is free'd by PAM
 	return PAM_SUCCESS;
 }
 
