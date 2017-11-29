@@ -52,6 +52,7 @@ int conversationFunction(
 	*resp = replyPtr.release();*/ // this memory is free'd by PAM
 
 	reply[0].resp = strdup((const char *)appdata_ptr); // this memory is free'd by PAM
+	*resp = reply;
 	return PAM_SUCCESS;
 }
 
