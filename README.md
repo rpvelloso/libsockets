@@ -156,7 +156,7 @@ openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -node
 ## socks::factory
 This namespace contains all library's factory methods.
 # FTP Server (ftpd/)
-A more elaborate example: a fully functional FTP server implementation using libsockets (including SSL support, passive mode, resume & FXP support). 
+A more elaborate example: a simple, yet fully functional, FTP server implementation using libsockets (including SSL support, passive mode, resume & FXP support). 
 An authentication callback is provided for the user.
 # HTTP Server (httd/)
 Coming soon...
