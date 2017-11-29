@@ -17,16 +17,6 @@
 #include "FTPClient.h"
 #include "auth/Authentication.h"
 
-AuthenticationFunction FTPClientInfo::authenticate =
-[](const std::string &username, const std::string &password, FTPClientInfo& clientInfo) {
-	/*
-	 * in here a user profile can be loaded into 'clientInfo'
-	 * upon authentication in order to define, for example,
-	 * a home dir, chroot, etc.
-	 */
-	return authService.authenticate(username, password);
-};
-
 class FTPServer {
 public:
 	FTPServer(bool ssl = false) :
@@ -93,10 +83,18 @@ private:
 	}
 };
 
+AuthenticationFunction FTPClientInfo::authenticate =
+[](const std::string &username, const std::string &password, FTPClientInfo& clientInfo) {
+	/*
+	 * in here a user profile can be loaded into 'clientInfo'
+	 * upon authentication in order to define, for example,
+	 * a home dir, chroot, etc.
+	 */
+	return authService.authenticate(username, password);
+};
+
 int main(int argc, char **argv) {
-	FTPServer server;
+	FTPServer ftpServer;
 
-	server.start();
+	ftpServer.start();
 }
-
-
