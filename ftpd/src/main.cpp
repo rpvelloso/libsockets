@@ -27,65 +27,76 @@ AuthenticationFunction FTPClientInfo::authenticate =
 	return authService.authenticate(username, password);
 };
 
-std::string readline(std::istream &inp) {
-	std::string line;
+class FTPServer {
+public:
+	FTPServer(bool ssl = false) :
+		server(ssl?
+			makeSSLFTPServer():
+			makeFTPServer()),
+		port(ssl?"990":"21") {
+	};
 
-	auto savePos = inp.tellg();
-	std::getline(inp, line);
-	if (inp && !inp.eof()) {
-		std::cerr << "< received: " << line << std::endl;
-		return line;
-	} else
-		inp.seekg(savePos);
+	void start() {
+		server.listen("0.0.0.0",port);
+	};
+private:
+	socks::Server server;
+	std::string port;
 
-	return "";
-}
+	static std::string readline(std::istream &inp) {
+		std::string line;
 
-void onConnect(socks::Context<FTPClient> &ctx, std::istream &inp, std::ostream &outp) {
-	FTPClient &context = ctx.getContext();
-	FTPClientInfo &clientInfo = context.getClientInfo();
-	clientInfo.setPasvAddr(ctx.getLocalAddress());
-	clientInfo.setPeerAddr(ctx.getRemoteAddress());
-	outp << clientInfo.buildReplyString(FTPReply::R220) << std::endl;
-}
-
-void onReceive(socks::Context<FTPClient> &ctx, std::istream &inp, std::ostream &outp) {
-	FTPClient &context = ctx.getContext();
-	FTPClientInfo &clientInfo = context.getClientInfo();
-
-	while (inp) {
-		auto cmd = readline(inp);
-		if (!cmd.empty()) {
-			auto reply = context.processCmd(cmd, outp);
-			if (reply != FTPReply::RNULL)
-				outp << clientInfo.buildReplyString(reply) << std::endl;
+		auto savePos = inp.tellg();
+		std::getline(inp, line);
+		if (inp && !inp.eof()) {
+			std::cerr << "< received: " << line << std::endl;
+			return line;
 		} else
-			break;
+			inp.seekg(savePos);
+
+		return "";
 	}
-}
 
-socks::Server makeSSLFTPServer() {
-	return socks::factory::makeThreadedSSLServer<FTPClient>(
-		onReceive,
-		onConnect);
-}
+	static void onConnect(socks::Context<FTPClient> &ctx, std::istream &inp, std::ostream &outp) {
+		FTPClient &context = ctx.getContext();
+		FTPClientInfo &clientInfo = context.getClientInfo();
+		clientInfo.setPasvAddr(ctx.getLocalAddress());
+		clientInfo.setPeerAddr(ctx.getRemoteAddress());
+		outp << clientInfo.buildReplyString(FTPReply::R220) << std::endl;
+	}
 
-socks::Server makeFTPServer() {
-	return socks::factory::makeThreadedServer<FTPClient>(
-		onReceive,
-		onConnect);
-}
+	static void onReceive(socks::Context<FTPClient> &ctx, std::istream &inp, std::ostream &outp) {
+		FTPClient &context = ctx.getContext();
+		FTPClientInfo &clientInfo = context.getClientInfo();
+
+		while (inp) {
+			auto cmd = readline(inp);
+			if (!cmd.empty()) {
+				auto reply = context.processCmd(cmd, outp);
+				if (reply != FTPReply::RNULL)
+					outp << clientInfo.buildReplyString(reply) << std::endl;
+			} else
+				break;
+		}
+	}
+
+	static socks::Server makeSSLFTPServer() {
+		return socks::factory::makeThreadedSSLServer<FTPClient>(
+			onReceive,
+			onConnect);
+	}
+
+	static socks::Server makeFTPServer() {
+		return socks::factory::makeThreadedServer<FTPClient>(
+			onReceive,
+			onConnect);
+	}
+};
 
 int main(int argc, char **argv) {
-	bool ssl = false;
-	std::string port = ssl?"990":"21";
-	auto serverFactory = ssl?
-		makeSSLFTPServer:
-		makeFTPServer;
+	FTPServer server;
 
-	auto FTPServer = serverFactory();
-
-	FTPServer.listen("0.0.0.0",port);
+	server.start();
 }
 
 
