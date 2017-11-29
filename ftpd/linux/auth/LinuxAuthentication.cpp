@@ -26,7 +26,7 @@ using UniqueMallocPtr = std::unique_ptr<Type, decltype(&free)>;
 
 Authentication authService(new LinuxAuthentication());
 
-int convFunction(
+int conversationFunction(
 	int num_msg,
 	const struct pam_message **msg,
 	struct pam_response **resp,
@@ -82,7 +82,10 @@ bool LinuxAuthentication::pamAuthentication(
 		strdup(password.c_str()),
 		free);
 
-	struct pam_conv conv = { convFunction, passwordPtr.get() };
+	struct pam_conv conv = {
+		conversationFunction,
+		passwordPtr.get() };
+
 	auto res = pam_start(service.c_str(), username.c_str(), &conv, &pamHandle);
 	if (res == PAM_SUCCESS) {
 		PAMGuard pamGuard(pamHandle, res);
