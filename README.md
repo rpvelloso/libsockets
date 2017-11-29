@@ -60,7 +60,6 @@ void onReceive(socks::Context<MyContext> &context, std::istream &inp, std::ostre
 
   while (inp >> word)
     outp << context.getContext().value++ << " " << word << std::endl;
-  inp.clear();
 };
 
 void onConnect(socks::Context<MyContext> &context, std::istream &inp, std::ostream &outp) {
