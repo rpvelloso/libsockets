@@ -65,30 +65,6 @@ public:
 		return serverFunc(*this, cmd);
 	};
 
-	void sendTo(size_t id, const std::string &msg) {
-		std::lock_guard<std::mutex> lock(contextLock);
-		if (contextList.count(id) > 0) {
-			if (id != this->id) {
-				std::lock_guard<std::mutex> lock(queueLock);
-				contextList[id]->queueMessage(msg);
-			} else
-				contextList[id]->queueMessage(msg);
-		}
-	}
-
-	void queueMessage(const std::string &msg) {
-		std::lock_guard<std::mutex> lock(queueLock);
-		messages.push(msg);
-	};
-
-	void processQueue(std::ostream &outp) {
-		std::lock_guard<std::mutex> lock(queueLock);
-		while (!messages.empty()) {
-			auto msg = messages.front();
-			outp << msg << std::endl;
-			messages.pop();
-		}
-	};
 private:
 	std::mutex contextLock;
 	std::mutex queueLock;
@@ -101,8 +77,7 @@ private:
 	void bindContext() {
 		lua.new_usertype<Context>(
 			"Context",
-			"getID",&Context::getID,
-			"sendTo",&Context::sendTo);
+			"getID",&Context::getID);
 	};
 };
 
@@ -146,9 +121,6 @@ public:
 	void start() {
 		auto server = socks::factory::makeThreadedServer<Context>(//4,
 		[](socks::Context<Context> &ctx, std::istream &inp, std::ostream &outp) {
-
-			ctx.getContext().processQueue(outp);
-
 			while (inp) {
 				std::string cmd;
 
@@ -157,7 +129,6 @@ public:
 				if (inp && !inp.eof()) {
 					outp << ctx.getContext().processCmd(cmd);
 				} else {
-					inp.clear();
 					inp.seekg(savePos);
 					break;
 				}
