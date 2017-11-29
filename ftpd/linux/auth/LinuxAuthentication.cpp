@@ -21,6 +21,9 @@
 #include "auth/Authentication.h"
 #include "auth/LinuxAuthentication.h"
 
+template<class Type>
+using UniqueMallocPtr = std::unique_ptr<Type, decltype(&free)>;
+
 Authentication authService(new LinuxAuthentication());
 
 int convFunction(
@@ -29,9 +32,11 @@ int convFunction(
 	struct pam_response **resp,
 	void *appdata_ptr) {
 
-	auto reply = (struct pam_response *)calloc(
-		num_msg,
-		sizeof(struct pam_response)); // this memory is free'd by PAM
+	UniqueMallocPtr<struct pam_response> replyPtr(
+		(struct pam_response *)calloc(num_msg, sizeof(struct pam_response)),
+		free);
+
+	auto reply = replyPtr.get();
 
 	for (int i = 0; i < num_msg; ++i) {
 		reply[i].resp = nullptr;
@@ -40,6 +45,7 @@ int convFunction(
 	reply[0].resp = (char *)appdata_ptr; // passwordPtr's addr
 
 	*resp = reply;
+	replyPtr.release(); // this memory is free'd by PAM
 	return PAM_SUCCESS;
 }
 
@@ -72,13 +78,16 @@ bool LinuxAuthentication::pamAuthentication(
 	const std::string &password) {
 
 	pam_handle_t *pamHandle = NULL;
-	auto passwordPtr = strdup(password.c_str()); // this memory is free'd by PAM
+	UniqueMallocPtr<char> passwordPtr(
+		strdup(password.c_str()),
+		free);
 
-	struct pam_conv conv = { convFunction, passwordPtr };
+	struct pam_conv conv = { convFunction, passwordPtr.get() };
 	auto res = pam_start(service.c_str(), username.c_str(), &conv, &pamHandle);
 	if (res == PAM_SUCCESS) {
 		PAMGuard pamGuard(pamHandle, res);
 		res = pam_authenticate(pamHandle, PAM_SILENT);
+		passwordPtr.release(); // this memory is free'd by PAM
 		if (res == PAM_SUCCESS)
 			res = pam_acct_mgmt(pamHandle, PAM_SILENT);
 	}
