@@ -27,7 +27,7 @@ template<class Type>
 using UniqueMallocPtr = std::unique_ptr<Type, decltype(&free)>;
 
 template<typename Type>
-UniqueMallocPtr<Type> makeUniqueMallocPtr(Type *data) {
+static UniqueMallocPtr<Type> makeUniqueMallocPtr(Type *data) {
 	return UniqueMallocPtr<Type>(data, free);
 }
 
