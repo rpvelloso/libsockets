@@ -35,6 +35,9 @@ int conversationFunction(
 	UniqueMallocPtr<struct pam_response> replyPtr(
 		(struct pam_response *)calloc(num_msg, sizeof(struct pam_response)),
 		free);
+	UniqueMallocPtr<char> passwordPtr(
+		strdup((const char *)appdata_ptr),
+		free);
 
 	auto reply = replyPtr.get();
 
@@ -42,9 +45,10 @@ int conversationFunction(
 		reply[i].resp = nullptr;
 		reply[i].resp_retcode = 0;
 	}
-	reply[0].resp = (char *)appdata_ptr; // passwordPtr's addr
+	reply[0].resp = passwordPtr.get();
 
 	*resp = reply;
+	passwordPtr.release();
 	replyPtr.release(); // this memory is free'd by PAM
 	return PAM_SUCCESS;
 }
@@ -78,19 +82,15 @@ bool LinuxAuthentication::pamAuthentication(
 	const std::string &password) {
 
 	pam_handle_t *pamHandle = NULL;
-	UniqueMallocPtr<char> passwordPtr(
-		strdup(password.c_str()),
-		free);
 
 	struct pam_conv conv = {
 		conversationFunction,
-		passwordPtr.get() };
+		const_cast<char *>(password.c_str()) };
 
 	auto res = pam_start(service.c_str(), username.c_str(), &conv, &pamHandle);
 	if (res == PAM_SUCCESS) {
 		PAMGuard pamGuard(pamHandle, res);
 		res = pam_authenticate(pamHandle, PAM_SILENT);
-		passwordPtr.release(); // this memory is free'd by PAM
 		if (res == PAM_SUCCESS)
 			res = pam_acct_mgmt(pamHandle, PAM_SILENT);
 	}
