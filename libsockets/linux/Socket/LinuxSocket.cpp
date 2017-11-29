@@ -190,4 +190,19 @@ int LinuxSocket::reuseAddress() {
 	int reuse = 1;
 	return setsockopt(fd,SOL_SOCKET,SO_REUSEADDR,(int *)&reuse,sizeof(reuse));
 }
+
+SocketAddress LinuxSocket::getLocalAddress() {
+	struct sockaddr_storage addr;
+	socklen_t addrlen = sizeof(addr);
+	getsockname(fd, (struct sockaddr *)(&addr), &addrlen);
+	return SocketAddress(new LinuxSocketAddress((struct sockaddr *)(&addr), addrlen));
+}
+
+SocketAddress LinuxSocket::getRemoteAddress() {
+	struct sockaddr_storage addr;
+	socklen_t addrlen = sizeof(addr);
+	getpeername(fd, (struct sockaddr *)(&addr), &addrlen);
+	return SocketAddress(new LinuxSocketAddress((struct sockaddr *)(&addr), addrlen));
+}
+
 }
