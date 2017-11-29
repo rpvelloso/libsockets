@@ -157,6 +157,23 @@ This namespace contains all library's factory methods.
 # FTP Server (ftpd/)
 A more elaborate example: a simple, yet fully functional, FTP server implementation using libsockets (including SSL support, passive mode, resume & FXP support). 
 An authentication callback is provided for the user.
+```cpp
+AuthenticationFunction FTPClientInfo::authenticate =
+[](const std::string &username, const std::string &password, FTPClientInfo& clientInfo) {
+	/*
+	 * in here a user profile can be loaded into 'clientInfo'
+	 * upon authentication in order to define, for example,
+	 * a home dir, chroot, etc.
+	 */
+	return authService.authenticate(username, password);
+};
+
+int main(int argc, char **argv) {
+	FTPServer server;
+
+	server.start();
+}
+```
 # HTTP Server (httd/)
 Coming soon...
 (under development/refactoring, currently not working...)
