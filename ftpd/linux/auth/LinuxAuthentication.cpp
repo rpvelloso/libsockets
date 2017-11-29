@@ -21,6 +21,8 @@
 #include "auth/Authentication.h"
 #include "auth/LinuxAuthentication.h"
 
+Authentication authService(new LinuxAuthentication());
+
 template<class Type>
 using UniqueMallocPtr = std::unique_ptr<Type, decltype(&free)>;
 
@@ -28,8 +30,6 @@ template<typename Type>
 UniqueMallocPtr<Type> makeUniqueMallocPtr(Type *data) {
 	return UniqueMallocPtr<Type>(data, free);
 }
-
-Authentication authService(new LinuxAuthentication());
 
 int conversationFunction(
 	int num_msg,
