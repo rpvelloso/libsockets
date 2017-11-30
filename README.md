@@ -156,7 +156,7 @@ openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -node
 This namespace contains all library's factory methods.
 # FTP Server (ftpd/)
 A more elaborate example: a simple, yet fully functional, FTP server implementation using libsockets (including SSL support, passive mode, resume & FXP support). 
-An authentication callback is provided for the user.
+An authentication callback is provided for the user. You can also register custom SITE commands.
 ```cpp
 AuthenticationFunction FTPClientInfo::authenticate =
 [](const std::string &username, const std::string &password, FTPClientInfo& clientInfo) {
@@ -170,6 +170,17 @@ AuthenticationFunction FTPClientInfo::authenticate =
 
 int main(int argc, char **argv) {
   FTPServer ftpServer;
+
+	ftpServer.registerSiteCommand("CLIENT", [&ftpServer](const std::string &params, FTPClientInfo &clientInfo){
+		std::stringstream ss(params);
+		std::string p1;
+		ss >> p1;
+		std::transform(p1.begin(), p1.end(), p1.begin(), ::toupper);
+		if (p1 == "COUNT")
+			return "200 There are " + std::to_string(ftpServer.getClientCount()) + " client(s) online.";
+		else
+			return std::string("501 Invalid SITE CLIENT parameter.");
+	});
 
   ftpServer.start();
 }
