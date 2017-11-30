@@ -180,7 +180,7 @@ int main(int argc, char **argv) {
       ss >> p1;
       std::transform(p1.begin(), p1.end(), p1.begin(), ::toupper);
       if (p1 == "COUNT")
-        return "200 There are " + std::to_string(ftpServer.getClientCount()) + " client(s) online.";
+        return "200 There is/are " + std::to_string(ftpServer.getClientCount()) + " client(s) online.";
       else
         return std::string("501 Invalid SITE CLIENT parameter.");
   });
