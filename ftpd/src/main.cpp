@@ -66,7 +66,7 @@ private:
 	}
 
 	void onConnect(socks::Context<FTPClient> &ctx, std::istream &inp, std::ostream &outp) {
-		clientCount++;
+		++clientCount;
 		FTPClient &context = ctx.getContext();
 		FTPClientInfo &clientInfo = context.getClientInfo();
 		clientInfo.setPasvAddr(ctx.getLocalAddress());
@@ -76,7 +76,7 @@ private:
 	}
 
 	void onDisconnect(socks::Context<FTPClient> &ctx, std::istream &inp, std::ostream &outp) {
-		clientCount--;
+		--clientCount;
 	}
 
 	void onReceive(socks::Context<FTPClient> &ctx, std::istream &inp, std::ostream &outp) {
