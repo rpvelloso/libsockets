@@ -22,8 +22,6 @@ FTPServer::FTPServer(bool ssl, const std::string &port) :
 			extern std::string pirate;
 			return pirate;
 	});
-
-
 }
 
 void FTPServer::start() {
