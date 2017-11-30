@@ -33,6 +33,12 @@ FileSystem fs(new WindowsFileSystem());
 using ClosedirType = decltype(&closedir);
 
 WindowsFileSystem::WindowsFileSystem() {
+	std::unique_ptr<char[]> currentdir(new char[FILENAME_MAX]);
+
+	if (getcwd(currentdir.get(), FILENAME_MAX))
+		driveLetter.push_back(currentdir[0]);
+	else
+		driveLetter.push_back('c');
 }
 
 WindowsFileSystem::~WindowsFileSystem() {
@@ -81,7 +87,7 @@ bool WindowsFileSystem::renameFile(
 }
 
 std::string WindowsFileSystem::path2Windows(const std::string &path) {
-	auto result = "c:\\" + path;
+	auto result = driveLetter + ":\\" + path;
 	std::transform(result.begin(), result.end(), result.begin(), [](char c){
 		if (c == '/')
 			return '\\';
