@@ -21,13 +21,13 @@
 #include <sys/stat.h>
 
 FTPClientTransfer::FTPClientTransfer(
-		FTPClientInfo &ctx,
-		std::ostream &outp,
-		std::function<socks::ClientSocket()> getDataSocket) :
-		FTPClientState(ctx),
-		outp(outp),
-		loggedInState(ctx),
-		getDataSocket(getDataSocket) {
+	FTPClientInfo &ctx,
+	std::ostream &outp,
+	std::function<socks::ClientSocket()> getDataSocket) :
+	FTPClientState(ctx),
+	outp(outp),
+	loggedInState(ctx),
+	getDataSocket(getDataSocket) {
 }
 
 FTPClientTransfer::~FTPClientTransfer() {
