@@ -7,15 +7,18 @@
 
 #include "FTPServer.h"
 
-FTPServer::FTPServer(bool ssl) :
+FTPServer::FTPServer(bool ssl, const std::string &port) :
 	server(ssl?
 		makeSSLFTPServer():
 		makeFTPServer()),
 	port(ssl?"990":"21") {
 	clientCount = 0;
+	if (!port.empty())
+		this->port = port;
 }
 
 void FTPServer::start() {
+	std::cout << "Listening on port " << port << std::endl;
 	server.listen("0.0.0.0",port);
 }
 

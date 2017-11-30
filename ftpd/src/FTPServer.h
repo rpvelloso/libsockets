@@ -19,7 +19,7 @@
 
 class FTPServer {
 public:
-	FTPServer(bool ssl = false);
+	FTPServer(bool ssl = false, const std::string & = "");
 	void start();
 	void registerSiteCommand(const std::string &command, SiteCallback callback);
 	size_t getClientCount();

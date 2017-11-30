@@ -26,7 +26,12 @@ AuthenticationFunction FTPClientInfo::authenticate =
 };
 
 int main(int argc, char **argv) {
-	FTPServer ftpServer;
+	std::string port;
+
+	if (argc > 1)
+		port = argv[1];
+
+	FTPServer ftpServer(false, port);
 
 	// SITE CLIENT COUNT
 	ftpServer.registerSiteCommand(
