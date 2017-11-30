@@ -23,7 +23,11 @@ std::string FTPClientInfo::buildReplyString(FTPReply reply) {
 	if (reply == FTPReply::RNULL)
 		throw std::runtime_error("invalid FTP reply");
 
-	std::string replyStr = FTPReplyString[reply];
+	std::string replyStr;
+	if (reply == FTPReply::RSITE_CUSTOM)
+		replyStr = customSiteReply;
+	else
+		replyStr = FTPReplyString[reply];
 
 	switch (reply) {
 	case FTPReply::R200_TYPE:
@@ -154,6 +158,11 @@ void FTPClientInfo::setPeerAddr(socks::SocketAddress &addr) {
 	peerAddr = addr.getHostname();
 }
 
+void FTPClientInfo::setCustomSiteReply(
+		const std::string& customSiteReply) {
+	this->customSiteReply = customSiteReply;
+}
+
 std::string FTPClientInfo::socketAddr2FTPAddr(socks::SocketAddress &addr) {
 	std::string ftpAddr = addr.getHostname() + ",";
 	std::transform(
@@ -168,4 +177,18 @@ std::string FTPClientInfo::socketAddr2FTPAddr(socks::SocketAddress &addr) {
 	});
 
 	return ftpAddr;
+}
+
+
+void FTPClientInfo::setSiteCommands(std::map<std::string, SiteCallback>& commands) {
+	siteCommands = &commands;
+}
+
+SiteCallback* FTPClientInfo::getSiteCommand(const std::string &command) {
+	if (siteCommands != nullptr) {
+		auto it = siteCommands->find(command);
+		if (it != siteCommands->end())
+			return &(it->second);
+	}
+	return nullptr;
 }

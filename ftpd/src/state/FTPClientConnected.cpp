@@ -23,15 +23,15 @@ FTPClientConnected::~FTPClientConnected() {
 
 FTPReply FTPClientConnected::USER(const std::string &username) {
 	if (validUserName(username)) {
-		context.setUsername(username);
+		clientInfo.setUsername(username);
 		return FTPReply::R331;
 	} else
 		return FTPReply::R501;
 }
 
 FTPReply FTPClientConnected::PASS(const std::string &password) {
-	if (!context.getUsername().empty()) {
-		if (context.authenticate(context.getUsername(), password, context))
+	if (!clientInfo.getUsername().empty()) {
+		if (clientInfo.authenticate(clientInfo.getUsername(), password, clientInfo))
 			return FTPReply::R230;
 		else
 			return FTPReply::R530;

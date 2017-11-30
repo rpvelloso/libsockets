@@ -64,7 +64,7 @@ public:
 	virtual FTPReply SITE(const std::string &);
 
 protected:
-	FTPClientInfo &context;
+	FTPClientInfo &clientInfo;
 };
 
 #endif /* FTPCLIENTSTATE_H_ */

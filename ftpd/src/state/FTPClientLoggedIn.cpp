@@ -40,7 +40,7 @@ FTPReply FTPClientLoggedIn::STRU(const std::string& structure) {
 
 FTPReply FTPClientLoggedIn::TYPE(const std::string& type) {
 	if (type == "A" || type == "I") {
-		context.setType(type);
+		clientInfo.setType(type);
 		return FTPReply::R200_TYPE;
 	} else
 		return FTPReply::R504;
@@ -50,9 +50,9 @@ FTPReply FTPClientLoggedIn::CWD(const std::string& path) {
 	if (path.empty())
 		return FTPReply::R501;
 
-	auto newPath = fs.resolvePath(context.getChroot(), context.getCwd(), path);
+	auto newPath = fs.resolvePath(clientInfo.getChroot(), clientInfo.getCwd(), path);
 	if (fs.changeWorkingDir(newPath)) {
-		context.setCwd(newPath);
+		clientInfo.setCwd(newPath);
 		return FTPReply::R250;
 	}
 
@@ -63,7 +63,7 @@ FTPReply FTPClientLoggedIn::MKD(const std::string& path) {
 	if (path.empty())
 		return FTPReply::R501;
 
-	if (fs.makeDir(fs.resolvePath(context.getChroot(), context.getCwd(), path)))
+	if (fs.makeDir(fs.resolvePath(clientInfo.getChroot(), clientInfo.getCwd(), path)))
 		return FTPReply::R257;
 
 	return FTPReply::R550_MKD;
@@ -74,8 +74,8 @@ FTPReply FTPClientLoggedIn::SIZE(const std::string& path) {
 		return FTPReply::R501;
 
 	size_t sz;
-	if (fs.size(fs.resolvePath(context.getChroot(), context.getCwd(), path), sz)) {
-		context.setSize(sz);
+	if (fs.size(fs.resolvePath(clientInfo.getChroot(), clientInfo.getCwd(), path), sz)) {
+		clientInfo.setSize(sz);
 		return FTPReply::R213;
 	}
 
@@ -98,7 +98,7 @@ FTPReply FTPClientLoggedIn::DELE(const std::string& path) {
 	if (path.empty())
 		return FTPReply::R501;
 
-	if (fs.deleteFile(fs.resolvePath(context.getChroot(), context.getCwd(), path)))
+	if (fs.deleteFile(fs.resolvePath(clientInfo.getChroot(), clientInfo.getCwd(), path)))
 		return FTPReply::R250;
 
 	return FTPReply::R550_DELE;
@@ -108,7 +108,7 @@ FTPReply FTPClientLoggedIn::RNFR(const std::string& path) {
 	if (path.empty())
 		return FTPReply::R501;
 
-	context.setRenameFrom(fs.resolvePath(context.getChroot(), context.getCwd(), path));
+	clientInfo.setRenameFrom(fs.resolvePath(clientInfo.getChroot(), clientInfo.getCwd(), path));
 	return FTPReply::R350_RNFR;
 }
 
@@ -134,12 +134,12 @@ FTPReply FTPClientLoggedIn::PORT(const std::string& addr) {
 	if (portNumber <= 0 || portNumber > 65535)
 		return FTPReply::R501;
 
-	context.setAddress(
+	clientInfo.setAddress(
 			std::to_string(port[0]) + "." +
 			std::to_string(port[1]) + "." +
 			std::to_string(port[2]) + "." +
 			std::to_string(port[3]));
-	context.setPort(std::to_string(portNumber));
+	clientInfo.setPort(std::to_string(portNumber));
 	return FTPReply::R200;
 }
 
@@ -147,7 +147,7 @@ FTPReply FTPClientLoggedIn::PASV() {
 	std::unique_ptr<socks::ServerSocket> passiveSocket(new socks::ServerSocket());
 
 	if (passiveSocket->listenForConnections("0.0.0.0", "") == 0) {
-		context.setPassiveSocket(std::move(passiveSocket));
+		clientInfo.setPassiveSocket(std::move(passiveSocket));
 		return FTPReply::R227;
 	}
 
@@ -156,13 +156,23 @@ FTPReply FTPClientLoggedIn::PASV() {
 
 FTPReply FTPClientLoggedIn::SITE(const std::string &parameters) {
 	std::stringstream ss(parameters);
-	std::string command;
+	std::string command, siteParams;
 
 	ss >> command;
+	std::getline(ss, siteParams);
+	if (!siteParams.empty())
+		siteParams = siteParams.substr(siteParams.find_first_not_of(' '));
+
 	std::transform(command.begin(), command.end(), command.begin(), ::toupper);
 
 	if (command == "EXEC")
 		return FTPReply::R501_EXEC;
+
+	auto callback = clientInfo.getSiteCommand(command);
+	if (callback != nullptr) {
+		clientInfo.setCustomSiteReply((*callback)(siteParams, clientInfo));
+		return FTPReply::RSITE_CUSTOM;
+	}
 
 	return FTPReply::R500;
 }

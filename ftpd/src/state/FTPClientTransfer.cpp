@@ -39,10 +39,10 @@ FTPReply FTPClientTransfer::LIST(const std::string& path) {
 		lsPath = path;
 
 	try {
-		outp << context.buildReplyString(FTPReply::R150) << std::endl;
+		outp << clientInfo.buildReplyString(FTPReply::R150) << std::endl;
 
 		auto dataSocket = getDataSocket();
-		auto fileList = fs.list(fs.resolvePath(context.getChroot(), context.getCwd(), lsPath));
+		auto fileList = fs.list(fs.resolvePath(clientInfo.getChroot(), clientInfo.getCwd(), lsPath));
 
 		for (auto &file:fileList) {
 			auto mode = std::get<3>(file);
@@ -84,15 +84,15 @@ FTPReply FTPClientTransfer::LIST(const std::string& path) {
 
 FTPReply FTPClientTransfer::RETR(const std::string& filename) {
 	try {
-		outp << context.buildReplyString(FTPReply::R150) << std::endl;
+		outp << clientInfo.buildReplyString(FTPReply::R150) << std::endl;
 
 		auto dataSocket = getDataSocket();
 		std::fstream file(
-			fs.resolvePath(context.getChroot(), context.getCwd(),filename),
+			fs.resolvePath(clientInfo.getChroot(), clientInfo.getCwd(),filename),
 			std::ios::binary|std::ios::in);
 
 		if (file.is_open()) {
-			auto restartPos = context.getRestartPos();
+			auto restartPos = clientInfo.getRestartPos();
 			file.seekg(restartPos);
 			if (file.tellg() == restartPos) {
 				sendFile(file, dataSocket);
@@ -107,11 +107,11 @@ FTPReply FTPClientTransfer::RETR(const std::string& filename) {
 
 FTPReply FTPClientTransfer::STOR(const std::string& filename) {
 	try {
-		outp << context.buildReplyString(FTPReply::R150) << std::endl;
+		outp << clientInfo.buildReplyString(FTPReply::R150) << std::endl;
 
 		auto dataSocket = getDataSocket();
 		std::fstream file(
-			fs.resolvePath(context.getChroot(), context.getCwd(),filename),
+			fs.resolvePath(clientInfo.getChroot(), clientInfo.getCwd(),filename),
 			std::ios::binary|std::ios::out);
 
 		if (file.is_open()) {
@@ -126,11 +126,11 @@ FTPReply FTPClientTransfer::STOR(const std::string& filename) {
 
 FTPReply FTPClientTransfer::APPE(const std::string& filename) {
 	try {
-		outp << context.buildReplyString(FTPReply::R150) << std::endl;
+		outp << clientInfo.buildReplyString(FTPReply::R150) << std::endl;
 
 		auto dataSocket = getDataSocket();
 		std::fstream file(
-			fs.resolvePath(context.getChroot(), context.getCwd(),filename),
+			fs.resolvePath(clientInfo.getChroot(), clientInfo.getCwd(),filename),
 			std::ios::binary|std::ios::app|std::ios::out);
 
 		if (file.is_open()) {
@@ -147,7 +147,7 @@ FTPReply FTPClientTransfer::REST(const std::string& pos) {
 	if (pos.empty())
 		return FTPReply::R501;
 
-	context.setRestartPos(std::stoul(pos));
+	clientInfo.setRestartPos(std::stoul(pos));
 	return FTPReply::R350;
 }
 

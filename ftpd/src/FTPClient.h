@@ -16,9 +16,9 @@
 #ifndef FTPCLIENT_H_
 #define FTPCLIENT_H_
 
-#include <FTPClientInfo.h>
 #include <memory>
 
+#include "FTPClientInfo.h"
 #include "state/FTPClientState.h"
 
 class FTPClient {

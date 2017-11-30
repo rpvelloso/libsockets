@@ -37,7 +37,7 @@ std::unordered_map<FTPReply, std::string> FTPReplyString= {
 		{FTPReply::R350_RNFR	,"350 Rename from accepted."},
 		{FTPReply::R421			,"421 Server full."},
 		{FTPReply::R425			,"425 Can't open data connection."},
-		{FTPReply::R426			,"426 Connection closed} transfer aborted."},
+		{FTPReply::R426			,"426 Connection closed, transfer aborted."},
 		{FTPReply::R500			,"500 Invalid command."},
 		{FTPReply::R501			,"501 Invalid arguments."},
 		{FTPReply::R501_EXEC	,"501 Are you INSANE?!."},
@@ -55,7 +55,7 @@ std::unordered_map<FTPReply, std::string> FTPReplyString= {
 		{FTPReply::R550_RNTO	,"550 Can't rename file."}
 };
 
-FTPClientState::FTPClientState(FTPClientInfo &ctx) : context(ctx) {};
+FTPClientState::FTPClientState(FTPClientInfo &ctx) : clientInfo(ctx) {};
 FTPClientState::~FTPClientState() {};
 FTPReply FTPClientState::NOOP() { return FTPReply::R200; };
 FTPReply FTPClientState::QUIT() { return FTPReply::R221; };

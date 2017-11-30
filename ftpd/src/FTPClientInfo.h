@@ -20,6 +20,7 @@
 
 #include <string>
 #include <fstream>
+#include <map>
 
 enum class FTPReply {
 	RNULL, R150, R200, R200_MODE, R200_TYPE, R200_STRU, R211,
@@ -27,18 +28,21 @@ enum class FTPReply {
 	R257, R257_PWD, R331, R350, R350_RNFR, R421, R425,
 	R426, R500, R501, R501_EXEC, R503, R503_RNTO, R504, R530,
 	R550_MKD, R550_SIZE1, R550_SIZE2, R550_CWD, R550_RETR,
-	R550_STOR, R550_DELE, R550_RNTO
+	R550_STOR, R550_DELE, R550_RNTO, RSITE_CUSTOM
 };
 
 extern std::unordered_map<FTPReply, std::string> FTPReplyString;
 
 class FTPClientInfo;
+using SiteCallback = std::function<std::string(const std::string &, FTPClientInfo &)>;
 using AuthenticationFunction = std::function<bool(const std::string &username, const std::string &password, FTPClientInfo &clientInfo)>;
 
 class FTPClientInfo {
 public:
 	FTPClientInfo();
 	std::string buildReplyString(FTPReply reply);
+	void setSiteCommands(std::map<std::string, SiteCallback> &commands);
+	SiteCallback* getSiteCommand(const std::string &command);
 
 	const std::string& getUsername() const;
 	void setUsername(const std::string& username);
@@ -65,6 +69,8 @@ public:
 	void setPasvAddr(socks::SocketAddress &addr);
 	const std::string& getPeerAddr() const;
 	void setPeerAddr(socks::SocketAddress &addr);
+	void setCustomSiteReply(const std::string& customSiteReply);
+
 	static AuthenticationFunction authenticate;
 private:
 	std::string username;
@@ -79,6 +85,8 @@ private:
 	std::string pasvAddr;
 	std::string peerAddr;
 	std::unique_ptr<socks::ServerSocket> passiveSocket;
+	std::map<std::string, SiteCallback> *siteCommands = nullptr;
+	std::string customSiteReply = "";
 
 	std::string socketAddr2FTPAddr(socks::SocketAddress &addr);
 };
