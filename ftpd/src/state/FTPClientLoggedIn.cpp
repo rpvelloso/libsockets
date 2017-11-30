@@ -154,6 +154,19 @@ FTPReply FTPClientLoggedIn::PASV() {
 	return FTPReply::R425;
 }
 
+FTPReply FTPClientLoggedIn::SITE(const std::string &parameters) {
+	std::stringstream ss(parameters);
+	std::string command;
+
+	ss >> command;
+	std::transform(command.begin(), command.end(), command.begin(), ::toupper);
+
+	if (command == "EXEC")
+		return FTPReply::R501_EXEC;
+
+	return FTPReply::R500;
+}
+
 StateType FTPClientLoggedIn::getState() {
 	return StateType::LoggedIn;
 }

@@ -61,6 +61,8 @@ public:
 	virtual FTPReply APPE(const std::string &);
 	virtual FTPReply REST(const std::string &);
 
+	virtual FTPReply SITE(const std::string &);
+
 protected:
 	FTPClientInfo &context;
 };

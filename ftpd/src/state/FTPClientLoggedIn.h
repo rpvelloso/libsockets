@@ -38,6 +38,8 @@ public:
 
 	FTPReply PORT(const std::string &) override;
 	FTPReply PASV() override;
+
+	FTPReply SITE(const std::string &parameters) override;
 };
 
 #endif /* STATE_FTPCLIENTLOGGEDIN_H_ */

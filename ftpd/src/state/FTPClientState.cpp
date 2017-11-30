@@ -40,6 +40,7 @@ std::unordered_map<FTPReply, std::string> FTPReplyString= {
 		{FTPReply::R426			,"426 Connection closed} transfer aborted."},
 		{FTPReply::R500			,"500 Invalid command."},
 		{FTPReply::R501			,"501 Invalid arguments."},
+		{FTPReply::R501_EXEC	,"501 Are you INSANE?!."},
 		{FTPReply::R503			,"503 User name required."},
 		{FTPReply::R503_RNTO	,"503 Bad sequence of commands."},
 		{FTPReply::R504			,"504 Unsupported parameter."},
@@ -82,3 +83,5 @@ FTPReply FTPClientState::REST(const std::string &) { return FTPReply::R500; };
 
 FTPReply FTPClientState::PORT(const std::string &) { return FTPReply::R500; };
 FTPReply FTPClientState::PASV() { return FTPReply::R500; };
+
+FTPReply FTPClientState::SITE(const std::string&) { return FTPReply::R500; };

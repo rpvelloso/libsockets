@@ -134,6 +134,8 @@ FTPReply FTPClient::processCmd(const std::string& cmdline, std::ostream &outp) {
 			state.reset(new FTPClientLoggedIn(clientInfo));
 	} else if (command == "REST")
 		reply = state->REST(param);
+	else if (command == "SITE")
+		reply = state->SITE(param);
 	else
 		reply = FTPReply::R500;
 
