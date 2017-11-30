@@ -15,6 +15,15 @@ FTPServer::FTPServer(bool ssl, const std::string &port) :
 	clientCount = 0;
 	if (!port.empty())
 		this->port = port;
+
+	registerSiteCommand(
+		"PIRATE",
+		[](const std::string &params, FTPClientInfo &clientInfo) {
+			extern std::string pirate;
+			return pirate;
+	});
+
+
 }
 
 void FTPServer::start() {
@@ -106,3 +115,31 @@ socks::Server FTPServer::makeFTPServer() {
 			std::placeholders::_2,
 			std::placeholders::_3));
 }
+
+std::string pirate =
+		"200-                 uuuuuuu\r\n"
+		"200-             uu$$$$$$$$$$$uu\r\n"
+		"200-          uu$$$$$$$$$$$$$$$$$uu\r\n"
+		"200-         u$$$$$$$$$$$$$$$$$$$$$u\r\n"
+		"200-        u$$$$$$$$$$$$$$$$$$$$$$$u\r\n"
+		"200-       u$$$$$$$$$$$$$$$$$$$$$$$$$u\r\n"
+		"200-       u$$$$$$$$$$$$$$$$$$$$$$$$$u\r\n"
+		"200-       u$$$$$$\"   \"$$$\"   \"$$$$$$u\r\n"
+		"200-       \"$$$$\"      u$u       $$$$\"\r\n"
+		"200-        $$$u       u$u       u$$$\r\n"
+		"200-        $$$u      u$$$u      u$$$\r\n"
+		"200-         \"$$$$uu$$$   $$$uu$$$$\"\r\n"
+		"200-          \"$$$$$$$\"   \"$$$$$$$\"\r\n"
+		"200-            u$$$$$$$u$$$$$$$u\r\n"
+		"200-             u$\"$\"$\"$\"$\"$\"$u\r\n"
+		"200-  uuu        $$u$ $ $ $ $u$$       uuu\r\n"
+		"200- u$$$$        $$$$$u$u$u$$$       u$$$$\r\n"
+		"200-  $$$$$uu      \"$$$$$$$$$\"     uu$$$$$$\r\n"
+		"200-u$$$$$$$$$$$uu    \"\"\"\"\"    uuuu$$$$$$$$$$\r\n"
+		"200-$$$$\"\"\"$$$$$$$$$$uuu   uu$$$$$$$$$\"\"\"$$$\"\r\n"
+		"200- \"\"\"      \"\"$$$$$$$$$$$uu \"\"$\"\"\"\r\n"
+		"200-           uuuu \"\"$$$$$$$$$$uuu\r\n"
+		"200-  u$$$uuu$$$$$$$$$uu \"\"$$$$$$$$$$$uuu$$$\r\n"
+		"200-  $$$$$$$$$$\"\"\"\"           \"\"$$$$$$$$$$$\"\r\n"
+		"200-   \"$$$$$\"                      \"\"$$$$\"\"\r\n"
+		"200      $$$\"                         $$$$\"";
