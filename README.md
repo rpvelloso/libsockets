@@ -157,6 +157,7 @@ This namespace contains all library's factory methods.
 # FTP Server (ftpd/)
 A more elaborate example: a simple, yet fully functional, FTP server implementation using libsockets (including SSL support, passive mode, resume & FXP support). 
 An authentication callback is provided for the user. You can also register custom SITE commands.
+Windows x64 static binary: https://github.com/rpvelloso/libsockets/blob/master/ftpd-mingw64-static.zip
 ```cpp
 AuthenticationFunction FTPClientInfo::authenticate =
 [](const std::string &username, const std::string &password, FTPClientInfo& clientInfo) {
