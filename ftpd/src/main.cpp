@@ -13,8 +13,40 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <getopt.h>
+
 #include "FTPServer.h"
 #include "auth/Authentication.h"
+
+struct Options {
+	std::string port = "";
+	bool secure = false;
+};
+
+void usage(const std::string &prog) {
+	std::cerr << prog << " [-p port] [-s]" << std::endl;
+	std::cerr << "ex.: " << prog << " -p 21 -s" << std::endl;
+	throw std::runtime_error("bad options");
+}
+
+Options parseOptions(int argc, char **argv) {
+	Options options;
+	int c;
+	while ((c = getopt(argc, argv, "sp:")) != -1) {
+		switch (c) {
+		case 'p':
+			options.port = optarg;
+			break;
+		case 's':
+			options.secure = true;
+			break;
+		default:
+			usage(argv[0]);
+		}
+	}
+
+	return options;
+}
 
 AuthenticationFunction FTPClientInfo::authenticate =
 [](const std::string &username, const std::string &password, FTPClientInfo& clientInfo) {
@@ -27,30 +59,31 @@ AuthenticationFunction FTPClientInfo::authenticate =
 };
 
 int main(int argc, char **argv) {
-	std::string port;
+	try{
+		Options options = parseOptions(argc, argv);
 
-	if (argc > 1)
-		port = argv[1];
+		FTPServer ftpServer(options.secure, options.port);
 
-	FTPServer ftpServer(false, port);
+		// SITE CLIENT COUNT
+		ftpServer.registerSiteCommand(
+			"CLIENT",
+			[&ftpServer](const std::string &params, FTPClientInfo &clientInfo) {
+				std::stringstream ss(params);
+				std::string p1;
+				ss >> p1;
+				std::transform(p1.begin(), p1.end(), p1.begin(), ::toupper);
+				if (p1 == "COUNT")
+					return "200 Dear " +
+							clientInfo.getUsername() +
+							", there is/are currently " +
+							std::to_string(ftpServer.getClientCount()) +
+							" client(s) online.";
+				else
+					return std::string("501 Invalid SITE CLIENT parameter.");
+		});
 
-	// SITE CLIENT COUNT
-	ftpServer.registerSiteCommand(
-		"CLIENT",
-		[&ftpServer](const std::string &params, FTPClientInfo &clientInfo) {
-			std::stringstream ss(params);
-			std::string p1;
-			ss >> p1;
-			std::transform(p1.begin(), p1.end(), p1.begin(), ::toupper);
-			if (p1 == "COUNT")
-				return "200 Dear " +
-						clientInfo.getUsername() +
-						", there is/are currently " +
-						std::to_string(ftpServer.getClientCount()) +
-						" client(s) online.";
-			else
-				return std::string("501 Invalid SITE CLIENT parameter.");
-	});
-
-	ftpServer.start();
+		ftpServer.start();
+	} catch (std::exception &e) {
+		std::cerr << e.what() << std::endl;
+	}
 }
