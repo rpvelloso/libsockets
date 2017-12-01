@@ -1,8 +1,16 @@
 /*
- * FTPServer.cpp
- *
- *  Created on: 30 de nov de 2017
- *      Author: rvelloso
+    Copyright 2017 Roberto Panerai Velloso.
+    This file is part of libsockets.
+    libsockets is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    libsockets is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include "FTPServer.h"
@@ -21,6 +29,12 @@ FTPServer::FTPServer(bool ssl, const std::string &port) :
 		[](const std::string &params, FTPClientInfo &clientInfo) {
 			extern std::string pirate;
 			return pirate;
+	});
+	registerSiteCommand(
+		"HACK",
+		[](const std::string &params, FTPClientInfo &clientInfo) {
+			extern std::string hack;
+			return hack;
 	});
 }
 
@@ -141,3 +155,31 @@ std::string pirate =
 		"200-  $$$$$$$$$$\"\"\"\"           \"\"$$$$$$$$$$$\"\r\n"
 		"200-   \"$$$$$\"                      \"\"$$$$\"\"\r\n"
 		"200      $$$\"                         $$$$\"";
+
+std::string hack =
+		"200-                      ,---.\r\n"
+		"200-                     /    |\r\n"
+		"200-                    /     |\r\n"
+		"200- You shall         /      |\r\n"
+		"200-   not pass!      /       |\r\n"
+		"200-             ___,'        |\r\n"
+		"200-           <  -'          :\r\n"
+		"200-            `-.__..--'``-,_\\_\r\n"
+		"200-               |o/ <o>` :,.)_`>\r\n"
+		"200-               :/ `     ||/)\r\n"
+		"200-               (_.).__,-` |\\\r\n"
+		"200-               /( `.``   `| :\r\n"
+		"200-               \\'`-.)  `  ; ;\r\n"
+		"200-               | `       /-<\r\n"
+		"200-               |     `  /   `.\r\n"
+		"200-,-_-..____     /|  `    :__..-'\\\r\n"
+		"200-/,'-.__\\\\  ``-./ :`      ;       \\\r\n"
+		"200-`\\ `\\  `\\\\  \\ :  (   `  /  ,   `. \\\r\n"
+		"200- \\` \\   \\\\   |  | `   :  :     .\\ \\\r\n"
+		"200-  \\ `\\_  ))  :  ;     |  |      ): :\r\n"
+		"200- (`-.-'\\ ||  |\\ \\   ` ;  ;       | |\r\n"
+		"200-  \\-_   `;;._   ( `  /  /_       | |\r\n"
+		"200-   `-.-.// ,'`-._\\__/_,'         ; |\r\n"
+		"200-     \\:: :     /     `     ,   /  |\r\n"
+		"200-      || |    (        ,' /   /   |\r\n"
+		"200       ||                ,'   /    |";
