@@ -40,7 +40,7 @@ do
    i=$(( $i + 1 ))
 done
 
-g++ -I/local/include/ -E tmp.h -o tmp2.h
+g++ -E tmp.h -o tmp2.h
 
 echo '#ifndef _LIBSOCKETS_H
 #define _LIBSOCKETS_H
