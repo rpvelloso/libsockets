@@ -158,7 +158,7 @@ This namespace contains all library's factory methods.
 A more elaborate example: a simple, yet fully functional, FTP server implementation using libsockets (including SSL support, passive mode, resume & FXP support). 
 An authentication callback is provided for the user. You can also register custom SITE commands.
 
-You can try it: [Windows x64 static binary](https://github.com/rpvelloso/libsockets/blob/master/ftpd-mingw64-static.zip)
+You can try it: [Windows x64 static binary](https://github.com/rpvelloso/libsockets/raw/master/ftpd-mingw64-static.zip)
 
 ```cpp
 AuthenticationFunction FTPClientInfo::authenticate =
