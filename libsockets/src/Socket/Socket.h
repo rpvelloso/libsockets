@@ -20,10 +20,7 @@
 
 #include "Socket/SocketAddress.h"
 #include "Socket/SocketImpl.h"
-#include "Socket/SocketState/ClosedState.h"
-#include "Socket/SocketState/ConnectedState.h"
-#include "Socket/SocketState/DisconnectedState.h"
-#include "Socket/SocketState/ListeningState.h"
+#include "Socket/SocketState/SocketState.h"
 
 namespace socks {
 
@@ -31,49 +28,13 @@ class Socket {
 public:
 	Socket(Socket &&) = default;
 	virtual Socket &operator=(Socket &&) = default;
-
-	Socket(SocketImpl *impl) : impl(impl) {
-		switch (impl->getSocketState()) {
-		case SocketStateType::Disconnected:
-			state.reset(new DisconnectedState(getImpl()));
-			break;
-		case SocketStateType::Connected:
-			state.reset(new ConnectedState(getImpl()));
-			break;
-		case SocketStateType::Listening:
-			state.reset(new ListeningState(getImpl()));
-			break;
-		case SocketStateType::Closed:
-			state.reset(new ClosedState(getImpl()));
-			break;
-		}
-	}
-
-	virtual ~Socket() {
-		if (state)
-			state->disconnect();
-	}
-
-	virtual int setNonBlockingIO(bool status) {
-		return impl->setNonBlockingIO(status);
-	}
-
-	virtual std::string getPort() {
-		return impl->getPort();
-	}
-
-	virtual SocketImpl &getImpl() {
-		return *impl;
-	}
-
-	virtual SocketAddress getLocalAddress() {
-		return impl->getLocalAddress();
-	}
-
-	virtual SocketAddress getRemoteAddress() {
-		return impl->getRemoteAddress();
-	}
-
+	Socket(SocketImpl *impl);
+	virtual ~Socket();
+	virtual int setNonBlockingIO(bool status);
+	virtual std::string getPort();
+	virtual SocketImpl &getImpl();
+	virtual SocketAddress getLocalAddress();
+	virtual SocketAddress getRemoteAddress();
 protected:
 	std::unique_ptr<SocketImpl> impl;
 	std::unique_ptr<SocketState> state;

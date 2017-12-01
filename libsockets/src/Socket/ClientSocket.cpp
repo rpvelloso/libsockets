@@ -15,6 +15,8 @@
 
 #include "Socket/ClientSocket.h"
 #include "Factory/SocketFactory.h"
+#include "Socket/SocketState/ConnectedState.h"
+#include "Socket/SocketState/ClosedState.h"
 
 namespace socks {
 
