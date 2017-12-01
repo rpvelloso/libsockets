@@ -23,7 +23,6 @@
 #include "libsockets.h"
 #include "FTPClient.h"
 #include "FTPClientInfo.h"
-#include "auth/Authentication.h"
 
 class FTPServer {
 public:

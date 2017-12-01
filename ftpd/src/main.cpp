@@ -14,6 +14,7 @@
  */
 
 #include "FTPServer.h"
+#include "auth/Authentication.h"
 
 AuthenticationFunction FTPClientInfo::authenticate =
 [](const std::string &username, const std::string &password, FTPClientInfo& clientInfo) {
@@ -42,7 +43,11 @@ int main(int argc, char **argv) {
 			ss >> p1;
 			std::transform(p1.begin(), p1.end(), p1.begin(), ::toupper);
 			if (p1 == "COUNT")
-				return "200 There is/are " + std::to_string(ftpServer.getClientCount()) + " client(s) online.";
+				return "200 Dear " +
+						clientInfo.getUsername() +
+						", there is/are currently " +
+						std::to_string(ftpServer.getClientCount()) +
+						" client(s) online.";
 			else
 				return std::string("501 Invalid SITE CLIENT parameter.");
 	});
