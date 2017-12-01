@@ -1,18 +1,3 @@
-/*
-    Copyright 2017 Roberto Panerai Velloso.
-    This file is part of libsockets.
-    libsockets is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-    libsockets is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-    You should have received a copy of the GNU General Public License
-    along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 #ifndef _LIBSOCKETS_H
 #define _LIBSOCKETS_H
 
@@ -30,12 +15,18 @@
 #include <sstream>
 #include <unordered_map>
 #include <openssl/ssl.h>
+
+#undef _WIN32_WINNT
+#define _WIN32_WINNT 0x0600
 #include <winsock2.h>
 
 namespace socks {
 
 typedef SOCKET SocketFDType;
 const SocketFDType InvalidSocketFD = INVALID_SOCKET;
+
+}
+namespace socks {
 
 class SocketAddressImpl {
 public:
@@ -48,6 +39,9 @@ public:
  virtual void setSocketAddressSize(int saSize) = 0;
  virtual int getSocketAddressSize() const = 0;
 };
+
+}
+namespace socks {
 
 enum class SocketProtocol {
  TCP,
@@ -77,6 +71,9 @@ namespace factory {
    const std::string &port,
    SocketProtocol protocol = SocketProtocol::UDP);
 }
+
+}
+namespace socks {
 
 class ClientSocket;
 
@@ -122,6 +119,9 @@ protected:
  SocketStateType socketState;
 };
 
+}
+namespace socks {
+
 class SocketState : public SocketImpl {
 public:
  SocketState(SocketImpl &impl);
@@ -146,6 +146,9 @@ protected:
  SocketImpl &impl;
 };
 
+}
+namespace socks {
+
 class Socket {
 public:
  Socket(Socket &&) = default;
@@ -164,29 +167,35 @@ private:
  Socket() = delete;
 };
 
+}
+namespace socks {
+
 class ClientSocket : public Socket {
 public:
-	ClientSocket(ClientSocket &&) = default;
-	ClientSocket &operator=(ClientSocket &&);
+ ClientSocket(ClientSocket &&) = default;
+ ClientSocket &operator=(ClientSocket &&);
 
-	ClientSocket(SocketImpl *impl);
-	ClientSocket();
-	virtual ~ClientSocket();
-	int receiveData(void *buf, size_t len);
-	int sendData(const void *buf, size_t len);
-	int connectTo(const std::string &host, const std::string &port);
-	void disconnect();
-	size_t getSendBufferSize() const;
-	size_t getReceiveBufferSize() const;
+ ClientSocket(SocketImpl *impl);
+ ClientSocket();
+ virtual ~ClientSocket();
+ int receiveData(void *buf, size_t len);
+ int sendData(const void *buf, size_t len);
+ int connectTo(const std::string &host, const std::string &port);
+ void disconnect();
+ size_t getSendBufferSize() const;
+ size_t getReceiveBufferSize() const;
 
 private:
-	size_t sendBufferSize = 0;
-	size_t receiveBufferSize = 0;
+ size_t sendBufferSize = 0;
+ size_t receiveBufferSize = 0;
 };
 
 namespace factory {
-	ClientSocket makeClientSocket();
+ ClientSocket makeClientSocket();
 }
+
+}
+namespace socks {
 
 class ServerSocket : public Socket {
 public:
@@ -202,6 +211,9 @@ public:
 namespace factory {
  ServerSocket makeServerSocket();
 }
+
+}
+namespace socks {
 
 class DatagramSocket: public Socket {
 public:
@@ -220,6 +232,9 @@ namespace factory {
  ClientSocket makeUDPClientSocket();
  DatagramSocket makeDatagramSocket();
 }
+
+}
+namespace socks {
 
 class SocketStreamBuf : public std::streambuf {
 public:
@@ -256,6 +271,13 @@ namespace factory {
  SocketStream makeUDPSocketStream();
 }
 
+}
+namespace socks {
+
+
+
+
+
 class BufferedClientSocketInterface {
 public:
  BufferedClientSocketInterface() {};
@@ -276,6 +298,9 @@ public:
  virtual void writeCallback() = 0;
  virtual int setNonBlockingIO(bool status) = 0;
 };
+
+}
+namespace socks {
 
 template<class ClientContext>
 class Context {
@@ -303,6 +328,10 @@ private:
 
 template<class ClientContext>
 using ClientCallback = std::function<void(Context<ClientContext> &, std::istream &, std::ostream &)>;
+
+
+
+
 
 template<class ClientContext>
 class BufferedClientSocket : public BufferedClientSocketInterface {
@@ -366,12 +395,18 @@ private:
  Context<ClientContext> clientData;
 };
 
+}
+namespace socks {
+
 class ConnectionPoolImpl {
 public:
  ConnectionPoolImpl() {};
  virtual ~ConnectionPoolImpl() {};
  virtual void addClientSocket(std::unique_ptr<BufferedClientSocketInterface> clientSocket) = 0;
 };
+
+}
+namespace socks {
 
 class ConnectionPool {
 public:
@@ -386,12 +421,18 @@ ConnectionPool makeMultiplexedConnectionPool(size_t numThreads);
 ConnectionPool makeThreadedConnectionPool();
 }
 
+}
+namespace socks {
+
 class ThreadedConnectionPoolImpl: public ConnectionPoolImpl {
 public:
  ThreadedConnectionPoolImpl();
  virtual ~ThreadedConnectionPoolImpl();
  void addClientSocket(std::unique_ptr<BufferedClientSocketInterface> clientSocket) override;
 };
+
+}
+namespace socks {
 
 class Poll;
 class BufferedClientSocketInterface;
@@ -421,9 +462,18 @@ protected:
  virtual void removeClientSocket(BufferedClientSocketInterface &clientSocket);
  virtual bool selfPipe(BufferedClientSocketInterface &clientSocket);
 
+
+
+
  bool readHandler(BufferedClientSocketInterface &client);
  bool writeHandler(BufferedClientSocketInterface &client);
 };
+
+}
+namespace socks {
+
+
+
 
 class Multiplexer {
 public:
@@ -447,6 +497,9 @@ namespace factory {
  Multiplexer makeMultiplexer();
 }
 
+}
+namespace socks {
+
 class MultiplexedConnectionPoolImpl : public ConnectionPoolImpl {
 public:
  MultiplexedConnectionPoolImpl() = delete;
@@ -459,6 +512,9 @@ private:
 
  Multiplexer &getMultiplexer();
 };
+
+}
+namespace socks {
 
 class ServerImplInterface {
 public:
@@ -512,6 +568,9 @@ private:
  ClientCallback<ClientContext> readCB, connectCB, disconnectCB, writeCB;
 };
 
+}
+namespace socks {
+
 class Server {
 public:
  Server(ServerImplInterface *impl);
@@ -555,6 +614,10 @@ namespace factory {
  };
 }
 
+}
+namespace socks {
+
+
 using pollTuple = std::tuple<BufferedClientSocketInterface &, bool, bool>;
 
 class Poll {
@@ -564,6 +627,9 @@ public:
  virtual std::vector<pollTuple> pollClients(ClientListType &clients, int timeout = -1) = 0;
 
 };
+
+}
+namespace socks {
 
 class SocketFactoryImpl {
 public:
@@ -578,6 +644,9 @@ public:
    SocketProtocol protocol = SocketProtocol::UDP) = 0;
  virtual std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > createSocketPair() = 0;
 };
+
+}
+namespace socks {
 
 class SocketFactory {
 public:
@@ -597,6 +666,9 @@ private:
 };
 
 extern SocketFactory socketFactory;
+
+}
+namespace socks {
 
 struct FreeSSLContext {
  void operator()(SSL_CTX* sslContext) const {
