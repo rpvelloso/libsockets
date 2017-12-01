@@ -49,7 +49,8 @@ std::string FTPClientInfo::buildReplyString(FTPReply reply) {
 		break;
 	}
 
-	std::cerr << ">     sent: " << replyStr << std::endl;
+	if (verbose)
+		std::cerr << ">     sent: " << replyStr << std::endl;
 
 	return replyStr+'\r';
 }
@@ -191,4 +192,12 @@ SiteCallback* FTPClientInfo::getSiteCommand(const std::string &command) {
 			return &(it->second);
 	}
 	return nullptr;
+}
+
+bool FTPClientInfo::isVerbose() const {
+	return verbose;
+}
+
+void FTPClientInfo::setVerbose(bool verbose) {
+	this->verbose = verbose;
 }

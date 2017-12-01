@@ -21,24 +21,33 @@
 struct Options {
 	std::string port = "";
 	bool secure = false;
+	bool verbose = false;
 };
 
 void usage(const std::string &prog) {
-	std::cerr << prog << " [-p port] [-s]" << std::endl;
-	std::cerr << "ex.: " << prog << " -p 21 -s" << std::endl;
+	std::cerr << prog << " [-p port] [-s] [-v]" << std::endl;
+	std::cerr << "-p port number. Default: 21 or 990 with SSL enabled." << std::endl;
+	std::cerr << "-s enables SSL. Default disabled. " << std::endl <<
+				 "   Files 'cert.pem' and 'key.pem' are required in current directory. " << std::endl;
+	std::cerr << "-v enables verbose mode. Default disabled. " << std::endl <<
+				 "   Console display of all messages exchanged with clients" << std::endl;
+	std::cerr << "ex.: " << prog << " -p 21 -v" << std::endl;
 	throw std::runtime_error("bad options");
 }
 
 Options parseOptions(int argc, char **argv) {
 	Options options;
 	int c;
-	while ((c = getopt(argc, argv, "sp:")) != -1) {
+	while ((c = getopt(argc, argv, "vsp:")) != -1) {
 		switch (c) {
 		case 'p':
 			options.port = optarg;
 			break;
 		case 's':
 			options.secure = true;
+			break;
+		case 'v':
+			options.verbose = true;
 			break;
 		default:
 			usage(argv[0]);
@@ -62,7 +71,10 @@ int main(int argc, char **argv) {
 	try{
 		Options options = parseOptions(argc, argv);
 
-		FTPServer ftpServer(options.secure, options.port);
+		FTPServer ftpServer(
+			options.secure,
+			options.verbose,
+			options.port);
 
 		// SITE CLIENT COUNT
 		ftpServer.registerSiteCommand(

@@ -15,10 +15,11 @@
 
 #include "FTPServer.h"
 
-FTPServer::FTPServer(bool ssl, const std::string &port) :
+FTPServer::FTPServer(bool ssl, bool verbose, const std::string &port) :
 	server(ssl?
 		makeSSLFTPServer():
 		makeFTPServer()),
+	verbose(verbose),
 	port(ssl?"990":"21") {
 	clientCount = 0;
 	if (!port.empty())
@@ -58,10 +59,9 @@ std::string FTPServer::readline(std::istream &inp) {
 
 	auto savePos = inp.tellg();
 	std::getline(inp, line);
-	if (inp && !inp.eof()) {
-		std::cerr << "< received: " << line << std::endl;
+	if (inp && !inp.eof())
 		return line;
-	} else
+	else
 		inp.seekg(savePos);
 
 	return "";
@@ -71,6 +71,7 @@ void FTPServer::onConnect(socks::Context<FTPClient> &ctx, std::istream &inp, std
 	++clientCount;
 	FTPClient &context = ctx.getContext();
 	FTPClientInfo &clientInfo = context.getClientInfo();
+	clientInfo.setVerbose(verbose);
 	clientInfo.setPasvAddr(ctx.getLocalAddress());
 	clientInfo.setPeerAddr(ctx.getRemoteAddress());
 	clientInfo.setSiteCommands(siteCommands);

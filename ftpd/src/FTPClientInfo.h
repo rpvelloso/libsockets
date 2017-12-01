@@ -70,6 +70,8 @@ public:
 	const std::string& getPeerAddr() const;
 	void setPeerAddr(socks::SocketAddress &addr);
 	void setCustomSiteReply(const std::string& customSiteReply);
+	bool isVerbose() const;
+	void setVerbose(bool verbose);
 
 	static AuthenticationFunction authenticate;
 private:
@@ -87,6 +89,7 @@ private:
 	std::unique_ptr<socks::ServerSocket> passiveSocket;
 	std::map<std::string, SiteCallback> *siteCommands = nullptr;
 	std::string customSiteReply = "";
+	bool verbose = false;
 
 	std::string socketAddr2FTPAddr(socks::SocketAddress &addr);
 };

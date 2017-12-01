@@ -26,12 +26,13 @@
 
 class FTPServer {
 public:
-	FTPServer(bool ssl = false, const std::string & = "");
+	FTPServer(bool ssl = false, bool verbose = false, const std::string & = "");
 	void start();
 	void registerSiteCommand(const std::string &command, SiteCallback callback);
 	size_t getClientCount();
 private:
 	socks::Server server;
+	bool verbose;
 	std::string port;
 	std::map<std::string, SiteCallback> siteCommands;
 	std::atomic<size_t> clientCount;
