@@ -1,5 +1,8 @@
 # libsockets (Work In Progress!!!)
 A platform independent C++ socket library with transparent SSL support (and some more stuff).
+
+Get it here: [Windows x64 static & shared libraries](https://github.com/rpvelloso/libsockets/raw/master/libsockets-mingw64-ssl.zip)
+
 # Examples
 ## socks::ClientSocket & socks::ServerSocket
 ```cpp
