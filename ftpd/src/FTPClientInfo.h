@@ -16,8 +16,7 @@
 #ifndef FTPCLIENTINFO_H_
 #define FTPCLIENTINFO_H_
 
-#include "libsockets.h"
-
+#include <libsockets.h>
 #include <string>
 #include <fstream>
 #include <map>

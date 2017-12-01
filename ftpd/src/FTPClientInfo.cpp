@@ -13,6 +13,8 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
+
 #include "FTPClientInfo.h"
 #include "filesystem/FileSystem.h"
 

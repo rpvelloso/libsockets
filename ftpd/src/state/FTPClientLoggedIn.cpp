@@ -14,6 +14,7 @@
  */
 
 #include <sstream>
+#include <algorithm>
 
 #include "filesystem/FileSystem.h"
 #include "state/FTPClientLoggedIn.h"

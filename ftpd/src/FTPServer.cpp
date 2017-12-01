@@ -13,6 +13,7 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <algorithm>
 #include "FTPServer.h"
 
 FTPServer::FTPServer(bool ssl, bool verbose, const std::string &port) :

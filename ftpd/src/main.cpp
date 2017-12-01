@@ -14,6 +14,7 @@
  */
 
 #include <getopt.h>
+#include <algorithm>
 
 #include "FTPServer.h"
 #include "auth/Authentication.h"
