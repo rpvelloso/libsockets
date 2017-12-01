@@ -108,6 +108,7 @@
 								<option id="gnu.cpp.compiler.mingw.exe.debug.option.debugging.level.1548585655" name="Debug Level" superClass="gnu.cpp.compiler.mingw.exe.debug.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.include.paths.1377567639" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;C:\mingw-w64\local\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libsockets/win/include}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/win}&quot;"/>
 								</option>
@@ -182,6 +183,7 @@
 									<listOptionValue builtIn="false" value="&quot;C:\mingw-w64\local\include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/win}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/libsockets/win/include}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.dialect.std.1277760775" name="Language standard" superClass="gnu.cpp.compiler.option.dialect.std" useByScannerDiscovery="true" value="gnu.cpp.compiler.dialect.c++1y" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.434816751" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false"/>
