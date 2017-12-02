@@ -32,6 +32,7 @@ void usage(const std::string &prog) {
 				 "   Files 'cert.pem' and 'key.pem' are required in current directory. " << std::endl;
 	std::cerr << "-v enables verbose mode. Default disabled. " << std::endl <<
 				 "   Console display of all messages exchanged with clients" << std::endl;
+	std::cerr << "-h this help screen." << std::endl;
 	std::cerr << "ex.: " << prog << " -p 21 -v" << std::endl;
 	throw std::runtime_error("bad options");
 }
@@ -39,7 +40,7 @@ void usage(const std::string &prog) {
 Options parseOptions(int argc, char **argv) {
 	Options options;
 	int c;
-	while ((c = getopt(argc, argv, "vsp:")) != -1) {
+	while ((c = getopt(argc, argv, "hvsp:")) != -1) {
 		switch (c) {
 		case 'p':
 			options.port = optarg;
@@ -50,6 +51,7 @@ Options parseOptions(int argc, char **argv) {
 		case 'v':
 			options.verbose = true;
 			break;
+		case 'h':
 		default:
 			usage(argv[0]);
 		}
@@ -97,6 +99,8 @@ int main(int argc, char **argv) {
 
 		ftpServer.start();
 	} catch (std::exception &e) {
-		std::cerr << e.what() << std::endl;
+		std::string what = e.what();
+		if (what != "bad options")
+			std::cerr << e.what() << std::endl;
 	}
 }
