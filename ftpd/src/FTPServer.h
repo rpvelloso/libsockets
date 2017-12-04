@@ -20,9 +20,7 @@
 #include <map>
 #include <atomic>
 
-#include "libsockets.h"
 #include "FTPClient.h"
-#include "FTPClientInfo.h"
 
 class FTPServer {
 public:
