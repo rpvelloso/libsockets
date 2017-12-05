@@ -36,6 +36,7 @@ public:
 	virtual FTPReply NOOP();
 
 	virtual FTPReply QUIT();
+	virtual FTPReply REIN();
 	virtual FTPReply USER(const std::string &);
 	virtual FTPReply PASS(const std::string &);
 

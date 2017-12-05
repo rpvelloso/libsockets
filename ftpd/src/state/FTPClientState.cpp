@@ -59,6 +59,7 @@ FTPClientState::FTPClientState(FTPClientInfo &ctx) : clientInfo(ctx) {};
 FTPClientState::~FTPClientState() {};
 FTPReply FTPClientState::NOOP() { return FTPReply::R200; };
 FTPReply FTPClientState::QUIT() { return FTPReply::R221; };
+FTPReply FTPClientState::REIN() { clientInfo.clear(); return FTPReply::R200; };
 FTPReply FTPClientState::USER(const std::string &) { return FTPReply::R500; };
 FTPReply FTPClientState::PASS(const std::string &) { return FTPReply::R500; };
 

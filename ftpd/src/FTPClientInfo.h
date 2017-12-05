@@ -40,6 +40,7 @@ class FTPClientInfo {
 public:
 	FTPClientInfo();
 	std::string buildReplyString(FTPReply reply);
+	void clear();
 	void setSiteCommands(std::map<std::string, SiteCallback> &commands);
 	SiteCallback* getSiteCommand(const std::string &command);
 
@@ -87,7 +88,7 @@ private:
 	std::string peerAddr;
 	std::unique_ptr<socks::ServerSocket> passiveSocket;
 	std::map<std::string, SiteCallback> *siteCommands = nullptr;
-	std::string customSiteReply = "";
+	std::string customSiteReply;
 	bool verbose = false;
 
 	std::string socketAddr2FTPAddr(socks::SocketAddress &addr);

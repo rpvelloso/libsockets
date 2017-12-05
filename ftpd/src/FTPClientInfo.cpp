@@ -203,3 +203,19 @@ bool FTPClientInfo::isVerbose() const {
 void FTPClientInfo::setVerbose(bool verbose) {
 	this->verbose = verbose;
 }
+
+void FTPClientInfo::clear() {
+	username.clear();
+	cwd = "/";
+	chroot = "/";
+	address.clear();
+	port.clear();
+	type = "I";
+	renameFrom.clear();
+	size = 0;
+	restartPos = 0;
+	pasvAddr.clear();
+	peerAddr.clear();
+	passiveSocket.reset(nullptr);
+	customSiteReply.clear();
+}

@@ -53,7 +53,11 @@ FTPReply FTPClient::processCmd(const std::string& cmdline, std::ostream &outp) {
 		reply = state->NOOP();
 	else if (command == "QUIT")
 		reply = state->QUIT();
-	else if (command == "USER")
+	else if (command == "REIN") {
+		reply = state->REIN();
+		if (reply == FTPReply::R200)
+			state.reset(new FTPClientConnected(clientInfo));
+	} else if (command == "USER")
 		reply = state->USER(param);
 	else if (command == "PASS") {
 		reply = state->PASS(param);
@@ -148,3 +152,4 @@ FTPReply FTPClient::processCmd(const std::string& cmdline, std::ostream &outp) {
 FTPClientInfo& FTPClient::getClientInfo() {
 	return clientInfo;
 }
+
