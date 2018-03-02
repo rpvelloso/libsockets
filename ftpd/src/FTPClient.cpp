@@ -33,8 +33,7 @@ FTPReply FTPClient::processCmd(const std::string& cmdline, std::ostream &outp) {
 	std::string command;
 	std::string param;
 
-	if (clientInfo.isVerbose())
-		std::cerr << "< received: " << cmdline << std::endl;
+	clientInfo.log(false, cmdline, clientInfo);
 
 	ss >> command;
 	std::getline(ss, param);

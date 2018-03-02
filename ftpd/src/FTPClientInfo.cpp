@@ -51,8 +51,7 @@ std::string FTPClientInfo::buildReplyString(FTPReply reply) {
 		break;
 	}
 
-	if (verbose)
-		std::cerr << ">     sent: " << replyStr << std::endl;
+	log(true, replyStr, *this);
 
 	return replyStr+'\r';
 }

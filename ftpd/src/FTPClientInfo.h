@@ -35,6 +35,7 @@ extern std::unordered_map<FTPReply, std::string> FTPReplyString;
 class FTPClientInfo;
 using SiteCallback = std::function<std::string(const std::string &, FTPClientInfo &)>;
 using AuthenticationFunction = std::function<bool(const std::string &username, const std::string &password, FTPClientInfo &clientInfo)>;
+using LogFunction = std::function<void(bool reply, const std::string &str, const FTPClientInfo &clientInfo)>;
 
 class FTPClientInfo {
 public:
@@ -74,6 +75,7 @@ public:
 	void setVerbose(bool verbose);
 
 	static AuthenticationFunction authenticate;
+	static LogFunction log;
 private:
 	std::string username;
 	std::string cwd = "/";

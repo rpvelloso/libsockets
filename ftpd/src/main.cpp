@@ -60,6 +60,20 @@ Options parseOptions(int argc, char **argv) {
 	return options;
 }
 
+LogFunction FTPClientInfo::log =
+[](bool reply, const std::string &str, const FTPClientInfo &clientInfo) {
+	if (clientInfo.isVerbose()) {
+		if (reply)
+			std::cerr << ">     sent: " << str << std::endl;
+		else {
+			if (str.substr(0, 5) == "PASS ")
+				std::cerr << "< received: " << str.substr(0, 5) << "********" << std::endl;
+			else
+				std::cerr << "< received: " << str << std::endl;
+		}
+	}
+};
+
 AuthenticationFunction FTPClientInfo::authenticate =
 [](const std::string &username, const std::string &password, FTPClientInfo& clientInfo) {
 	/*
