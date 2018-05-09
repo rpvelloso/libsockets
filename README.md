@@ -110,7 +110,7 @@ int main() {
 ```
 You can also turn a `socks::DatagramSocket` into a 'connected' datagram socket and use `socks::ClientSocket`'s interface.
 ```cpp
-socks::ClientSocket = datagramSocket.makeClientSocket(peer); 
+socks::ClientSocket clientSocket = datagramSocket.makeClientSocket(peer); 
 /* 
  * from this point on 'datagramSocket' cannot be used anymore,
  * its implementation has been moved to 'clientSocket'.
@@ -118,7 +118,7 @@ socks::ClientSocket = datagramSocket.makeClientSocket(peer);
 ```
 or
 ```cpp
-socks::ClientSocket = datagramSocket.makeClientSocket(host, port); // same here
+socks::ClientSocket clientSocket = datagramSocket.makeClientSocket(host, port); // same here
 ```
 
 ## socks::SocketStream
