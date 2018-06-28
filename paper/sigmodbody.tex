@@ -199,7 +199,7 @@ They can also be easily acquired from the extraction technique we are relying
 on.
 
 We will discuss each feature in Subsections \ref{ss:size}, \ref{ss:pos},
-\ref{ss:range}, \ref{ss:rec}  and \ref{ss:ang} respectively.
+\ref{ss:range} and \ref{ss:rec} respectively.
 
 \subsection{Size Feature}\label{ss:size}
 The region size feature is a real number, between 0 and 1, that represents the
@@ -365,33 +365,40 @@ Throughout this paper we will refer to this feature as ``record'' feature.
 % dos experimentos (cujos resultados serão apresentados pelas metricas de
 % avaliacao com numero plotados nos gráficos)}%}
 
-In this section we detail the experiments we have conducted using supervised
+In this section we detail the experiments we conducted using supervised
 machine learning techniques with the features from Section \ref{sec:content}.
 The objectives of this experiments are to determine the subset of features which
 are important in this classification problem and measure the classification
 performance in terms of precision, recall and f-score.
 We have considered, in our study, the following machine learning techniques:
 gaussian naive Bayes (GNB), logistic regression (LR), k Nearest Neighbours
-(kNN), Gradient Boosting, Extra-trees and Support Vector Machine (SVM).
+(kNN), Gradient Boosting (GB), Extra-trees (EXT) and Support Vector Machine
+(SVM). These experiments were conducted using scikit-learn\cite{scikit-learn}
+framework. For the gradient boosting, we used
+XGBoost\cite{Chen:2016:XST:2939672.2939785} implementation.
 
 We have conducted experiments to determine the best combination of features,
 within each approach, for solving the problem of distinguishing noise from
 content. To do so we ran a grid search for each algorithm with all feature
-combinations (63 in total). After that we have used grid search again to select
-the best parameters for each algorithm.
+combinations, since the number of possible combinations, for six features, is
+not prohibitive (only 63 in total).
+After that we have used grid search, again, to select the best parameters for
+each algorithm. The feature set for each algorithm is documented in Table
+\ref{tab:featsel} and the parameters in Table \ref{tab:params}.
 
 For these experiments we have used a dataset consisting of 266 HTML documents
 with structured content from various domains (news, banking, hotels, car rental,
-tickets, electronics), we use only one page per site to avoid introducing bias
-towards specific sites and/or templates\footnote{this is possible because the
-extraction approach used also works with a single page input}. These documents
-were processed using the technique proposed in
-\cite{Velloso:2017:ERW:3132847.3132875}, resulting in a total of 458 regions
-that were manually labeled as content or noise (menus, ads, template, etc). This
-is the input dataset used for cross-validation and it is summarized in Table
-\ref{tab:dataset}. Figure \ref{fig:dataset} shows a scatter plot of each
-feature, separately, with respect to the target class (content vs noise), it
-gives a rough idea of how content and noise are intertwined. Table
+tickets, electronics), plus 61 documents more without structured content,
+totalizing 327 documents.
+We use only one page per site to avoid introducing bias towards specific sites and/or
+templates\footnote{this is possible because the extraction approach used also
+works with a single page input}. These documents were processed using the
+technique proposed in \cite{Velloso:2017:ERW:3132847.3132875}, resulting in a
+total of 533 regions that were manually labeled as content or noise (menus, ads,
+template, etc). This is the input dataset used for cross-validation and it is
+summarized in Table \ref{tab:dataset}. Figure \ref{fig:dataset} shows a scatter
+plot of each feature, separately, with respect to the target class (content vs
+noise), it gives a rough idea of how content and noise are intertwined. Table
 \ref{tab:stat} shows mean and CV for all features with respect to the target
 class.
 
@@ -480,30 +487,30 @@ Feature & Mean & CV & Skewness & Kurtosis \\
 \hline
 \multicolumn{5}{|l|}{Content \& Noise} \\
 \hline
-Center & 0.57 & 0.51 & -0.18 & 1.71 \\
 Size & 0.27 & 0.87 & 0.92 & 2.90 \\
-Record & 0.40 & 0.68 & 0.52 & 2.15 \\
+Center & 0.57 & 0.51 & -0.18 & 1.71 \\
 Range & 0.11 & 1.12 & 1.98 & 7.46 \\
-Horizontal & 0.55 & 0.47 & -0.26 & 2.14 \\
+Record & 0.40 & 0.68 & 0.52 & 2.15 \\
 Vertical & 0.59 & 0.40 & -0.49 & 2.42 \\
+Horizontal & 0.55 & 0.47 & -0.26 & 2.14 \\
 \hline
 \multicolumn{5}{|l|}{Content} \\
 \hline
-Center & 0.74 & 0.27 & -0.81 & 2.95 \\
 Size & 0.44 & 0.49 & 0.28 & 2.47 \\
-Record & 0.46 & 0.61 & 0.22 & 1.89 \\
+Center & 0.74 & 0.27 & -0.81 & 2.95 \\
 Range & 0.19 & 0.74 & 1.49 & 5.51 \\
-Horizontal & 0.57 & 0.26 & -0.45 & 3.63 \\
+Record & 0.46 & 0.61 & 0.22 & 1.89 \\
 Vertical & 0.63 & 0.24 & -0.80 & 3.58 \\
+Horizontal & 0.57 & 0.26 & -0.45 & 3.63 \\
 \hline
 \multicolumn{5}{|l|}{Noise} \\
 \hline
-Center & 0.41 & 0.65 & 0.58 & 2.16 \\
 Size & 0.12 & 0.94 & 2.32 & 9.37 \\
-Record & 0.34 & 0.74 & 0.81 & 2.74 \\
+Center & 0.41 & 0.65 & 0.58 & 2.16 \\
 Range & 0.05 & 1.40 & 4.37 & 26.83 \\
-Horizontal & 0.53 & 0.61 & -0.06 & 1.44 \\
+Record & 0.34 & 0.74 & 0.81 & 2.74 \\
 Vertical & 0.56 & 0.53 & -0.15 & 1.69 \\
+Horizontal & 0.53 & 0.61 & -0.06 & 1.44 \\
 \hline
 \end{tabular}
 \end{table}
@@ -517,8 +524,9 @@ Vertical & 0.56 & 0.53 & -0.15 & 1.69 \\
 
 \section{Results}
 For each approach we've conducted 1,000 random runs/trials from which we
-reported the average precision, recall and f-score. At each run we partition the
-dataset randomly for training and cross-validation.
+reported the average precision, recall and f-score in Tables \ref{tab:result} and
+\ref{tab:resultnoise}.
+At each run we partition the dataset randomly for training and cross-validation.
 
 \begin{table}[h]
 \centering
@@ -527,14 +535,33 @@ dataset randomly for training and cross-validation.
 \begin{tabular}{| l | l | l | l | l |}
 \hline
 Algorithm & Precision & Recall & Accuracy & F-score \\ \hline
-LR   & 93.30\% & 93.85\% & 93.02\% & 93.57\% \\
+LR   & 93.30\% & \textbf{93.85}\% & \textbf{93.02}\% & \textbf{93.57}\% \\
 GNB  & 91.97\% & 90.55\% & 90.62\% & 91.26\% \\
 KNN  & 93.83\% & 92.21\% & 92.59\% & 93.01\% \\
 SVM  & 93.60\% & 92.20\% & 92.37\% & 92.90\% \\
-EXTT & 91.88\% & 91.87\% & 91.23\% & 91.88\% \\
-XGBC & 90.75\% & 90.14\% & 89.74\% & 90.44\% \\
-ENSV & 93.92\% & 91.79\% & 92.37\% & 92.85\% \\
+EXT  & 91.88\% & 91.87\% & 91.23\% & 91.88\% \\
+GB   & 90.75\% & 90.14\% & 89.74\% & 90.44\% \\
+VOT  & \textbf{93.92}\% & 91.79\% & 92.37\% & 92.85\% \\
 STCK & 92.97\% & 92.20\% & 92.06\% & 92.59\% \\
+\hline
+\end{tabular}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Results using complete dataset (including unstructured documents).}
+\label{tab:resultnoise}
+\begin{tabular}{| l | l | l | l | l | l |}
+\hline
+Algorithm & Precision & Recall & Accuracy & F-score & Drop \\ \hline
+LR   & 87.97\% & \textbf{92.13}\% & 89.45\% & 90.00\% & -3.57\% \\
+GNB  & 89.69\% & 88.99\% & 89.47\% & 89.34\% & -1.92\% \\
+KNN  & 89.72\% & 90.56\% & 90.02\% & 90.14\% & -2.87\% \\
+SVM  & 89.51\% & 92.12\% & 90.77\% & 90.79\% & -2.11\% \\
+EXT  & 88.80\% & 88.43\% & 88.71\% & 88.61\% & -3.27\% \\
+GB   & 90.13\% & 88.97\% & 89.65\% & 89.55\% & \textbf{-0.89}\% \\
+VOT  & \textbf{90.73}\% & 92.12\% & 91.33\% & \textbf{91.42}\% & -1.43\% \\
+STCK & 89.93\% & 91.81\% & 90.73\% & 90.86\% & -1.73\% \\
 \hline
 \end{tabular}
 \end{table}
@@ -548,10 +575,10 @@ STCK & 92.97\% & 92.20\% & 92.06\% & 92.59\% \\
 Algorithm & Size & Center & Horizontal & Vertical & Range & Record \\ \hline
 LR        & \cmark & \xmark & \cmark & \xmark & \cmark & \cmark \\
 GNB       & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
-EXTT      & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
+EXT       & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
 SVM       & \cmark & \xmark & \cmark & \cmark & \cmark & \cmark \\
 kNN       & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
-XGBC      & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
+GB        & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
 \hline
 \end{tabular}
 \end{table}
@@ -567,7 +594,7 @@ LR        & $C=1.0$ \\
           & $penalty=L2$ \\
           & $warm\_start=True$ \\ \hline
 GNB       & none \\ \hline
-EXTT      & $max\_features=0.8$ \\ 
+EXT       & $max\_features=0.8$ \\ 
           & $criterion=entropy$ \\
           & $warm\_start=False$ \\
           & $n\_estimators=31$ \\
@@ -582,9 +609,13 @@ SVM       & $kernel=poly$ \\
 kNN       & $weights=uniform$ \\
           & $p=3$ \\
           & $n\_neighbors=13$ \\ \hline
-XGBC      & $min\_child\_weight=9 $ \\
+GB        & $min\_child\_weight=9 $ \\
           & $subsample=0.60$ \\ 
-          & $n\_estimators=92$ \\
+          & $n\_estimators=92$ \\ \hline
+VOT       & $clfs=[SVM, KNN, GB]$ \\
+          & $weights=[1.0, 0.5, 0.5]$ \\ \hline
+STCK      & $classifiers=[GNB, SVM, KNN, GB]$ \\
+          & $meta\_classifier=LogisticRegression$ \\          
 \hline
 \end{tabular}
 \end{table}
