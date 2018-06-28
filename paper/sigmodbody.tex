@@ -365,17 +365,19 @@ Throughout this paper we will refer to this feature as ``record'' feature.
 % dos experimentos (cujos resultados serão apresentados pelas metricas de
 % avaliacao com numero plotados nos gráficos)}%}
 
-In this section we detail the experiments we conducted using supervised
-machine learning techniques with the features from Section \ref{sec:content}.
+In this section we detail the experiments we conducted using supervised machine
+learning techniques with the features from Section \ref{sec:content}.
 The objectives of this experiments are to determine the subset of features which
 are important in this classification problem and measure the classification
 performance in terms of precision, recall and f-score.
 We have considered, in our study, the following machine learning techniques:
 gaussian naive Bayes (GNB), logistic regression (LR), k Nearest Neighbours
-(kNN), Gradient Boosting (GB), Extra-trees (EXT) and Support Vector Machine
-(SVM). These experiments were conducted using scikit-learn\cite{scikit-learn}
-framework. For the gradient boosting, we used
-XGBoost\cite{Chen:2016:XST:2939672.2939785} implementation.
+(kNN), Gradient Boosting (GB), Extra-trees (EXT), Support Vector Machine (SVM),
+Voting Ensemble (VOT) and Stacking Ensemble (STCK). These experiments were
+conducted using scikit-learn\cite{scikit-learn} framework. For the gradient
+boosting we used XGBoost\cite{Chen:2016:XST:2939672.2939785}
+and for the ensembles we used MLxtend's\cite{raschkas_2018_mlxtend}
+implementation.
 
 We have conducted experiments to determine the best combination of features,
 within each approach, for solving the problem of distinguishing noise from
@@ -388,11 +390,11 @@ each algorithm. The feature set for each algorithm is documented in Table
 
 For these experiments we have used a dataset consisting of 266 HTML documents
 with structured content from various domains (news, banking, hotels, car rental,
-tickets, electronics), plus 61 documents more without structured content,
-totalizing 327 documents.
-We use only one page per site to avoid introducing bias towards specific sites and/or
-templates\footnote{this is possible because the extraction approach used also
-works with a single page input}. These documents were processed using the
+tickets, electronics), plus 61 documents without structured content, totalizing
+327 documents.
+We use only one page per site to avoid introducing bias towards specific sites
+and/or templates\footnote{this is possible because the extraction approach used
+also works with a single page input}. These documents were processed using the
 technique proposed in \cite{Velloso:2017:ERW:3132847.3132875}, resulting in a
 total of 533 regions that were manually labeled as content or noise (menus, ads,
 template, etc). This is the input dataset used for cross-validation and it is
@@ -449,7 +451,7 @@ Horizontal & 0.433793117 & 3.63505065 \\
 \label{tab:featcorr}
 \begin{tabular}{ | l | l | l | l | l | l |}
 \hline
-& Size & Record & Range & Vertical & Vertical \\ \hline
+& Size & Record & Range & Horizontal & Vertical \\ \hline
 \multicolumn{6}{|l|}{Content \& Noise} \\
 \hline
 Center & \textbf{0.63} & 0.08 & 0.45 & -0.11 & 0.01 \\
