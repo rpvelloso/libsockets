@@ -376,7 +376,7 @@ gaussian naive Bayes (GNB), logistic regression (LR), k Nearest Neighbours
 
 We have conducted experiments to determine the best combination of features,
 within each approach, for solving the problem of distinguishing noise from
-content. To to so we ran a grid search for each algorithm with all feature
+content. To do so we ran a grid search for each algorithm with all feature
 combinations (63 in total). After that we have used grid search again to select
 the best parameters for each algorithm.
 
@@ -420,6 +420,24 @@ Total & 533 & 100.00 \\
 
 \begin{table}[h]
 \centering
+\caption{Feature Importance (feature vs class).}
+\label{tab:importance}
+\begin{tabular}{| l | l | l |}
+\hline
+feature & $\chi^2$ & ANOVA \\
+\hline
+Size       & 51.6426225  & 487.50116318 \\
+Center     & 25.8025951  & 260.93679423 \\
+Range      & 23.1719961  & 232.44608713 \\
+Record     & 4.71168623  & 26.59572956 \\
+Vertical   & 1.16942710  & 12.38250104 \\
+Horizontal & 0.433793117 & 3.63505065 \\
+\hline
+\end{tabular}
+\end{table}
+         
+\begin{table}[h]
+\centering
 \caption{Correlation between all features.}
 \label{tab:featcorr}
 \begin{tabular}{ | l | l | l | l | l | l |}
@@ -427,11 +445,11 @@ Total & 533 & 100.00 \\
 & Size & Record & Range & Vertical & Vertical \\ \hline
 \multicolumn{6}{|l|}{Content \& Noise} \\
 \hline
-Center & 0.63 & 0.08 & 0.45 & -0.11 & 0.01 \\
-Size & & 0.08 & 0.68 & -0.02 & 0.11 \\
+Center & \textbf{0.63} & 0.08 & 0.45 & -0.11 & 0.01 \\
+Size & & 0.08 & \textbf{0.68} & -0.02 & 0.11 \\
 Record & & & 0.08 & 0.04 & 0.03 \\
 Range & & & & -0.01 & 0.08 \\
-Horizontal & & & & & 0.85 \\
+Horizontal & & & & & \textbf{0.85} \\
 \hline
 \multicolumn{6}{|l|}{Content} \\
 \hline
@@ -490,24 +508,6 @@ Vertical & 0.56 & 0.53 & -0.15 & 1.69 \\
 \end{tabular}
 \end{table}
 
-\begin{table}[h]
-\centering
-\caption{Feature Importance (feature vs class).}
-\label{tab:importance}
-\begin{tabular}{| l | l | l |}
-\hline
-feature & $\chi^2$ & ANOVA \\
-\hline
-Size       & 51.6426225  & 487.50116318 \\
-Center     & 25.8025951  & 260.93679423 \\
-Range      & 23.1719961  & 232.44608713 \\
-Record     & 4.71168623  & 26.59572956 \\
-Vertical   & 1.16942710  & 12.38250104 \\
-Horizontal & 0.433793117 & 3.63505065 \\
-\hline
-\end{tabular}
-\end{table}
-         
 \begin{figure}[h]
   \centering
      \includegraphics[trim={2.0cm 7.4cm 0.7cm 7.4cm}, clip,  width=\columnwidth]{img/dataset.pdf}
@@ -545,7 +545,7 @@ STCK & 92.97\% & 92.20\% & 92.06\% & 92.59\% \\
 \label{tab:featsel}
 \begin{tabular}{| l | l | l | l | l | l | l |}
 \hline
-Algorithm & Size & Pos. Center & Pos. H. & Pos. V. & Range & Record \\ \hline
+Algorithm & Size & Center & Horizontal & Vertical & Range & Record \\ \hline
 LR        & \cmark & \xmark & \cmark & \xmark & \cmark & \cmark \\
 GNB       & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
 EXTT      & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
@@ -563,17 +563,17 @@ XGBC      & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
 \begin{tabular}{| l | l |}
 \hline
 Algorithm & Parameters \\ \hline 
-LR        & $C = 1.0$ \\ 
-          & $penalty = L2$ \\
-          & $warm\_start = True$ \\ \hline
+LR        & $C=1.0$ \\ 
+          & $penalty=L2$ \\
+          & $warm\_start=True$ \\ \hline
 GNB       & none \\ \hline
 EXTT      & $max\_features=0.8$ \\ 
           & $criterion=entropy$ \\
           & $warm\_start=False$ \\
           & $n\_estimators=31$ \\
           & $bootstrap=True$ \\
-          & $min\_samples_leaf=5$ \\ 
-          & $min\_samples_split=0.02$ \\ \hline
+          & $min\_samples\_leaf=5$ \\ 
+          & $min\_samples\_split=0.02$ \\ \hline
 SVM       & $kernel=poly$ \\
           & $C=0.6$ \\
           & $gamma=0.188$ \\ 
