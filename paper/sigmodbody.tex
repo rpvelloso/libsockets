@@ -228,7 +228,7 @@ $\frac{618}{1,336} = 0,4625 = 46.25\%$.
     sizeFeat = \frac{regionSize}{documentSize}
 \end{equation}
 
-\subsection{Position Feature}\label{ss:pos}
+\subsection{Position Features}\label{ss:pos}
 The region position feature is actually comprised of three position features:
 center, horizontal and vertical positions. All three are real numbers between 0
 and 1. The \textbf{center position} represents the distance from the center of
@@ -276,6 +276,9 @@ feature igual to $ $. The vertical position is the distance from the horizontal
 center of the region (i.e., its average value) to the horizontal end of the
 document (i.e., its maximum value). Using Equation \ref{}, the value of this
 features is equal to $ $.
+
+Throughout this paper we will refer to these features as ``center'',
+``horizontal'' and ``vertical'' positions.
 
 \subsection{Range Feature}\label{ss:range}
 The range feature is a real number, between 0 and 1, that represents the
@@ -363,19 +366,19 @@ Throughout this paper we will refer to this feature as ``record'' feature.
 % avaliacao com numero plotados nos gráficos)}%}
 
 In this section we detail the experiments we have conducted using supervised
-machine learning techniques using the features from Section \ref{sec:content}.
+machine learning techniques with the features from Section \ref{sec:content}.
 The objectives of this experiments are to determine the subset of features which
 are important in this classification problem and measure the classification
 performance in terms of precision, recall and f-score.
 We have considered, in our study, the following machine learning techniques:
 gaussian naive Bayes (GNB), logistic regression (LR), k Nearest Neighbours
-(kNN), C5.0 decision trees/rules and Support Vector Machine (SVM).
+(kNN), Gradient Boosting, Extra-trees and Support Vector Machine (SVM).
 
 We have conducted experiments to determine the best combination of features,
 within each approach, for solving the problem of distinguishing noise from
-content. The procedure employed is to measure the performance using various
-combinations of features, starting with each feature separately, to determine
-which are key to the problem and which do not contributed to the solution.
+content. To to so we ran a grid search for each algorithm with all feature
+combinations (63 in total). After that we have used grid search again to select
+the best parameters for each algorithm.
 
 For these experiments we have used a dataset consisting of 266 HTML documents
 with structured content from various domains (news, banking, hotels, car rental,
@@ -385,19 +388,17 @@ extraction approach used also works with a single page input}. These documents
 were processed using the technique proposed in
 \cite{Velloso:2017:ERW:3132847.3132875}, resulting in a total of 458 regions
 that were manually labeled as content or noise (menus, ads, template, etc). This
-is the input dataset used for training and validation (randomly partitioned
-50\%/50\% in each run) and it is summarized in Table \ref{tab:dataset}. Figure
-\ref{fig:dataset} shows a scatter plot of each feature, separately, with respect
-to the target class (content vs noise), it gives a rough idea of how content and
-noise are intertwined. Table \ref{tab:stat} shows mean and CV for all features
-with respect to the target class.
+is the input dataset used for cross-validation and it is summarized in Table
+\ref{tab:dataset}. Figure \ref{fig:dataset} shows a scatter plot of each
+feature, separately, with respect to the target class (content vs noise), it
+gives a rough idea of how content and noise are intertwined. Table
+\ref{tab:stat} shows mean and CV for all features with respect to the target
+class.
 
 Table \ref{tab:featcorr} shows the correlation between all features. We see that
 ``size'' vs ``position'', ``size'' vs ``range'' and ``position'' vs ``range''
-have a stronger correlation compared to others. Due to that fact we have
-investigated how these features behave together in our experiments and found
-that no combination of those (in pairs) yielded significant improvements in
-f-score, although they usually perform slightly better when combined.
+have a stronger correlation compared to others. These same three features,
+according to Table \ref{tab:importance}, are also the most important ones.
 
 % \textcolor{red}{as legendas das figuras estao iguais... além disso, eu
 % colocaria a legenda de noise e content mais visivel (está escondida, eu
@@ -423,30 +424,30 @@ Total & 533 & 100.00 \\
 \label{tab:featcorr}
 \begin{tabular}{ | l | l | l | l | l | l |}
 \hline
-& Size & Record & Range & Vert. Pos. & Hor. Pos. \\ \hline
+& Size & Record & Range & Vertical & Vertical \\ \hline
 \multicolumn{6}{|l|}{Content \& Noise} \\
 \hline
-Position & 0.63 & 0.08 & 0.45 & -0.11 & 0.01 \\
+Center & 0.63 & 0.08 & 0.45 & -0.11 & 0.01 \\
 Size & & 0.08 & 0.68 & -0.02 & 0.11 \\
 Record & & & 0.08 & 0.04 & 0.03 \\
 Range & & & & -0.01 & 0.08 \\
-Vert. Pos & & & & & 0.85 \\
+Horizontal & & & & & 0.85 \\
 \hline
 \multicolumn{6}{|l|}{Content} \\
 \hline
-Position & 0.58 & -0.11 & 0.21 & -0.37 & -0.07 \\
+Center & 0.58 & -0.11 & 0.21 & -0.37 & -0.07 \\
 Size & & -0.10 & 0.53 & -0.12 & 0.12 \\
 Record & & & -0.04 & 0.04 & -0.04 \\
 Range & & & & -0.03 & 0.08 \\
-Vert. Pos & & & & & 0.65 \\
+Horizontal & & & & & 0.65 \\
 \hline
 \multicolumn{6}{|l|}{Noise} \\
 \hline
-Position & 0.25 & -0.01 & 0.22 & -0.15 & -0.11 \\
+Center & 0.25 & -0.01 & 0.22 & -0.15 & -0.11 \\
 Size & & -0.12 & 0.39 & -0.15 & -0.11 \\
 Record & & & -0.08 & 0.01 & 0.01 \\
 Range & & & & -0.13 & -0.09 \\
-Vert. Pos & & & & & 0.89 \\
+Horizontal & & & & & 0.89 \\
 \hline
 \end{tabular}
 \end{table}
@@ -461,30 +462,30 @@ Feature & Mean & CV & Skewness & Kurtosis \\
 \hline
 \multicolumn{5}{|l|}{Content \& Noise} \\
 \hline
-Position & 0.57 & 0.51 & -0.18 & 1.71 \\
+Center & 0.57 & 0.51 & -0.18 & 1.71 \\
 Size & 0.27 & 0.87 & 0.92 & 2.90 \\
 Record & 0.40 & 0.68 & 0.52 & 2.15 \\
 Range & 0.11 & 1.12 & 1.98 & 7.46 \\
-Vert. Pos. & 0.55 & 0.47 & -0.26 & 2.14 \\
-Hor. Pos. & 0.59 & 0.40 & -0.49 & 2.42 \\
+Horizontal & 0.55 & 0.47 & -0.26 & 2.14 \\
+Vertical & 0.59 & 0.40 & -0.49 & 2.42 \\
 \hline
 \multicolumn{5}{|l|}{Content} \\
 \hline
-Position & 0.74 & 0.27 & -0.81 & 2.95 \\
+Center & 0.74 & 0.27 & -0.81 & 2.95 \\
 Size & 0.44 & 0.49 & 0.28 & 2.47 \\
 Record & 0.46 & 0.61 & 0.22 & 1.89 \\
 Range & 0.19 & 0.74 & 1.49 & 5.51 \\
-Vert. Pos. & 0.57 & 0.26 & -0.45 & 3.63 \\
-Hor. Pos. & 0.63 & 0.24 & -0.80 & 3.58 \\
+Horizontal & 0.57 & 0.26 & -0.45 & 3.63 \\
+Vertical & 0.63 & 0.24 & -0.80 & 3.58 \\
 \hline
 \multicolumn{5}{|l|}{Noise} \\
 \hline
-Position & 0.41 & 0.65 & 0.58 & 2.16 \\
+Center & 0.41 & 0.65 & 0.58 & 2.16 \\
 Size & 0.12 & 0.94 & 2.32 & 9.37 \\
 Record & 0.34 & 0.74 & 0.81 & 2.74 \\
 Range & 0.05 & 1.40 & 4.37 & 26.83 \\
-Vert. Pos. & 0.53 & 0.61 & -0.06 & 1.44 \\
-Hor. Pos. & 0.56 & 0.53 & -0.15 & 1.69 \\
+Horizontal & 0.53 & 0.61 & -0.06 & 1.44 \\
+Vertical & 0.56 & 0.53 & -0.15 & 1.69 \\
 \hline
 \end{tabular}
 \end{table}
@@ -497,12 +498,12 @@ Hor. Pos. & 0.56 & 0.53 & -0.15 & 1.69 \\
 \hline
 feature & $\chi^2$ & ANOVA \\
 \hline
-Size     & 51.6426225  & 487.50116318 \\
-Position & 25.8025951  & 260.93679423 \\
-Range    & 23.1719961  & 232.44608713 \\
-Record   & 4.71168623  & 26.59572956 \\
-HPos     & 1.16942710  & 12.38250104 \\
-VPos     & 0.433793117 & 3.63505065 \\
+Size       & 51.6426225  & 487.50116318 \\
+Center     & 25.8025951  & 260.93679423 \\
+Range      & 23.1719961  & 232.44608713 \\
+Record     & 4.71168623  & 26.59572956 \\
+Vertical   & 1.16942710  & 12.38250104 \\
+Horizontal & 0.433793117 & 3.63505065 \\
 \hline
 \end{tabular}
 \end{table}
@@ -514,304 +515,78 @@ VPos     & 0.433793117 & 3.63505065 \\
   \label{fig:dataset}
 \end{figure}
 
-For each approach we've conducted 1,100 random runs/trials from which we remove
-the top 50 best results and bottom 50 worst results and reported the average
-precision, recall and f-score from the remaining 1,000 runs. At each run we
-partition the dataset randomly for training and validation.
-
-In our result tables we are using the following shortening when referring to
-feature names: size (\textbf{s}), position (\textbf{p}), range (\textbf{ra}),
-record (\textbf{re}) and angle (\textbf{a}). Their combinations is indicated
-using the plus signal (\textbf{+}) and the word '\textbf{all}' when all features
-are combined.
-
-We detail each experiment, discuss the results and, finally, compare each other.
-We will discuss the experiments in Subsections \ref{ss:gnb}, \ref{ss:log},
-\ref{ss:c5} and \ref{ss:svm} respectively.
-
-We have adopted the same procedure for all experiments: analyze isolated
-features, combine those with best results and add features with worst results,
-one by one, to check if they contribute to improve performance. Besides that we
-also run experiments combining the highlighted features in Table
-\ref{tab:featcorr} (the ones with higher correlation). We have summarized the
-results using the standard measures: precision, recall and f-score, plus we also
-provide, in the last column, f-score coefficient of variation (CV) to depict the
-f-score variability for each feature combination, the lower the CV the better
-because it is more likely we can get a result closer to the average out of a
-random run of the algorithm.
-
-\begin{verbatim}
-MODELPRECRECALLACCF-SCRCV					
-LR	90,26%	83,87%	87,60%	86,95%	-4,29%
-GNB	81,68%	87,03%	83,64%	84,27%	-5,09%
-KNN	87,75%	88,59%	88,35%	88,17%	-1,92%
-SVM	86,68%	88,97%	87,77%	87,81%	-3,47%
-EXTT	88,31%	88,59%	88,42%	88,45%	-4,05%
-XGBC	84,90%	90,54%	87,59%	87,63%	-2,54%
-ENSV	88,44%	89,36%	89,09%	88,90%	-3,40%
-STCK	88,87%	88,40%	88,76%	88,64%	-3,53%
-TPOT	88,60%	88,30%	88,52%	88,45%	-3,13%
-------------------------------
-
-MODEL PREC    RECALL  ACC     F-SCR   CV
-LR  : 93.23%; 89.33%; 90.61%; 91.24%
-GNB : 87.04%; 91.79%; 88.01%; 89.36%
-KNN : 90.04%; 90.14%; 89.30%; 90.09%
-SVM : 90.41%; 92.17%; 90.61%; 91.28%
-EXTT: 92.27%; 92.73%; 91.88%; 92.50%
-XGBC: 88.24%; 92.19%; 89.31%; 90.17%
-ENSV: 91.20%; 93.42%; 91.70%; 92.30%
-STCK: 92.02%; 92.32%; 91.58%; 92.17%
-TPOT: 91.54%; 91.62%; 90.91%; 91.58%
-\end{verbatim}
-
-\subsection{Gaussian Naive Bayes}\label{ss:gnb}
-We start our experiments with Naive Bayes approach. Table
-\ref{tab:nbfeatcombres} shows the results for several possible combinations of
-features. We can conclude from these results that, using Naive Bayes, the best
-feature alone is the ``size'' and the worst is ``record''. We can also see that
-not only it is the worst, but it is also counter productive because when
-combined with other features it yielded worst results.
-
-The best combination we found, for Naive Bayes approach, is achieved by removing
-``record'' from the feature set (f-score 88.31\%). All other features work in
-synergy (when we add one of them, we get better results). Although we have
-initially hypothesized that should exist some degree of proportionality between
-the number of records and their size, that does not seem to true in \textbf{this
-case} (using Gaussian Naive Bayes), according to these evidences.
+\section{Results}
+For each approach we've conducted 1,000 random runs/trials from which we
+reported the average precision, recall and f-score. At each run we partition the
+dataset randomly for training and cross-validation.
 
 \begin{table}[h]
 \centering
-\caption{Naive Bayes feature combination results.}
-\label{tab:nbfeatcombres}
-\begin{tabular}{ | l | l | l | l | l |}
+\caption{Results using dataset containing only structured content documents.}
+\label{tab:result}
+\begin{tabular}{| l | l | l | l | l |}
 \hline
-Features & Precision & Recall & F-score & CV \\
-\hline
-\multicolumn{5}{|l|}{Combination of features} \\
-\hline
-s+ra+p   & 0.914715 & 0.840427 & 0.875999 & 0.0171566 \\
-s+ra+p+a & 0.911097 & 0.856756 & \textbf{0.883092} & 0.0154882 \\
-s+ra+p+re& 0.922310 & 0.735077 & 0.818118 & 0.0460571 \\
-all      & 0.921546 & 0.739159 & 0.820337 & 0.0445733 \\
-\hline
-\multicolumn{5}{|l|}{Single feature} \\
-\hline
-s        & 0.914287 & 0.818580 & \textbf{0.863791} & 0.0163568 \\
-p        & 0.797262 & 0.820565 & 0.808745 & 0.0196024 \\
-ra       & 0.923057 & 0.617778 & 0.740176 & 0.0466489 \\
-a        & 0.581955 & 0.883760 & 0.701785 & 0.0248184 \\
-re       & 0.751081 & 0.132800 & \textcolor{red}{0.225695} & \textcolor{red}{1.7310500} \\
-\hline
-\multicolumn{5}{|l|}{Pairs of features with high correlation} \\
-\hline
-s+p      & 0.882599 & 0.856926 & \textbf{0.869573} & 0.0168241 \\
-s+ra     & 0.904398 & 0.826890 & 0.863909 & 0.0152281 \\
-p+ra     & 0.866504 & 0.822008 & 0.843670 & 0.0177351 \\
+Algorithm & Precision & Recall & Accuracy & F-score \\ \hline
+LR   & 93.30\% & 93.85\% & 93.02\% & 93.57\% \\
+GNB  & 91.97\% & 90.55\% & 90.62\% & 91.26\% \\
+KNN  & 93.83\% & 92.21\% & 92.59\% & 93.01\% \\
+SVM  & 93.60\% & 92.20\% & 92.37\% & 92.90\% \\
+EXTT & 91.88\% & 91.87\% & 91.23\% & 91.88\% \\
+XGBC & 90.75\% & 90.14\% & 89.74\% & 90.44\% \\
+ENSV & 93.92\% & 91.79\% & 92.37\% & 92.85\% \\
+STCK & 92.97\% & 92.20\% & 92.06\% & 92.59\% \\
 \hline
 \end{tabular}
 \end{table}
 
-\subsection{Logistic Regression}\label{ss:log}
-Next we proceed to logistic regression. Again we try several combinations
-features, starting with single features and building other combinations on top
-of these first results.
-
-Shown in Table \ref{tab:lrfeatcombres}, we see that the best isolated feature
-for this approach is ``position'' and worst is ``range''. Although ``record''
-performed well alone it showed the highest variability. This approach does not
-seem to work well with single features when compared to other approaches adopted
-in this paper, probably because this model is not fit for non-linearly separable
-data. But when we add other features, increasing dimensions, the results start
-to converge with the other approaches.
-
-The best combination we found for logistic regression uses all features (f-score
-86.05\%).
-
 \begin{table}[h]
 \centering
-\caption{Logistic regression feature combination results.}
-\label{tab:lrfeatcombres}
-\begin{tabular}{ | l | l | l | l | l |}
+\caption{Grid Search result: best set of features per algorithm.}
+\label{tab:featsel}
+\begin{tabular}{| l | l | l | l | l | l | l |}
 \hline
-Features & Precision & Recall & F-score & CV \\
-\hline
-\multicolumn{5}{|l|}{Combination of features} \\
-\hline
-all      & 0.872804 & 0.848496 & \textbf{0.860478} & 0.0178399 \\
-p+a+re+s & 0.864550 & 0.837602 & 0.850863 & 0.0184087 \\
-p+a+re+ra& 0.835755 & 0.838857 & 0.837303 & 0.0194044 \\
-%s+ra+p+a & 0.865408 & 0.808549 & 0.836013 & 0.0180523 \\
-%s+ra+p+re& 0.868641 & 0.830611 & 0.849201 & 0.0208313 \\
-%s+ra+p   & 0.854419 & 0.780766 & 0.815934 & 0.0189245 \\
-p+a+re   & 0.808337 & 0.828931 & 0.818505 & 0.0188616 \\
-\hline
-\multicolumn{5}{|l|}{Single feature} \\
-\hline
-s        & 0.977069 & 0.341960 & 0.506613 & 0.0561876 \\
-p        & 0.792757 & 0.823705 & \textbf{0.807935} & 0.0190436 \\
-ra       & 0.961880 & 0.102638 & \textcolor{red}{0.185483} & 0.1379820 \\
-a        & 0.550692 & 0.963034 & 0.700702 & 0.0223186 \\
-re       & 0.553701 & 0.923832 & 0.692406 & \textcolor{red}{0.2636230} \\
-\hline
-\multicolumn{5}{|l|}{Pairs of features with high correlation} \\
-\hline
-s+p      & 0.865122 & 0.753066 & \textbf{0.805214} & 0.0203305 \\
-s+ra     & 0.938936 & 0.657236 & 0.773228 & 0.0331775 \\
-p+ra     & 0.823153 & 0.773365 & 0.797483 & 0.0210066 \\
+Algorithm & Size & Pos. Center & Pos. H. & Pos. V. & Range & Record \\ \hline
+LR        & \cmark & \xmark & \cmark & \xmark & \cmark & \cmark \\
+GNB       & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
+EXTT      & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
+SVM       & \cmark & \xmark & \cmark & \cmark & \cmark & \cmark \\
+kNN       & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
+XGBC      & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
 \hline
 \end{tabular}
 \end{table}
 
-\subsection{kNN}\label{ss:knn}
-This algorithm worked better using only the features ``size'' and ``range''
-combined (f-score 87.06\%) as shown in Table \ref{tab:knnfeatcombres}. Whenever
-we add other features we get worst results with increased variability. kNN also
-presented high overall variability, other approaches tended to decrease
-variability when more features were added and presented only isolated cases with
-higher CV, whereas this one has a higher CV on most feature combinations.
-
 \begin{table}[h]
 \centering
-\caption{kNN feature combination results.}
-\label{tab:knnfeatcombres}
-\begin{tabular}{ | l | l | l | l | l |}
+\caption{Grid Search result: algorithm parameters.}
+\label{tab:params}
+\begin{tabular}{| l | l |}
 \hline
-Features & Precision & Recall & F-score & CV \\
-\hline
-\multicolumn{5}{|l|}{Combination of features} \\
-\hline
-all      & 0.909575 & 0.785409 & 0.842944 & 0.057421 \\
-s+ra+p+a & 0.918977 & 0.765377 & 0.835173 & 0.061300 \\
-s+ra+p+re& 0.923357 & 0.758758 & 0.833004 & 0.040087 \\
-s+ra+p   & 0.923587 & 0.742281 & 0.823068 & 0.058277 \\
-\hline
-\multicolumn{5}{|l|}{Single feature} \\
-\hline
-s  & 0.855220 & 0.842680 & 0.848910 & 0.017819 \\ 
-p  & 0.759754 & 0.798229 & 0.778517 & 0.024110 \\
-ra & 0.821240 & 0.842640 & 0.831803 & 0.020511 \\
-a  & 0.592757 & 0.612325 & 0.602382 & 0.042055 \\
-re & 0.621748 & 0.591872 & 0.606442 & 0.046740 \\
-\hline
-\multicolumn{5}{|l|}{Pairs of features with high correlation} \\
-\hline
-s+p      & 0.954587 & 0.539115 & 0.689070 & 0.097750 \\
-s+ra     & 0.842014 & 0.901301 & \textbf{0.870649} & 0.017291 \\
-p+ra     & 0.683811 & 0.960632 & 0.798922 & 0.032261 \\
+Algorithm & Parameters \\ \hline 
+LR        & $C = 1.0$ \\ 
+          & $penalty = L2$ \\
+          & $warm\_start = True$ \\ \hline
+GNB       & none \\ \hline
+EXTT      & $max\_features=0.8$ \\ 
+          & $criterion=entropy$ \\
+          & $warm\_start=False$ \\
+          & $n\_estimators=31$ \\
+          & $bootstrap=True$ \\
+          & $min\_samples_leaf=5$ \\ 
+          & $min\_samples_split=0.02$ \\ \hline
+SVM       & $kernel=poly$ \\
+          & $C=0.6$ \\
+          & $gamma=0.188$ \\ 
+          & $degree=3$ \\
+          & $shrinking=True$ \\ \hline
+kNN       & $weights=uniform$ \\
+          & $p=3$ \\
+          & $n\_neighbors=13$ \\ \hline
+XGBC      & $min\_child\_weight=9 $ \\
+          & $subsample=0.60$ \\ 
+          & $n\_estimators=92$ \\
 \hline
 \end{tabular}
 \end{table}
-
-\subsection{C5.0}\label{ss:c5}
-
-This technique\cite{c5.0} (as well as its preceding versions - ID3\cite{id3} and
-C4.5\cite{c4.5}) constructs a decision tree (or a set of rules) selecting first
-the features with lower entropy relative to the class/target attribute.
-The best combination of features found is ``size'', ``range'', ``position'' and
-``record'' (f-score 88.98\%). We can see in Table \ref{tab:c50featcombres} other
-combinations with very similar results (e.g., s+ra+p), we believe the reason for
-this is that the algorithm has build-in pruning heuristics, eliminating features
-that do not contribute significantly, lowering the complexity of the classifier
-and improving generalization. Considering this, s+ra+p should be a better pick
-than s+ra+p+re.
-
-\begin{table}[h]
-\centering
-\caption{C5.0 feature combination results.}
-\label{tab:c50featcombres}
-\begin{tabular}{ | l | l | l | l | l |}
-\hline
-Features & Precision & Recall & F-score & CV \\
-\hline
-\multicolumn{5}{|l|}{Combination of features} \\
-\hline
-all      & 0.884062 & 0.894603 & 0.889301 & 0.0157853  \\
-s+ra+p+a & 0.882084 & 0.893372 & 0.887692 & 0.0155015  \\
-s+ra+p+re& 0.884565 & 0.895041 & \textbf{0.889772} & 0.0158125  \\
-s+ra+p   & 0.884232 & 0.894208 & 0.889192 & 0.0164464  \\
-\hline
-\multicolumn{5}{|l|}{Single feature} \\
-\hline
-s        & 0.879768 & 0.874718 & \textbf{0.877236} & 0.0157662  \\
-p        & 0.764563 & 0.896252 & 0.825187 & 0.0234265  \\
-ra       & 0.808759 & 0.896646 & 0.850438 & 0.0236098  \\
-a        & 0.640404 & 0.775778 & 0.701621 & 0.0757501  \\
-re       & 0.677834 & 0.568221 & 0.618206 & 0.0670405  \\
-\hline
-\multicolumn{5}{|l|}{Pairs of features with high correlation} \\
-\hline
-s+p      &  0.886840 & 0.881957 & 0.884392 & 0.0155634 \\
-s+ra     & 0.883394 & 0.885894 & \textbf{0.884642} & 0.0164020 \\
-p+ra     & 0.861210 & 0.883945 & 0.872429 & 0.0170438 \\
-\hline
-\end{tabular}
-\end{table}
-
-\subsection{SVM}\label{ss:svm}
-
-\begin{table}[h]
-\centering
-\caption{SVM feature combination results.}
-\label{tab:svmfeatcombres}
-\begin{tabular}{ | l | l | l | l | l |}
-\hline
-Features & Precision & Recall & F-score & CV \\
-\hline
-\multicolumn{5}{|l|}{Combination of features} \\
-\hline
-all      & 0.900460 & 0.875131 & 0.887615 & 0.0151347 \\
-s+ra+p+a & 0.902895 & 0.872775 & 0.887580 & 0.0148896 \\
-s+ra+p+re& 0.907240 & 0.873625 & 0.890115 & 0.0157376 \\
-s+ra+p   & 0.905775 & 0.875056 & \textbf{0.890151} & 0.0150039 \\
-\hline
-\multicolumn{5}{|l|}{Single feature} \\
-\hline
-s        & 0.900371 & 0.850074 & \textbf{0.874500} & 0.0155069 \\
-p        & 0.780726 & 0.874462 & 0.824940 & 0.0191736 \\
-ra       & 0.866758 & 0.763723 & 0.811985 & 0.0215323 \\
-a        & 0.587373 & 0.853673 & 0.695917 & 0.0243024 \\
-re       & 0.529824 & 0.995518 & 0.691582 & 0.0236980 \\
-\hline
-\multicolumn{5}{|l|}{Pairs of features with high correlation} \\
-s+p      & 0.907346 & 0.856814 & \textbf{0.881356} & 0.0144878 \\
-s+ra     & 0.900025 & 0.853688 & 0.876244 & 0.0155736 \\
-p+ra     & 0.833709 & 0.868877 & 0.850930 & 0.0172262 \\
-\hline
-\end{tabular}
-\end{table}
-
-\subsection{Comparison}
-tabela com comparação de todas as abordagens, comentar que são abordagens
-supervisionadas vs heuristica não-supervisionada
-
-
-\begin{table}[h]
-\centering
-\caption{Results comparison.}
-\label{tab:results}
-\begin{tabular}{ | l | l | l | l | l | l |}
-\hline
-& Features & Precision & Recall & F-score & CV \\
-\hline
-GNB  & s+ra+p+a & \textbf{0.911097} & 0.856756 & 0.883092 & 0.0154882 \\
-LR   & all      & 0.872804 & 0.848496 & 0.860478 & 0.0178399 \\
-kNN  & s+ra     & 0.842014 & 0.901301 & 0.870649 & 0.017291 \\
-C5.0 & s+ra+p+re& 0.884565 & 0.895041 & 0.889772 & 0.0158125 \\
-\textbf{SVM} & s+ra+p   & 0.905775 & 0.875056 & \textbf{0.890151} & \textbf{0.0150039} \\
-\hline
-\end{tabular}
-\end{table}
-
-\iffalse
-\begin{verbatim}
-tech             prec    recall  F1
-gauss naiv bayes 98.64\% 57.03\% 72.27\% (very low recall, but highest precision)
-LR-SGD           92.11\% 82.03\% 86.78\% (simplest approach, acceptable results)
-c5.0             92.80\% 90.62\% 91.70\% (also useful for investigation)
-opt k-means      95.06\% 87.83\% 91.30\% (*) has drawbacks/ is biased
-svm rbf          95.65\% 85.94\% 90.53\% (equiv do linear, no need to use a kernel)
-svm linear       95.69\% 86.72\% 90.98\% (best option, simple with high precision)\end{verbatim}
-\fi
 
 \section{Conclusion}\label{sec:con}
