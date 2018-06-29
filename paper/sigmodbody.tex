@@ -527,10 +527,9 @@ Horizontal & 0.53 & 0.61 & -0.06 & 1.44 \\
 \end{figure}
 
 \section{Results}
-For each approach we've conducted 1,000 random runs/trials from which we
-reported the average precision, recall and f-score in Tables \ref{tab:result} and
-\ref{tab:resultnoise}.
-At each run we partition the dataset randomly for training and cross-validation.
+We have used 5-fold cross-validation to evaluate the performance of each model
+with respect to precision, recall, accuracy and F-Score. The results are shown
+in Tables \ref{tab:result} and \ref{tab:resultnoise}.
 
 \begin{table}[h]
 \centering
@@ -538,14 +537,14 @@ At each run we partition the dataset randomly for training and cross-validation.
 \label{tab:result}
 \begin{tabular}{| l | l | l | l | l |}
 \hline
-Algorithm & Precision & Recall & Accuracy & F-score \\ \hline
+Model & Precision & Recall & Accuracy & F-score \\ \hline
 LR   & 93.30\% & \textbf{93.85}\% & \textbf{93.02}\% & \textbf{93.57}\% \\
 GNB  & 91.97\% & 90.55\% & 90.62\% & 91.26\% \\
-KNN  & 93.83\% & 92.21\% & 92.59\% & 93.01\% \\
+KNN  & \textbf{93.83}\% & 92.21\% & 92.59\% & 93.01\% \\
 SVM  & 93.60\% & 92.20\% & 92.37\% & 92.90\% \\
 EXT  & 91.88\% & 91.87\% & 91.23\% & 91.88\% \\
 GB   & 90.75\% & 90.14\% & 89.74\% & 90.44\% \\
-VOT  & \textbf{93.92}\% & 91.79\% & 92.37\% & 92.85\% \\
+VOT  & 92.41\% & 92.20\% & 91.71\% & 92.31\% \\
 STCK & 92.97\% & 92.20\% & 92.06\% & 92.59\% \\
 \hline
 \end{tabular}
@@ -557,14 +556,14 @@ STCK & 92.97\% & 92.20\% & 92.06\% & 92.59\% \\
 \label{tab:resultnoise}
 \begin{tabular}{| l | l | l | l | l | l |}
 \hline
-Algorithm & Precision & Recall & Accuracy & F-score & Drop \\ \hline
-LR   & 87.97\% & \textbf{92.13}\% & 89.45\% & 90.00\% & -3.57\% \\
+Model & Precision & Recall & Accuracy & F-score & Drop \\ \hline
+LR   & 87.97\% & 92.13\% & 89.45\% & 90.00\% & -3.57\% \\
 GNB  & 89.69\% & 88.99\% & 89.47\% & 89.34\% & -1.92\% \\
 KNN  & 89.72\% & 90.56\% & 90.02\% & 90.14\% & -2.87\% \\
 SVM  & 89.51\% & 92.12\% & 90.77\% & 90.79\% & -2.11\% \\
 EXT  & 88.80\% & 88.43\% & 88.71\% & 88.61\% & -3.27\% \\
 GB   & 90.13\% & 88.97\% & 89.65\% & 89.55\% & \textbf{-0.89}\% \\
-VOT  & \textbf{90.73}\% & 92.12\% & \textbf{91.33}\% & \textbf{91.42}\% & -1.43\% \\
+VOT  & \textbf{90.45}\% & \textbf{92.52}\% & \textbf{91.33}\% & \textbf{91.47}\% & -1.38\% \\
 STCK & 89.93\% & 91.81\% & 90.73\% & 90.86\% & -1.73\% \\
 \hline
 \end{tabular}
@@ -576,7 +575,7 @@ STCK & 89.93\% & 91.81\% & 90.73\% & 90.86\% & -1.73\% \\
 \label{tab:featsel}
 \begin{tabular}{| l | l | l | l | l | l | l |}
 \hline
-Algorithm & Size & Center & Horizontal & Vertical & Range & Record \\ \hline
+Model & Size & Center & Horizontal & Vertical & Range & Record \\ \hline
 LR        & \cmark & \xmark & \cmark & \xmark & \cmark & \cmark \\
 GNB       & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
 EXT       & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
@@ -593,7 +592,7 @@ GB        & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
 \label{tab:params}
 \begin{tabular}{| l | l |}
 \hline
-Algorithm & Parameters \\ \hline 
+Model & Parameters \\ \hline 
 LR        & $C=1.0$ \\ 
           & $penalty=L2$ \\
           & $warm\_start=True$ \\ \hline
@@ -616,9 +615,9 @@ kNN       & $weights=uniform$ \\
 GB        & $min\_child\_weight=9 $ \\
           & $subsample=0.60$ \\ 
           & $n\_estimators=92$ \\ \hline
-VOT       & $clfs=[SVM, KNN, GB]$ \\
-          & $weights=[1.0, 0.5, 0.5]$ \\ \hline
-STCK      & $classifiers=[GNB, SVM, KNN, GB]$ \\
+VOT       & $clfs=[GNB, SVM, kNN, GB]$ \\
+          & $weights=[0.5, 1.0, 0.5, 0.5]$ \\ \hline
+STCK      & $classifiers=[GNB, SVM, kNN, GB]$ \\
           & $meta\_classifier=LogisticRegression$ \\          
 \hline
 \end{tabular}
