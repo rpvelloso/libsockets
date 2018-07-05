@@ -237,10 +237,10 @@ content (and not noise) is directly proportional to its size.
 Figure \ref{fig:size} shows an example where the entire document sequence has
 size equal to 1,336 and the main content region subsequence has size 618. The
 size feature in this case, using Equation \ref{eq:size}, is equal to
-$\frac{618}{1,336} = 0,4625 = 46.25\%$.
+$\frac{618}{1,336} = 46.25\%$.
 
 \begin{equation}\label{eq:size}
-    sizeFeat = \frac{regionSize}{documentSize}
+    sizeFeat = \frac{regionSize}{sequenceSize}
 \end{equation}
 
 \subsection{Position Features}\label{ss:pos}
@@ -270,11 +270,11 @@ document, the higher the probability it refers to real content.
 Figure \ref{fig:position} shows an example where the document center is at
 position 667 (this is the maximum distance allowed) and main content region
 subsequence center is at position 783, at a distance of 117 from document
-center. The value of this feature, using Equation \ref{eq:position}, is equal to
-$1- \frac{117}{667} = 82.46\%$
+center. The value of this feature, using Equation \ref{eq:cposition}, is equal
+to $1- \frac{117}{667} = 82.46\%$
 
-\begin{equation}\label{eq:position}
-    positionFeat = 1 - \frac{distance}{documentCenter}
+\begin{equation}\label{eq:cposition}
+    centerPositionFeat = 1 - \frac{|regionCenter - sequenceCenter|}{sequenceCenter}
 \end{equation}
 
 With respect to the vertical and horizontal position, we believe they are needed
@@ -286,21 +286,34 @@ these two features would, probably, be of little value to us.
 
 Figure \ref{fig:position} shows how the horizontal and vertical positions are
 calculated. The horizontal position is the distance from the center of the
-region to the end of the document. Using Equation \ref{}, the value of this
-feature igual to $ $. The vertical position is the distance from the horizontal
-center of the region (i.e., its average value) to the horizontal end of the
-sequence (i.e., its maximum value). Using Equation \ref{}, the value of this
-features is equal to $ $.
+region to the end of the sequence. Using Equation \ref{eq:vposition}, the value
+of the horizontal position, in this example, is equal to $\frac{554}{1,336} =
+41.47\%$.
+
+\begin{equation}\label{eq:hposition}
+    horizontalPositionFeat = \frac{sequenceSize - regionCenter}{sequenceSize}
+\end{equation}
+
+The vertical position is the distance from the vertical
+center of the region (i.e., its average value) to the vertical end of the
+sequence (i.e., its maximum value). Using Equation \ref{eq:vposition}, the value
+of the vertical position, in this example, is equal to $\frac{263}{391} =
+67.26\%$.
+
+\begin{equation}\label{eq:vposition}
+    verticalPositionFeat = \frac{avg(region)}{max(sequence)}
+\end{equation}
 
 Throughout this paper we will refer to these features as ``center'',
-``horizontal'' and ``vertical'' positions.
+``horizontal'' and ``vertical'' features.
 
 \subsection{Range Feature}\label{ss:range}
 The range feature is a real number, between 0 and 1, that represents the
-percentage of the region range relative to the entire document. It is analogous
+percentage of the region range relative to the entire sequence. It is analogous
 to the Size Feature (Subsection \ref{ss:size}) only it is vertical instead of
-horizontal. The range is simply the maximum value found in the sequence (or
-subsequence) minus the minimum value.
+horizontal. The region range is simply the maximum value found in the sequence
+(or subsequence) minus the minimum value and the sequence range is equivalent
+to its maximum value.
 
 \begin{figure}[h]
   \centering
@@ -315,16 +328,16 @@ document range is equal to 391. The value of this feature, using Equation
 document range.
 
 \begin{equation}\label{eq:range}
-    rangeFeat = \frac{regionRange}{documentRange}
+    rangeFeat = \frac{regionRange}{max(sequence)}
 \end{equation}
 
 \subsection{Record Feature}\label{ss:rec}
-We use the ratio between the number of records and their average size as feature
-to indicate if a region is content or noise. We hypothesize that the lack of
-proportion\footnote{i.e., a lot of small records or few large records} between
-this two measures indicates noise and, conversely, the closer they are from one
-another the more likely the region is content. We calculate this value as shown
-in Equation \ref{eq:recsize}.
+We use the ratio between the number of records and their average size as a
+feature to indicate if a region is content or noise. We hypothesize that the
+lack of proportion\footnote{i.e., a lot of small records or few large records}
+between this two measures (record count and record size) indicates noise and,
+conversely, the closer they are from one another the more likely the region is
+content. We calculate this value as shown in Equation \ref{eq:recsize}.
 
 \begin{equation}\label{eq:recsize}
 recRatioFeat = \frac{min(numRecs, recCount)}{max(numRecs, recCount)}
@@ -335,11 +348,12 @@ denominator in Equation \ref{eq:recsize} is always greater or equal to the
 numerator.
 
 This two measures are obtained as documented in
-\cite{Velloso:2017:ERW:3132847.3132875}, using the region's Fourier transform.
-Figure \ref{fig:fft} shows the power spectrum density of the main content region
-and its respective record count and average record size. In this example the
-number of records detected is 20 and the average size is 31, so the value of the
-feature, using Equation \ref{eq:recsize}, is equal do $\frac{20}{31}=64.51\%$
+\cite{Velloso:2017:ERW:3132847.3132875}, using the region's power spectrum
+density (PSD).
+Figure \ref{fig:fft} shows the PSD of the main content region
+and its detected record count and average record size. In this example the
+number of records detected is 20 and their average size is 31, so the value of
+the feature, using Equation \ref{eq:recsize}, is equal do $\frac{20}{31}=64.51\%$
 
 \begin{figure}[h]
   \centering
@@ -685,4 +699,23 @@ STCK      & $classifiers=[GNB, SVM, kNN, GB]$ \\
 \end{tabular}
 \end{table}
 
-\section{Conclusion}\label{sec:con}
+\section{Conclusion and Future Work}\label{sec:con}
+In our research, thru observation, we have come up with the hypothesis depicted
+here, for each feature and, thru experimentation, we have confirmed these
+hypothesis in two different situations:
+in a controlled setting (with 93.57\% F-Score using Logistic Regressor) and; in
+an open environment (with 91.47\% F-Score using a heterogeneous voting
+ensemble). We believe that these results are very good, specially
+considering we are using only very basic information (size, position, etc.) to
+distinguish between content and noise.
+
+We have also demonstrated the relevance of these features to the problem
+by testing every possible combination of features.
+
+Nonetheless, there is always room for improvements. Adding other features
+to the problem, perhaps using semantic features combined with the ones
+proposed here, should be investigated. With an increased number of features,
+testing all combinations becames prohibitive, other approaches should then be
+employed (e.g., genetic algorithms) to find a good combination of features.
+
+
