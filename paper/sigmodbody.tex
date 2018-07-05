@@ -21,9 +21,9 @@ to noise (menus, template, ads), this amount is more than enough to completely
 compromise extraction precision.
 Since structured data can exist in any kind of web document, whether main
 content is structured or not, we must be able to identify it correctly
-independently from its source, even when there is no structured content, e.g. we
-must be able to identify noise in a textual document as well as in a
-semi-structured one.
+independently from its source, even when there is no structured content, i.e.
+we must be able to identify noise in a document whose main content is textual
+as well as in a document whose main content is semi-structured.
 So, once we have extracted the structured content from a document, how can we
 classify it as content or noise? We could not find in literature, nor did we
 reach a deterministic and closed form way of doing this, for this reason we
@@ -33,19 +33,19 @@ Our goal is to classify \textbf{structured data}, specifically, as content or
 noise, but without restricting ourselves to \textbf{structured content}
 documents (i.e., we also want to detect structured noise in textual content
 documents). This is a desirable property in order to avoid manual intervention
-(selecting only certain types of documents for processing) since the web is
-completely heterogeneous in all aspects.
+(selecting only certain types of documents for processing) for the web is
+completely heterogeneous in all aspects. But we also evaluated the models in a
+controlled setting, when the web pages are known beforehand to have structured
+content. This scenario is not unreallistic (e.g., a focused crawler that
+retrieves only search result records from e-commerce sites), altought it does
+demands more manual intervention.
 
 % related work
 Previous attempts at this problem, such as \cite{Densiometric08,Noisy03,
 Boilerplate10, vieira2006fast}, were targeted at textual content, their
 performance is measured in tasks such as clustering and classification of web
-pages, not in terms of records extracted.
-
-% {\textcolor{red}{esta frase anterior está meio esquisita}}
- 
-It is also not clear whether or not these approaches can
-be used with structured content, they might remove part of the content,
+pages, not in terms of records extracted. It is also not clear whether or not
+these approaches can be used with structured content, they might remove part of the content,
 believing it is noise, without affecting clustering, but this removal would most
 likely impair record extraction.
  
@@ -57,7 +57,7 @@ likely impair record extraction.
 structured content, can not be used in an open environment (i.e., one where we
 encounter any kind of content: textual, structured  or hybrid), they assume only
 structured content will be processed. Although this is not completely
-unrealistic it is also not general, demanding more controlled environments of
+unrealistic it is also not as general, demanding more controlled environments of
 execution (i.e., more manual intervention needed).
 
 % {\textcolor{red}{este parágrafo está trazendo a discussão de não
@@ -78,9 +78,10 @@ execution (i.e., more manual intervention needed).
 
 % proposed approach
 In this paper, we analyze several possible supervised machine learning models
-for structured content detection. Our investigation considered five machine
-learning techniques (Naive Bayes, Support Vector Machine, k Nearest Neighbours,
-C5.0 and Logistic Regression) and several combinations of features within each
+for structured content detection. Our investigation considered eight machine
+learning techniques (Logistic Regression, Gaussian Naive Bayes, k Nearest
+Neighbours, Support Vector Machine, Extra Trees, Gradient Boosting, Voting and
+Stacking Ensembles) and all possible combinations of features within each
 approach to find the one that suited best in each case. For the extraction phase
 we choose the method proposed in \cite{Velloso:2017:ERW:3132847.3132875} because
 of the good quality of the results, its feasibility in a production environment
@@ -93,15 +94,18 @@ available for download, allowing reproducibility of results.
 % justificativas técnicas e fim de papo}}
 The features proposed here are produced during the extraction phase, we just
 normalize their values, adding no overhead to the pipeline (once we have the
-model trained). We have attained 89\% F-Score in a dataset consisting of 266
-different HTML documents from various domains. The novelty presented here lies
-in the nature of the features. We are using an alternative representation for
-the web documents, to the best of our knowledge this representation was first
-introduced in \cite{TPC09}, and until now we have not found any content/noise
-detection proposal using features derived from this representation. Our
-investigation showed these features can be used to solve this problem
-effectively. 
-%{\textcolor{red}{DOM tree?? como assim, de onde saiu? Não fale em DOM tree na
+model trained). We have attained 94\% F-Score in a dataset consisting of 266
+different HTML documents from various domains with structured content and 90\%
+F-Score in a dataset with 327 different HTML documents, some with unstructured
+content (same 266 structured documents, plus 61 unstructured documents mostly
+from blogs, news, etc.).
+The novelty presented here lies in the nature of the features. We are using an
+alternative representation for the web documents, to the best of our knowledge
+this representation was first introduced in \cite{TPC09}, and until now we have
+not found any content/noise detection proposal using features derived from this
+representation. Our investigation showed these features can be used to solve
+this problem effectively and efficiently.
+% {\textcolor{red}{DOM tree?? como assim, de onde saiu? Não fale em DOM tree na
 % introdução, se estás em um nível de abstração maior... aqui, por
 % enquanto, é tudo HTML documents}}
 
@@ -111,7 +115,8 @@ present a brief review of related works; in Section \ref{sec:prelim} we
 reproduce some concepts needed for the understanding of our work; in Section
 \ref{sec:content} we describe and illustrate each feature used in solving the
 problem of content detection; in Section \ref{sec:exp} we detail and discuss the
-experiments conducted; and in Section \ref{sec:con} we present our conclusions.
+experiments conducted; in Section \ref{sec:results} we analyze the results
+achieved and; in Section \ref{sec:con} we present our conclusions.
 
 \section{Related Work}\label{sec:related}
 
@@ -160,7 +165,8 @@ rendering-based approaches. This extraction technique uses an alternative
 representation for the web documents, a \textbf{tag path sequence} (or TPS), and
 here we detail this representation. The understanding of this alternate
 representation is needed because the features we use to classify content and
-noise are derived from it.
+noise are derived from it. For a more thorough explanation we refer the reader
+to the work in \cite{Velloso:2017:ERW:3132847.3132875}.
 
 \begin{definition}\textbf{(Tag Path)} is a string describing the path from the
 root node of the DOM tree to every other node in the tree. For example:
@@ -182,9 +188,15 @@ set of TPCode used for that the sequence. In this paper we also refer to TPS as
 simply ``sequence''.
 \end{definition}
 
+The translation process from DOM tree representation to tag path sequence is
+depicted in Figure \ref{fig:tree2seq}. The HTML code is converted to a DOM tree
+in Step 1; the DOM tree is converted to a sequence of tag paths in Step 2 and;
+in Step 3 the TPS is built by assigning TPCodes to each tag path. 
+
 \begin{figure}[h]
   \centering
-     \includegraphics[trim={1.0cm 2.0cm 1.5cm 1.0cm}, clip,  width=\columnwidth]{img/tree2seq.pdf}
+     \includegraphics[trim={1.0cm 2.0cm 1.5cm 1.0cm}, clip, 
+     width=1.0\columnwidth]{img/tree2seq.pdf}
   \caption{Conversion of HTML snippet to a tag path sequence.}
   \label{fig:tree2seq}
 \end{figure}
@@ -192,15 +204,17 @@ simply ``sequence''.
 \section{Content Detection}\label{sec:content}
 In order to distinguish which structured regions are content and which are noise
 we consider six region features, such as: size, center position, horizontal
-position, vertical position, range and record proportion (count vs size).
+position, vertical position, range and record proportion (record count vs
+record size).
 
 These features were chosen because we believe (that is our hypothesis) they
 characterize the problem well and thus, can be helpful in solving the problem.
-They can also be easily acquired from the extraction technique we are relying
-on.
+As an extra, they can also be easily acquired from the extraction technique we
+are relying on.
 
-We will discuss each feature in Subsections \ref{ss:size}, \ref{ss:pos},
-\ref{ss:range} and \ref{ss:rec} respectively.
+We will discuss each feature (size, positions, range and record proportion) in
+Subsections \ref{ss:size}, \ref{ss:pos}, \ref{ss:range} and \ref{ss:rec}
+respectively.
 
 \subsection{Size Feature}\label{ss:size}
 The region size feature is a real number, between 0 and 1, that represents the
@@ -236,10 +250,10 @@ and 1. The \textbf{center position} represents the distance from the center of
 the region to the center of the document; the \textbf{horizontal position} is
 the distance from the center of the region to the end of the document and; the
 \textbf{vertical position} is the distance from the vertical center of the
-region to the maximum value of the document.
+region to the maximum value of the sequence.
 
 With respect to the center position, the maximum possible distance is equal to
-half document size (e.g, when a region has size one and sits at the start/end of
+half sequence size (e.g, when a region has size one and sits at the start/end of
 the document). The value of this feature is a percentage representing how close
 a region is from the center of the document (i.e., it is the distance
 complement). The rationale of our hypothesis for this feature is similar to the
@@ -263,19 +277,19 @@ $1- \frac{117}{667} = 82.46\%$
     positionFeat = 1 - \frac{distance}{documentCenter}
 \end{equation}
 
-With respect to the vertical and horizontal position, they are needed to provide
-a better indication of a region's position, \textbf{specially} when a document
-has no structured content (only structured noise), in this situation a noisy region
-will be closer to the extremes of the document, and more distant from its
-center. If we were concerned only about documents with structured content, these
-two features would, probably, be of little value to us. 
+With respect to the vertical and horizontal position, we believe they are needed
+to provide a better indication of a region's position, \textbf{specially} when a
+document has no structured content (only structured noise), in this situation a
+noise region will be closer to the center of the sequence and further away from
+its extremes. If we were concerned only about documents with structured content,
+these two features would, probably, be of little value to us.
 
 Figure \ref{fig:position} shows how the horizontal and vertical positions are
 calculated. The horizontal position is the distance from the center of the
 region to the end of the document. Using Equation \ref{}, the value of this
 feature igual to $ $. The vertical position is the distance from the horizontal
 center of the region (i.e., its average value) to the horizontal end of the
-document (i.e., its maximum value). Using Equation \ref{}, the value of this
+sequence (i.e., its maximum value). Using Equation \ref{}, the value of this
 features is equal to $ $.
 
 Throughout this paper we will refer to these features as ``center'',
@@ -367,48 +381,58 @@ Throughout this paper we will refer to this feature as ``record'' feature.
 % avaliacao com numero plotados nos gráficos)}%}
 
 In this section we detail the experiments we conducted using supervised machine
-learning techniques with the features from Section \ref{sec:content}.
-The objectives of this experiments are to determine the subset of features which
-are important in this classification problem and measure the classification
-performance in terms of precision, recall and f-score.
+learning techniques with the features from Section \ref{sec:content}. We also
+characterize the dataset used in the experiments, its statistical propoerties,
+features correlation, etc. The objectives of this experiments are to determine
+the parameters and the subset of features which are important in this
+classification problem and measure the classification performance in terms of
+precision, recall, accuracy and f-score.
 We have considered, in our study, the following machine learning techniques:
 gaussian naive Bayes (GNB), logistic regression (LR), k Nearest Neighbours
 (kNN), Gradient Boosting (GB), Extra-trees (EXT), Support Vector Machine (SVM),
-Voting Ensemble (VOT) and Stacking Ensemble (STCK). These experiments were
-conducted using scikit-learn\cite{scikit-learn} framework. For the gradient
-boosting we used XGBoost\cite{Chen:2016:XST:2939672.2939785}
-and for the ensembles we used MLxtend's\cite{raschkas_2018_mlxtend}
-implementation.
+Voting Ensemble (VOT) and Stacking Ensemble (STCK). The voting and stacking
+ensembles are heterogeneous ensembles and are built from combinations of all the
+other models (GNB, LR, kNN, SVM, GB and EXT). These experiments were conducted
+using scikit-learn\cite{scikit-learn} framework. For the gradient boosting we
+used XGBoost\cite{Chen:2016:XST:2939672.2939785} and for the ensembles we used
+MLxtend's\cite{raschkas_2018_mlxtend} implementation.
 
-We have conducted experiments to determine the best combination of features,
-within each approach, for solving the problem of distinguishing noise from
-content. To do so we ran a grid search for each algorithm with all feature
-combinations, since the number of possible combinations, for six features, is
-not prohibitive (only 63 in total).
+We have conducted experiments to determine the best combination of parameters
+and features, within each approach, for solving the problem of distinguishing
+noise from content. To do so we ran a grid search for each algorithm with all
+feature combinations since the number of possible combinations, for six
+features, is not prohibitive (only 63 in total).
 After that we have used grid search, again, to select the best parameters for
 each algorithm. The feature set for each algorithm is documented in Table
-\ref{tab:featsel} and the parameters in Table \ref{tab:params}.
+\ref{tab:featsel} and the parameters in Table \ref{tab:params} (more details
+on that in Section \ref{sec:results}).
 
 For these experiments we have used a dataset consisting of 266 HTML documents
 with structured content from various domains (news, banking, hotels, car rental,
-tickets, electronics), plus 61 documents without structured content, totalizing
-327 documents.
+tickets, electronics), plus 61 documents \textbf{without} structured content,
+totalizing 327 documents. The documents without structured content were added to
+the dataset to investigate the behaviour of the classifiers in the presence of
+this type of input.
 We use only one page per site to avoid introducing bias towards specific sites
 and/or templates\footnote{this is possible because the extraction approach used
 also works with a single page input}. These documents were processed using the
 technique proposed in \cite{Velloso:2017:ERW:3132847.3132875}, resulting in a
 total of 533 regions that were manually labeled as content or noise (menus, ads,
-template, etc). This is the input dataset used for cross-validation and it is
-summarized in Table \ref{tab:dataset}. Figure \ref{fig:dataset} shows a scatter
-plot of each feature, separately, with respect to the target class (content vs
-noise), it gives a rough idea of how content and noise are intertwined. Table
-\ref{tab:stat} shows mean and CV for all features with respect to the target
-class.
+template, etc). This is the input dataset used for training and cross-validation
+and it is summarized in Table \ref{tab:dataset}. Figure \ref{fig:dataset} shows
+a scatter plot of each feature, separately, with respect to the target class
+(content vs noise), it gives a rough idea of how content and noise are
+intertwined. 
 
-Table \ref{tab:featcorr} shows the correlation between all features. We see that
+Table \ref{tab:stat} shows mean, coefficient of variation (CV), skewness and
+kurtosis for all features with respect to the target class. Table
+\ref{tab:featcorr} shows the correlation between all features. We see that
 ``size'' vs ``position'', ``size'' vs ``range'' and ``position'' vs ``range''
-have a stronger correlation compared to others. These same three features,
-according to Table \ref{tab:importance}, are also the most important ones.
+have a stronger correlation compared to others, this fact reflected in feature
+selection for some models.
+These same three features, according to Table \ref{tab:importance}, are also
+the most important ones. The ranking of features, with both criterias (ANOVA and
+$\chi^2$) yielded the same result.
 
 % \textcolor{red}{as legendas das figuras estao iguais... além disso, eu
 % colocaria a legenda de noise e content mais visivel (está escondida, eu
@@ -430,7 +454,7 @@ Total & 533 & 100.00 \\
 
 \begin{table}[h]
 \centering
-\caption{Feature Importance (feature vs class).}
+\caption{Relative Feature Importance (feature vs class).}
 \label{tab:importance}
 \begin{tabular}{| l | l | l |}
 \hline
@@ -525,10 +549,21 @@ Horizontal & 0.53 & 0.61 & -0.06 & 1.44 \\
   \label{fig:dataset}
 \end{figure}
 
-\section{Results}
-We have used 5-fold cross-validation to evaluate the performance of each model
-with respect to precision, recall, accuracy and F-Score. The results are shown
-in Tables \ref{tab:result} and \ref{tab:resultnoise}.
+\section{Results}\label{sec:results}
+We have used 5-fold cross-validation to evaluate the performance
+of each model with respect to precision, recall, accuracy and F-Score. The
+average results of 200 runs is shown in Tables \ref{tab:result} and
+\ref{tab:resultnoise}.
+
+When we omit the documents without structured content we get the results
+shown in Table \ref{tab:result}. The best model was the Logistic Regressor (LR),
+with 93.57\% F-score. In this application we should prioritize precision
+(the web is vast and full of noise), with that in mind kNN performed a little
+better, with almost 94\% precision. So, in a controlled enviromnment, where we
+can guarantee the input will always contain structured content, the features we
+elected were enough to achieve very good results with relatively simple models
+(kNN and LR). No need to use more elaborate approaches and/or ensembles in this
+setting.
 
 \begin{table}[h]
 \centering
@@ -549,6 +584,25 @@ STCK & 92.97\% & 92.20\% & 92.06\% & 92.59\% \\
 \end{tabular}
 \end{table}
 
+When we consider the full dataset, including the documents without structured
+content, we get the results shown in Table \ref{tab:resultnoise}. As expected
+there is a drop in F-Score. The amount of unstructured documents corresponds,
+roughly, to 18\% of the entire dataset and yet we were able attain negative
+variations in F-Score lower than 1\%, for this reason we consider this results
+to be very significant as they show it is possible to identify noise no matter
+the content is structured or not. The most prominent drop, ironically, occurs
+with Logistic Regressior (which performed best with only structured content
+documents).
+Gradient Boosting (GB), altough not the best performing model in either setting,
+showed the lowest impact in F-Score. Another interesting result we see is that
+all ensembles (VOT, STCK and GB) have relatively low drop in F-Score (the lowest
+ones, in fact), with the exception of ExtraTrees (EXT) ensemble, which is the
+second largest.
+For this setting, where we have no guarantee that the documents have structured
+content (only that they may have structured noise), the best option would be the
+Voting heterogeneous ensemble with F-Score of 91.47\% and largest precision
+(above 90\%).
+
 \begin{table}[h]
 \centering
 \caption{Results using complete dataset (including unstructured documents).}
@@ -556,11 +610,11 @@ STCK & 92.97\% & 92.20\% & 92.06\% & 92.59\% \\
 \begin{tabular}{| l | l | l | l | l | l |}
 \hline
 Model & Precision & Recall & Accuracy & F-score & Drop \\ \hline
-LR   & 87.97\% & 92.13\% & 89.45\% & 90.00\% & -3.57\% \\
+LR   & 87.97\% & 92.13\% & 89.45\% & 90.00\% & \textbf{\textcolor{red}{-3.57}}\% \\
 GNB  & 89.69\% & 88.99\% & 89.47\% & 89.34\% & -1.92\% \\
 KNN  & 89.72\% & 90.56\% & 90.02\% & 90.14\% & -2.87\% \\
 SVM  & 89.51\% & 92.12\% & 90.77\% & 90.79\% & -2.11\% \\
-EXT  & 88.80\% & 88.43\% & 88.71\% & 88.61\% & -3.27\% \\
+EXT  & 88.80\% & 88.43\% & 88.71\% & 88.61\% & \textbf{\textcolor{red}{-3.27}}\% \\
 GB   & 90.13\% & 88.97\% & 89.65\% & 89.55\% & \textbf{-0.89}\% \\
 VOT  & \textbf{90.45}\% & \textbf{92.52}\% & \textbf{91.33}\% & \textbf{91.47}\% & -1.38\% \\
 STCK & 89.93\% & 91.81\% & 90.73\% & 90.86\% & -1.73\% \\
@@ -568,19 +622,28 @@ STCK & 89.93\% & 91.81\% & 90.73\% & 90.86\% & -1.73\% \\
 \end{tabular}
 \end{table}
 
+We show in Table \ref{tab:featsel} the best performing features for each model.
+Almost all models used all features, this shows that all features are relevant
+to the problem and somehow contribute to the solution. The exceptions are the
+Logistic Regressor and SVM. The Logistic Regressor achieved the best results
+without features ``center'' and ``vertical'' and SVM without feature ``center'',
+that is probably due to the high correlation with other features. We can see in
+Table \ref{tab:featcorr} thsat ``center'' has a considerable correlation with
+``size'' and ``vertical'' with ``horizontal''.
+
 \begin{table}[h]
 \centering
 \caption{Grid Search result: best set of features per algorithm.}
 \label{tab:featsel}
 \begin{tabular}{| l | l | l | l | l | l | l |}
 \hline
-Model & Size & Center & Horizontal & Vertical & Range & Record \\ \hline
-LR        & \cmark & \xmark & \cmark & \xmark & \cmark & \cmark \\
-GNB       & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
-EXT       & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
-SVM       & \cmark & \xmark & \cmark & \cmark & \cmark & \cmark \\
-kNN       & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
-GB        & \cmark & \cmark & \cmark & \cmark & \cmark & \cmark \\
+Model     & Size   & Center & Range  & Record & Vertical & Horizontal \\ \hline
+LR        & \cmark & \xmark & \cmark & \cmark & \xmark   & \cmark     \\
+GNB       & \cmark & \cmark & \cmark & \cmark & \cmark   & \cmark     \\
+EXT       & \cmark & \cmark & \cmark & \cmark & \cmark   & \cmark     \\
+SVM       & \cmark & \xmark & \cmark & \cmark & \cmark   & \cmark     \\
+kNN       & \cmark & \cmark & \cmark & \cmark & \cmark   & \cmark     \\
+GB        & \cmark & \cmark & \cmark & \cmark & \cmark   & \cmark     \\
 \hline
 \end{tabular}
 \end{table}

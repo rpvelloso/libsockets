@@ -33,10 +33,11 @@
 
 \begin{document}
 
-\copyrightyear{2018} 
-\acmYear{2018} 
+\copyrightyear{2019} 
+\acmYear{2019} 
 \setcopyright{acmcopyright}
-\acmConference{CIKM'18 }{October 22--26, 2018}{Turin, Italy}\acmPrice{15.00}\acmDOI{}\acmISBN{}
+\acmConference{SIGMOD'19 }{June 30--July 5, 2019}{Amsterdam,
+Netherlands}\acmPrice{15.00}\acmDOI{}\acmISBN{}
 
 \fancyhead{}
 \settopmatter{printacmref=false, printfolios=false}
@@ -62,7 +63,23 @@
 \email{dorneles@inf.ufsc.br}
 
 \begin{abstract}
-    In this paper we present a comparative study using five supervised machine learning techniques to solve the problem of classifying content and noise in web pages. We specifically tackle the problem of detecting content in semi-structured data (e.g., e-commerce search results) using only syntactical information. The features used are obtained from a preexisting and publicly available extraction technique that processes web pages as a sequence of tag paths, thus the features are extracted from these sequences instead of the DOM tree. Besides comparing the performance between different techniques we have also conducted extensive features selection/combination experiments. We have achieve an average F-score of about 89\% using only syntactical information.
+    In this paper we present a comparative study using several supervised 
+    machine learning techniques, including homogeneous and heterogeneous
+    ensembles, to solve the problem of classifying content and noise in web
+    pages. We specifically tackle the problem of detecting content in 
+    semi-structured data (e.g., e-commerce 
+    search results) using only syntactical information under two different
+    settings: a controlled environment with only structured content documents
+    and; an open environment where the web page being processed may or may
+    not have structured content.
+    The features used are obtained from a preexisting and publicly available extraction 
+    technique that processes web pages as a sequence of tag paths, thus 
+    the features are extracted from these sequences instead of the DOM 
+    tree. Besides comparing the performance between different models 
+    we have also conducted extensive feature selection/combination 
+    experiments. We have achieve an average F-score of about
+    94\% in a controlled setting and 90\% in an open setting, using only
+    syntactical information.
 \end{abstract}
 
 %
