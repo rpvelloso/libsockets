@@ -461,17 +461,21 @@ $\chi^2$) yielded the same result.
 % colocaria a legenda de noise e content mais visivel (est√° escondida, eu
 % demorei para achar ...:) ) }
  
-\textcolor{red}{esta tabela poderia ter a quantidade de documentos estruturados e a quantidade de documentos n„o estruturados, j· que trata de um resumo sobre o dataset} 
 \begin{table}[h]
 \centering
 \caption{Input dataset summary.}
 \label{tab:dataset}
 \begin{tabular}{ | l | l | r |}
 \hline
-\# Content Regions & 254 & 47.65 \\
-\# Noise Regions & 279 & 52.35 \\
+\# Content Regions & 254 & 47.65\% \\
+\# Noise Regions & 279 & 52.35\% \\
 \hline
-Total & 533 & 100.00 \\
+Total & 533 & 100\% \\
+\hline
+\# Structured documents & 266 & 81.35\% \\
+\# Unstructured documents & 61 & 18.65\% \\
+\hline
+Total & 327 & 100\% \\
 \hline
 \end{tabular}
 \end{table}
@@ -650,10 +654,11 @@ In Table \ref{tab:resultcomp} we have compared our results with another,
 state-of-the-art, approach found in the literature. We have compared the
 performance of our classifiers in both settings (Logistic Regressor from Table
 \ref{tab:result} and Voting Ensemble from Table \ref{tab:resultnoise}) with the
-results published in \cite{TPC09}, using the same dataset. The work in
-\cite{TPC09} deals specifically with structured content, the authors have not
-measure its performance in the presence of noise as we did in Table
-\ref{tab:resultnoise}.
+results published in \cite{TPC09}, using the same dataset (from
+\cite{yamada2004testbed}).
+The work in \cite{TPC09} deals specifically with
+structured content, the authors have not measure its performance in the presence
+of noise as we did in Table \ref{tab:resultnoise}.
 We can see, in Table \ref{tab:resultcomp}, that our work outmatches the other
 approaches (MDR by a large margin) even in the presence of unstructured content
 documents.
@@ -667,8 +672,9 @@ documents.
 Algorithm & Precision & Recall  & F-Score & Accuracy \\ \hline
 TPC       & 90.40\%   & 93.10\% & 91.73\% & n/d \\
 MDR       & 59.80\%   & 61.80\% & 60.78\% & n/d \\
-LR        & \textbf{95.45}\%   & 95.45\% & \textbf{95.45}\% & 94.80\% \\
-VOT       & \textbf{93.02}\%   & 90.91\% & \textbf{91.95}\% & 90.91\% \\
+ \hline \multicolumn{5}{|l|}{Our models} \\ \hline
+LR & \textbf{95.45}\%   & 95.45\% & \textbf{95.45}\% & 94.80\% \\
+VOT & \textbf{93.02}\%   & 90.91\% & \textbf{91.95}\% & 90.91\% \\
 \hline
 \end{tabular}
 \end{table}
