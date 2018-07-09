@@ -77,6 +77,8 @@ execution (i.e., more manual intervention needed).
 % tÃ©cnica de ML em cima de um problema"... "qual Ã© o tcham do negÃ³cio?"}%}
 
 % proposed approach
+\textcolor{red}{eu acho que aqui neste parágrafo deveria deixar mais explícito, tecnicamente, do que se trata o trabalho publicado no CIKM. Não precisa explicar, mas mostrar a intuíçào do uso de processamento de sinais; afinal, todas as tuas features foram extraídas considerando a ideia que está lá... e isso não está dito em lugar algum}
+
 In this paper, we analyze several possible supervised machine learning models
 for structured content detection. Our investigation considered eight machine
 learning techniques (Logistic Regression, Gaussian Naive Bayes, k Nearest
@@ -202,6 +204,8 @@ in Step 3 the TPS is built by assigning TPCodes to each tag path.
 \end{figure}
 
 \section{Content Detection}\label{sec:content}
+\textcolor{red}{não vais explicar a intuição de como as features são extraídas? Afinal, teu documento é representado como um sinal e todas as features são extraídas com base em valores detectados neste sinal; não é isso? Deve ficar claro isso aqui. Outra coisa, tem bastante espaço sobrando... acho que poderias fazer uma figura similar àquela que tem no CIKM com a página original e o que foi gerado dela (não a mesma, por favor!)}
+
 In order to distinguish which structured regions are content and which are noise
 we consider six region features, such as: size, center position, horizontal
 position, vertical position, range and record proportion (record count vs
@@ -215,6 +219,8 @@ are relying on.
 We will discuss each feature (size, positions, range and record proportion) in
 Subsections \ref{ss:size}, \ref{ss:pos}, \ref{ss:range} and \ref{ss:rec}
 respectively.
+
+\textcolor{red}{as Figuras 2, 3 e 4 não estão claras... quero dizer, estás explicando que são um exemplo de documento com cada feature, mas não explica o que significam as coordenadas (x e y) nem o que são as linhas plotadas. Antes de entrar nos exemplos, tens que dizer que as figuras representam tal coisa, explicando as coordenadas e as linhas plotadas.}
 
 \subsection{Size Feature}\label{ss:size}
 The region size feature is a real number, between 0 and 1, that represents the
@@ -362,6 +368,8 @@ the feature, using Equation \ref{eq:recsize}, is equal do $\frac{20}{31}=64.51\%
   \label{fig:fft}
 \end{figure}
 
+\textcolor{red}{a Figura 5 está bem mal explicada... :( sei que estás referenciando o artigo do CIKM, mas pelo menos explique o que significa. A figura em si tem duas imagens, e quando falas por exemplo que o número de registro é 20, o leitor fica confuso se isso deve ser visto na primeira imagem ou na segunda. Coloque (a) e (b) em cada uma delas e explique melhor o que elas representam. Além disso, claro ela foi gerada a partir de que outra imagem? (na verdade, a primeira imagem é um "corte" de uma região e isso não está claro}
+
 Throughout this paper we will refer to this feature as ``record'' feature.
 
 %\subsection{Angular Coefficient}\label{ss:ang}
@@ -401,6 +409,7 @@ features correlation, etc. The objectives of this experiments are to determine
 the parameters and the subset of features which are important in this
 classification problem and measure the classification performance in terms of
 precision, recall, accuracy and f-score.
+
 We have considered, in our study, the following machine learning techniques:
 gaussian naive Bayes (GNB), logistic regression (LR), k Nearest Neighbours
 (kNN), Gradient Boosting (GB), Extra-trees (EXT), Support Vector Machine (SVM),
@@ -452,6 +461,7 @@ $\chi^2$) yielded the same result.
 % colocaria a legenda de noise e content mais visivel (estÃ¡ escondida, eu
 % demorei para achar ...:) ) }
  
+\textcolor{red}{esta tabela poderia ter a quantidade de documentos estruturados e a quantidade de documentos não estruturados, já que trata de um resumo sobre o dataset} 
 \begin{table}[h]
 \centering
 \caption{Input dataset summary.}
@@ -559,7 +569,7 @@ Horizontal & 0.53 & 0.61 & -0.06 & 1.44 \\
 \begin{figure}[h]
   \centering
      \includegraphics[trim={2.0cm 7.4cm 0.7cm 7.4cm}, clip,  width=\columnwidth]{img/dataset.pdf}
-  \caption{Input dataset features: content vs noise.}
+  \caption{Input dataset features: content vs noise. \textcolor{red}{esta figura fica boa quando imprime? Será que não seria melhor colocar só 2 lado a lado? Não esqueça de rotular direito as coordenadas - dá uma onferida em todas as tuas figuras antes de submeter e veja se estão bem explicadas}}
   \label{fig:dataset}
 \end{figure}
 
@@ -632,6 +642,33 @@ EXT  & 88.80\% & 88.43\% & 88.71\% & 88.61\% & \textbf{\textcolor{red}{-3.27}}\%
 GB   & 90.13\% & 88.97\% & 89.65\% & 89.55\% & \textbf{-0.89}\% \\
 VOT  & \textbf{90.45}\% & \textbf{92.52}\% & \textbf{91.33}\% & \textbf{91.47}\% & -1.38\% \\
 STCK & 89.93\% & 91.81\% & 90.73\% & 90.86\% & -1.73\% \\
+\hline
+\end{tabular}
+\end{table}
+
+In Table \ref{tab:resultcomp} we have compared our results with another,
+state-of-the-art, approach found in the literature. We have compared the
+performance of our classifiers in both settings (Logistic Regressor from Table
+\ref{tab:result} and Voting Ensemble from Table \ref{tab:resultnoise}) with the
+results published in \cite{TPC09}, using the same dataset. The work in
+\cite{TPC09} deals specifically with structured content, the authors have not
+measure its performance in the presence of noise as we did in Table
+\ref{tab:resultnoise}.
+We can see, in Table \ref{tab:resultcomp}, that our work outmatches the other
+approaches (MDR by a large margin) even in the presence of unstructured content
+documents.
+
+\begin{table}[h]
+\centering
+\caption{Results comparison with other approaches.}
+\label{tab:resultcomp}
+\begin{tabular}{| l | l | l | l | l | l |}
+\hline
+Algorithm & Precision & Recall  & F-Score & Accuracy \\ \hline
+TPC       & 90.40\%   & 93.10\% & 91.73\% & n/d \\
+MDR       & 59.80\%   & 61.80\% & 60.78\% & n/d \\
+LR        & \textbf{95.45}\%   & 95.45\% & \textbf{95.45}\% & 94.80\% \\
+VOT       & \textbf{93.02}\%   & 90.91\% & \textbf{91.95}\% & 90.91\% \\
 \hline
 \end{tabular}
 \end{table}
