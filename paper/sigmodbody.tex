@@ -179,8 +179,8 @@ representation is needed because the features we use to classify content and
 noise are derived from it. For a more thorough explanation we refer the reader
 to the work in \cite{Velloso:2017:ERW:3132847.3132875}.
 
-\begin{definition}\textbf{(Tag Path)} is a string describing the path from the
-root node of the DOM tree to every other node in the tree. For example:
+\begin{definition}\textbf{(Tag Path)}\label{def:tp} is a string describing the
+path from the root node of the DOM tree to every other node in the tree. For example:
 ``\texttt{html/body/table/tr/td/\#text}''.
 \end{definition}
 
@@ -192,8 +192,8 @@ Figure \ref{fig:tree2seq} shows an example of this definition. Here we refer to
 TPCode as ``symbol'' and a set of TPCodes as ``alphabet''.
 \end{definition}
 
-\begin{definition}\textbf{(Tag Path Sequence -- TPS)} is a sequence of TPCodes
-in the same order as they were built from the DOM tree. Figure
+\begin{definition}\textbf{(Tag Path Sequence -- TPS)}\label{def:tps} is a
+sequence of TPCodes in the same order as they were built from the DOM tree. Figure
 \ref{fig:tree2seq} shows the resulting TPS for an HTML snippet as  well as the
 set of TPCode used for that the sequence. In this paper we also refer to TPS as
 simply ``sequence''.
@@ -212,18 +212,34 @@ in Step 3 the TPS is built by assigning TPCodes to each tag path.
   \label{fig:tree2seq}
 \end{figure}
 
-\section{Content Detection}\label{sec:content}
-\textcolor{red}{ não vais explicar a intuição de como as features são extraídas?
-Afinal, teu documento é representado como um sinal e todas as features são
-extraídas com base em valores detectados neste sinal; não é isso? Deve ficar
-claro isso aqui. Outra coisa, tem bastante espaço sobrando... acho que poderias
-fazer uma figura similar àquela que tem no CIKM com a página original e o que
-foi gerado dela (não a mesma, por favor!)}
+Figure \ref{fig:stru} illustrates a web page converted to its sequence
+representation and highlights its structured main content region as well. We
+will use this specific sequence and its main content region throughout Section
+\ref{sec:content} to characterize the features. The sequence was constructed
+according to the definitions in this section. Every point in the sequence
+(Definition \ref{def:tps}) corresponds to a specific node in the DOM tree and
+has a TPCode value (Definition \ref{def:tpc}) that encodes the node's Tag Path
+(Definition \ref{def:tp}).
 
+\begin{figure*}[h]
+ %\captionsetup{width=\textwidth}
+  \centering
+     \includegraphics[width=400pt]{img/main-reg.jpg}
+  \caption{Web page converted to sequence representation and its structured
+  content.}
+  \label{fig:stru}
+\end{figure*}
+
+\section{Content Detection}\label{sec:content}
 In order to distinguish which structured regions are content and which are noise
-we consider six region features, such as: size, center position, horizontal
-position, vertical position, range and record proportion (record count vs
-record size).
+we consider six region features, extracted from the document sequence, such as:
+region size, center position, horizontal position, vertical position, region
+range and record proportion (record count vs record size). All features refer to
+the document sequence, as opposed to the DOM tree as most works do. The region
+size and range are the size and range of the subsequence that represents the
+structured region; all position features are relative to the document sequence
+and; record proportion is retrieved from the spectral analysis of the region's
+subsequence.
 
 These features were chosen because we believe (that is our hypothesis) they
 characterize the problem well and thus, can be helpful in solving the problem.
@@ -233,8 +249,6 @@ are relying on.
 We will discuss each feature (size, positions, range and record proportion) in
 Subsections \ref{ss:size}, \ref{ss:pos}, \ref{ss:range} and \ref{ss:rec}
 respectively.
-
-\textcolor{red}{as Figuras 2, 3 e 4 não estão claras... quero dizer, estás explicando que são um exemplo de documento com cada feature, mas não explica o que significam as coordenadas (x e y) nem o que são as linhas plotadas. Antes de entrar nos exemplos, tens que dizer que as figuras representam tal coisa, explicando as coordenadas e as linhas plotadas.}
 
 \subsection{Size Feature}\label{ss:size}
 The region size feature is a real number, between 0 and 1, that represents the
@@ -249,7 +263,7 @@ content (and not noise) is directly proportional to its size.
 
 \begin{figure}[h]
   \centering
-     \includegraphics[trim={2.5cm 7.4cm 2.2cm 7.4cm}, clip,  width=\columnwidth]{img/size.pdf}
+     \includegraphics[trim={2.0cm 7.0cm 2.2cm 7.4cm}, clip,  width=\columnwidth]{img/size.pdf}
   \caption{Size feature example.}
   \label{fig:size}
 \end{figure}
@@ -282,7 +296,7 @@ document, the higher the probability it refers to real content.
 
 \begin{figure}[h]
   \centering
-     \includegraphics[trim={2.5cm 7.4cm 2.2cm 7.4cm}, clip,  width=\columnwidth]{img/position.pdf}
+     \includegraphics[trim={2.0cm 7.0cm 2.2cm 7.4cm}, clip,  width=\columnwidth]{img/position.pdf}
   \caption{Position feature example.}
   \label{fig:position}
 \end{figure}
@@ -337,7 +351,7 @@ to its maximum value.
 
 \begin{figure}[h]
   \centering
-     \includegraphics[trim={2.5cm 7.4cm 2.2cm 7.4cm}, clip,  width=\columnwidth]{img/range.pdf}
+     \includegraphics[trim={2.0cm 7.0cm 2.2cm 7.4cm}, clip,  width=\columnwidth]{img/range.pdf}
   \caption{Range feature example.}
   \label{fig:range}
 \end{figure}
