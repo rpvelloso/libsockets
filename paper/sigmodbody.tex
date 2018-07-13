@@ -384,10 +384,14 @@ numerator.
 This two measures are obtained as documented in
 \cite{Velloso:2017:ERW:3132847.3132875}, using the region's power spectrum
 density (PSD).
-Figure \ref{fig:fft} shows the PSD of the main content region
-and its detected record count and average record size. In this example the
-number of records detected is 20 and their average size is 31, so the value of
-the feature, using Equation \ref{eq:recsize}, is equal do $\frac{20}{31}=64.51\%$
+Figure \ref{fig:fft}(a) shows the PSD of the main content region in Figure
+\ref{fig:fft}(b) and its detected record count and average record size. The
+sequence in Figure \ref{fig:fft}(a) is the extracted main content region from
+the sequence depicted in Figure \ref{fig:stru}.
+In this example the number of records (represented by the peak in Figure
+\ref{fig:fft}(a)) detected is 20 and their average size is 31, so the value of
+the feature, using Equation \ref{eq:recsize}, is equal do
+$\frac{20}{31}=64.51\%$
 
 \begin{figure}[h]
   \centering
@@ -395,8 +399,6 @@ the feature, using Equation \ref{eq:recsize}, is equal do $\frac{20}{31}=64.51\%
   \caption{Record count \& size feature example.}
   \label{fig:fft}
 \end{figure}
-
-\textcolor{red}{a Figura 5 está bem mal explicada... :( sei que estás referenciando o artigo do CIKM, mas pelo menos explique o que significa. A figura em si tem duas imagens, e quando falas por exemplo que o número de registro é 20, o leitor fica confuso se isso deve ser visto na primeira imagem ou na segunda. Coloque (a) e (b) em cada uma delas e explique melhor o que elas representam. Além disso, claro ela foi gerada a partir de que outra imagem? (na verdade, a primeira imagem é um "corte" de uma região e isso não está claro}
 
 Throughout this paper we will refer to this feature as ``record'' feature.
 
@@ -600,8 +602,8 @@ Horizontal & 0.53 & 0.61 & -0.06 & 1.44 \\
 
 \begin{figure}[h]
   \centering
-     \includegraphics[trim={2.0cm 7.4cm 0.7cm 7.4cm}, clip,  width=\columnwidth]{img/dataset.pdf}
-  \caption{Input dataset features: content vs noise. \textcolor{red}{esta figura fica boa quando imprime? Será que não seria melhor colocar só 2 lado a lado? Não esqueça de rotular direito as coordenadas - dá uma onferida em todas as tuas figuras antes de submeter e veja se estão bem explicadas}}
+     \includegraphics[trim={2.0cm 7.0cm 0.7cm 7.4cm}, clip,  width=\columnwidth]{img/dataset.pdf}
+  \caption{Input dataset features: content vs noise.}
   \label{fig:dataset}
 \end{figure}
 
@@ -722,7 +724,7 @@ Table \ref{tab:featcorr} thsat ``center'' has a considerable correlation with
 \label{tab:featsel}
 \begin{tabular}{| l | l | l | l | l | l | l |}
 \hline
-Model     & Size   & Center & Range  & Record & Vertical & Horizontal \\ \hline
+Model     & Size   & Center & Range  & Record & Vert. & Horiz. \\ \hline
 LR        & \cmark & \xmark & \cmark & \cmark & \xmark   & \cmark     \\
 GNB       & \cmark & \cmark & \cmark & \cmark & \cmark   & \cmark     \\
 EXT       & \cmark & \cmark & \cmark & \cmark & \cmark   & \cmark     \\
@@ -788,5 +790,3 @@ to the problem, perhaps using semantic features combined with the ones
 proposed here, should be investigated. With an increased number of features,
 testing all combinations becames prohibitive, other approaches should then be
 employed (e.g., genetic algorithms) to find a good combination of features.
-
-
