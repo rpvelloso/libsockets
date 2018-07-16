@@ -6,8 +6,8 @@ public in a semi-structured fashion (e.g., shopping items, news, search engine
 results, etc.), providing some level of organization that can be exploited and
 leveraged: one can use it to detect/find semi-structured content in a document.
 But there are other parts of a document, besides the main content, that can have
-some sort of organization (template and menus, for instance), this
-``non-content'' organized information adds noise to the extraction process,
+some sort of organization (template and menus, for instance), this organized
+``non-content'' information adds noise to the extraction process,
 decreasing precision. How can we distinguish between them? This is the problem
 we tackle in this paper.
 
@@ -25,12 +25,12 @@ independently from its source, even when there is no structured content, i.e.
 we must be able to identify noise in a document whose main content is textual
 as well as in a document whose main content is semi-structured.
 So, once we have extracted the structured content from a document, how can we
-classify it as content or noise? We could not find in literature, nor did we
+classify it as content or noise? We could not find in the literature, nor did we
 reach a deterministic and closed form way of doing this, for this reason we
 decided to characterize (create hypothesis for the features) content and noise
 the best we could and try out machine learning models to approximate a solution.
 Our goal is to classify \textbf{structured data}, specifically, as content or
-noise, but without restricting ourselves to \textbf{structured content}
+noise, but without restricting ourselves just to \textbf{structured content}
 documents (i.e., we also want to detect structured noise in textual content
 documents). This is a desirable property in order to avoid manual intervention
 (selecting only certain types of documents for processing) for the web is
@@ -88,12 +88,14 @@ for structured content detection. Our investigation considered eight machine
 learning techniques (Logistic Regression, Gaussian Naive Bayes, k Nearest
 Neighbours, Support Vector Machine, Extra Trees, Gradient Boosting, Voting and
 Stacking Ensembles) and all possible combinations of features within each
-approach to find the one that suited best in each case. For the extraction phase
-we choose the method proposed in \cite{Velloso:2017:ERW:3132847.3132875} because
-of the good quality of the results, its feasibility in a production environment
-(it is unsupervised and computationally efficient compared to other
-state-of-the-art approaches) and also because its source code is freely
-available for download, allowing reproducibility of results.
+approach to find the one that suited best in each case and at the same time
+investigate feature importance.
+For the extraction phase we choose the method proposed in
+\cite{Velloso:2017:ERW:3132847.3132875} because of the good quality of the
+results, its feasibility in a production environment (it is unsupervised and
+computationally efficient compared to other state-of-the-art approaches) and
+also because its source code is freely available for download, allowing
+reproducibility of results.
 This extraction method uses a signal processing approach to detect repetitive
 structural patterns in the document by means of stability and spectral analysis.
 The web page is converted to a sequence (or signal) representation, prior to
@@ -180,22 +182,22 @@ noise are derived from it. For a more thorough explanation we refer the reader
 to the work in \cite{Velloso:2017:ERW:3132847.3132875}.
 
 \begin{definition}\textbf{(Tag Path)}\label{def:tp} is a string describing the
-path from the root node of the DOM tree to every other node in the tree. For example:
+path from the root node of the DOM tree to another node in the tree. For
+example:
 ``\texttt{html/body/table/tr/td/\#text}''.
 \end{definition}
 
 \begin{definition}\textbf{(Tag Path Code -- TPCode)}\label{def:tpc} is a numeric
 ascending code assigned to every different tag path string encountered in the
-tree, in order of appearance. If a given path has occurred in the past, it is
-assigned the same code as before. The paths are built in depth first order.
-Figure \ref{fig:tree2seq} shows an example of this definition. Here we refer to
-TPCode as ``symbol'' and a set of TPCodes as ``alphabet''.
+document tree, in order of appearance. If a given path has already occurred, it
+is assigned the same code as before. The paths are built in depth first order.
+Figure \ref{fig:tree2seq} shows an example of this definition.
 \end{definition}
 
 \begin{definition}\textbf{(Tag Path Sequence -- TPS)}\label{def:tps} is a
 sequence of TPCodes in the same order as they were built from the DOM tree. Figure
 \ref{fig:tree2seq} shows the resulting TPS for an HTML snippet as  well as the
-set of TPCode used for that the sequence. In this paper we also refer to TPS as
+set of TPCodes used in that sequence. In this paper we also refer to TPS as
 simply ``sequence''.
 \end{definition}
 
@@ -208,7 +210,7 @@ in Step 3 the TPS is built by assigning TPCodes to each tag path.
   \centering
      \includegraphics[trim={1.0cm 2.0cm 1.5cm 1.0cm}, clip, 
      width=1.0\columnwidth]{img/tree2seq.pdf}
-  \caption{Conversion of HTML snippet to a tag path sequence.}
+  \caption{Conversion of HTML snippet into a tag path sequence.}
   \label{fig:tree2seq}
 \end{figure}
 
@@ -234,16 +236,16 @@ Tag Path (Definition \ref{def:tp}).
 \section{Content Detection}\label{sec:content}
 In order to distinguish which structured regions are content and which are noise
 we consider six region features, extracted from the document sequence, such as:
-region size, center position, horizontal position, vertical position, region
-range and record proportion (record count vs record size). All features refer to
-the document sequence, as opposed to the DOM tree as most works do. The region
-size and range are the size and range of the subsequence that represents the
-structured region; all position features are relative to the document sequence
-and; record proportion is retrieved from the spectral analysis of the region's
-subsequence.
+region \textbf{size}, \textbf{center} position, \textbf{horizontal} position,
+\textbf{vertical} position, region \textbf{range} and \textbf{record} proportion
+(record count vs record size). All features refer to the document sequence, as
+opposed to the DOM tree as other works do. The region size and range are the
+size and range of the subsequence that represents a given structured region; all
+position features are relative to the document sequence and; record proportion is
+retrieved from the spectral analysis of the region's subsequence.
 
 These features were chosen because we believe (that is our hypothesis) they
-characterize the problem well and thus, can be helpful in solving the problem.
+characterize the problem well and thus, can be helpful solving it.
 As an extra, they can also be easily acquired from the extraction technique we
 are relying on.
 
@@ -264,7 +266,8 @@ content (and not noise) is directly proportional to its size.
 
 \begin{figure}[h]
   \centering
-     \includegraphics[trim={2.0cm 7.0cm 2.2cm 7.4cm}, clip,  width=\columnwidth]{img/size.pdf}
+     \includegraphics[trim={2.0cm 7.0cm 2.2cm 7.4cm}, clip, 
+     width=\columnwidth]{img/size.pdf}
   \caption{Size feature example.}
   \label{fig:size}
 \end{figure}
@@ -279,7 +282,7 @@ $\frac{618}{1,336} = 46.25\%$.
 \end{equation}
 
 \subsection{Position Features}\label{ss:pos}
-The region position feature is actually comprised of three position features:
+The region position features are actually comprised of three position features:
 center, horizontal and vertical positions. All three are real numbers between 0
 and 1. The \textbf{center position} represents the distance from the center of
 the region to the center of the document; the \textbf{horizontal position} is
@@ -302,45 +305,45 @@ document, the higher the probability it refers to real content.
   \label{fig:position}
 \end{figure}
 
-Figure \ref{fig:position} shows an example where the document center is at
-position 667 (this is the maximum distance allowed) and main content region
-subsequence center is at position 783, at a distance of 117 from document
-center. The value of this feature, using Equation \ref{eq:cposition}, is equal
-to $1- \frac{117}{667} = 82.46\%$
+Figure \ref{fig:position} shows an example where the document center (dark blue
+dashed line) is at position 667 (this is the maximum distance allowed) and main
+content region subsequence center (red dashed line) is at position 783, at a
+distance of 117 from document center (green dashed line). The value of this
+feature, using Equation \ref{eq:cposition}, is equal to $1- \frac{117}{667} = 82.46\%$
 
 \begin{equation}\label{eq:cposition}
     centerPositionFeat = 1 - \frac{|regionCenter - sequenceCenter|}{sequenceCenter}
 \end{equation}
 
 With respect to the vertical and horizontal position, we believe they are needed
-to provide a better indication of a region's position, \textbf{specially} when a
-document has no structured content (only structured noise), in this situation a
+to provide a better indication of a region's position, \textbf{specially}
+when a document has no structured content (only structured noise), in this situation a
 noise region will be closer to the center of the sequence and further away from
 its extremes. If we were concerned only about documents with structured content,
 these two features would, probably, be of little value to us.
 
 Figure \ref{fig:position} shows how the horizontal and vertical positions are
 calculated. The horizontal position is the distance from the center of the
-region to the end of the sequence. Using Equation \ref{eq:vposition}, the value
-of the horizontal position, in this example, is equal to $\frac{554}{1,336} =
-41.47\%$.
+region to the end of the sequence (light blue dashed line). Using Equation
+\ref{eq:vposition}, the value of the horizontal position, in this example, is
+equal to $\frac{554}{1,336} = 41.47\%$.
 
 \begin{equation}\label{eq:hposition}
-    horizontalPositionFeat = \frac{sequenceSize - regionCenter}{sequenceSize}
+    horizPositionFeat = \frac{sequenceSize - regionCenter}{sequenceSize}
 \end{equation}
 
-The vertical position is the distance from the vertical
+The vertical position (black dashed line) is the distance from the vertical
 center of the region (i.e., its average value) to the vertical end of the
 sequence (i.e., its maximum value). Using Equation \ref{eq:vposition}, the value
 of the vertical position, in this example, is equal to $\frac{263}{391} =
 67.26\%$.
 
 \begin{equation}\label{eq:vposition}
-    verticalPositionFeat = \frac{avg(region)}{max(sequence)}
+    vertPositionFeat = \frac{avg(region)}{max(sequence)}
 \end{equation}
 
-Throughout this paper we will refer to these features as ``center'',
-``horizontal'' and ``vertical'' features.
+Throughout this paper we will refer to these three features simply as
+``center'', ``horizontal'' and ``vertical'' features.
 
 \subsection{Range Feature}\label{ss:range}
 The range feature is a real number, between 0 and 1, that represents the
