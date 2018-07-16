@@ -212,19 +212,20 @@ in Step 3 the TPS is built by assigning TPCodes to each tag path.
   \label{fig:tree2seq}
 \end{figure}
 
-Figure \ref{fig:stru} illustrates a web page converted to its sequence
-representation and highlights its structured main content region as well. We
-will use this specific sequence and its main content region throughout Section
-\ref{sec:content} to characterize the features. The sequence was constructed
-according to the definitions in this section. Every point in the sequence
-(Definition \ref{def:tps}) corresponds to a specific node in the DOM tree and
-has a TPCode value (Definition \ref{def:tpc}) that encodes the node's Tag Path
-(Definition \ref{def:tp}).
+Figure \ref{fig:stru} illustrates a real web page converted to its sequence
+representation with its structured regions encircled and its main content region
+highlighted.
+We will use this specific sequence and its main content region throughout
+Section \ref{sec:content} to characterize the features. The sequence was
+constructed according to the definitions in this section. Every point in the
+sequence (Definition \ref{def:tps}) corresponds to a specific node in the DOM
+tree and has a TPCode value (Definition \ref{def:tpc}) that encodes the node's
+Tag Path (Definition \ref{def:tp}).
 
 \begin{figure*}[h]
  %\captionsetup{width=\textwidth}
   \centering
-     \includegraphics[width=400pt]{img/main-reg.jpg}
+     \includegraphics[width=\textwidth]{img/main-reg-color.jpg}
   \caption{Web page converted to sequence representation and its structured
   content.}
   \label{fig:stru}
@@ -632,7 +633,7 @@ setting.
 Model & Precision & Recall & Accuracy & F-score \\ \hline
 LR   & 93.30\% & \textbf{93.85}\% & \textbf{93.02}\% & \textbf{93.57}\% \\
 GNB  & 91.97\% & 90.55\% & 90.62\% & 91.26\% \\
-KNN  & \textbf{93.83}\% & 92.21\% & 92.59\% & 93.01\% \\
+kNN  & \textbf{93.83}\% & 92.21\% & 92.59\% & 93.01\% \\
 SVM  & 93.60\% & 92.20\% & 92.37\% & 92.90\% \\
 EXT  & 91.88\% & 91.87\% & 91.23\% & 91.88\% \\
 GB   & 90.75\% & 90.14\% & 89.74\% & 90.44\% \\
@@ -670,7 +671,7 @@ Voting heterogeneous ensemble with F-Score of 91.47\% and largest precision
 Model & Precision & Recall & Accuracy & F-score & Drop \\ \hline
 LR   & 87.97\% & 92.13\% & 89.45\% & 90.00\% & \textbf{\textcolor{red}{-3.57}}\% \\
 GNB  & 89.69\% & 88.99\% & 89.47\% & 89.34\% & -1.92\% \\
-KNN  & 89.72\% & 90.56\% & 90.02\% & 90.14\% & -2.87\% \\
+kNN  & 89.72\% & 90.56\% & 90.02\% & 90.14\% & -2.87\% \\
 SVM  & 89.51\% & 92.12\% & 90.77\% & 90.79\% & -2.11\% \\
 EXT  & 88.80\% & 88.43\% & 88.71\% & 88.61\% & \textbf{\textcolor{red}{-3.27}}\% \\
 GB   & 90.13\% & 88.97\% & 89.65\% & 89.55\% & \textbf{-0.89}\% \\

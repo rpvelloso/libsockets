@@ -1,4 +1,4 @@
-\documentclass[10pt,sigconf]{acmart}
+\documentclass[sigconf,10pt]{acmart}
 
 \usepackage{booktabs} % For formal tables
 
@@ -14,20 +14,22 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
-\usepackage{algorithmicx}
-\usepackage[Algorithm,ruled]{algorithm}
-\usepackage[noend]{algpseudocode}
+%\usepackage{algorithmicx}
+%\usepackage[Algorithm,ruled]{algorithm}
+%\usepackage[noend]{algpseudocode}
 \usepackage{url}
 \usepackage{balance}
 \usepackage{listings}
 \usepackage{enumerate}
 \usepackage{color}
-\usepackage{microtype}
-\usepackage[medium,compact]{titlesec}
+%\usepackage{microtype}
+%\usepackage[medium,compact]{titlesec}
 
 \usepackage{pifont}% http://ctan.org/pkg/pifont
 \newcommand{\cmark}{\ding{51}}%
 \newcommand{\xmark}{\ding{55}}%
+
+\setcopyright{rightsretained}
 
 \hyphenation{spec-trum}
 
@@ -35,7 +37,6 @@
 
 \copyrightyear{2019} 
 \acmYear{2019} 
-\setcopyright{acmcopyright}
 \acmConference{SIGMOD'19 }{June 30--July 5, 2019}{Amsterdam,
 Netherlands}\acmPrice{15.00}\acmDOI{}\acmISBN{}
 
@@ -117,7 +118,8 @@ Netherlands}\acmPrice{15.00}\acmDOI{}\acmISBN{}
 \ccsdesc[500]{Information systems~Information extraction}
 \ccsdesc[300]{Information systems~Content analysis and feature selection}
 
-\keywords{web mining, record extraction, structure detection, information retrieval, noise removal, content detection}
+\keywords{web mining, content detection, noise removal, record extraction,
+structure detection, information retrieval}
 
 \maketitle
 
