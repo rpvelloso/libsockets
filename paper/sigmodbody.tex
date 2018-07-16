@@ -350,7 +350,7 @@ The range feature is a real number, between 0 and 1, that represents the
 percentage of the region range relative to the entire sequence. It is analogous
 to the Size Feature (Subsection \ref{ss:size}) only it is vertical instead of
 horizontal. The region range is simply the maximum value found in the sequence
-(or subsequence) minus the minimum value and the sequence range is equivalent
+(or subsequence) minus the minimum value. The full sequence range is equivalent
 to its maximum value.
 
 \begin{figure}[h]
@@ -387,14 +387,14 @@ numerator.
 
 This two measures are obtained as documented in
 \cite{Velloso:2017:ERW:3132847.3132875}, using the region's power spectrum
-density (PSD).
-Figure \ref{fig:fft}(a) shows the PSD of the main content region in Figure
-\ref{fig:fft}(b) and its detected record count and average record size. The
-sequence in Figure \ref{fig:fft}(a) is the extracted main content region from
-the sequence depicted in Figure \ref{fig:stru}.
-In this example the number of records (represented by the peak in Figure
-\ref{fig:fft}(a)) detected is 20 and their average size is 31, so the value of
-the feature, using Equation \ref{eq:recsize}, is equal do
+density (PSD) \cite{oppenheim1989discrete}.
+Figure \ref{fig:fft}b shows the PSD of the main content region in Figure
+\ref{fig:fft}a and its detected record count and average record size. The
+sequence in Figure \ref{fig:fft}a is the extracted main content region
+from the sequence depicted in Figure \ref{fig:stru}.
+In this example the number of records (represented by the red peak in Figure
+\ref{fig:fft}b) detected is 20 and their average size is 31, therefor the
+value of the record feature, using Equation \ref{eq:recsize}, is equal do
 $\frac{20}{31}=64.51\%$
 
 \begin{figure}[h]
@@ -438,11 +438,11 @@ Throughout this paper we will refer to this feature as ``record'' feature.
 
 In this section we detail the experiments we conducted using supervised machine
 learning techniques with the features from Section \ref{sec:content}. We also
-characterize the dataset used in the experiments, its statistical propoerties,
+characterize the dataset used in the experiments, its statistical properties,
 features correlation, etc. The objectives of this experiments are to determine
 the parameters and the subset of features which are important in this
 classification problem and measure the classification performance in terms of
-precision, recall, accuracy and f-score.
+precision, recall, accuracy and F-Score.
 
 We have considered, in our study, the following machine learning techniques:
 gaussian naive Bayes (GNB), logistic regression (LR), k Nearest Neighbours
@@ -457,39 +457,42 @@ MLxtend's\cite{raschkas_2018_mlxtend} implementation.
 We have conducted experiments to determine the best combination of parameters
 and features, within each approach, for solving the problem of distinguishing
 noise from content. To do so we ran a grid search for each algorithm with all
-feature combinations since the number of possible combinations, for six
-features, is not prohibitive (only 63 in total).
+feature combinations. We did so because the number of all possible combinations,
+for six features, is not prohibitive (only $2^6 - 1  = 63$ in total).
 After that we have used grid search, again, to select the best parameters for
 each algorithm. The feature set for each algorithm is documented in Table
-\ref{tab:featsel} and the parameters in Table \ref{tab:params} (more details
-on that in Section \ref{sec:results}).
+\ref{tab:featsel} and the parameters in Table \ref{tab:params} (more details on
+that in Section \ref{sec:results}).
 
 For these experiments we have used a dataset consisting of 266 HTML documents
 with structured content from various domains (news, banking, hotels, car rental,
 tickets, electronics), plus 61 documents \textbf{without} structured content,
-totalizing 327 documents. The documents without structured content were added to
-the dataset to investigate the behaviour of the classifiers in the presence of
-this type of input.
+totalizing 327 documents. All pages were collected recently, to guarantee they
+are all using modern and up to date templates. The documents without structured
+content were added to the dataset to investigate the behaviour of the
+classifiers in the presence of this type of input.
 We use only one page per site to avoid introducing bias towards specific sites
 and/or templates\footnote{this is possible because the extraction approach used
 also works with a single page input}. These documents were processed using the
 technique proposed in \cite{Velloso:2017:ERW:3132847.3132875}, resulting in a
 total of 533 regions that were manually labeled as content or noise (menus, ads,
-template, etc). This is the input dataset used for training and cross-validation
-and it is summarized in Table \ref{tab:dataset}. Figure \ref{fig:dataset} shows
-a scatter plot of each feature, separately, with respect to the target class
-(content vs noise), it gives a rough idea of how content and noise are
-intertwined. 
+template, etc). 
 
+That is our input dataset used for training and cross-validation
+and it is summarized in Table \ref{tab:dataset}.
+Figure \ref{fig:dataset} shows a scatter plot of each feature, separately, with
+respect to the target class (content vs noise), it gives a rough idea of how
+content and noise are intertwined within each feature.
+Table \ref{tab:importance} shows the features relative importance according to
+two different criterias (ANOVA and $\chi^2$), both yielding the same results.
 Table \ref{tab:stat} shows mean, coefficient of variation (CV), skewness and
-kurtosis for all features with respect to the target class. Table
-\ref{tab:featcorr} shows the correlation between all features. We see that
+kurtosis for all features with respect to the target class. 
+Table \ref{tab:featcorr} shows the correlation between all features. We see that
 ``size'' vs ``position'', ``size'' vs ``range'' and ``position'' vs ``range''
 have a stronger correlation compared to others, this fact reflected in feature
-selection for some models.
-These same three features, according to Table \ref{tab:importance}, are also
-the most important ones. The ranking of features, with both criterias (ANOVA and
-$\chi^2$) yielded the same result.
+selection for some models and these same three features (size, position and
+range), according to Table \ref{tab:importance}, are also the most important
+ones.
 
 % \textcolor{red}{as legendas das figuras estao iguais... além disso, eu
 % colocaria a legenda de noise e content mais visivel (está escondida, eu
@@ -611,15 +614,16 @@ Horizontal & 0.53 & 0.61 & -0.06 & 1.44 \\
   \label{fig:dataset}
 \end{figure}
 
+\vspace{0.1cm}
 \section{Results}\label{sec:results}
 We have used 5-fold cross-validation to evaluate the performance
 of each model with respect to precision, recall, accuracy and F-Score. The
-average results of 200 runs is shown in Tables \ref{tab:result} and
+average result of 200 runs is shown in Tables \ref{tab:result} and
 \ref{tab:resultnoise}.
 
 When we omit the documents without structured content we get the results
-shown in Table \ref{tab:result}. The best model was the Logistic Regressor (LR),
-with 93.57\% F-score. In this application we should prioritize precision
+shown in Table \ref{tab:result}. The best model was the Logistic Regression
+(LR), with 93.57\% F-Score. In this application we should prioritize precision
 (the web is vast and full of noise), with that in mind kNN performed a little
 better, with almost 94\% precision. So, in a controlled enviromnment, where we
 can guarantee the input will always contain structured content, the features we
@@ -633,7 +637,7 @@ setting.
 \label{tab:result}
 \begin{tabular}{| l | l | l | l | l |}
 \hline
-Model & Precision & Recall & Accuracy & F-score \\ \hline
+Model & Precision & Recall & Accuracy & F-Score \\ \hline
 LR   & 93.30\% & \textbf{93.85}\% & \textbf{93.02}\% & \textbf{93.57}\% \\
 GNB  & 91.97\% & 90.55\% & 90.62\% & 91.26\% \\
 kNN  & \textbf{93.83}\% & 92.21\% & 92.59\% & 93.01\% \\
@@ -655,7 +659,7 @@ to be very significant as they show it is possible to identify noise no matter
 the content is structured or not. The most prominent drop, ironically, occurs
 with Logistic Regressior (which performed best with only structured content
 documents).
-Gradient Boosting (GB), altough not the best performing model in either setting,
+Gradient Boosting (GB), although not the best performing model in either setting,
 showed the lowest impact in F-Score. Another interesting result we see is that
 all ensembles (VOT, STCK and GB) have relatively low drop in F-Score (the lowest
 ones, in fact), with the exception of ExtraTrees (EXT) ensemble, which is the
@@ -686,16 +690,17 @@ STCK & 89.93\% & 91.81\% & 90.73\% & 90.86\% & -1.73\% \\
 
 In Table \ref{tab:resultcomp} we have compared our results with another,
 state-of-the-art, approach found in the literature. We have compared the
-performance of our classifiers in both settings (Logistic Regressor from Table
+performance of our classifiers in both settings (Logistic Regression from Table
 \ref{tab:result} and Voting Ensemble from Table \ref{tab:resultnoise}) with the
 results published in \cite{TPC09}, using the same dataset (from
 \cite{yamada2004testbed}).
-The work in \cite{TPC09} deals specifically with
-structured content, the authors have not measure its performance in the presence
-of noise as we did in Table \ref{tab:resultnoise}.
+The work in \cite{TPC09} deals specifically with structured content, the authors
+have not measure its performance in the presence of noise as we did in Table
+\ref{tab:resultnoise}. They also have not published the accuracy of their
+method.
 We can see, in Table \ref{tab:resultcomp}, that our work outmatches the other
-approaches (MDR by a large margin) even in the presence of unstructured content
-documents.
+approaches (MDR\cite{MDR03} by a large margin) even in the presence of
+unstructured content documents.
 
 \begin{table}[h]
 \centering
@@ -716,11 +721,11 @@ VOT & \textbf{93.02}\%   & 90.91\% & \textbf{91.95}\% & 90.91\% \\
 We show in Table \ref{tab:featsel} the best performing features for each model.
 Almost all models used all features, this shows that all features are relevant
 to the problem and somehow contribute to the solution. The exceptions are the
-Logistic Regressor and SVM. The Logistic Regressor achieved the best results
+Logistic Regression and SVM. The Logistic Regression achieved the best results
 without features ``center'' and ``vertical'' and SVM without feature ``center'',
-that is probably due to the high correlation with other features. We can see in
-Table \ref{tab:featcorr} thsat ``center'' has a considerable correlation with
-``size'' and ``vertical'' with ``horizontal''.
+that is probably due to the high correlation with other features as shown in
+Table \ref{tab:featcorr}: feature ``center'' has a considerable correlation
+with ``size'' and ``vertical'' with ``horizontal''.
 
 \begin{table}[h]
 \centering
@@ -780,7 +785,7 @@ STCK      & $classifiers=[GNB, SVM, kNN, GB]$ \\
 In our research, thru observation, we have come up with the hypothesis depicted
 here, for each feature and, thru experimentation, we have confirmed these
 hypothesis in two different situations:
-in a controlled setting (with 93.57\% F-Score using Logistic Regressor) and; in
+in a controlled setting (with 93.57\% F-Score using Logistic Regression) and; in
 an open environment (with 91.47\% F-Score using a heterogeneous voting
 ensemble). We believe that these results are very good, specially
 considering we are using only very basic information (size, position, etc.) to
