@@ -689,20 +689,22 @@ STCK & 89.93\% & 91.81\% & 90.73\% & 90.86\% & -1.73\% \\
 \end{tabular}
 \end{table}
 
-In Table \ref{tab:resultcomp} we have compared our results with another,
-state-of-the-art, approach found in the literature. We have compared the
+In Table \ref{tab:resultcomp} we have compared our results with other,
+state-of-the-art, approaches found in the literature. We have compared the
 performance of our classifiers in both settings (Logistic Regression from Table
 \ref{tab:result}, trained only with structured content, and Voting Ensemble from
 Table \ref{tab:resultnoise} trained with our full dataset) with the results
-published in \cite{TPC09}, using their dataset (from
-\cite{yamada2004testbed}) as our test data.
-The work in \cite{TPC09} deals specifically with structured content, the authors
-have not measure its performance in the presence of noise as we did in Table
-\ref{tab:resultnoise}. They also have not published the accuracy of their
-method.
-We can see, in Table \ref{tab:resultcomp}, that our work outmatches the other
-approaches (MDR\cite{MDR03} by a large margin) even in the presence of
-unstructured content documents.
+published in \cite{TPC09} and \cite{Velloso:2017:ERW:3132847.3132875}, using
+their reference dataset (from \cite{yamada2004testbed}) as our test data.
+The work in \cite{TPC09,Velloso:2017:ERW:3132847.3132875} deals specifically
+with structured content, the authors have not measure its performance in the
+presence of noise as we did in Table \ref{tab:resultnoise}. They also have not
+published the accuracy of their method.
+We can see, in Table \ref{tab:resultcomp}, that our work outperformed the other
+approaches (MDR\cite{MDR03} by a large margin). We outmatched TPC and MDR
+even in the presence of unstructured content documents. With respect to the
+SIG\cite{Velloso:2017:ERW:3132847.3132875} approach, we have achieve superior
+results in a controlled setting and better precision in an open environment.
 
 \begin{table}[h]
 \centering
@@ -711,8 +713,9 @@ unstructured content documents.
 \begin{tabular}{| l | l | l | l | l | l |}
 \hline
 Algorithm & Precision & Recall  & F-Score & Accuracy \\ \hline
-TPC       & 90.40\%   & 93.10\% & 91.73\% & n/d \\
-MDR       & 59.80\%   & 61.80\% & 60.78\% & n/d \\
+SIG\cite{Velloso:2017:ERW:3132847.3132875} & 92.02\% & 94.11\% & 93.05\% & n/d \\
+TPC\cite{TPC09}       & 90.40\%   & 93.10\% & 91.73\% & n/d \\
+MDR\cite{MDR03}       & 59.80\%   & 61.80\% & 60.78\% & n/d \\
  \hline \multicolumn{5}{|l|}{Our models} \\ \hline
 LR & \textbf{95.45}\%   & 95.45\% & \textbf{95.45}\% & 94.80\% \\
 VOT & \textbf{93.02}\%   & 90.91\% & \textbf{91.95}\% & 90.91\% \\
