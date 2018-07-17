@@ -36,8 +36,8 @@ documents). This is a desirable property in order to avoid manual intervention
 (selecting only certain types of documents for processing) for the web is
 completely heterogeneous in all aspects. But we also evaluated the models in a
 controlled setting, when the web pages are known beforehand to have structured
-content. This scenario is not unreallistic (e.g., a focused crawler that
-retrieves only search result records from e-commerce sites), altought it does
+content. This scenario is not unrealistic (e.g., a focused crawler that
+retrieves only search result records from e-commerce sites), although it does
 demands more manual intervention.
 
 % related work
@@ -445,7 +445,7 @@ classification problem and measure the classification performance in terms of
 precision, recall, accuracy and F-Score.
 
 We have considered, in our study, the following machine learning techniques:
-gaussian naive Bayes (GNB), logistic regression (LR), k Nearest Neighbours
+Gaussian Naive Bayes (GNB), Logistic Regression (LR), k Nearest Neighbours
 (kNN), Gradient Boosting (GB), Extra-trees (EXT), Support Vector Machine (SVM),
 Voting Ensemble (VOT) and Stacking Ensemble (STCK). The voting and stacking
 ensembles are heterogeneous ensembles and are built from combinations of all the
@@ -484,7 +484,7 @@ Figure \ref{fig:dataset} shows a scatter plot of each feature, separately, with
 respect to the target class (content vs noise), it gives a rough idea of how
 content and noise are intertwined within each feature.
 Table \ref{tab:importance} shows the features relative importance according to
-two different criterias (ANOVA and $\chi^2$), both yielding the same results.
+two different criteria (ANOVA and $\chi^2$), both yielding the same results.
 Table \ref{tab:stat} shows mean, coefficient of variation (CV), skewness and
 kurtosis for all features with respect to the target class. 
 Table \ref{tab:featcorr} shows the correlation between all features. We see that
@@ -621,15 +621,15 @@ of each model with respect to precision, recall, accuracy and F-Score. The
 average result of 200 runs is shown in Tables \ref{tab:result} and
 \ref{tab:resultnoise}.
 
-When we omit the documents without structured content we get the results
-shown in Table \ref{tab:result}. The best model was the Logistic Regression
-(LR), with 93.57\% F-Score. In this application we should prioritize precision
-(the web is vast and full of noise), with that in mind kNN performed a little
-better, with almost 94\% precision. So, in a controlled enviromnment, where we
-can guarantee the input will always contain structured content, the features we
-elected were enough to achieve very good results with relatively simple models
-(kNN and LR). No need to use more elaborate approaches and/or ensembles in this
-setting.
+When we omit the documents without structured content we get the results shown
+in Table \ref{tab:result}. The model with the best performance, in our
+experiments, was the Logistic Regression (LR), with 93.57\% F-Score. In this
+application we should prioritize precision (the web is vast and full of noise),
+with that in mind kNN performed a little better, with almost 94\% precision. So,
+in a controlled environment, where we can guarantee the input will always
+contain structured content, the features we elected were enough to achieve very
+good results with relatively simple models (kNN and LR). No need to use more
+elaborate approaches and/or ensembles in this setting.
 
 \begin{table}[h]
 \centering
@@ -652,18 +652,19 @@ STCK & 92.97\% & 92.20\% & 92.06\% & 92.59\% \\
 
 When we consider the full dataset, including the documents without structured
 content, we get the results shown in Table \ref{tab:resultnoise}. As expected
-there is a drop in F-Score. The amount of unstructured documents corresponds,
-roughly, to 18\% of the entire dataset and yet we were able attain negative
+there is a drop in F-Score (column ``Drop'' in Table \ref{tab:resultnoise}). The
+amount of unstructured documents corresponds, roughly, to 18\% of the entire
+dataset (see Table \ref{tab:dataset}) and yet we were able attain negative
 variations in F-Score lower than 1\%, for this reason we consider this results
-to be very significant as they show it is possible to identify noise no matter
-the content is structured or not. The most prominent drop, ironically, occurs
-with Logistic Regressior (which performed best with only structured content
-documents).
-Gradient Boosting (GB), although not the best performing model in either setting,
-showed the lowest impact in F-Score. Another interesting result we see is that
-all ensembles (VOT, STCK and GB) have relatively low drop in F-Score (the lowest
-ones, in fact), with the exception of ExtraTrees (EXT) ensemble, which is the
-second largest.
+to be very significant as they show it is possible, using the proposed approach,
+to identify noise no matter the content is structured or not. The most prominent
+drop, ironically, occurs with Logistic Regression (which performed best with
+only structured content documents).
+Gradient Boosting (GB), although not the best performing model in either
+setting, showed the lowest impact in F-Score. Another interesting result we see
+is that all ensembles (VOT, STCK and GB) have relatively low drop in F-Score
+(the lowest ones, in fact), with the exception of ExtraTrees (EXT) ensemble,
+which is the second largest.
 For this setting, where we have no guarantee that the documents have structured
 content (only that they may have structured noise), the best option would be the
 Voting heterogeneous ensemble with F-Score of 91.47\% and largest precision
@@ -691,9 +692,10 @@ STCK & 89.93\% & 91.81\% & 90.73\% & 90.86\% & -1.73\% \\
 In Table \ref{tab:resultcomp} we have compared our results with another,
 state-of-the-art, approach found in the literature. We have compared the
 performance of our classifiers in both settings (Logistic Regression from Table
-\ref{tab:result} and Voting Ensemble from Table \ref{tab:resultnoise}) with the
-results published in \cite{TPC09}, using the same dataset (from
-\cite{yamada2004testbed}).
+\ref{tab:result}, trained only with structured content, and Voting Ensemble from
+Table \ref{tab:resultnoise} trained with our full dataset) with the results
+published in \cite{TPC09}, using their dataset (from
+\cite{yamada2004testbed}) as our test data.
 The work in \cite{TPC09} deals specifically with structured content, the authors
 have not measure its performance in the presence of noise as we did in Table
 \ref{tab:resultnoise}. They also have not published the accuracy of their
@@ -718,14 +720,16 @@ VOT & \textbf{93.02}\%   & 90.91\% & \textbf{91.95}\% & 90.91\% \\
 \end{tabular}
 \end{table}
 
-We show in Table \ref{tab:featsel} the best performing features for each model.
+We show in Table \ref{tab:featsel} the best performing features for each model,
+for the sake of documentation and reproducibility.
 Almost all models used all features, this shows that all features are relevant
 to the problem and somehow contribute to the solution. The exceptions are the
-Logistic Regression and SVM. The Logistic Regression achieved the best results
-without features ``center'' and ``vertical'' and SVM without feature ``center'',
-that is probably due to the high correlation with other features as shown in
-Table \ref{tab:featcorr}: feature ``center'' has a considerable correlation
-with ``size'' and ``vertical'' with ``horizontal''.
+Logistic Regression and Support Vector Machine. The Logistic Regression achieved
+the best results without ``center'' and ``vertical'' features, and SVM without
+``center'' feature, that is probably due to the high correlation with other
+features as shown in Table \ref{tab:featcorr}: ``center'' feature has a
+considerable correlation with ``size'' and ``vertical'' feature with
+``horizontal''.
 
 \begin{table}[h]
 \centering
@@ -782,20 +786,24 @@ STCK      & $classifiers=[GNB, SVM, kNN, GB]$ \\
 \end{table}
 
 \section{Conclusion and Future Work}\label{sec:con}
-In our research, thru observation, we have come up with the hypothesis depicted
-here, for each feature and, thru experimentation, we have confirmed these
+In our research, through observation, we have come up with the hypothesis depicted
+here, for each feature and, through experimentation, we have confirmed these
 hypothesis in two different situations:
 in a controlled setting (with 93.57\% F-Score using Logistic Regression) and; in
 an open environment (with 91.47\% F-Score using a heterogeneous voting
-ensemble). We believe that these results are very good, specially
-considering we are using only very basic information (size, position, etc.) to
-distinguish between content and noise.
+ensemble). We believe these to be very good results, specially considering we
+are using only very basic information (size, position, etc.) to distinguish
+between content and noise.
 
 We have also demonstrated the relevance of these features to the problem
 by testing every possible combination of features.
 
-Nonetheless, there is always room for improvements. Adding other features
-to the problem, perhaps using semantic features combined with the ones
-proposed here, should be investigated. With an increased number of features,
-testing all combinations becames prohibitive, other approaches should then be
-employed (e.g., genetic algorithms) to find a good combination of features.
+Moreover, we have also shown that our proposal is superior to other
+state-of-the-art approaches found in the literature. 
+
+Nonetheless, there is always room for improvements. Adding other features to the
+problem, perhaps using semantic features combined with the ones proposed here
+could yield some interesting results. With an increased number of features,
+testing all combinations becomes prohibitive, other approaches should then be
+employed (e.g., genetic algorithms) to find a good (maybe the best) combination
+of features.
