@@ -26,11 +26,11 @@ namespace socks {
 
 namespace factory {
 	ClientSocket makeSSLClientSocket() {
-		return ClientSocket(new OpenSSLSocket(socketFactory.createSocketImpl()));
+		return ClientSocket(new OpenSSLSocket(socketFactory().createSocketImpl()));
 	};
 
 	ServerSocket makeSSLServerSocket() {
-		return ServerSocket(new OpenSSLSocket(socketFactory.createSocketImpl()));
+		return ServerSocket(new OpenSSLSocket(socketFactory().createSocketImpl()));
 	};
 
 	SocketStream makeSSLSocketStream() {

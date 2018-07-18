@@ -661,7 +661,7 @@ private:
  std::unique_ptr<SocketFactoryImpl> impl;
 };
 
-extern SocketFactory socketFactory;
+extern SocketFactory &socketFactory();
 
 }
 namespace socks {
@@ -730,7 +730,7 @@ namespace factory {
   ClientCallback<ClientContext> disconnectCallback = [](Context<ClientContext> &ctx, std::istream &inp, std::ostream &outp){},
   ClientCallback<ClientContext> writeCallback = [](Context<ClientContext> &ctx, std::istream &inp, std::ostream &outp){}) {
   return Server(new ServerImpl<ClientContext>(
-   new ServerSocket(new OpenSSLSocket(socketFactory.createSocketImpl())),
+   new ServerSocket(new OpenSSLSocket(socketFactory().createSocketImpl())),
    new ConnectionPool(new MultiplexedConnectionPoolImpl(numThreads)),
    readCallback,
    connectCallback,
@@ -744,7 +744,7 @@ namespace factory {
   ClientCallback<ClientContext> disconnectCallback = [](Context<ClientContext> &cd, std::istream &inp, std::ostream &outp){},
   ClientCallback<ClientContext> writeCallback = [](Context<ClientContext> &cd, std::istream &inp, std::ostream &outp){}) {
   return Server(new ServerImpl<ClientContext>(
-   new ServerSocket(new OpenSSLSocket(socketFactory.createSocketImpl())),
+   new ServerSocket(new OpenSSLSocket(socketFactory().createSocketImpl())),
    new ConnectionPool(new ThreadedConnectionPoolImpl()),
    readCallback,
    connectCallback,

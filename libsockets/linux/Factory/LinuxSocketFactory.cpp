@@ -22,7 +22,10 @@
 
 namespace socks {
 
-SocketFactory socketFactory(new LinuxSocketFactory());
+SocketFactory &socketFactory() {
+	static SocketFactory factory(new LinuxSocketFactory());
+	return factory;
+}
 
 LinuxSocketFactory::LinuxSocketFactory() {
 }
@@ -35,7 +38,7 @@ SocketImpl *LinuxSocketFactory::createSocketImpl() {
 }
 
 SocketImpl *LinuxSocketFactory::createUDPSocketImpl() {
-	return new LinuxSocket(UDPFDFactory);
+	return new LinuxSocket(UDPFDFactory());
 }
 
 Poll *LinuxSocketFactory::createPoll() {

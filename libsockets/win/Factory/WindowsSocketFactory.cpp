@@ -25,7 +25,10 @@
 
 namespace socks {
 
-SocketFactory socketFactory(new WindowsSocketFactory());
+SocketFactory &socketFactory() {
+	static SocketFactory factory(new WindowsSocketFactory());
+	return factory;
+}
 
 WindowsSocketFactory::WindowsSocketFactory() : SocketFactoryImpl() {
 }
@@ -38,7 +41,7 @@ SocketImpl *WindowsSocketFactory::createSocketImpl() {
 }
 
 SocketImpl *WindowsSocketFactory::createUDPSocketImpl() {
-	return new WindowsSocket(UDPFDFactory);
+	return new WindowsSocket(UDPFDFactory());
 }
 
 Poll *WindowsSocketFactory::createPoll() {

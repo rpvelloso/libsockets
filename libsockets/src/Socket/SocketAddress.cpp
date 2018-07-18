@@ -24,7 +24,7 @@ namespace factory {
 			const std::string &port,
 			SocketProtocol protocol) {
 
-		return SocketAddress(socketFactory.createSocketAddressImpl(host, port, protocol));
+		return SocketAddress(socketFactory().createSocketAddressImpl(host, port, protocol));
 	};
 }
 

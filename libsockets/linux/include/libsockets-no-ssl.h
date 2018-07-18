@@ -660,7 +660,7 @@ private:
  std::unique_ptr<SocketFactoryImpl> impl;
 };
 
-extern SocketFactory socketFactory;
+extern SocketFactory &socketFactory();
 
 }
 

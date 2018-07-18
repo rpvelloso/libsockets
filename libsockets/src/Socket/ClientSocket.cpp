@@ -22,7 +22,7 @@ namespace socks {
 
 namespace factory {
 	ClientSocket makeClientSocket() {
-		return ClientSocket(socketFactory.createSocketImpl());
+		return ClientSocket(socketFactory().createSocketImpl());
 	}
 }
 
@@ -40,7 +40,7 @@ ClientSocket::ClientSocket(SocketImpl *impl) : Socket(impl) {
 	}
 }
 
-ClientSocket::ClientSocket() : Socket(socketFactory.createSocketImpl()) {
+ClientSocket::ClientSocket() : Socket(socketFactory().createSocketImpl()) {
 
 }
 

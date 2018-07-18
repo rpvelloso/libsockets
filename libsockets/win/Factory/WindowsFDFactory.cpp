@@ -18,8 +18,15 @@
 
 namespace socks {
 
-FDFactory TCPFDFactory(new WindowsTCPFDFactory());
-FDFactory UDPFDFactory(new WindowsUDPFDFactory());
+FDFactory &TCPFDFactory() {
+	static WindowsTCPFDFactory factory;
+	return factory;
+}
+
+FDFactory &UDPFDFactory() {
+	static WindowsUDPFDFactory factory;
+	return factory;
+}
 
 WindowsTCPFDFactory::WindowsTCPFDFactory() : FDFactory() {
 }

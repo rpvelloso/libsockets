@@ -31,8 +31,8 @@ private:
 	std::unique_ptr<FDFactory> impl;
 };
 
-extern FDFactory TCPFDFactory;
-extern FDFactory UDPFDFactory;
+extern FDFactory &TCPFDFactory();
+extern FDFactory &UDPFDFactory();
 
 }
 

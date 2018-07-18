@@ -36,7 +36,7 @@ public:
 private:
 };
 
-WinSock winSock;
+WinSock winSock; // TODO: remove this static declaration!!!!
 
 WindowsSocket::WindowsSocket(FDFactory &fdFactory) : SocketImpl() {
 	fd = fdFactory();

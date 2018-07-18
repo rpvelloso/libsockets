@@ -18,8 +18,15 @@
 
 namespace socks {
 
-FDFactory TCPFDFactory(new LinuxTCPFDFactory());
-FDFactory UDPFDFactory(new LinuxUDPFDFactory());
+FDFactory &TCPFDFactory() {
+	static LinuxTCPFDFactory factory;
+	return factory;
+}
+
+FDFactory &UDPFDFactory() {
+	static  LinuxUDPFDFactory factory;
+	return factory;
+}
 
 LinuxTCPFDFactory::LinuxTCPFDFactory() : FDFactory() {
 }

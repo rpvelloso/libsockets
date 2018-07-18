@@ -54,7 +54,7 @@ size_t Multiplexer::getClientCount() {
 
 namespace factory {
 	Multiplexer makeMultiplexer() {
-		return Multiplexer(new MultiplexerImpl(socketFactory.createPoll()));
+		return Multiplexer(new MultiplexerImpl(socketFactory().createPoll()));
 	};
 }
 

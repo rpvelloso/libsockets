@@ -32,7 +32,7 @@ MultiplexerImpl::MultiplexerImpl(Poll *pollStrategy) :
 		pollStrategy(pollStrategy),
 		clientCount(0) {
 
-	auto socketPair = socketFactory.createSocketPair();
+	auto socketPair = socketFactory().createSocketPair();
 	sockIn = std::move(socketPair.first);
 	sockOutFD = socketPair.second->getImpl().getFD();
 	std::unique_ptr<BufferedClientSocketInterface> sockOut(new BufferedClientSocket<size_t>(std::move(socketPair.second)));
