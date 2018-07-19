@@ -197,4 +197,4 @@ int main(int argc, char **argv) {
 ```
 # HTTP Server (httd/)
 Coming soon...
-(under development/refactoring, currently not working...)
+(under development/refactoring, currently only working as a library...)
