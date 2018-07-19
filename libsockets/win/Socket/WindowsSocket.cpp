@@ -23,17 +23,18 @@
 namespace socks {
 
 class WinSock {
+friend class WindowsSocket;
 public:
+	~WinSock() {
+		WSACleanup();
+	};
+private:
 	WinSock() {
 		WSADATA wsaData;
 		if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
 			throw std::runtime_error("error initializing WinSock(): " + std::to_string(WSAGetLastError()));
 		}
 	};
-	virtual ~WinSock() {
-		WSACleanup();
-	};
-private:
 };
 
 WindowsSocket::WindowsSocket(FDFactory &fdFactory) : SocketImpl() {
