@@ -56,9 +56,6 @@ protected:
 	virtual void removeClientSocket(BufferedClientSocketInterface &clientSocket);
 	virtual bool selfPipe(BufferedClientSocketInterface &clientSocket);
 
-	/*
-	 * Factory method that wraps a clientSocket with a multiplexing interface
-	 */
 	bool readHandler(BufferedClientSocketInterface &client);
 	bool writeHandler(BufferedClientSocketInterface &client);
 };
