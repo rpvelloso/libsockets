@@ -345,7 +345,7 @@ public:
   writeCB(writeCallback),
   outputSocketBuffer(*(this->impl)),
   outp(&outputSocketBuffer),
-  clientData(*(this->impl)) {};
+  clientContext(*(this->impl)) {};
  virtual ~BufferedClientSocket() {};
  bool getHasOutput() override {return outputBuffer.rdbuf()->in_avail() > 0;};
  std::stringstream &getOutputBuffer() override {return outputBuffer;};
@@ -367,19 +367,19 @@ public:
  ClientSocket &getSocket() override {return *impl;};
  void readCallback() override {
   inputBuffer.clear();
-  readCB(clientData, inputBuffer, *outp);
+  readCB(clientContext, inputBuffer, *outp);
  };
  void connectCallback() override {
   inputBuffer.clear();
-  connectCB(clientData, inputBuffer, *outp);
+  connectCB(clientContext, inputBuffer, *outp);
  };
  void disconnectCallback() override {
   inputBuffer.clear();
-  disconnectCB(clientData, inputBuffer, *outp);
+  disconnectCB(clientContext, inputBuffer, *outp);
  };
  void writeCallback() override {
   inputBuffer.clear();
-  writeCB(clientData, inputBuffer, *outp);
+  writeCB(clientContext, inputBuffer, *outp);
  };
 private:
  std::unique_ptr<ClientSocket> impl;
@@ -388,7 +388,7 @@ private:
  std::stringstream inputBuffer;
  SocketStream outputSocketBuffer;
  std::ostream *outp;
- Context<ClientContext> clientData;
+ Context<ClientContext> clientContext;
 };
 
 }
