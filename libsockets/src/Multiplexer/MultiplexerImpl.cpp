@@ -125,21 +125,23 @@ void MultiplexerImpl::multiplex(int timeout) {
 					throw std::runtime_error("self-pipe error.");
 			}
 		}
-
-		{ // process incoming clients
-			std::lock_guard<std::mutex> lock(incomingClientsMutex);
-
-			for (size_t i = 0; i < incomingClients.size(); ++i) {
-				auto fd = incomingClients[i]->getImpl().getFD();
-				clients[fd] = std::move(incomingClients[i]);
-			}
-			incomingClients.clear();
-		}
+		processIncomingClients();
 
 		// update client count
 		clientCount = clients.size() - 1; // subtract self-pipe from count
 	}
 }
+
+void MultiplexerImpl::processIncomingClients() {
+	std::lock_guard<std::mutex> lock(incomingClientsMutex);
+
+	for (size_t i = 0; i < incomingClients.size(); ++i) {
+		auto fd = incomingClients[i]->getImpl().getFD();
+		clients[fd] = std::move(incomingClients[i]);
+	}
+	incomingClients.clear();
+}
+
 
 bool MultiplexerImpl::readHandler(BufferedClientSocketInterface &clientSocket) {
 	auto bufSize = clientSocket.getReceiveBufferSize();

@@ -52,9 +52,10 @@ protected:
 	std::vector<std::unique_ptr<BufferedClientSocketInterface>> incomingClients;
 	SocketFDType sockOutFD = InvalidSocketFD;
 
-	virtual void sendMultiplexerCommand(int cmd);
-	virtual void removeClientSocket(BufferedClientSocketInterface &clientSocket);
-	virtual bool selfPipe(BufferedClientSocketInterface &clientSocket);
+	void processIncomingClients();
+	void sendMultiplexerCommand(int cmd);
+	void removeClientSocket(BufferedClientSocketInterface &clientSocket);
+	bool selfPipe(BufferedClientSocketInterface &clientSocket);
 
 	bool readHandler(BufferedClientSocketInterface &client);
 	bool writeHandler(BufferedClientSocketInterface &client);
