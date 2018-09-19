@@ -233,6 +233,18 @@ Tag Path (Definition \ref{def:tp}).
   \label{fig:stru}
 \end{figure*}
 
+\begin{definition}\textbf{(Structured Region)}\label{def:strureg} is a region of
+the document that contains contiguous structured data (either content or noise)
+and, because of its structured nature, when converted to a TPS, exhibits a
+cyclic behaviour.
+This cyclic behaviour is a consequence of structure: the records are contiguous
+and have similar structure so the TPCs forming the structured region's TPS will
+repeat throughout the sequence, in cycles. This is illustrated in Figure
+\ref{fig:stru} where a document containing $20$ SRRs (search result records) is
+converted to its TPS representation and we can see that each record becomes a
+cycle in the encircled main content region.
+\end{definition}
+
 \section{Content Detection}\label{sec:content}
 In order to distinguish which structured regions are content and which are noise
 we consider six region features, extracted from the document sequence, such as:
@@ -690,6 +702,12 @@ STCK & 89.93\% & 91.81\% & 90.73\% & 90.86\% & -1.73\% \\
 \end{tabular}
 \end{table}
 
+For the sake of precision score we have investigated the false positives and
+concluded that they are borderline cases, i.e., they are structured noise
+regions that we can not clearly classify, even when we visually inspect the
+document's TPS (without considering semantics, of course). These region's
+features are in a gray area, half way between content and noise.
+ 
 In Table \ref{tab:resultcomp} we have compared our results with other,
 state-of-the-art, approaches found in the literature. We have compared the
 performance of our classifiers in both settings (Logistic Regression from Table
@@ -808,7 +826,8 @@ state-of-the-art approaches found in the literature.
 
 Nonetheless, there is always room for improvements. Adding other features to the
 problem, perhaps using semantic features combined with the ones proposed here
-could yield some interesting results. With an increased number of features,
-testing all combinations becomes prohibitive, other approaches should then be
-employed (e.g., genetic algorithms) to find a good (maybe the best) combination
-of features.
+could yield some interesting results, specially when we consider borderline
+false positives where semantics could help improve precision even further.
+With an increased number of features though, testing all combinations becomes
+prohibitive, other approaches should then be employed (e.g., genetic algorithms)
+to find a good (maybe the best) combination of features.
