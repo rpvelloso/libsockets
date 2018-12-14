@@ -81,17 +81,6 @@ It is also effective
 % (we provide a mechanism to ensure high precision at the expense of recall)
 and HTML syntax independent, i.e., there are no heuristic rules targeted at
 specific tags.
-The improvements proposed in this paper are two-fold: 1) \textbf{a better way to
-classify structured data as content and noise} using supervised machine
-learning. Our previous work employed unsupervised clustering for this task and
-was limited to datasets containing only documents known to have structured
-content, it did not perform well in documents without structured content (i.e.,
-documents with textual/unstructured content and structured noise); 2)
-\textbf{lower the time complexity} necessary to detect the records within a
-structured region.
-Our previous approach had a $O(nlogn)$ time complexity that we managed to lower
-to $O(n)$ by avoid unnecessary computation when inspecting the region's
-spectrum.
 
 % motivacao para uso de processamento de sinais
 When the DOM tree is converted into its sequence representation, and plotted in
@@ -116,7 +105,19 @@ main period (record size) and frequency (record count) we use this information
 to break down the data region into records that are subsequently aligned.
 
 % contribuicoes
-The main contributions presented here are:
+The improvements proposed in this paper are two-fold: 1) \textbf{a better way to
+classify structured data as content and noise} using supervised machine
+learning. Our previous work employed unsupervised clustering for this task and
+was limited to datasets containing only documents known to have structured
+content, it did not perform well in documents without structured content (i.e.,
+documents with textual/unstructured content and structured noise); 2)
+\textbf{lower the time complexity} necessary to detect the records within a
+structured region.
+Our previous approach had a $O(nlogn)$ time complexity that we managed to lower
+to $O(n)$ by avoid unnecessary computation when inspecting the region's
+spectrum.
+
+The main contributions of our approach are:
 %\begin{enumerate} 
 	(1) a novel insight on how the structure of a web document can be seen: as
     a periodic signal. To the best of our knowledge there is nothing alike in
