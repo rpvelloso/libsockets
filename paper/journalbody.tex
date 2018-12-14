@@ -65,18 +65,33 @@ the technique's longevity).
 % renderiza p�gina,
 
 % resumo da abordagem
-Here we outline a novel approach for the problem of structured extraction (or
-record extraction) from web pages, using an alternative representation of the
-DOM tree and some signal processing techniques. Our approach first converts the
-DOM tree to a sequence representation; segments the sequence into regions;
-identifies the regions with structured content; locates the records boundaries
-within the structured regions and; aligns the records into a table. The
-technique outlined here has the following characteristics: it takes a single
-page as input, does not need training and it is unsupervised, computationally
-efficient ($O(nlogn)$) and domain independent. It is also effective 
-%(we provide a mechanism to ensure high precision at the expense of recall) 
+Here we outline an improved and extended version of our previous
+approach\cite{Velloso:2017:ERW:3132847.3132875} for the problem of structured
+extraction (or record extraction) from web pages, using an alternative
+representation of the DOM tree, some signal processing techniques and supervised
+machine learning to detect useful content. Our approach first converts the DOM
+tree to a sequence representation; segments the sequence into regions;
+identifies the regions with structured content; classifies structured regions as
+content or noise; locates the records boundaries within the structured content
+regions and; aligns the records into a table. The technique outlined here has
+the following characteristics: it takes a single page as input, it is
+computationally efficient ($O(n)$ on the size of the document) and domain
+independent.
+It is also effective
+% (we provide a mechanism to ensure high precision at the expense of recall)
 and HTML syntax independent, i.e., there are no heuristic rules targeted at
 specific tags.
+The improvements proposed in this paper are two-fold: 1) \textbf{a better way to
+classify structured data as content and noise} using supervised machine
+learning. Our previous work employed unsupervised clustering for this task and
+was limited to datasets containing only documents known to have structured
+content, it did not perform well in documents without structured content (i.e.,
+documents with textual/unstructured content and structured noise); 2)
+\textbf{lower the time complexity} necessary to detect the records within a
+structured region.
+Our previous approach had a $O(nlogn)$ time complexity that we managed to lower
+to $O(n)$ by avoid unnecessary computation when inspecting the region's
+spectrum.
 
 % motivacao para uso de processamento de sinais
 When the DOM tree is converted into its sequence representation, and plotted in
@@ -1338,7 +1353,7 @@ this trade-off be worth it?
 \end{figure}
 %\vspace{-0.3cm}
 
-\section{Content Detection Experiments}\label{sec:exp}
+\subsection{Content Detection Experiments}\label{ss:exp}
 
 % {\textcolor{red}{em vez de "to achieve the goal of content detection" eu seria
 % bem direta e faria um parágrafo que apresente, em uma frase, o(s) objetivo(s)
@@ -1346,7 +1361,7 @@ this trade-off be worth it?
 % avaliacao com numero plotados nos gráficos)}%}
 
 In this section we detail the experiments we conducted using supervised machine
-learning techniques with the features from Section \ref{sec:content}. We also
+learning techniques with the features from Section \ref{ss:content}. We also
 characterize the dataset used in the experiments, its statistical properties,
 features correlation, etc. The objectives of this experiments are to determine
 the parameters and the subset of features which are important in this
@@ -1525,7 +1540,7 @@ Horizontal & 0.53 & 0.61 & -0.06 & 1.44 \\
 
 %\vspace{0.1cm}
 
-\subsection{Content Detection Results}\label{sec:results}
+\subsubsection{Content Detection Results}\label{sec:results}
 We have used 5-fold cross-validation to evaluate the performance
 of each model with respect to precision, recall, accuracy and F-Score. The
 average result of 200 runs is shown in Tables \ref{tab:result} and
@@ -1705,6 +1720,10 @@ STCK      & $classifiers=[GNB, SVM, kNN, GB]$ \\
 \end{table}
 
 %\vspace{2cm}
+
+
+\subsection{Runtime Improvement}\label{ss:exp}
+% goertzel + parseval
 
 \section{Conclusion and Future Work}\label{sec:con}
 
