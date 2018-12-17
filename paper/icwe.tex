@@ -1,0 +1,109 @@
+\documentclass[runningheads]{llncs}
+
+%\usepackage{booktabs} % For formal tables
+
+% Copyright
+%\setcopyright{none}
+%\setcopyright{acmcopyright}
+%\setcopyright{acmlicensed}
+%\setcopyright{rightsretained}
+%\setcopyright{usgov}
+%\setcopyright{usgovmixed}
+%\setcopyright{cagov}
+%\setcopyright{cagovmixed}
+
+%\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+%\usepackage{algorithmicx}
+%\usepackage[Algorithm,ruled]{algorithm}
+%\usepackage[noend]{algpseudocode}
+%\usepackage{url}
+%\usepackage{balance}
+%\usepackage{listings}
+%\usepackage{enumerate}
+\usepackage{color}
+%\usepackage{microtype}
+%\usepackage[medium,compact]{titlesec}
+
+\usepackage{pifont}% http://ctan.org/pkg/pifont
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+
+\hyphenation{spec-trum}
+
+\begin{document}
+
+\title{Web Page Structured Content Detection using Supervised Machine Learning}
+
+%\author{Roberto Panerai Velloso}
+%\affiliation{%
+%  \institution{Universidade Federal de Santa Catarina}
+%  \city{Florianópolis} 
+%  \state{Santa Catarina} 
+%  \country{Brazil}
+%}
+%\email{rvelloso@gmail.com}
+%
+%\author{Carina F. Dorneles}
+%\affiliation{%
+%  \institution{Universidade Federal de Santa Catarina}
+%  \city{Florianópolis} 
+%  \state{Santa Catarina} 
+%  \country{Brazil}
+%}
+%\email{dorneles@inf.ufsc.br}
+
+%\author{Author A}
+%\affiliation{%
+%  \institution{University}
+%  \city{City} 
+%  \state{State} 
+%  \country{Country}
+%}
+%\email{e-mail@domain.com}
+
+%\author{Author B}
+%\affiliation{%
+%  \institution{University}
+%  \city{City} 
+%  \state{State} 
+%  \country{Country}
+%}
+
+\author{Roberto Panerai Velloso\inst{1} \and
+Carina F. Dorneles\inst{1}}
+
+\institute{Universidade Federal de Santa Catarina, Florianopolis/SC
+Brasil\email{rvelloso@gmail.com@inf.ufsc.br} \and
+\email{dorneles@inf.ufsc.br}}
+
+
+%\email{e-mail@domain.com}
+
+\begin{abstract}
+    In this paper we present a comparative study using several supervised 
+    machine learning techniques, including homogeneous and heterogeneous
+    ensembles, to solve the problem of classifying content and noise in web
+    pages. We specifically tackle the problem of detecting content in 
+    semi-structured data (e.g., e-commerce 
+    search results) under two different
+    settings: a controlled environment with only structured content documents
+    and; an open environment where the web page being processed may or may
+    not have structured content.
+    The features are obtained from a preexisting and publicly available extraction 
+    technique that processes web pages as a sequence of tag paths, thus 
+    the features are extracted from these sequences instead of the DOM 
+    tree. Besides comparing the performance between different models 
+    we have also conducted extensive feature selection/combination 
+    experiments. We have achieved an average F-score of about
+    93\% in a controlled setting and 91\% in an open setting.
+\keywords{web mining, content detection, noise removal, record extraction,
+structure detection, information retrieval}
+\end{abstract}
+
+\input{icwebody}
+
+\bibliographystyle{splncs04}
+\bibliography{refs} 
+
+\end{document}
