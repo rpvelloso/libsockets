@@ -1,0 +1,21 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "chatd_lib",
+    srcs = glob(["*.cpp"]),
+    hdrs = glob(["*.h"]),
+    deps = [
+        "//libsockets:defs",
+        "//libsockets:libsockets_no_ssl",
+        "//libsockets:public_headers",
+        "//libsockets:src_headers",
+    ],
+)
+
+cc_binary(
+    name = "chatd",
+    srcs = ["main.cpp"],
+    deps = [":chatd_lib"],
+)

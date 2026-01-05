@@ -1,0 +1,14 @@
+common --enable_platform_specific_config
+
+# C++ standard per platform
+build:windows --cxxopt=/std:c++20
+build:windows --host_cxxopt=/std:c++20
+
+build:linux --cxxopt=-std=c++20
+build:linux --host_cxxopt=-std=c++20
+
+build:macos --cxxopt=-std=c++20
+build:macos --host_cxxopt=-std=c++20
+
+# Enable Bzlmod for every Bazel command
+common --enable_bzlmod

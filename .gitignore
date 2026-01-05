@@ -1,0 +1,10 @@
+# C++ artifacts
+.obj
+.exe
+
+# Bazel artifacts
+bazel-*
+MODULE.bazel.lock
+
+# vscode
+.vscode

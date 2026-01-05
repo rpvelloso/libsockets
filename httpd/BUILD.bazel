@@ -1,0 +1,26 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "httpd_lib",
+    srcs = glob(["*.cpp"]),
+    hdrs = glob(
+        [
+            "*.h",
+            "*.hpp",
+        ],
+        allow_empty = True,
+    ),
+    includes = ["."],
+    deps = [
+        "//:libsockets",
+    ],
+)
+
+# If/when you have a main:
+# cc_binary(
+#     name = "httpd",
+#     srcs = ["main.cpp"],
+#     deps = [":httpd_lib"],
+# )
