@@ -1,0 +1,40 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+# ftpd wants includes like "filesystem/FileSystem.h" and "state/FTPClientState.h"
+# so we give it the same umbrella treatment:
+cc_library(
+    name = "ftpd_headers",
+    hdrs = glob([
+        "src/**/*.h",
+        "src/**/*.hpp",
+    ]),
+    strip_include_prefix = "src",
+)
+
+cc_library(
+    name = "ftpd_lib",
+    srcs = glob([
+        "src/**/*.cc",
+        "src/**/*.cpp",
+    ]),
+    deps = [
+        ":ftpd_headers",
+        "//libsockets:defs",
+        "//libsockets:libsockets_no_ssl",
+        "//libsockets:public_headers",
+        "//libsockets:src_headers",
+    ],
+)
+
+cc_binary(
+    name = "ftpd",
+    srcs = ["src/main.cpp"],
+    # getopt.h breaks on Windows (MSVC). Gate until you add a compat version.
+    target_compatible_with = select({
+        "@bazel_tools//src/conditions:windows": ["@platforms//:incompatible"],
+        "//conditions:default": [],
+    }),
+    deps = [":ftpd_lib"],
+)
