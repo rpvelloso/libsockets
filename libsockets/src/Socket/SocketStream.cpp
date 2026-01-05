@@ -102,7 +102,7 @@ SocketStream::SocketStream(SocketStream &&rhs) : std::iostream(std::move(rhs)) {
 }
 
 SocketStream::SocketStream(ClientSocket &clientSocket) :
-		std::iostream(),
+		std::iostream(0),
 		socketStreamBuf(new SocketStreamBuf(clientSocket)) {
 	rdbuf(socketStreamBuf.get());
 }
