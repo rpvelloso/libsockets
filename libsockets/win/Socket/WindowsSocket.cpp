@@ -15,6 +15,7 @@
 
 #include <memory>
 #include <exception>
+#include <stdexcept>
 
 #include "Socket/ClientSocket.h"
 #include "Socket/WindowsSocket.h"

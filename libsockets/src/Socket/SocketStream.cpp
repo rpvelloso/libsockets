@@ -84,14 +84,14 @@ std::streambuf::int_type SocketStreamBuf::transmit() {
 }
 
 SocketStream::SocketStream(std::unique_ptr<ClientSocket> clientSocket) :
-		std::iostream(),
+		std::iostream(0),
 		clientSocket(std::move(clientSocket)),
 		socketStreamBuf(new SocketStreamBuf(*(this->clientSocket))) {
 	rdbuf(socketStreamBuf.get());
 }
 
 SocketStream::SocketStream() :
-		std::iostream(),
+		std::iostream(0),
 		clientSocket(new ClientSocket()),
 		socketStreamBuf(new SocketStreamBuf(*clientSocket)) {
 	rdbuf(socketStreamBuf.get());
