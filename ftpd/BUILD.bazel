@@ -8,7 +8,6 @@ cc_library(
     name = "ftpd_headers",
     hdrs = glob([
         "src/**/*.h",
-        "src/**/*.hpp",
     ]),
     strip_include_prefix = "src",
 )
@@ -16,7 +15,6 @@ cc_library(
 cc_library(
     name = "ftpd_lib",
     srcs = glob([
-        "src/**/*.cc",
         "src/**/*.cpp",
     ]),
     deps = [
