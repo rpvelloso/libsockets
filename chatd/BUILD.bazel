@@ -4,14 +4,22 @@ package(default_visibility = ["//visibility:public"])
 
 cc_library(
     name = "chatd_lib",
-    srcs = glob(["*.cpp"]),
+    srcs = glob(["*.cpp"], exclude = ["main.cpp"]),
     hdrs = glob(["*.h"]),
     deps = [
+        ":sqlite3",
         "//libsockets:defs",
         "//libsockets:libsockets_no_ssl",
         "//libsockets:public_headers",
         "//libsockets:src_headers",
     ],
+)
+
+cc_library(
+    name = "sqlite3",
+    srcs = ["sqlite3.c", "sqlite3.h"],
+    hdrs = ["sqlite.c++.h"],
+    deps = [],
 )
 
 cc_binary(
