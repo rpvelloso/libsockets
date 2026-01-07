@@ -18,9 +18,10 @@
 #include <openssl/engine.h>
 #include <openssl/conf.h>
 #include <openssl/err.h>
-#include <pthread.h>
+#include <mutex>
+#include <thread>
 
-#include "Socket/SSL/OpenSSL.h"
+#include "OpenSSL.h"
 
 namespace socks {
 
@@ -38,44 +39,43 @@ OpenSSL openSSL;
  * CRYPTO_thread_cleanup();
  */
 
-static pthread_mutex_t *lock_cs;
+static std::mutex *lock_cs;
 static long *lock_count;
 
 void pthreads_locking_callback(int mode, int type, const char *file, int line)
 {
     if (mode & CRYPTO_LOCK) {
-        pthread_mutex_lock(&(lock_cs[type]));
+        lock_cs[type].lock();
         lock_count[type]++;
     } else {
-        pthread_mutex_unlock(&(lock_cs[type]));
+        lock_cs[type].unlock();
     }
 }
 
 unsigned long pthreads_thread_id(void)
 {
+    auto id = std::this_thread::get_id();
     unsigned long ret;
-
-    ret = (unsigned long)pthread_self();
-    return (ret);
+    ret = *reinterpret_cast<unsigned long *>(&id);
+    return ret;
 }
 
 void CRYPTO_thread_setup(void)
 {
     int i;
 
-    lock_cs = (pthread_mutex_t *)OPENSSL_malloc(CRYPTO_num_locks() * sizeof(pthread_mutex_t));
+    lock_cs = new std::mutex[CRYPTO_num_locks()];
     lock_count = (long *)OPENSSL_malloc(CRYPTO_num_locks() * sizeof(long));
     if (!lock_cs || !lock_count) {
         /* Nothing we can do about this...void function! */
         if (lock_cs)
-            OPENSSL_free(lock_cs);
+            delete lock_cs;
         if (lock_count)
             OPENSSL_free(lock_count);
         return;
     }
     for (i = 0; i < CRYPTO_num_locks(); i++) {
         lock_count[i] = 0;
-        pthread_mutex_init(&(lock_cs[i]), NULL);
     }
 
     CRYPTO_set_id_callback((unsigned long (*)())pthreads_thread_id);
@@ -87,9 +87,6 @@ void CRYPTO_thread_cleanup(void)
     int i;
 
     CRYPTO_set_locking_callback(NULL);
-    for (i = 0; i < CRYPTO_num_locks(); i++) {
-        pthread_mutex_destroy(&(lock_cs[i]));
-    }
     OPENSSL_free(lock_cs);
     OPENSSL_free(lock_count);
 }

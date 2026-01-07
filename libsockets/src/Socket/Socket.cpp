@@ -15,7 +15,8 @@
 
 #include <memory>
 
-#include "Socket/Socket.h"
+#include "Socket.h"
+#include "SocketImpl.h"
 #include "Socket/SocketState/ClosedState.h"
 #include "Socket/SocketState/ConnectedState.h"
 #include "Socket/SocketState/DisconnectedState.h"

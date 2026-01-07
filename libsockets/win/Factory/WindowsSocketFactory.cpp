@@ -14,14 +14,14 @@
  */
 
 #include "defs.h"
+#include "WindowsSocketFactory.h"
 #include "Socket/ServerSocket.h"
 #include "Socket/WindowsSocket.h"
 #include "Socket/WindowsSocketAddress.h"
 #include "Factory/SocketFactory.h"
-#include "Factory/WindowsSocketFactory.h"
+#include "Multiplexer/MultiplexerImpl.h"
 #include "Multiplexer/WindowsPoll.h"
 #include "Multiplexer/WindowsSelect.h"
-#include "Multiplexer/MultiplexerImpl.h"
 
 namespace socks {
 

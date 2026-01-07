@@ -13,16 +13,16 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Socket/ServerSocket.h"
-#include "Server/Server.h"
+#include "Server.h"
 #include "ConnectionPool/MultiplexedConnectionPoolImpl.h"
 #include "ConnectionPool/ThreadedConnectionPoolImpl.h"
+#include "Socket/ServerSocket.h"
 
 namespace socks {
 
-Server::Server(ServerImplInterface *impl) : impl(impl) {
+Server::Server(ServerImplInterface *impl) : impl(impl) {};
 
-};
+Server::~Server() = default;
 
 void Server::listen(const std::string &bindAddr, const std::string &port) {
 	impl->listen(bindAddr, port);

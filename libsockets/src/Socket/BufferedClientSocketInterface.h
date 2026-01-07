@@ -16,16 +16,19 @@
 #ifndef SRC_SOCKET_BUFFEREDCLIENTSOCKETINTERFACE_H_
 #define SRC_SOCKET_BUFFEREDCLIENTSOCKETINTERFACE_H_
 
+#include <memory>
 #include <sstream>
-
-#include "Socket/SocketImpl.h"
+#include <unordered_map>
+#include "defs.h"
+#include "ClientSocket.h"
 
 namespace socks {
+
+class SocketImpl;
 
 /*
  * Wrapper class. Adds multiplexing and buffering capabilities to a ClientSocket.
  */
-
 class BufferedClientSocketInterface {
 public:
 	BufferedClientSocketInterface() {};
@@ -46,6 +49,8 @@ public:
 	virtual void writeCallback() = 0;
 	virtual int setNonBlockingIO(bool status) = 0;
 };
+
+using ClientListType = std::unordered_map<SocketFDType, std::unique_ptr<BufferedClientSocketInterface>>;
 
 }
 #endif /* SRC_SOCKET_BUFFEREDCLIENTSOCKETINTERFACE_H_ */

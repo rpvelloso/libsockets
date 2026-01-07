@@ -17,11 +17,12 @@
 #define SRC_SOCKETS_SERVERSOCKET_H_
 
 #include <string>
-
-#include "Socket/Socket.h"
-#include "Socket/SocketImpl.h"
+#include "ClientSocket.h"
+#include "Socket.h"
 
 namespace socks {
+
+class SocketImpl;
 
 class ServerSocket : public Socket {
 public:

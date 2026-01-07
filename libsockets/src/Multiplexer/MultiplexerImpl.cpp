@@ -15,12 +15,10 @@
 
 #include <iostream>
 #include <memory>
-
+#include "MultiplexerImpl.h"
+#include "Factory/SocketFactory.h"
 #include "Socket/BufferedClientSocketInterface.h"
 #include "Socket/BufferedClientSocket.h"
-#include "Factory/SocketFactory.h"
-#include "Multiplexer/MultiplexerImpl.h"
-#include "Multiplexer/Poll.h"
 
 namespace socks {
 
@@ -32,7 +30,6 @@ enum MultiplexerCommand : int {
 MultiplexerImpl::MultiplexerImpl(Poll *pollStrategy) :
 		pollStrategy(pollStrategy),
 		clientCount(0) {
-
 	auto socketPair = socketFactory().createSocketPair();
 	sockIn = std::move(socketPair.first);
 	sockOutFD = socketPair.second->getImpl().getFD();
@@ -40,13 +37,10 @@ MultiplexerImpl::MultiplexerImpl(Poll *pollStrategy) :
 	addClientSocket(std::move(sockOut));
 }
 
-MultiplexerImpl::~MultiplexerImpl() {
-}
+MultiplexerImpl::~MultiplexerImpl() = default;
 
 void MultiplexerImpl::addClientSocket(std::unique_ptr<BufferedClientSocketInterface> clientSocket) {
 	std::lock_guard<std::mutex> lock(incomingClientsMutex);
-
-
 	clientSocket->setNonBlockingIO(true);
 	clientSocket->connectCallback();
 	incomingClients.push_back(std::move(clientSocket));

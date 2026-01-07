@@ -9,9 +9,8 @@ cc_library(
     deps = [
         ":sqlite3",
         "//libsockets:defs",
-        "//libsockets:libsockets_no_ssl",
-        "//libsockets:public_headers",
-        "//libsockets:src_headers",
+        "//libsockets/src:sockets",
+        "//libsockets/src/Server",
     ],
 )
 
@@ -25,5 +24,8 @@ cc_library(
 cc_binary(
     name = "chatd",
     srcs = ["main.cpp"],
-    deps = [":chatd_lib"],
+    deps = [
+        ":chatd_lib",
+        "//libsockets:impl",
+    ],
 )

@@ -13,7 +13,7 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Factory/LinuxFDFactory.h"
+#include "LinuxFDFactory.h"
 #include "Socket/LinuxSocket.h"
 
 namespace socks {

@@ -16,22 +16,15 @@
 #ifndef SRC_MULTIPLEXER_MULTIPLEXERIMPL_H_
 #define SRC_MULTIPLEXER_MULTIPLEXERIMPL_H_
 
-#include <tuple>
-#include <memory>
-#include <vector>
-#include <mutex>
 #include <atomic>
-#include <functional>
-#include <unordered_map>
-
+#include <memory>
+#include <mutex>
+#include <vector>
+#include "Factory/Poll.h"
+#include "Socket/BufferedClientSocketInterface.h"
 #include "Socket/ClientSocket.h"
 
 namespace socks {
-
-class Poll;
-class BufferedClientSocketInterface;
-
-using ClientListType = std::unordered_map<SocketFDType, std::unique_ptr<BufferedClientSocketInterface>>;
 
 class MultiplexerImpl {
 public:

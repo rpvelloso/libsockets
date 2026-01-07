@@ -16,9 +16,9 @@
 #include <unistd.h>
 #include <cerrno>
 #include <exception>
+#include "LinuxSocket.h"
+#include "LinuxSocketAddress.h"
 #include "Socket/ClientSocket.h"
-#include "Socket/LinuxSocket.h"
-#include "Socket/LinuxSocketAddress.h"
 
 #include <string.h>
 #include <fcntl.h>

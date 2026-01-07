@@ -16,8 +16,8 @@
 #ifndef WIN_SOCKETS_WINDOWSSOCKETADDRESS_H_
 #define WIN_SOCKETS_WINDOWSSOCKETADDRESS_H_
 
+#include "WindowsSocket.h"
 #include "Socket/SocketAddressImpl.h"
-#include "Socket/WindowsSocket.h"
 
 namespace socks {
 

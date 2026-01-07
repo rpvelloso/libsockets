@@ -13,7 +13,7 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Socket/WindowsSocketAddress.h"
+#include "WindowsSocketAddress.h"
 
 namespace socks {
 

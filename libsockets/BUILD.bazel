@@ -1,25 +1,22 @@
-load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+load("@rules_cc//cc:defs.bzl", "cc_library")
 
 package(default_visibility = ["//visibility:public"])
-
-# -----------------------------------------------------------------------------
-# Umbrella header "views"
-# -----------------------------------------------------------------------------
-
-cc_library(
-    name = "src_headers",
-    # This makes #include "Socket/Socket.h" work (because we strip the "src/" prefix)
-    hdrs = glob([
-        "src/**/*.h",
-        "src/**/*.hpp",
-    ]),
-    strip_include_prefix = "src",
-)
 
 cc_library(
     name = "win_defs",
     hdrs = ["win/defs.h"],
     strip_include_prefix = "win",
+)
+
+cc_library(
+    name = "win_impl",
+    deps = ["//libsockets/win/Factory"],
+    linkopts = ["ws2_32.lib"],
+)
+
+cc_library(
+    name = "linux_impl",
+    deps = ["//libsockets/linux/Factory"],
 )
 
 cc_library(
@@ -38,144 +35,9 @@ cc_library(
 )
 
 cc_library(
-    name = "win_public_headers",
-    hdrs = glob(["win/include/*.h"]),
-    strip_include_prefix = "win/include",
-)
-
-cc_library(
-    name = "linux_public_headers",
-    hdrs = glob(["linux/include/*.h"]),
-    strip_include_prefix = "linux/include",
-)
-
-cc_library(
-    name = "public_headers",
-    # makes #include "libsockets.h" and "libsockets-no-ssl.h" work
+    name = "impl",
     deps = select({
-        "@bazel_tools//src/conditions:windows": [":win_public_headers"],
-        "//conditions:default": [":linux_public_headers"],
+        "@bazel_tools//src/conditions:windows": [":win_impl"],
+        "//conditions:default": [":linux_impl"],
     }),
-)
-
-# -----------------------------------------------------------------------------
-# libsockets core library (NO SSL for now)
-# -----------------------------------------------------------------------------
-#
-# This compiles all common code + the correct platform code.
-# And it exports ONE include "universe" via deps: src_headers + defs + public_headers.
-
-cc_library(
-    name = "libsockets_no_ssl",
-    srcs = (
-        glob(
-            [
-                "src/**/*.cpp",
-            ],
-            exclude = [
-                # These are apps/tools and currently break on Windows (getopt)
-                "src/nc.cpp",
-                "src/LuaServer.cpp",
-
-                # SSL is split out below
-                "src/Socket/SSL/**",
-            ],
-        ) +
-        select({
-            "@bazel_tools//src/conditions:windows": glob(
-                [
-                    "win/**/*.cpp",
-                ],
-                exclude = [
-                    "win/include/**",
-                ],
-            ),
-            "//conditions:default": glob(
-                [
-                    "linux/**/*.cpp",
-                ],
-                exclude = [
-                    "linux/include/**",
-                ],
-            ),
-        })
-    ),
-    includes = select({
-        "@platforms//os:windows": [
-            "src",
-            "win",
-        ],
-        "@platforms//os:linux": [
-            "linux",
-            "src",
-        ],
-        "//conditions:default": [
-            "src",
-        ],
-    }),
-    deps = [
-        ":defs",
-        ":public_headers",
-        ":src_headers",
-    ],
-)
-
-# Nice alias name most consumers will use:
-cc_library(
-    name = "libsockets",
-    deps = [":libsockets_no_ssl"],
-)
-
-# -----------------------------------------------------------------------------
-# Optional: SSL library (linux only unless you wire OpenSSL on Windows)
-# -----------------------------------------------------------------------------
-
-cc_library(
-    name = "libsockets_ssl",
-    srcs = glob([
-        "src/Socket/SSL/**/*.cpp",
-    ]),
-    linkopts = select({
-        "@bazel_tools//src/conditions:windows": [],
-        "//conditions:default": [
-            "-lssl",
-            "-lcrypto",
-        ],
-    }),
-    # Keep it from trying to build on Windows until OpenSSL is wired there.
-    target_compatible_with = select({
-        "@bazel_tools//src/conditions:windows": ["@platforms//:incompatible"],
-        "//conditions:default": [],
-    }),
-    deps = [
-        ":defs",
-        ":libsockets_no_ssl",
-        ":public_headers",
-        ":src_headers",
-    ],
-)
-
-# -----------------------------------------------------------------------------
-# Tools (optional)
-# -----------------------------------------------------------------------------
-
-cc_binary(
-    name = "nc",
-    srcs = ["src/nc.cpp"],
-    # getopt.h doesn't exist on MSVC; gate until you add a compat impl.
-    target_compatible_with = select({
-        "@bazel_tools//src/conditions:windows": ["@platforms//:incompatible"],
-        "//conditions:default": [],
-    }),
-    deps = [":libsockets_no_ssl"],
-)
-
-cc_binary(
-    name = "LuaServer",
-    srcs = ["src/LuaServer.cpp"],
-    target_compatible_with = select({
-        "@bazel_tools//src/conditions:windows": ["@platforms//:incompatible"],
-        "//conditions:default": [],
-    }),
-    deps = [":libsockets_no_ssl"],
 )

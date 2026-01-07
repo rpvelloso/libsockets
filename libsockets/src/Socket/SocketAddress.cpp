@@ -13,8 +13,9 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "SocketAddress.h"
+#include "SocketAddressImpl.h"
 #include "Factory/SocketFactory.h"
-#include "Socket/SocketAddress.h"
 
 namespace socks {
 
@@ -28,9 +29,10 @@ namespace factory {
 	};
 }
 
-SocketAddress::SocketAddress(SocketAddressImpl *impl) : impl(impl) {
+SocketAddress::SocketAddress(SocketAddressImpl *impl) : impl(impl) {};
 
-};
+SocketAddress::SocketAddress(SocketAddress &&) = default;
+SocketAddress::~SocketAddress() = default;
 
 void *SocketAddress::getSocketAddress() const {
 	return impl->getSocketAddress();

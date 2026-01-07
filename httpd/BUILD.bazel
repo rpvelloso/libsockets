@@ -5,22 +5,11 @@ package(default_visibility = ["//visibility:public"])
 cc_library(
     name = "httpd_lib",
     srcs = glob(["*.cpp"]),
-    hdrs = glob(
-        [
-            "*.h",
-            "*.hpp",
-        ],
-        allow_empty = True,
-    ),
+    hdrs = glob(["*.h"]),
     includes = ["."],
     deps = [
-        "//:libsockets",
+        "//libsockets/src:sockets",
+        "//libsockets/src/Server",
+        "@nlohmann_json//:json",
     ],
 )
-
-# If/when you have a main:
-# cc_binary(
-#     name = "httpd",
-#     srcs = ["main.cpp"],
-#     deps = [":httpd_lib"],
-# )

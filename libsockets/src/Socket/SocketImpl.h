@@ -21,11 +21,9 @@
 #include <memory>
 
 #include "defs.h"
-#include "Socket/SocketAddress.h"
+#include "SocketAddress.h"
 
 namespace socks {
-
-class ClientSocket;
 
 enum class SocketStateType {
 	Disconnected = 0,

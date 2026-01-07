@@ -19,10 +19,11 @@
 #include <memory>
 #include <functional>
 
-#include "Socket/Socket.h"
-#include "Socket/SocketImpl.h"
+#include "Socket.h"
 
 namespace socks {
+
+class SocketImpl;
 
 class ClientSocket : public Socket {
 public:

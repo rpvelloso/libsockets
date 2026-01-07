@@ -13,8 +13,8 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Socket/SocketStream.h"
-#include "Socket/DatagramSocket.h"
+#include "SocketStream.h"
+#include "DatagramSocket.h"
 
 namespace socks {
 

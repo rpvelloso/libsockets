@@ -25,7 +25,6 @@
 #include <openssl/engine.h>
 #include <openssl/conf.h>
 #include <openssl/err.h>
-#include <pthread.h>
 
 namespace socks {
 
@@ -42,7 +41,7 @@ public:
 	};
 
 	~OpenSSL() {
-		FIPS_mode_set(0);
+		// FIPS_mode_set(0);
 		CONF_modules_unload(1);
 
 		CRYPTO_thread_cleanup();

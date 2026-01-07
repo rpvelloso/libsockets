@@ -19,15 +19,16 @@
 #define SRC_CONNECTIONPOOL_CONNECTIONPOOL_H_
 
 #include <memory>
-
 #include "Socket/BufferedClientSocketInterface.h"
-#include "ConnectionPool/ConnectionPoolImpl.h"
 
 namespace socks {
+
+class ConnectionPoolImpl;
 
 class ConnectionPool {
 public:
 	ConnectionPool(ConnectionPoolImpl *impl);
+    ~ConnectionPool();
 	void addClientSocket(std::unique_ptr<BufferedClientSocketInterface> clientSocket);
 private:
 	std::unique_ptr<ConnectionPoolImpl> impl;

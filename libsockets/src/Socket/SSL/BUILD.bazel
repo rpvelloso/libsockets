@@ -1,0 +1,16 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "SSL",
+    srcs = glob(["*.cpp"]),
+    hdrs = glob(["*.h"]),
+    deps = [
+        "//libsockets/src:sockets",
+        "//libsockets/src/ConnectionPool",
+        "//libsockets/src/Server",
+        "@openssl//:ssl",
+    ],
+    strip_include_prefix = "//libsockets/src",
+)

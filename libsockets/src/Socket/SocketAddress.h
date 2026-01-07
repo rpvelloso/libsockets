@@ -17,10 +17,11 @@
 #define SRC_SOCKET_SOCKETADDRESS_H_
 
 #include <memory>
-
-#include "Socket/SocketAddressImpl.h"
+#include <string>
 
 namespace socks {
+
+class SocketAddressImpl;
 
 enum class SocketProtocol {
 	TCP,
@@ -32,6 +33,8 @@ friend class SocketImpl;
 public:
 	SocketAddress() = delete;
 	SocketAddress(SocketAddressImpl *impl);
+	SocketAddress(SocketAddress &&);
+	~SocketAddress();
 
 	bool operator==(const SocketAddress &rhs);
 	bool operator!=(const SocketAddress &rhs);

@@ -19,7 +19,7 @@
 #include <iostream>
 #include <memory>
 
-#include "Socket/ClientSocket.h"
+#include "ClientSocket.h"
 
 namespace socks {
 

@@ -13,9 +13,10 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ConnectionPool/ConnectionPool.h"
-#include "ConnectionPool/MultiplexedConnectionPoolImpl.h"
-#include "ConnectionPool/ThreadedConnectionPoolImpl.h"
+#include "ConnectionPool.h"
+#include "ConnectionPoolImpl.h"
+#include "MultiplexedConnectionPoolImpl.h"
+#include "ThreadedConnectionPoolImpl.h"
 
 namespace socks {
 
@@ -29,9 +30,9 @@ namespace factory {
 	};
 }
 
-ConnectionPool::ConnectionPool(ConnectionPoolImpl *impl) : impl(impl) {
+ConnectionPool::ConnectionPool(ConnectionPoolImpl *impl) : impl(impl) {};
 
-};
+ConnectionPool::~ConnectionPool() = default;
 
 void ConnectionPool::addClientSocket(std::unique_ptr<BufferedClientSocketInterface> clientSocket) {
 	impl->addClientSocket(std::move(clientSocket));

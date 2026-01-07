@@ -16,8 +16,8 @@
 #ifndef LINUX_SOCKETS_LINUXSOCKETADDRESS_H_
 #define LINUX_SOCKETS_LINUXSOCKETADDRESS_H_
 
+#include "LinuxSocket.h"
 #include "Socket/SocketAddressImpl.h"
-#include "Socket/LinuxSocket.h"
 
 namespace socks {
 

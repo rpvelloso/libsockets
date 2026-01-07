@@ -13,7 +13,7 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Socket/SocketState/DisconnectedState.h"
+#include "DisconnectedState.h"
 
 namespace socks {
 

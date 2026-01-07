@@ -18,15 +18,15 @@
 
 #include <thread>
 #include <memory>
-
+#include "MultiplexerImpl.h"
+#include "Socket/BufferedClientSocketInterface.h"
 #include "Socket/ClientSocket.h"
-#include "Multiplexer/MultiplexerImpl.h"
 
 namespace socks {
+
 /*
  * AKA Reactor Pattern - https://en.wikipedia.org/wiki/Reactor_pattern
  */
-
 class Multiplexer {
 public:
 	Multiplexer() = delete;

@@ -15,8 +15,8 @@
 
 #include <memory>
 #include <poll.h>
+#include "LinuxPoll.h"
 #include "Socket/BufferedClientSocket.h"
-#include "Multiplexer/LinuxPoll.h"
 
 namespace socks {
 

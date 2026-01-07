@@ -14,6 +14,7 @@
  */
 
 #include "HTTPRequest.h"
+#include <iostream>
 
 namespace idx {
 

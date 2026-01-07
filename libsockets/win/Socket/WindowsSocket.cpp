@@ -17,9 +17,9 @@
 #include <exception>
 #include <stdexcept>
 
+#include "WindowsSocket.h"
+#include "WindowsSocketAddress.h"
 #include "Socket/ClientSocket.h"
-#include "Socket/WindowsSocket.h"
-#include "Socket/WindowsSocketAddress.h"
 
 namespace socks {
 

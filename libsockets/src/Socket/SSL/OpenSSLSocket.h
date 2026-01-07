@@ -19,14 +19,14 @@
 #include <functional>
 #include <openssl/ssl.h>
 
+#include "ConnectionPool/ThreadedConnectionPoolImpl.h"
+#include "ConnectionPool/MultiplexedConnectionPoolImpl.h"
+#include "Factory/SocketFactory.h"
+#include "Server/Server.h"
 #include "Socket/ClientSocket.h"
 #include "Socket/ServerSocket.h"
 #include "Socket/SocketStream.h"
 #include "Socket/SocketImpl.h"
-#include "Server/Server.h"
-#include "ConnectionPool/ThreadedConnectionPoolImpl.h"
-#include "ConnectionPool/MultiplexedConnectionPoolImpl.h"
-#include "Factory/SocketFactory.h"
 
 namespace socks {
 

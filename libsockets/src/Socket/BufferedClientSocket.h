@@ -18,10 +18,10 @@
 
 #include <functional>
 #include <sstream>
-
-#include "Socket/ClientSocket.h"
-#include "Socket/BufferedClientSocketInterface.h"
-#include "Socket/SocketStream.h"
+#include "BufferedClientSocketInterface.h"
+#include "ClientSocket.h"
+#include "SocketImpl.h"
+#include "SocketStream.h"
 
 namespace socks {
 

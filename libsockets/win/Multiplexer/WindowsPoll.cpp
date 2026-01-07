@@ -14,8 +14,8 @@
  */
 
 #include <memory>
-#include <Socket/BufferedClientSocketInterface.h>
-#include "Multiplexer/WindowsPoll.h"
+#include "WindowsPoll.h"
+#include "Socket/BufferedClientSocketInterface.h"
 
 namespace socks {
 
