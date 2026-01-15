@@ -16,11 +16,12 @@
 #ifndef SRC_SOCKET_DATAGRAMSOCKET_H_
 #define SRC_SOCKET_DATAGRAMSOCKET_H_
 
-#include "Socket/Socket.h"
-#include "Socket/SocketImpl.h"
-#include "Socket/ClientSocket.h"
+#include "ClientSocket.h"
+#include "Socket.h"
 
 namespace socks {
+
+class SocketImpl;
 
 class DatagramSocket: public Socket {
 public:

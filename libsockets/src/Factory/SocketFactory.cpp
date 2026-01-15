@@ -13,14 +13,16 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Factory/SocketFactory.h"
+#include "SocketFactory.h"
+#include "SocketFactoryImpl.h"
 
 namespace socks {
 
 SocketFactory::SocketFactory(SocketFactoryImpl *impl) : impl(impl) {};
 
-std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> >
-SocketFactory::createSocketPair() {
+SocketFactory::~SocketFactory() = default;
+
+std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket>> SocketFactory::createSocketPair() {
 	return impl->createSocketPair();
 };
 
@@ -28,15 +30,14 @@ SocketAddressImpl *SocketFactory::createSocketAddressImpl(
 		const std::string &host,
 		const std::string &port,
 		SocketProtocol protocol) {
-
 	return impl->createSocketAddressImpl(host, port, protocol);
 };
 
-SocketImpl* SocketFactory::createSocketImpl() {
+SocketImpl *SocketFactory::createSocketImpl() {
 	return impl->createSocketImpl();
 }
 
-SocketImpl* SocketFactory::createUDPSocketImpl() {
+SocketImpl *SocketFactory::createUDPSocketImpl() {
 	return impl->createUDPSocketImpl();
 }
 

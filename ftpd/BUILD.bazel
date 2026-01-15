@@ -1,0 +1,36 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+# ftpd wants includes like "filesystem/FileSystem.h" and "state/FTPClientState.h"
+# so we give it the same umbrella treatment:
+cc_library(
+    name = "ftpd_headers",
+    hdrs = glob([
+        "src/**/*.h",
+    ]),
+    strip_include_prefix = "src",
+)
+
+cc_library(
+    name = "ftpd_lib",
+    srcs = glob([
+        "src/**/*.cpp",
+    ]),
+    deps = [
+        ":ftpd_headers",
+        "//libsockets:defs",
+        "//libsockets/src:sockets",
+        "//libsockets/src/Server",
+    ],
+)
+
+cc_binary(
+    name = "ftpd",
+    srcs = ["src/main.cpp"],
+    deps = [
+        ":ftpd_lib",
+        "//getopt",
+        "//libsockets:impl",
+    ],
+)

@@ -13,7 +13,7 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Socket/LinuxSocketAddress.h"
+#include "LinuxSocketAddress.h"
 #include <string.h>
 #include <arpa/inet.h>
 

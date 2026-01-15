@@ -13,9 +13,9 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Socket/BufferedClientSocketInterface.h"
+#include "Multiplexer.h"
 #include "Factory/SocketFactory.h"
-#include "Multiplexer/Multiplexer.h"
+#include "Socket/BufferedClientSocketInterface.h"
 
 namespace socks {
 
@@ -59,7 +59,3 @@ namespace factory {
 }
 
 }
-
-
-
-

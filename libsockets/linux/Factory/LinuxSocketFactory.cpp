@@ -13,8 +13,8 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "LinuxSocketFactory.h"
 #include "Factory/SocketFactory.h"
-#include "Factory/LinuxSocketFactory.h"
 #include "Socket/LinuxSocket.h"
 #include "Multiplexer/LinuxPoll.h"
 #include "Multiplexer/LinuxSelect.h"

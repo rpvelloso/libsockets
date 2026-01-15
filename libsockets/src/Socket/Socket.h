@@ -17,18 +17,18 @@
 #define SRC_SOCKETS_SOCKET_H_
 
 #include <memory>
-
-#include "Socket/SocketAddress.h"
-#include "Socket/SocketImpl.h"
-#include "Socket/SocketState/SocketState.h"
+#include "SocketAddress.h"
+#include "SocketState/SocketState.h"
 
 namespace socks {
 
+class SocketImpl;
+
 class Socket {
 public:
+	explicit Socket(SocketImpl *impl);
 	Socket(Socket &&) = default;
 	virtual Socket &operator=(Socket &&) = default;
-	Socket(SocketImpl *impl);
 	virtual ~Socket();
 	virtual int setNonBlockingIO(bool status);
 	virtual std::string getPort();

@@ -8,8 +8,9 @@
 #ifndef CHATSERVER_H_
 #define CHATSERVER_H_
 
-#include <libsockets-no-ssl.h>
 #include "ChatClient.h"
+#include "Socket/BufferedClientSocket.h"
+#include "Server/Server.h"
 
 class ChatServer {
 public:

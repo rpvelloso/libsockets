@@ -14,8 +14,9 @@
  */
 
 #include <exception>
+#include <stdexcept>
 
-#include "Socket/SocketState/SocketState.h"
+#include "SocketState.h"
 
 namespace socks {
 

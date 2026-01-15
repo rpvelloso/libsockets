@@ -16,7 +16,7 @@
 #ifndef WIN_MULTIPLEXERS_WINDOWSSELECT_H_
 #define WIN_MULTIPLEXERS_WINDOWSSELECT_H_
 
-#include "Multiplexer/Poll.h"
+#include "Factory/Poll.h"
 
 namespace socks {
 

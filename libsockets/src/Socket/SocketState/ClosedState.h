@@ -16,7 +16,7 @@
 #ifndef SRC_SOCKET_SOCKETSTATE_CLOSEDSTATE_H_
 #define SRC_SOCKET_SOCKETSTATE_CLOSEDSTATE_H_
 
-#include "Socket/SocketState/SocketState.h"
+#include "SocketState.h"
 
 namespace socks {
 

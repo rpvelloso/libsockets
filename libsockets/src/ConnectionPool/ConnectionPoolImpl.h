@@ -16,9 +16,8 @@
 #ifndef SRC_CONNECTIONPOOL_CONNECTIONPOOLIMPL_H_
 #define SRC_CONNECTIONPOOL_CONNECTIONPOOLIMPL_H_
 
-#include "Socket/BufferedClientSocketInterface.h"
 #include <memory>
-
+#include "Socket/BufferedClientSocketInterface.h"
 
 namespace socks {
 

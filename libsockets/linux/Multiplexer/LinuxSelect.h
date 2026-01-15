@@ -16,7 +16,7 @@
 #ifndef LINUX_MULTIPLEXERS_LINUXSELECT_H_
 #define LINUX_MULTIPLEXERS_LINUXSELECT_H_
 
-#include "Multiplexer/Poll.h"
+#include "Factory/Poll.h"
 
 namespace socks {
 

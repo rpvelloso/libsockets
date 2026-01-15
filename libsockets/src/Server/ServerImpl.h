@@ -17,9 +17,8 @@
 #define SRC_SERVER_SERVERIMPL_H_
 
 #include <memory>
-
-#include "Socket/BufferedClientSocket.h"
 #include "ConnectionPool/ConnectionPool.h"
+#include "Socket/BufferedClientSocket.h"
 #include "Socket/ServerSocket.h"
 
 namespace socks {

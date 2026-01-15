@@ -13,8 +13,8 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Socket/SocketStream.h"
-#include "Socket/DatagramSocket.h"
+#include "SocketStream.h"
+#include "DatagramSocket.h"
 
 namespace socks {
 
@@ -84,14 +84,14 @@ std::streambuf::int_type SocketStreamBuf::transmit() {
 }
 
 SocketStream::SocketStream(std::unique_ptr<ClientSocket> clientSocket) :
-		std::iostream(),
+		std::iostream(0),
 		clientSocket(std::move(clientSocket)),
 		socketStreamBuf(new SocketStreamBuf(*(this->clientSocket))) {
 	rdbuf(socketStreamBuf.get());
 }
 
 SocketStream::SocketStream() :
-		std::iostream(),
+		std::iostream(0),
 		clientSocket(new ClientSocket()),
 		socketStreamBuf(new SocketStreamBuf(*clientSocket)) {
 	rdbuf(socketStreamBuf.get());
@@ -102,7 +102,7 @@ SocketStream::SocketStream(SocketStream &&rhs) : std::iostream(std::move(rhs)) {
 }
 
 SocketStream::SocketStream(ClientSocket &clientSocket) :
-		std::iostream(),
+		std::iostream(0),
 		socketStreamBuf(new SocketStreamBuf(clientSocket)) {
 	rdbuf(socketStreamBuf.get());
 }

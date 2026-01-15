@@ -13,8 +13,9 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <Socket/BufferedClientSocketInterface.h>
-#include "Multiplexer/WindowsPoll.h"
+#include <memory>
+#include "WindowsPoll.h"
+#include "Socket/BufferedClientSocketInterface.h"
 
 namespace socks {
 
@@ -28,7 +29,7 @@ std::vector<pollTuple> WindowsPoll::pollClients(ClientListType &clients, int tim
 	std::vector<pollTuple> readyClients;
 
 	auto nfds = clients.size();
-	WSAPOLLFD fdarray[nfds];
+	auto fdarray = std::make_unique<WSAPOLLFD[]>(nfds);
 
 	auto clientIt = clients.begin();
 	for (size_t i = 0; i < nfds; ++i, ++clientIt) {
@@ -40,8 +41,9 @@ std::vector<pollTuple> WindowsPoll::pollClients(ClientListType &clients, int tim
 	}
 	//std::cout << "# " << nfds << std::endl;
 
-	if (WSAPoll(fdarray,nfds,timeout) > 0) {
-		for (auto c:fdarray) {
+	if (WSAPoll(fdarray.get(),nfds,timeout) > 0) {
+		for (size_t i = 0; i < nfds; ++i) {
+			auto & c = fdarray[i];
 			bool fdError = false;
 			bool readFlag = c.revents & POLLIN;
 			bool writeFlag = c.revents & POLLOUT;

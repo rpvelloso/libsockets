@@ -16,11 +16,11 @@
 #include <iostream>
 
 #include "defs.h"
-#include "Factory/SocketFactory.h"
-#include "Socket/SSL/OpenSSL.h"
-#include "Socket/SSL/OpenSSLSocket.h"
+#include "OpenSSL.h"
+#include "OpenSSLSocket.h"
 #include "ConnectionPool/ThreadedConnectionPoolImpl.h"
 #include "ConnectionPool/MultiplexedConnectionPoolImpl.h"
+#include "Factory/SocketFactory.h"
 
 namespace socks {
 
@@ -39,7 +39,7 @@ namespace factory {
 }
 
 OpenSSLSocket::OpenSSLSocket(SocketImpl* impl) : SocketImpl(), impl(impl),
-		sslContext(nullptr, FreeSSLContext()),
+		sslContext(nullptr,FreeSSLContext()),
 		sslHandler(nullptr,FreeSSLHandler()) {
 }
 

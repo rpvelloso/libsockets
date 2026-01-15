@@ -13,7 +13,7 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Factory/WindowsFDFactory.h"
+#include "WindowsFDFactory.h"
 #include "Socket/WindowsSocket.h"
 
 namespace socks {

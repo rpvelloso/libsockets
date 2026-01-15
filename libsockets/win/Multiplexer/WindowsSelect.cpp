@@ -13,8 +13,8 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <Socket/BufferedClientSocketInterface.h>
-#include "Multiplexer/WindowsSelect.h"
+#include "WindowsSelect.h"
+#include "Socket/BufferedClientSocketInterface.h"
 
 namespace socks {
 

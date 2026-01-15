@@ -18,17 +18,21 @@
 
 #include <memory>
 
-#include "Socket/BufferedClientSocket.h"
-#include "Socket/ClientSocket.h"
-#include "Server/ServerImpl.h"
+#include "ServerImpl.h"
+#include "ConnectionPool/ConnectionPool.h"
 #include "ConnectionPool/MultiplexedConnectionPoolImpl.h"
 #include "ConnectionPool/ThreadedConnectionPoolImpl.h"
+#include "Socket/BufferedClientSocket.h"
+#include "Socket/ClientSocket.h"
+#include "Socket/ServerSocket.h"
 
 namespace socks {
 
 class Server {
 public:
 	Server(ServerImplInterface *impl);
+	Server(Server &&) = default;
+	~Server();
 	void listen(const std::string &bindAddr, const std::string &port);
 	std::string getPort();
 private:

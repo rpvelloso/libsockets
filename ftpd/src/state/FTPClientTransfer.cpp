@@ -47,6 +47,7 @@ FTPReply FTPClientTransfer::LIST(const std::string& path) {
 		for (auto &file:fileList) {
 			auto mode = std::get<3>(file);
 			std::string modeStr(10,'-');
+			// TODO make this windows compatible
 			modeStr[0] =  (S_ISDIR(mode)?'d':'-');
 			modeStr[1] = ((S_IRUSR&mode)?'r':'-');
 			modeStr[2] = ((S_IWUSR&mode)?'w':'-');

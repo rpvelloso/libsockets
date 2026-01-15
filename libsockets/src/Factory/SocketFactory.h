@@ -16,20 +16,23 @@
 #ifndef SRC_FACTORY_SOCKETFACTORY_H_
 #define SRC_FACTORY_SOCKETFACTORY_H_
 
+#include <atomic>
 #include <fstream>
 #include <iostream>
-
 #include <memory>
-#include <atomic>
-
-#include "Factory/SocketFactoryImpl.h"
+#include "Poll.h"
 
 namespace socks {
+
+class SocketAddressImpl;
+class SocketFactoryImpl;
+class SocketImpl;
 
 class SocketFactory {
 public:
 	SocketFactory() = delete;
-	SocketFactory(SocketFactoryImpl *impl);
+	explicit SocketFactory(SocketFactoryImpl *impl);
+    ~SocketFactory();
 
 	SocketImpl *createSocketImpl();
 	SocketImpl *createUDPSocketImpl();

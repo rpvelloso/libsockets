@@ -1,0 +1,30 @@
+load("@rules_cc//cc:defs.bzl", "cc_library", "cc_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "sockets",
+    srcs = glob([
+        "Factory/*.cpp",
+        "Socket/*.cpp",
+        "Socket/SocketState/*.cpp",
+    ]),
+    hdrs = glob([
+        "Factory/*.h",
+        "Socket/*.h",
+        "Socket/SocketState/*.h",
+    ]),
+    deps = ["//libsockets:defs"],
+    strip_include_prefix = "//libsockets/src",
+)
+
+cc_binary(
+    name = "netcat",
+    srcs = ["nc.cpp"],
+    deps = [
+        "//getopt",
+        "//libsockets:impl",
+        "//libsockets/src:sockets",
+        "//libsockets/src/Socket/SSL",
+    ],
+)

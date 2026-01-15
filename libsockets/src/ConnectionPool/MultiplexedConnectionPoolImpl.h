@@ -16,9 +16,9 @@
 #ifndef SRC_CONNECTIONPOOL_MULTIPLEXEDCONNECTIONPOOLIMPL_H_
 #define SRC_CONNECTIONPOOL_MULTIPLEXEDCONNECTIONPOOLIMPL_H_
 
-#include "Socket/BufferedClientSocketInterface.h"
+#include "ConnectionPoolImpl.h"
 #include "Multiplexer/Multiplexer.h"
-#include "ConnectionPool/ConnectionPool.h"
+#include "Socket/BufferedClientSocketInterface.h"
 
 namespace socks {
 

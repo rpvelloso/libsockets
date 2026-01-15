@@ -1,0 +1,31 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "chatd_lib",
+    srcs = glob(["*.cpp"], exclude = ["main.cpp"]),
+    hdrs = glob(["*.h"]),
+    deps = [
+        ":sqlite3",
+        "//libsockets:defs",
+        "//libsockets/src:sockets",
+        "//libsockets/src/Server",
+    ],
+)
+
+cc_library(
+    name = "sqlite3",
+    srcs = ["sqlite3.c", "sqlite3.h"],
+    hdrs = ["sqlite.c++.h"],
+    deps = [],
+)
+
+cc_binary(
+    name = "chatd",
+    srcs = ["main.cpp"],
+    deps = [
+        ":chatd_lib",
+        "//libsockets:impl",
+    ],
+)

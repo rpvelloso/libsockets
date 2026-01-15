@@ -13,8 +13,9 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "DatagramSocket.h"
+#include "SocketImpl.h"
 #include "Factory/SocketFactory.h"
-#include "Socket/DatagramSocket.h"
 
 namespace socks {
 

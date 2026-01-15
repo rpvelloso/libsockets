@@ -1,0 +1,17 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "Factory",
+    srcs = glob(["*.cpp"]),
+    hdrs = glob(["*.h"]),
+    deps = [
+        "//libsockets:defs",
+        "//libsockets/src:sockets",
+        "//libsockets/src/Multiplexer",
+        "//libsockets/linux/Multiplexer",
+        "//libsockets/linux/Socket",
+    ],
+    strip_include_prefix = "//libsockets/linux",
+)

@@ -13,12 +13,17 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <getopt.h>
 #include <iostream>
-#include <vector>
 #include <thread>
-
-#include "libsockets.h"
+#include <vector>
+#include "getopt.h"
+#include "Factory/SocketFactory.h"
+#include "Socket/ClientSocket.h"
+#include "Socket/DatagramSocket.h"
+#include "Socket/ServerSocket.h"
+// TODO uncomment OpenSSLSocket.h and makeSSLClientSocket and makeSSLServerSocket below
+// after solving the unresolved externals symbol errors with @openssl bazel module
+// #include "Socket/SSL/OpenSSLSocket.h"
 
 class Netcat {
 public:
@@ -39,7 +44,7 @@ public:
 
 		if (!listen) {
 			auto factory =
-					secure?&socks::factory::makeSSLClientSocket:
+					// secure?&socks::factory::makeSSLClientSocket:
 					udp?&socks::factory::makeUDPClientSocket:
 					&socks::factory::makeClientSocket;
 
@@ -50,7 +55,7 @@ public:
 				datagramServer();
 			else {
 				auto factory =
-					secure?&socks::factory::makeSSLServerSocket:
+					// secure?&socks::factory::makeSSLServerSocket:
 					&socks::factory::makeServerSocket;
 				auto serverSocket = factory();
 				server(serverSocket);

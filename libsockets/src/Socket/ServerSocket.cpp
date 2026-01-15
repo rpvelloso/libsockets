@@ -13,9 +13,10 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "ServerSocket.h"
+#include "ClientSocket.h"
+#include "SocketImpl.h"
 #include "Factory/SocketFactory.h"
-#include "Socket/ClientSocket.h"
-#include "Socket/ServerSocket.h"
 #include "Socket/SocketState/ListeningState.h"
 #include "Socket/SocketState/ClosedState.h"
 

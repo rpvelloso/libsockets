@@ -1,0 +1,15 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_library(
+    name = "httpd_lib",
+    srcs = glob(["*.cpp"]),
+    hdrs = glob(["*.h"]),
+    includes = ["."],
+    deps = [
+        "//libsockets/src:sockets",
+        "//libsockets/src/Server",
+        "@nlohmann_json//:json",
+    ],
+)

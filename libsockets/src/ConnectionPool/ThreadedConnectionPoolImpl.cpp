@@ -16,18 +16,17 @@
 #include <thread>
 #include <sstream>
 #include <memory>
-
+#include "ThreadedConnectionPoolImpl.h"
 #include "Factory/SocketFactory.h"
 #include "Socket/BufferedClientSocketInterface.h"
 #include "Socket/ClientSocket.h"
-#include "ConnectionPool/ThreadedConnectionPoolImpl.h"
 #include "Socket/SocketStream.h"
 
 namespace socks {
 
 void threadFunction(std::unique_ptr<BufferedClientSocketInterface> clientSocket) {
 	auto recvBufSize = clientSocket->getReceiveBufferSize();
-	char recvBuf[recvBufSize];
+	auto recvBuf = std::make_unique<char[]>(recvBufSize);
 
 	struct ScopedGuard {
 		ScopedGuard(std::function<void()> cleanup) : cleanup(cleanup) {};
@@ -45,17 +44,17 @@ void threadFunction(std::unique_ptr<BufferedClientSocketInterface> clientSocket)
 	while (true) {
 		while (clientSocket->getHasOutput()) {
 			auto sndBufSize = outputBuffer.rdbuf()->in_avail();
-			char sndBuf[sndBufSize];
+			auto sndBuf = std::make_unique<char[]>(sndBufSize);
 
-			outputBuffer.readsome(sndBuf, sndBufSize);
-			clientSocket->sendData(sndBuf, outputBuffer.gcount());
+			outputBuffer.readsome(sndBuf.get(), sndBufSize);
+			clientSocket->sendData(sndBuf.get(), outputBuffer.gcount());
 		}
 		outputBuffer.clear();
 		outputBuffer.str(std::string());
 		clientSocket->writeCallback();
 
-		if ((len = clientSocket->receiveData(recvBuf, recvBufSize)) > 0) {
-			inputBuffer.write(recvBuf, len);
+		if ((len = clientSocket->receiveData(recvBuf.get(), recvBufSize)) > 0) {
+			inputBuffer.write(recvBuf.get(), len);
 			clientSocket->readCallback();
 		} else
 			break;

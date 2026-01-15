@@ -14,12 +14,11 @@
  */
 
 #include <iostream>
-
+#include <memory>
+#include "MultiplexerImpl.h"
+#include "Factory/SocketFactory.h"
 #include "Socket/BufferedClientSocketInterface.h"
 #include "Socket/BufferedClientSocket.h"
-#include "Factory/SocketFactory.h"
-#include "Multiplexer/MultiplexerImpl.h"
-#include "Multiplexer/Poll.h"
 
 namespace socks {
 
@@ -31,7 +30,6 @@ enum MultiplexerCommand : int {
 MultiplexerImpl::MultiplexerImpl(Poll *pollStrategy) :
 		pollStrategy(pollStrategy),
 		clientCount(0) {
-
 	auto socketPair = socketFactory().createSocketPair();
 	sockIn = std::move(socketPair.first);
 	sockOutFD = socketPair.second->getImpl().getFD();
@@ -39,13 +37,10 @@ MultiplexerImpl::MultiplexerImpl(Poll *pollStrategy) :
 	addClientSocket(std::move(sockOut));
 }
 
-MultiplexerImpl::~MultiplexerImpl() {
-}
+MultiplexerImpl::~MultiplexerImpl() = default;
 
 void MultiplexerImpl::addClientSocket(std::unique_ptr<BufferedClientSocketInterface> clientSocket) {
 	std::lock_guard<std::mutex> lock(incomingClientsMutex);
-
-
 	clientSocket->setNonBlockingIO(true);
 	clientSocket->connectCallback();
 	incomingClients.push_back(std::move(clientSocket));
@@ -91,9 +86,10 @@ void MultiplexerImpl::multiplex(int timeout) {
 			if (readFlag) {
 				if (sp) {
 					size_t cmdBufSize = 1024*sizeof(int);
-					int cmdBuf[cmdBufSize], len, command;
+					auto cmdBuf = std::make_unique<int[]>(cmdBufSize);
+					int len, command;
 
-					len = clientSocket.receiveData(static_cast<void *>(&cmdBuf),cmdBufSize);
+					len = clientSocket.receiveData(cmdBuf.get(),cmdBufSize);
 
 					for (int i = 0; i < (int)(len/sizeof(int)); ++i) {
 						command = cmdBuf[i];
@@ -145,12 +141,12 @@ void MultiplexerImpl::processIncomingClients() {
 
 bool MultiplexerImpl::readHandler(BufferedClientSocketInterface &clientSocket) {
 	auto bufSize = clientSocket.getReceiveBufferSize();
-	char buf[bufSize];
+	auto buf = std::make_unique<char[]>(bufSize);
 	int len;
 
 	try {
-		if ((len = clientSocket.receiveData(buf, bufSize)) > 0) {
-			clientSocket.getInputBuffer().write(buf, len);
+		if ((len = clientSocket.receiveData(buf.get(), bufSize)) > 0) {
+			clientSocket.getInputBuffer().write(buf.get(), len);
 
 			if (!selfPipe(clientSocket))
 				clientSocket.readCallback();
@@ -167,12 +163,12 @@ bool MultiplexerImpl::writeHandler(BufferedClientSocketInterface &clientSocket) 
 
 	while (outp.rdbuf()->in_avail() > 0) {
 		int bufSize = clientSocket.getSendBufferSize();
-		char buf[bufSize];
+		auto buf = std::make_unique<char[]>(bufSize);
 
 		auto savePos = outp.tellg();
-		outp.readsome(buf, bufSize);
+		outp.readsome(buf.get(), bufSize);
 		try {
-			if (clientSocket.sendData(buf, outp.gcount()) <= 0) {
+			if (clientSocket.sendData(buf.get(), outp.gcount()) <= 0) {
 				outp.clear();
 				outp.seekg(savePos, outp.beg);
 				break;

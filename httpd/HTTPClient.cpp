@@ -17,7 +17,7 @@
 #include <ctime>
 
 #include "HTTPClient.h"
-#include "json.hpp"
+#include "nlohmann/json.hpp"
 
 struct InfoDisplay {
 	template<class T>
