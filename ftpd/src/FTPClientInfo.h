@@ -19,8 +19,7 @@
 #include <string>
 #include <fstream>
 #include <map>
-#include "Server/Server.h"
-#include "Socket/SocketAddress.h"
+#include "libsockets.h"
 
 enum class FTPReply {
 	RNULL, R150, R200, R200_MODE, R200_TYPE, R200_STRU, R211,

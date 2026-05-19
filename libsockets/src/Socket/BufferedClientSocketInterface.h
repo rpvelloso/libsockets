@@ -19,7 +19,6 @@
 #include <memory>
 #include <sstream>
 #include <unordered_map>
-#include "defs.h"
 #include "ClientSocket.h"
 
 namespace socks {
