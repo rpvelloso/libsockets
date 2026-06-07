@@ -23,7 +23,6 @@ ClosedState::ClosedState(SocketImpl &impl) : SocketState(impl) {
 }
 
 ClosedState::~ClosedState() {
-
 }
 
 }

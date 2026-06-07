@@ -27,8 +27,8 @@ namespace factory {
 	}
 }
 
-ClientSocket& ClientSocket::operator =(ClientSocket&& rhs) {
-	Socket::operator =(std::move(rhs));
+ClientSocket& ClientSocket::operator=(ClientSocket&& rhs) {
+	Socket::operator=(std::move(rhs));
 	this->receiveBufferSize = rhs.receiveBufferSize;
 	this->sendBufferSize = rhs.sendBufferSize;
 	return *this;
@@ -42,7 +42,6 @@ ClientSocket::ClientSocket(SocketImpl *impl) : Socket(impl) {
 }
 
 ClientSocket::ClientSocket() : Socket(socketFactory().createSocketImpl()) {
-
 }
 
 ClientSocket::~ClientSocket() {
@@ -53,7 +52,13 @@ int ClientSocket::receiveData(void* buf, size_t len) {
 }
 
 int ClientSocket::sendData(const void* buf, size_t len) {
-	return state->sendData(buf, len);
+	auto [sent,nativeErrorCode,wouldBlock] = state->sendData(buf, len);
+	// HINT: there is a debug/logging opportunity here
+	if( sent < 0 && nativeErrorCode > 0 && !wouldBlock ) {
+		// TODO: maybe save the nativeErrorCode in ClientSocket for further diagnostics?
+		disconnect();  // socket is in a bad state. disconnecting to prevent further errors
+	}
+	return sent;
 }
 
 int ClientSocket::connectTo(const std::string &host, const std::string &port) {

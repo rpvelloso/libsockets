@@ -22,10 +22,10 @@ namespace socks {
 
 class SocketState : public SocketImpl {
 public:
-	SocketState(SocketImpl &impl);
+	explicit SocketState(SocketImpl &impl);
 	virtual ~SocketState();
 	int receiveData(void *buf, size_t len);
-	int sendData(const void *buf, size_t len);
+	SendDataResult sendData(const void *buf, size_t len);
 	std::pair<int, SocketAddress> receiveFrom(void *buf, size_t len);
 	int sendTo(const SocketAddress &addr, const void *buf, size_t len);
 	int connectTo(const std::string &host, const std::string &port);

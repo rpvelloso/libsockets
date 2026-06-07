@@ -20,37 +20,34 @@ namespace socks {
 ConnectedState::ConnectedState(SocketImpl& impl) : SocketState(impl) {
 	setSocketState(SocketStateType::Connected);
 	impl.setSocketState(socketState);
-};
+}
 
 ConnectedState::~ConnectedState() {
-
-};
+}
 
 int ConnectedState::receiveData(void *buf, size_t len) {
 	return impl.receiveData(buf, len);
-};
+}
 
-int ConnectedState::sendData(const void *buf, size_t len) {
+SendDataResult ConnectedState::sendData(const void *buf, size_t len) {
 	return impl.sendData(buf, len);
-};
+}
 
-std::pair<int, SocketAddress> ConnectedState::receiveFrom(void* buf,
-		size_t len) {
+std::pair<int, SocketAddress> ConnectedState::receiveFrom(void* buf, size_t len) {
 	return impl.receiveFrom(buf, len);
-};
+}
 
-int ConnectedState::sendTo(const SocketAddress& addr, const void* buf,
-		size_t len) {
+int ConnectedState::sendTo(const SocketAddress& addr, const void* buf, size_t len) {
 	return impl.sendTo(addr, buf, len);
-};
+}
 
 void ConnectedState::disconnect() {
 	impl.disconnect();
-};
+}
 
 std::string ConnectedState::getPort() {
 	return impl.getPort();
-};
+}
 
 size_t ConnectedState::getSendBufferSize() {
 	return impl.getSendBufferSize();

@@ -71,6 +71,10 @@ namespace factory {
 				disconnectCallback,
 				writeCallback));
 	};
+
+	inline Server makeSimpleThreadedServer(std::function<void(socks::ClientSocket)> socketCallback) {
+		return Server(new SimpleServerImpl(socketCallback));
+	}
 }
 
 }

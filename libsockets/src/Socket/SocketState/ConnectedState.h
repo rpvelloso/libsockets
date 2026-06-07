@@ -22,10 +22,10 @@ namespace socks {
 
 class ConnectedState : public SocketState {
 public:
-	ConnectedState(SocketImpl &impl);
+	explicit ConnectedState(SocketImpl &impl);
 	virtual ~ConnectedState();
 	int receiveData(void *buf, size_t len) override;
-	int sendData(const void *buf, size_t len) override;
+	SendDataResult sendData(const void *buf, size_t len) override;
 	std::pair<int, SocketAddress> receiveFrom(void *buf, size_t len) override;
 	int sendTo(const SocketAddress &addr, const void *buf, size_t len) override;
 	void disconnect() override;

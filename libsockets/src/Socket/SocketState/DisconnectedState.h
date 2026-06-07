@@ -22,7 +22,7 @@ namespace socks {
 
 class DisconnectedState : public SocketState {
 public:
-	DisconnectedState(SocketImpl &impl);
+	explicit DisconnectedState(SocketImpl &impl);
 	virtual ~DisconnectedState();
 	std::pair<int, SocketAddress> receiveFrom(void *buf, size_t len) override;
 	int sendTo(const SocketAddress &addr, const void *buf, size_t len) override;

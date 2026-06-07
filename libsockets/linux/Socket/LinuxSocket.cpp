@@ -70,14 +70,15 @@ int LinuxSocket::receiveData(void *buf, size_t len) {
 	return recv(fd, static_cast<char *>(buf), len, 0);
 }
 
-int LinuxSocket::sendData(const void *buf, size_t len) {
-	int ret;
+SendDataResult LinuxSocket::sendData(const void *buf, size_t len) {
+	auto result = SendDataResult({});  // :)~
 
-	if ((ret = send(fd, static_cast<const char *>(buf), len, 0)) == -1)
-		if (errno != EWOULDBLOCK && errno != EAGAIN)
-			throw std::runtime_error("sendData() error: " + std::to_string(errno) + ".");
+	if ((result.sent = send(fd, static_cast<const char *>(buf), len, 0)) == -1) {
+		result.nativeErrorCode = errno;
+		result.wouldBlock = result.nativeErrorCode == EWOULDBLOCK || result.nativeErrorCode == EAGAIN;
+	}
 
-	return ret;
+	return result;
 }
 
 std::pair<int, SocketAddress> LinuxSocket::receiveFrom(void *buf, size_t len) {

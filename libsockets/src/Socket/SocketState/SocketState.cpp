@@ -20,14 +20,17 @@
 
 namespace socks {
 
-SocketState::SocketState(SocketImpl &impl) : SocketImpl(), impl(impl) {};
-SocketState::~SocketState() {};
+SocketState::SocketState(SocketImpl &impl) : impl(impl)
+{}
+
+SocketState::~SocketState()
+{}
 
 int SocketState::receiveData(void *buf, size_t len) {
 	throw std::runtime_error("invalid operation receiveData().");
 }
 
-int SocketState::sendData(const void *buf, size_t len) {
+SendDataResult SocketState::sendData(const void *buf, size_t len) {
 	throw std::runtime_error("invalid operation sendData().");
 }
 
