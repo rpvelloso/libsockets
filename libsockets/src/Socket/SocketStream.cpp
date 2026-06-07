@@ -16,6 +16,17 @@
 #include "SocketStream.h"
 #include "DatagramSocket.h"
 
+#include <iostream>
+
+template<typename... Args>
+void A(Args... args) {
+    (std::cerr << ... << args) << std::endl;
+}
+#define D(...) \
+    std::cerr << "line " << __LINE__ << " in " << __func__ << "() "; \
+	A(__VA_ARGS__)
+
+
 namespace socks {
 
 namespace factory {
@@ -33,10 +44,9 @@ SocketStreamBuf::SocketStreamBuf(ClientSocket &clientSocket) :
 		inp(new char[buffSize]),
 		outp(new char[buffSize]),
 		clientSocket(clientSocket) {
-
-		setp(outp.get(), outp.get() + buffSize - 1);
-		setg(inp.get(), inp.get(), inp.get());
-	};
+	setp(outp.get(), outp.get() + buffSize - 1);
+	setg(inp.get(), inp.get(), inp.get());
+};
 
 SocketStreamBuf::~SocketStreamBuf() {};
 
@@ -67,6 +77,14 @@ int SocketStreamBuf::sync() {
 	if (transmit() == traits_type::eof())
 		return -1;
 	return 0;
+}
+
+std::streamsize SocketStreamBuf::xsputn(char_type const * s, std::streamsize count) {
+	// first send whatever was in the socket buffer, if anything
+	transmit();
+	// then send the rest directly to the socket
+	auto sent = clientSocket.sendData(s, count);
+	return sent;
 }
 
 std::streambuf::int_type SocketStreamBuf::transmit() {

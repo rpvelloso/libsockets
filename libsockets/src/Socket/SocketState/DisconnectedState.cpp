@@ -23,16 +23,13 @@ DisconnectedState::DisconnectedState(SocketImpl &impl) : SocketState(impl) {
 }
 
 DisconnectedState::~DisconnectedState() {
-
 }
 
-std::pair<int, SocketAddress> DisconnectedState::receiveFrom(void* buf,
-		size_t len) {
+std::pair<int, SocketAddress> DisconnectedState::receiveFrom(void* buf, size_t len) {
 	return impl.receiveFrom(buf, len);
 }
 
-int DisconnectedState::sendTo(const SocketAddress& addr, const void* buf,
-		size_t len) {
+int DisconnectedState::sendTo(const SocketAddress& addr, const void* buf, size_t len) {
 	return impl.sendTo(addr, buf, len);
 }
 
@@ -49,4 +46,3 @@ int DisconnectedState::listenForConnections(const std::string &bindAddr, const s
 }
 
 }
-

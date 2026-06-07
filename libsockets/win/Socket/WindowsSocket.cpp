@@ -82,15 +82,14 @@ int WindowsSocket::receiveData(void *buf, size_t len) {
 	return recv(fd, reinterpret_cast<char *>(buf), len, 0);
 }
 
-int WindowsSocket::sendData(const void *buf, size_t len) {
-	int ret;
+SendDataResult WindowsSocket::sendData(const void *buf, size_t len) {
+	auto result = SendDataResult({});  // :)~
 
-	if ((ret = send(fd, reinterpret_cast<const char *>(buf), len, 0)) == -1) {
-		auto err = WSAGetLastError();
-		if (err != WSAEWOULDBLOCK)
-			throw std::runtime_error("sendData() error: " + std::to_string(err) + ".");
+	if ((result.sent = send(fd, reinterpret_cast<const char *>(buf), len, 0)) == SOCKET_ERROR) {
+		result.nativeErrorCode = WSAGetLastError();
+		result.wouldBlock = result.nativeErrorCode == WSAEWOULDBLOCK;
 	}
-	return ret;
+	return result;
 }
 
 std::pair<int, SocketAddress> WindowsSocket::receiveFrom(void *buf, size_t len) {

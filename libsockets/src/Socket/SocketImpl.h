@@ -32,12 +32,18 @@ enum class SocketStateType {
 	Closed = 3
 };
 
+struct SendDataResult {
+	int sent;
+	int nativeErrorCode;
+	bool wouldBlock;
+};
+
 class SocketImpl {
 public:
 	SocketImpl() : socketState(SocketStateType::Disconnected) {};
 	virtual ~SocketImpl() {};
 	virtual int receiveData(void *buf, size_t len) = 0;
-	virtual int sendData(const void *buf, size_t len) = 0;
+	virtual SendDataResult sendData(const void *buf, size_t len) = 0;
 	virtual std::pair<int, SocketAddress> receiveFrom(void *buf, size_t len) = 0;
 	virtual int sendTo(const SocketAddress &addr, const void *buf, size_t len) = 0;
 	virtual int connectTo(const std::string &host, const std::string &port) = 0;

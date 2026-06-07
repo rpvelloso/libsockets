@@ -22,7 +22,7 @@ namespace socks {
 
 class ListeningState : public SocketState {
 public:
-	ListeningState(SocketImpl &impl);
+	explicit ListeningState(SocketImpl &impl);
 	virtual ~ListeningState();
 	void disconnect() override;
 	std::unique_ptr<SocketImpl> acceptConnection() override;

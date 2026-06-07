@@ -30,8 +30,9 @@ public:
 	ClientSocket &getClientSocket();
 protected:
     int_type underflow() override;
-    int_type overflow(int_type __c  = traits_type::eof()) override;
+    int_type overflow(int_type __c = traits_type::eof()) override;
     int sync() override;
+    std::streamsize xsputn(char_type const * s, std::streamsize count) override;
 private:
     static constexpr size_t buffSize = 4096;
     std::unique_ptr<char []> inp, outp;

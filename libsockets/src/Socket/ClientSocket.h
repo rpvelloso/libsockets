@@ -18,7 +18,6 @@
 
 #include <memory>
 #include <functional>
-
 #include "Socket.h"
 
 namespace socks {

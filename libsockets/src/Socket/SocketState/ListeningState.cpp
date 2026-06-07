@@ -23,7 +23,6 @@ ListeningState::ListeningState(SocketImpl &impl) : SocketState(impl) {
 }
 
 ListeningState::~ListeningState() {
-
 }
 
 void ListeningState::disconnect() {
