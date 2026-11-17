@@ -8,3 +8,5 @@ MODULE.bazel.lock
 
 # vscode
 .vscode
+
+build/

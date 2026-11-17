@@ -20,6 +20,7 @@
 #include <list>
 #include <sstream>
 #include <algorithm>
+#include <array>
 
 FileSystemImpl::FileSystemImpl() {
 }
