@@ -34,6 +34,7 @@ public:
 	Server(Server &&) = default;
 	~Server();
 	void listen(const std::string &bindAddr, const std::string &port);
+	void stop();
 	std::string getPort();
 private:
 	std::unique_ptr<ServerImplInterface> impl;

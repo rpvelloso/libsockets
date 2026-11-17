@@ -28,6 +28,10 @@ void Server::listen(const std::string &bindAddr, const std::string &port) {
 	impl->listen(bindAddr, port);
 };
 
+void Server::stop() {
+	impl->stop();
+};
+
 std::string Server::getPort() {
 	return impl->getPort();
 };
