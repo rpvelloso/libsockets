@@ -13,9 +13,6 @@
     along with libsockets.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <exception>
-#include <stdexcept>
-
 #include "SocketState.h"
 
 namespace socks {
@@ -26,51 +23,53 @@ SocketState::SocketState(SocketImpl &impl) : impl(impl)
 SocketState::~SocketState()
 {}
 
+// a state that does not support an operation fails it instead of throwing:
+// -1 for the int operations, an empty result for the others
 int SocketState::receiveData(void *buf, size_t len) {
-	throw std::runtime_error("invalid operation receiveData().");
+	return -1;
 }
 
 SendDataResult SocketState::sendData(const void *buf, size_t len) {
-	throw std::runtime_error("invalid operation sendData().");
+	return {-1, 0, false};
 }
 
 std::pair<int, SocketAddress> SocketState::receiveFrom(void *buf, size_t len) {
-	throw std::runtime_error("invalid operation receiveFrom().");
+	return {-1, SocketAddress(nullptr)};
 }
 
 int SocketState::sendTo(const SocketAddress &addr, const void *buf, size_t len) {
-	throw std::runtime_error("invalid operation sendTo().");
+	return -1;
 }
 
 int SocketState::connectTo(const std::string &host, const std::string &port) {
-	throw std::runtime_error("invalid operation connectTo().");
+	return -1;
 }
 
 void SocketState::disconnect() {
 }
 
 int SocketState::bindSocket(const std::string &bindAddr, const std::string &port) {
-	throw std::runtime_error("invalid operation bindSocket().");
+	return -1;
 };
 
 int SocketState::listenForConnections(const std::string &bindAddr, const std::string &port) {
-	throw std::runtime_error("invalid operation listenForConnections().");
+	return -1;
 }
 
-std::unique_ptr<SocketImpl> SocketState::acceptConnection() {
-	throw std::runtime_error("invalid operation acceptConnection().");
+AcceptResult SocketState::acceptConnection() {
+	return {};
 }
 
 std::string SocketState::getPort() {
-	throw std::runtime_error("invalid operation getPort().");
+	return "";
 }
 
 size_t SocketState::getSendBufferSize() {
-	throw std::runtime_error("invalid operation getSendBufferSize().");
+	return 0;
 }
 
 size_t SocketState::getReceiveBufferSize() {
-	throw std::runtime_error("invalid operation getReceiveBufferSize().");
+	return 0;
 }
 
 int SocketState::setNonBlockingIO(bool status) {

@@ -24,8 +24,8 @@ Server::Server(ServerImplInterface *impl) : impl(impl) {};
 
 Server::~Server() = default;
 
-void Server::listen(const std::string &bindAddr, const std::string &port) {
-	impl->listen(bindAddr, port);
+int Server::listen(const std::string &bindAddr, const std::string &port) {
+	return impl->listen(bindAddr, port);
 };
 
 void Server::stop() {

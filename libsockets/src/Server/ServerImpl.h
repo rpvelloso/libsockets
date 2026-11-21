@@ -18,8 +18,8 @@
 
 #include <atomic>
 #include <exception>
+#include <iostream>
 #include <memory>
-#include <stdexcept>
 #include <string>
 #include <thread>
 #include <utility>
@@ -33,7 +33,7 @@ class ServerImplInterface {
 public:
 	ServerImplInterface() {};
 	virtual ~ServerImplInterface() {};
-	virtual void listen(const std::string &bindAddr, const std::string &port) = 0;
+	virtual int listen(const std::string &bindAddr, const std::string &port) = 0;
 	virtual void stop() = 0;
 	virtual std::string getPort() = 0;
 };
@@ -46,29 +46,28 @@ public:
 
 	virtual void accept(ClientSocket socket) = 0;
 
-	virtual bool errorCallback(std::exception & failure) {
-		std::cerr << failure.what() << std::endl;
-		return true;
-	}
-
-	void listen(const std::string &bindAddr, const std::string &port) override {
+	int listen(const std::string &bindAddr, const std::string &port) override {
 		wakeHost = bindAddr;
 		listening = true;
-		serverSocket->listenForConnections(bindAddr, port);
-		while (listening) {
-			try {
-				ClientSocket clientSocket = serverSocket->acceptConnection();
-				// never serve the connection stop() dials to wake us up
-				if( ! listening ) break;
-				accept(std::move(clientSocket));
-			} catch (std::exception & error) {
-				if( ! listening ) break;  // stop() during the last accept
-				// one failure is a client that reset a pending connection
-				// before we could accept it; only a listener that never
-				// accepts anything again is really broken
-				if( ! errorCallback(error) ) break;
-			}
+		if( int error = serverSocket->listenForConnections(bindAddr, port); error != 0 ) {
+			listening = false;
+			return error;
 		}
+		while (listening) {
+			AcceptResult accepted = serverSocket->acceptConnection();
+			// never serve the connection stop() dials to wake us up
+			if( ! listening ) break;
+			if( ! accepted.socket ) {
+				// a client that reset a pending connection before we could
+				// accept it is one lost connection; anything else means the
+				// listener itself is broken and the error goes to the caller
+				if( accepted.retryable ) continue;
+				listening = false;
+				return accepted.nativeErrorCode;
+			}
+			accept(std::move(ClientSocket(accepted.socket.release())));
+		}
+		return 0;
 	}
 
 	// sets the flag and, since the blocked accept() never looks at it,

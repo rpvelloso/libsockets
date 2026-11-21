@@ -32,7 +32,7 @@ public:
 	void disconnect();
 	int bindSocket(const std::string &bindAddr, const std::string &port);
 	int listenForConnections(const std::string &bindAddr, const std::string &port);
-	std::unique_ptr<SocketImpl> acceptConnection();
+	AcceptResult acceptConnection();
 	std::string getPort();
 	size_t getSendBufferSize();
 	size_t getReceiveBufferSize();

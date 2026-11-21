@@ -14,8 +14,6 @@
  */
 
 #include <memory>
-#include <exception>
-#include <stdexcept>
 
 #include "WindowsSocket.h"
 #include "WindowsSocketAddress.h"
@@ -30,11 +28,11 @@ public:
 		WSACleanup();
 	};
 private:
+	// a failed WSAStartup is not fatal here: socket() then returns
+	// INVALID_SOCKET and the error surfaces from bind/listen as a code
 	WinSock() {
 		WSADATA wsaData;
-		if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-			throw std::runtime_error("error initializing WinSock(): " + std::to_string(WSAGetLastError()));
-		}
+		WSAStartup(MAKEWORD(2, 2), &wsaData);
 	};
 };
 
@@ -179,18 +177,18 @@ int WindowsSocket::listenForConnections(const std::string &bindAddr, const std::
 	return listen(fd, 20);
 }
 
-std::unique_ptr<SocketImpl> WindowsSocket::acceptConnection() {
+AcceptResult WindowsSocket::acceptConnection() {
 	struct sockaddr_storage addr;
 	socklen_t addrlen = sizeof(addr);
 
 	SocketFDType clientFd = accept(fd, (struct sockaddr *)&addr, &addrlen);
 
 	if (clientFd == INVALID_SOCKET) {
-		throw std::runtime_error("accept() returned an invalid socket. " + std::to_string(WSAGetLastError()));
+		auto error = WSAGetLastError();
+		return {nullptr, error, error == WSAECONNABORTED || error == WSAEINTR};
 	}
 
-	std::unique_ptr<SocketImpl> ret(new WindowsSocket(clientFd));
-	return std::move(ret);
+	return {std::unique_ptr<SocketImpl>(new WindowsSocket(clientFd)), 0, false};
 }
 
 int WindowsSocket::setNonBlockingIO(bool status) {

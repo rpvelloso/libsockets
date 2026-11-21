@@ -38,6 +38,16 @@ struct SendDataResult {
 	bool wouldBlock;
 };
 
+class SocketImpl;
+
+// accept() outcome: the accepted socket is null when the accept failed, and
+// nativeErrorCode then carries errno or WSAGetLastError()
+struct AcceptResult {
+	std::unique_ptr<SocketImpl> socket;
+	int nativeErrorCode = 0;
+	bool retryable = false;  // transient failure: the accept loop can continue
+};
+
 class SocketImpl {
 public:
 	SocketImpl() : socketState(SocketStateType::Disconnected) {};
@@ -50,7 +60,7 @@ public:
 	virtual void disconnect() = 0;
 	virtual int bindSocket(const std::string &bindAddr, const std::string &port) = 0;
 	virtual int listenForConnections(const std::string &bindAddr, const std::string &port) = 0;
-	virtual std::unique_ptr<SocketImpl> acceptConnection() = 0;
+	virtual AcceptResult acceptConnection() = 0;
 	virtual int setNonBlockingIO(bool status) = 0;
 	virtual int reuseAddress() = 0;
 	virtual std::string getPort() = 0;
