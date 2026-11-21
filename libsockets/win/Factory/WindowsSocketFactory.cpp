@@ -57,7 +57,9 @@ std::pair<std::unique_ptr<ClientSocket>, std::unique_ptr<ClientSocket> > Windows
 	server.listenForConnections("127.0.0.1",""); // listen on a random free port
 	sockIn->connectTo("127.0.0.1",server.getPort());
 	sockIn->setNonBlockingIO(true);
-	auto sockOut = std::make_unique<ClientSocket>(server.acceptConnection());
+	AcceptResult accepted = server.acceptConnection();
+	std::unique_ptr<ClientSocket> sockOut;
+	if( accepted.socket ) sockOut = std::make_unique<ClientSocket>(accepted.socket.release());
 
 	return std::make_pair(std::move(sockIn), std::move(sockOut));
 }

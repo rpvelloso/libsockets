@@ -29,7 +29,7 @@ void ListeningState::disconnect() {
 	impl.disconnect();
 }
 
-std::unique_ptr<SocketImpl> ListeningState::acceptConnection() {
+AcceptResult ListeningState::acceptConnection() {
 	return impl.acceptConnection();
 }
 

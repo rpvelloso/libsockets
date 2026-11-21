@@ -15,8 +15,6 @@
 
 #include <unistd.h>
 #include <cerrno>
-#include <exception>
-#include <stdexcept>
 #include "LinuxSocket.h"
 #include "LinuxSocketAddress.h"
 #include "Socket/ClientSocket.h"
@@ -166,18 +164,18 @@ int LinuxSocket::listenForConnections(const std::string &bindAddr, const std::st
 	return listen(fd, 20);
 }
 
-std::unique_ptr<SocketImpl> LinuxSocket::acceptConnection() {
+AcceptResult LinuxSocket::acceptConnection() {
 	struct sockaddr_storage addr;
 	socklen_t addrlen = sizeof(addr);
 
 	SocketFDType clientFd = accept(fd, (struct sockaddr *)&addr, &addrlen);
 
 	if (clientFd < 0) {
-		throw std::runtime_error("accept() returned an invalid socket. " + std::to_string(errno));
+		auto error = errno;
+		return {nullptr, error, error == EINTR || error == ECONNABORTED || error == EPROTO};
 	}
 
-	std::unique_ptr<SocketImpl> ret(new LinuxSocket(clientFd));
-	return std::move(ret);
+	return {std::unique_ptr<SocketImpl>(new LinuxSocket(clientFd)), 0, false};
 }
 
 int LinuxSocket::setNonBlockingIO(bool status) {

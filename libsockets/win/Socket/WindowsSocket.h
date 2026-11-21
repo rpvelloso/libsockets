@@ -38,7 +38,7 @@ public:
 	void disconnect() override;
 	int bindSocket(const std::string &bindAddr, const std::string &port) override;
 	int listenForConnections(const std::string &bindAddr, const std::string &port) override;
-	std::unique_ptr<SocketImpl> acceptConnection() override;
+	AcceptResult acceptConnection() override;
 	int setNonBlockingIO(bool status) override;
 	int reuseAddress() override;
 	std::string getPort() override;

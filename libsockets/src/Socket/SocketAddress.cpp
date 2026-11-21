@@ -34,32 +34,35 @@ SocketAddress::SocketAddress(SocketAddressImpl *impl) : impl(impl) {};
 SocketAddress::SocketAddress(SocketAddress &&) = default;
 SocketAddress::~SocketAddress() = default;
 
+// an address without an implementation is the "no address" value that failed
+// operations return; every accessor tolerates it
 void *SocketAddress::getSocketAddress() const {
-	return impl->getSocketAddress();
+	return impl ? impl->getSocketAddress() : nullptr;
 };
 
 void SocketAddress::setSocketAddressSize(int saSize) {
-	impl->setSocketAddressSize(saSize);
+	if (impl) impl->setSocketAddressSize(saSize);
 };
 
 int SocketAddress::getSocketAddressSize() const {
-	return impl->getSocketAddressSize();
+	return impl ? impl->getSocketAddressSize() : 0;
 };
 
 bool SocketAddress::operator==(const SocketAddress &rhs) {
+	if (!impl || !rhs.impl) return impl.get() == rhs.impl.get();
 	return impl->operator==(*rhs.impl.get());
 };
 
 bool SocketAddress::operator!=(const SocketAddress &rhs) {
-	return !impl->operator==(*rhs.impl.get());
+	return !(*this == rhs);
 };
 
 std::string SocketAddress::getHostname() const {
-	return impl->getHostname();
+	return impl ? impl->getHostname() : "";
 };
 
 std::string SocketAddress::getPort() const {
-	return impl->getPort();
+	return impl ? impl->getPort() : "";
 };
 
 }
