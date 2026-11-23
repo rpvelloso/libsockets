@@ -31,6 +31,8 @@ public:
 	virtual Socket &operator=(Socket &&) = default;
 	virtual ~Socket();
 	virtual int setNonBlockingIO(bool status);
+	// can wake a blocked receiveData() in a thread without closing the descriptor or touching the socket state
+	virtual void shutdownConnection();
 	virtual std::string getPort();
 	virtual SocketImpl &getImpl();
 	virtual SocketAddress getLocalAddress();

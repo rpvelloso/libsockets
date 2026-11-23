@@ -190,6 +190,10 @@ int OpenSSLSocket::setNonBlockingIO(bool status) {
 	return impl->setNonBlockingIO(status);
 }
 
+void OpenSSLSocket::shutdownConnection() {
+	impl->shutdownConnection();
+}
+
 int OpenSSLSocket::reuseAddress() {
 	return impl->reuseAddress();
 }

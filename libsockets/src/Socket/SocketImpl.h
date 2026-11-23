@@ -62,6 +62,7 @@ public:
 	virtual int listenForConnections(const std::string &bindAddr, const std::string &port) = 0;
 	virtual AcceptResult acceptConnection() = 0;
 	virtual int setNonBlockingIO(bool status) = 0;
+	virtual void shutdownConnection() {}
 	virtual int reuseAddress() = 0;
 	virtual std::string getPort() = 0;
 	virtual size_t getSendBufferSize() = 0;

@@ -126,6 +126,10 @@ int LinuxSocket::connectTo(const std::string &host, const std::string &port) {
 	return ret;
 }
 
+void LinuxSocket::shutdownConnection() {
+	shutdown(fd, SHUT_RDWR);
+}
+
 void LinuxSocket::disconnect() {
 	shutdown(fd, SHUT_RDWR);
 	close(fd);

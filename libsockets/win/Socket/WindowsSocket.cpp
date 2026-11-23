@@ -138,6 +138,10 @@ int WindowsSocket::connectTo(const std::string &host, const std::string &port) {
 	return ret;
 }
 
+void WindowsSocket::shutdownConnection() {
+	shutdown(fd, SD_BOTH);
+}
+
 void WindowsSocket::disconnect() {
 	shutdown(fd, SD_BOTH);
 	closesocket(fd);

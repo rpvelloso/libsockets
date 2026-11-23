@@ -63,6 +63,7 @@ public:
 	int listenForConnections(const std::string &bindAddr, const std::string &port) override;
 	AcceptResult acceptConnection() override;
 	int setNonBlockingIO(bool status) override;
+	void shutdownConnection() override;
 	int reuseAddress() override;
 	std::string getPort() override;
 	size_t getSendBufferSize() override;
