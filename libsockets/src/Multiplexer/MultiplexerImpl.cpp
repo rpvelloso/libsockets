@@ -117,8 +117,12 @@ void MultiplexerImpl::multiplex(int timeout) {
 					clientSocket.disconnectCallback();
 					removeClientSocket(clientSocket);
 				}
-				else
-					throw std::runtime_error("self-pipe error.");
+				else {
+					// without the self-pipe the multiplexer can no longer be
+					// woken up, only stopped
+					std::cerr << "self-pipe error, stopping the multiplexer" << std::endl;
+					return;
+				}
 			}
 		}
 		processIncomingClients();

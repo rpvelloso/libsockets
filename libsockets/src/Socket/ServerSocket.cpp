@@ -14,7 +14,6 @@
  */
 
 #include "ServerSocket.h"
-#include "ClientSocket.h"
 #include "SocketImpl.h"
 #include "Factory/SocketFactory.h"
 #include "Socket/SocketState/ListeningState.h"
@@ -49,8 +48,8 @@ int ServerSocket::listenForConnections(const std::string &bindAddr, const std::s
 	return ret;
 }
 
-ClientSocket ServerSocket::acceptConnection() {
-	return ClientSocket(state->acceptConnection().release());
+AcceptResult ServerSocket::acceptConnection() {
+	return state->acceptConnection();
 }
 
 void ServerSocket::disconnect() {

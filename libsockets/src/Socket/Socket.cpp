@@ -50,6 +50,10 @@ int Socket::setNonBlockingIO(bool status) {
 	return impl->setNonBlockingIO(status);
 }
 
+void Socket::shutdownConnection() {
+	impl->shutdownConnection();
+}
+
 std::string Socket::getPort() {
 	return impl->getPort();
 }

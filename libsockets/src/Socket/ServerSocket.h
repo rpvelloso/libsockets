@@ -17,7 +17,6 @@
 #define SRC_SOCKETS_SERVERSOCKET_H_
 
 #include <string>
-#include "ClientSocket.h"
 #include "Socket.h"
 
 namespace socks {
@@ -31,7 +30,7 @@ public:
 	ServerSocket();
 	virtual ~ServerSocket();
 	int listenForConnections(const std::string &bindAddr, const std::string &port);
-	ClientSocket acceptConnection();
+	AcceptResult acceptConnection();
 	void disconnect();
 };
 

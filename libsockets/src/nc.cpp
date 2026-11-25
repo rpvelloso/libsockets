@@ -71,13 +71,17 @@ private:
 				<< serverSocket.getPort()
 				<< std::endl;
 
-			auto clientSocket = serverSocket.acceptConnection();
+			socks::AcceptResult accepted = serverSocket.acceptConnection();
 			serverSocket.disconnect();
 
 			if (verbose)
 				std::cerr << "connection received." << std::endl;
 
-			sendAndReceive(clientSocket);
+			if( accepted.socket ) {
+				socks::ClientSocket clientSocket(accepted.socket.release());
+				sendAndReceive(clientSocket);
+			} else
+				std::cerr << "error accepting a connection." << std::endl;
 		} else
 			std::cerr << "error listening for connections on "
 				<< host << ":" << port << std::endl;
@@ -108,7 +112,11 @@ private:
 		}
 
 		auto clientSocket = datagramSocket.makeClientSocket(peer);
-		sendAndReceive(clientSocket);
+		if( ! clientSocket ) {
+			std::cerr << "error creating a client socket." << std::endl;
+			return;
+		}
+		sendAndReceive(*clientSocket);
 	}
 
 	void client(socks::ClientSocket &clientSocket) {

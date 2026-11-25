@@ -25,7 +25,7 @@ public:
 	explicit ListeningState(SocketImpl &impl);
 	virtual ~ListeningState();
 	void disconnect() override;
-	std::unique_ptr<SocketImpl> acceptConnection() override;
+	AcceptResult acceptConnection() override;
 	std::string getPort() override;
 };
 

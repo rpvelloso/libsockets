@@ -30,7 +30,12 @@ void server() {
   socks::ServerSocket serverSocket;
   
   serverSocket.listenForConnections("127.0.0.1", "10000");
-  socks::ClientSocket clientSocket = serverSocket.acceptConnection();
+  socks::AcceptResult accepted = serverSocket.acceptConnection();
+  if (!accepted.socket) { // accepted.nativeErrorCode says why
+    std::cerr << "error accepting a connection." << std::endl;
+    return;
+  }
+  socks::ClientSocket clientSocket(accepted.socket.release());
   
   char buf[512];
   auto len = clientSocket.receiveData(buf, 512);
@@ -80,7 +85,8 @@ int main() {
     */
     ); // onReceive is mandatory, onConnect, onDisconnect & afterWrite are optional
     
-  myServer.listen("127.0.0.1", "10000"); // serves
+  // serves until stopped; returns 0 or the error that stopped it
+  myServer.listen("127.0.0.1", "10000");
 };
 ```
 You can replace `socks::factory::makeThreadedServer` with `socks::factory::makeMultiplexedServer`. The first instantiates a server that creates one thread per client (using blocking I/O), the second instantiates a server with a more scalable architecture, using the reactor pattern (several clients are served per thread using non-blocking I/O).
@@ -110,7 +116,7 @@ int main() {
 ```
 You can also turn a `socks::DatagramSocket` into a 'connected' datagram socket and use `socks::ClientSocket`'s interface.
 ```cpp
-socks::ClientSocket clientSocket = datagramSocket.makeClientSocket(peer); 
+std::optional<socks::ClientSocket> clientSocket = datagramSocket.makeClientSocket(peer);
 /* 
  * from this point on 'datagramSocket' cannot be used anymore,
  * its implementation has been moved to 'clientSocket'.
@@ -118,7 +124,7 @@ socks::ClientSocket clientSocket = datagramSocket.makeClientSocket(peer);
 ```
 or
 ```cpp
-socks::ClientSocket clientSocket = datagramSocket.makeClientSocket(host, port); // same here
+std::optional<socks::ClientSocket> clientSocket = datagramSocket.makeClientSocket(host, port); // same here
 ```
 
 ## socks::SocketStream

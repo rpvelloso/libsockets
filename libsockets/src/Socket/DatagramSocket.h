@@ -16,6 +16,8 @@
 #ifndef SRC_SOCKET_DATAGRAMSOCKET_H_
 #define SRC_SOCKET_DATAGRAMSOCKET_H_
 
+#include <optional>
+
 #include "ClientSocket.h"
 #include "Socket.h"
 
@@ -32,8 +34,8 @@ public:
 	std::pair<int, SocketAddress> receiveFrom(void *buf, size_t len);
 	int sendTo(const SocketAddress &addr, const void *buf, size_t len);
 	int bindSocket(const std::string &bindAddr, const std::string &port);
-	ClientSocket makeClientSocket(const SocketAddress &addr);
-	ClientSocket makeClientSocket(const std::string &host, const std::string &port);
+	std::optional<ClientSocket> makeClientSocket(const SocketAddress &addr);
+	std::optional<ClientSocket> makeClientSocket(const std::string &host, const std::string &port);
 };
 
 namespace factory {

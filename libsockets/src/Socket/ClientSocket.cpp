@@ -54,10 +54,11 @@ int ClientSocket::receiveData(void* buf, size_t len) {
 int ClientSocket::sendData(const void* buf, size_t len) {
 	auto [sent,nativeErrorCode,wouldBlock] = state->sendData(buf, len);
 	// HINT: there is a debug/logging opportunity here
-	if( sent < 0 && nativeErrorCode > 0 && !wouldBlock ) {
-		// TODO: maybe save the nativeErrorCode in ClientSocket for further diagnostics?
-		disconnect();  // socket is in a bad state. disconnecting to prevent further errors
-	}
+	// a socket is shared with every thread that broadcasts to it, so a
+	// failed send must not swap the socket state here: the connection that
+	// owns the socket disconnects it, and the failure goes to the caller
+	(void)nativeErrorCode;
+	(void)wouldBlock;
 	return sent;
 }
 

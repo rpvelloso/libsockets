@@ -83,7 +83,7 @@ int OpenSSLSocket::receiveData(void* buf, size_t len) {
 	return ret;
 }
 
-int OpenSSLSocket::sendData(const void* buf, size_t len) {
+SendDataResult OpenSSLSocket::sendData(const void* buf, size_t len) {
 	auto ret = SSL_write(sslHandler.get(), buf, len);
 	if (ret <= 0) {
 		auto error = SSL_get_error(sslHandler.get(), ret);
@@ -93,20 +93,20 @@ int OpenSSLSocket::sendData(const void* buf, size_t len) {
 		case SSL_ERROR_WANT_X509_LOOKUP:
 		case SSL_ERROR_WANT_ACCEPT:
 		case SSL_ERROR_WANT_CONNECT:
-			return 0;
+			return {0, 0, true};
 		default:
-			return -1;
+			return {-1, error, false};
 		}
 	}
-	return ret;
+	return {ret, 0, false};
 }
 
 std::pair<int, SocketAddress> OpenSSLSocket::receiveFrom(void *buf, size_t len) {
-	throw std::runtime_error("invalid operation receiveFrom().");
+	return {-1, SocketAddress(nullptr)};
 };
 
 int OpenSSLSocket::sendTo(const SocketAddress &addr, const void *buf, size_t len) {
-	throw std::runtime_error("invalid operation sendTo().");
+	return -1;
 };
 
 int OpenSSLSocket::connectTo(const std::string& host, const std::string& port) {
@@ -174,19 +174,24 @@ int OpenSSLSocket::listenForConnections(const std::string& bindAddr,
 			return -1;
 
 		if (SSL_CTX_check_private_key(sslContext.get()) != 1)
-			throw std::runtime_error("SSL_CTX_check_private_key()");
+			return -1;
 	}
 
 	return ret;
 }
 
-std::unique_ptr<SocketImpl> OpenSSLSocket::acceptConnection() {
-	std::unique_ptr<SocketImpl> ret(new OpenSSLSocket(impl->getFD(), impl->acceptConnection().release(), sslContext.get()));
-	return std::move(ret);
+AcceptResult OpenSSLSocket::acceptConnection() {
+	AcceptResult accepted = impl->acceptConnection();
+	if( ! accepted.socket ) return accepted;
+	return {std::unique_ptr<SocketImpl>(new OpenSSLSocket(impl->getFD(), accepted.socket.release(), sslContext.get())), 0, false};
 }
 
 int OpenSSLSocket::setNonBlockingIO(bool status) {
 	return impl->setNonBlockingIO(status);
+}
+
+void OpenSSLSocket::shutdownConnection() {
+	impl->shutdownConnection();
 }
 
 int OpenSSLSocket::reuseAddress() {

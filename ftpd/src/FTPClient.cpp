@@ -113,7 +113,10 @@ FTPReply FTPClient::processCmd(const std::string& cmdline, std::ostream &outp) {
 			outp << clientInfo.buildReplyString(reply) << std::endl;
 			reply = FTPReply::RNULL;
 			state.reset(new FTPClientTransfer(clientInfo, outp, [this]() {
-				auto dataSocket = this->getClientInfo().getPassiveSocket().acceptConnection();
+				auto accepted = this->getClientInfo().getPassiveSocket().acceptConnection();
+				if( ! accepted.socket )
+					throw std::runtime_error("Can't accept data connection.");
+				auto dataSocket = socks::ClientSocket(accepted.socket.release());
 				if (this->getClientInfo().getPeerAddr() != dataSocket.getRemoteAddress().getHostname())
 					throw std::runtime_error("Invalid peer address.");
 				clientInfo.getPassiveSocket().disconnect();

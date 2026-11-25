@@ -33,7 +33,7 @@ public:
 	Server(ServerImplInterface *impl);
 	Server(Server &&) = default;
 	~Server();
-	void listen(const std::string &bindAddr, const std::string &port);
+	int listen(const std::string &bindAddr, const std::string &port);
 	void stop();
 	std::string getPort();
 private:
